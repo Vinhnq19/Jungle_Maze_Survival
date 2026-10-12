@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3012737e968aac4f8a93169c621a6c1, type: 3}
+  m_Name: Config_10min_70x70
+  m_EditorClassIdentifier: 
+  mapSize: 70
+  TotalMapTime: 600
+  InitialWidth: 70
+  NumberOfShrinks: 6
+  TimeToStartBorder: 30
+  ShrinkDelay: 77
+  ShrinkDuration: 8
+  ShrinkSize: 8
+  baseReviveTime: 15
+  limitTimeToRevive: 30
+  WeaponsPerBotPerMinute: 1.5
+  NumberOfWeaponSpawnWaves: 8
+  InitialWeaponSpawnCount: 40

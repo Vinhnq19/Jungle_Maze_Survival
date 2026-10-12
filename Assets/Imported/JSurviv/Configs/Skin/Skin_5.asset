@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ab6aac69481c1846b484f716c93d67c, type: 3}
+  m_Name: Skin_5
+  m_EditorClassIdentifier: 
+  idleClip:
+    Back: {fileID: 7400000, guid: 07b7688e7d990fc48981cefd5f733d78, type: 2}
+    Side: {fileID: 7400000, guid: f0727d214b8804b409b5ee30a2ec08f8, type: 2}
+    Front: {fileID: 7400000, guid: 096e2be8fdc96db42939d067714e049d, type: 2}
+  walkClip:
+    Back: {fileID: 7400000, guid: 6be6ba2efa8ac3c4b92f920a0f3efdfd, type: 2}
+    Side: {fileID: 7400000, guid: 178fad200e1b2f244a4e937937803152, type: 2}
+    Front: {fileID: 7400000, guid: 36d6a1d762d5e5043b7703e8ae68b649, type: 2}
+  attackClip:
+    Back: {fileID: 7400000, guid: 29ad5b6a95eb4a04ea369bb82d98c083, type: 2}
+    Side: {fileID: 7400000, guid: 602b07f06db42694eb8940fd3c42e724, type: 2}
+    Front: {fileID: 7400000, guid: 192959085c1cf564885c899d9d44e15f, type: 2}

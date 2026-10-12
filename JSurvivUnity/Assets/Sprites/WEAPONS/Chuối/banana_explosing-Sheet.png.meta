@@ -1,0 +1,533 @@
+fileFormatVersion: 2
+guid: 28a12d9849740dd4887dc29765575a42
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -7765348523709983726
+    second: banana_explosing-Sheet_0
+  - first:
+      213: 5134369151546457678
+    second: banana_explosing-Sheet_1
+  - first:
+      213: -5595241261264972132
+    second: banana_explosing-Sheet_2
+  - first:
+      213: 8795527550542511667
+    second: banana_explosing-Sheet_3
+  - first:
+      213: 1060515499735505365
+    second: banana_explosing-Sheet_4
+  - first:
+      213: 5476081280218353406
+    second: banana_explosing-Sheet_5
+  - first:
+      213: -5657998387741406618
+    second: banana_explosing-Sheet_6
+  - first:
+      213: 8989753510154877403
+    second: banana_explosing-Sheet_7
+  - first:
+      213: 8797702794108472062
+    second: banana_explosing-Sheet_8
+  - first:
+      213: 6782691076476819184
+    second: banana_explosing-Sheet_9
+  - first:
+      213: 1172770461868134005
+    second: banana_explosing-Sheet_10
+  - first:
+      213: 3515827351407915870
+    second: banana_explosing-Sheet_11
+  - first:
+      213: 7910058672407439862
+    second: banana_explosing-Sheet_12
+  - first:
+      213: -1609983021602927584
+    second: banana_explosing-Sheet_13
+  - first:
+      213: -4329347070202486255
+    second: banana_explosing-Sheet_14
+  - first:
+      213: 1000624132877323559
+    second: banana_explosing-Sheet_15
+  - first:
+      213: 2240632611955943766
+    second: banana_explosing-Sheet_16
+  - first:
+      213: -4472485743735463441
+    second: banana_explosing-Sheet_17
+  - first:
+      213: 5206179183786140183
+    second: banana_explosing-Sheet_18
+  - first:
+      213: 2154488010465727725
+    second: banana_explosing-Sheet_19
+  - first:
+      213: -8594278110450363687
+    second: banana_explosing-Sheet_20
+  - first:
+      213: 579831230059333771
+    second: banana_explosing-Sheet_21
+  - first:
+      213: 5158086057785768575
+    second: banana_explosing-Sheet_22
+  - first:
+      213: 5611026889669888376
+    second: banana_explosing-Sheet_23
+  - first:
+      213: 3013203018784646993
+    second: banana_explosing-Sheet_24
+  - first:
+      213: -7093571343795364393
+    second: banana_explosing-Sheet_25
+  - first:
+      213: -7926724885425322816
+    second: banana_explosing-Sheet_26
+  - first:
+      213: -3055032678150314842
+    second: banana_explosing-Sheet_27
+  - first:
+      213: -8143358920211066729
+    second: banana_explosing-Sheet_28
+  - first:
+      213: 739120419348163674
+    second: banana_explosing-Sheet_29
+  - first:
+      213: -3925069997447643202
+    second: banana_explosing-Sheet_30
+  - first:
+      213: -914422681257317227
+    second: banana_explosing-Sheet_31
+  - first:
+      213: 8127740097068461862
+    second: banana_explosing-Sheet_32
+  - first:
+      213: -6780916189911715822
+    second: banana_explosing-Sheet_33
+  - first:
+      213: 8879812628717151414
+    second: banana_explosing-Sheet_34
+  - first:
+      213: 6654260058720137202
+    second: banana_explosing-Sheet_35
+  - first:
+      213: -4795524166209645037
+    second: banana_explosing-Sheet_36
+  - first:
+      213: -6637990412202531292
+    second: banana_explosing-Sheet_37
+  - first:
+      213: 1176570215580098150
+    second: banana_explosing-Sheet_38
+  - first:
+      213: -7415037271727798254
+    second: banana_explosing-Sheet_39
+  - first:
+      213: 4442527641546319962
+    second: banana_explosing-Sheet_40
+  - first:
+      213: 4311112847681795404
+    second: banana_explosing-Sheet_41
+  - first:
+      213: -3463013761391882866
+    second: banana_explosing-Sheet_42
+  - first:
+      213: -124507837751890766
+    second: banana_explosing-Sheet_43
+  - first:
+      213: 5046050658158051207
+    second: banana_explosing-Sheet_44
+  - first:
+      213: -3035865613372044055
+    second: banana_explosing-Sheet_45
+  - first:
+      213: 5355017452374769257
+    second: banana_explosing-Sheet_46
+  - first:
+      213: -4126040429986318884
+    second: banana_explosing-Sheet_47
+  - first:
+      213: 915688329510529151
+    second: banana_explosing-Sheet_48
+  - first:
+      213: -5449446655329964886
+    second: banana_explosing-Sheet_49
+  - first:
+      213: 1614977102752937247
+    second: banana_explosing-Sheet_50
+  - first:
+      213: 4483854000757756115
+    second: banana_explosing-Sheet_51
+  - first:
+      213: -4474148043779316957
+    second: banana_explosing-Sheet_52
+  - first:
+      213: -364792319736715242
+    second: banana_explosing-Sheet_53
+  - first:
+      213: -7322365634324537786
+    second: banana_explosing-Sheet_54
+  - first:
+      213: 8660566094509189507
+    second: banana_explosing-Sheet_55
+  - first:
+      213: 1702185605792909350
+    second: banana_explosing-Sheet_56
+  - first:
+      213: 872288244192268198
+    second: banana_explosing-Sheet_57
+  - first:
+      213: 3887468513754593346
+    second: banana_explosing-Sheet_58
+  - first:
+      213: 2518382294881123839
+    second: banana_explosing-Sheet_59
+  - first:
+      213: 7004938751246931856
+    second: banana_explosing-Sheet_60
+  - first:
+      213: -4340380430397216211
+    second: banana_explosing-Sheet_61
+  - first:
+      213: -4966356228426224592
+    second: banana_explosing-Sheet_62
+  - first:
+      213: -5835077794215851505
+    second: banana_explosing-Sheet_63
+  - first:
+      213: -4415320757816131559
+    second: banana_explosing-Sheet_64
+  - first:
+      213: 5850417562458414540
+    second: banana_explosing-Sheet_65
+  - first:
+      213: 2162960713626386558
+    second: banana_explosing-Sheet_66
+  - first:
+      213: -2964755059562243033
+    second: banana_explosing-Sheet_67
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 0
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 0
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 214992709a0fb3490800000000000000
+      internalID: -7765348523709983726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_1
+      rect:
+        serializedVersion: 2
+        x: 384
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e4e76af4a81f04740800000000000000
+      internalID: 5134369151546457678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_2
+      rect:
+        serializedVersion: 2
+        x: 768
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c9651bdb7b5b952b0800000000000000
+      internalID: -5595241261264972132
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 1152
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33e7f3ed4bdff0a70800000000000000
+      internalID: 8795527550542511667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_4
+      rect:
+        serializedVersion: 2
+        x: 1536
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5d9d7886a35b7be00800000000000000
+      internalID: 1060515499735505365
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 1920
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efec49c29e2fefb40800000000000000
+      internalID: 5476081280218353406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 2304
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66ac0f69170ca71b0800000000000000
+      internalID: -5657998387741406618
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: banana_explosing-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 2688
+        y: 0
+        width: 384
+        height: 384
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bd93a1f003502cc70800000000000000
+      internalID: 8989753510154877403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: d0d7992989e5b4a18823ca39f899bf40
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":9.0,"y":1.0},"gridSpriteSize":{"x":384.0,"y":384.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      banana_explosing-Sheet_0: -7765348523709983726
+      banana_explosing-Sheet_1: 5134369151546457678
+      banana_explosing-Sheet_2: -5595241261264972132
+      banana_explosing-Sheet_3: 8795527550542511667
+      banana_explosing-Sheet_4: 1060515499735505365
+      banana_explosing-Sheet_5: 5476081280218353406
+      banana_explosing-Sheet_6: -5657998387741406618
+      banana_explosing-Sheet_7: 8989753510154877403
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

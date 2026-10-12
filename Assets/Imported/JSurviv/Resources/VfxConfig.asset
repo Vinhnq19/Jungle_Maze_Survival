@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cc1970762d7c1e49a2e7c034f4eef11, type: 3}
+  m_Name: VfxConfig
+  m_EditorClassIdentifier: 
+  bleedVfx: {fileID: 19891620, guid: 5ae8e312b2fa7e24187ab5f854563a80, type: 3}
+  poisonVfx: {fileID: 19841656, guid: 0efaaa0785c0e1047a04ecc05397b4c1, type: 3}
+  burnVfx: {fileID: 19818808, guid: 2d05e4fd3dd473e4583284cd10e03eb4, type: 3}
+  blindVfx: {fileID: 3659648776251392824, guid: 7e00f2abb349a4d99b77a2d5bcc210c2,
+    type: 3}
+  waterVfx: {fileID: 7690000038905730161, guid: 0ac650f6f50174cfaa6177d8ca26ee23,
+    type: 3}
+  immunityVfx: {fileID: 7247741073074075921, guid: 36114ff2fc7237442809f63edaa20fca,
+    type: 3}
+  stunnedVfx: {fileID: 19856336, guid: 3e7867af8e36b3c41a1b75a697655ea8, type: 3}
+  reverseVfx: {fileID: 5337852670610583583, guid: 1255107e76827314a945672c4e504e35,
+    type: 3}
+  immortalVfx: {fileID: 3161998446915842472, guid: 7f5bd9d1f96791247a8883902df1fa17,
+    type: 3}
+  buffDamageVfx: {fileID: 5890446628888991619, guid: c55f94b6067107a488cbb72e21b5c3ef,
+    type: 3}
+  cantUseWeaponVfx: {fileID: 5371619071905763368, guid: 0991e9908cb936d4ea10862d8be4ac13,
+    type: 3}

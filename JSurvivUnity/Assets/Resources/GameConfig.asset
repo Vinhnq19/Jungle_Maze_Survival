@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a0a3b5045c134adc9e2c672c4dfc09df, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: 
+  secretKey: sk-tgreUAEHR3-BouznGQUg0A:fG98QvdhvWIDUQtOfst4BGwxIzi8bdIdCuC1SAIPXPBV00uwNsBPqcpNVCoiV3zt_ZYd-Jy8sfe4KbL7umylzg
+  serverUrl: https://cf25-server.jsclub.dev/game/socket
+  stepTime: 0.5

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25e8029ab153db84780981de7a20b1c9, type: 3}
+  m_Name: PlayerAudioConfig
+  m_EditorClassIdentifier: 
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
+  throwablesAttackSound: {fileID: 0}
+  exploitSound: {fileID: 0}
+  useItemSound: {fileID: 0}
+  pickupGunSound: {fileID: 0}
+  pickupMeleeSound: {fileID: 0}
+  pickupThrowableSound: {fileID: 0}
+  putOnArmorSound: {fileID: 0}
+  putOnHelmetSound: {fileID: 0}
+  pickupItemSound: {fileID: 0}
+  bleedSound: {fileID: 8300000, guid: 7a3af59eb6e377a4090de783f4c3452e, type: 3}
+  stunSound: {fileID: 0}
+  reviveSound: {fileID: 0}
+  deathSound: {fileID: 0}

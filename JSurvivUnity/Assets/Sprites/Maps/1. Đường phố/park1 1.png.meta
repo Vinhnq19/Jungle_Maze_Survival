@@ -1,0 +1,6098 @@
+fileFormatVersion: 2
+guid: 1ffd2a8785bbb0e4ab7d26cbc918a584
+TextureImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 64
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: park1 1_0
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a7d81d6cabaf1834e9ee8198bb9707e8
+      internalID: -1605386427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_1
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42a6293510c7d94418d0f3247ca71e91
+      internalID: 1766984279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_2
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18981b7f83a203b49a1d6e7c88d2e11a
+      internalID: -90568144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_3
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efc73e05e3420ec45945123cdbfc1f88
+      internalID: -223857740
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_4
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6eab2e3757455e04fac49b95860c2529
+      internalID: 641480472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_5
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3737afc07639ce24e95c2853e5469ab2
+      internalID: 1012306504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_6
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0d3a357bb824864f805d48d3ef3327e
+      internalID: -1646623294
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_7
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96657b71d3020a548bc591238f2be26c
+      internalID: -993231288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_8
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2beefd41a0895c543b5109134f8a1e54
+      internalID: 1266974819
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_9
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca7a59ff3745dc34ba3d49a33de61e8d
+      internalID: -1351728293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_10
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 27bbb23d946b9ed4bbe3562175fb3a8e
+      internalID: 1849915579
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_11
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cb6d109e551f4674682af7f35ccea960
+      internalID: 819090018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_12
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5dd9a4b754f060f47a4dffa700cd7ff3
+      internalID: 447775687
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_13
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aef183c63b8ea3343a11e00ff02bfc79
+      internalID: 266944809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_14
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 087d154d47ad0094eb926fcb21d0a6ee
+      internalID: -332980480
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_15
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 1069
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d0a4090a9ced4994a90b41d713486d89
+      internalID: -210739581
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_16
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 16c3aac82a372b34b86b157467ab1130
+      internalID: -1664474978
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_17
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 149eb908baa5ec44b9f0eb3be8a71c86
+      internalID: 1763295295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_18
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e646c522a6a135b439e86953b2d4cc9c
+      internalID: -480273800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_19
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7dd113e37acdf4e47a3e6418e2325d9b
+      internalID: 1159605521
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_20
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ade0f3029b0c1c34d97e810be1d1942c
+      internalID: 2103176980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_21
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32ad8be4c7f38e845bd6d8cb11a4c679
+      internalID: -855145901
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_22
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6494274d301d8f04cb007457306d8ef1
+      internalID: 250147986
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_23
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3469268186c4060459874ef3ee90cdad
+      internalID: 1285680816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_24
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa69849214c92354f8ee5f77f422b9d5
+      internalID: 1972569982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_25
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0c7585ab42b11c47946fa47c5ba9518
+      internalID: -925965168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_26
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d314994e5ba22440b497cab1e5054f4
+      internalID: -141971220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_27
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec8aa5e59d27ed64e893c1ed4083d585
+      internalID: 1357950093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_28
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82a0f686c5eb1a34390a16efba1c7aaa
+      internalID: 1537750208
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_29
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0b1485847102097429df2c3261a16eaf
+      internalID: 271677955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_30
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a074e2cc3d191ec48b3cce7a772a7f29
+      internalID: 1304219158
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_31
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 1005
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78d8fc411f78f4a4ba30b7f0937221df
+      internalID: -1300188212
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_32
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5b8fc3f8a3000d942a634a4b08a8f689
+      internalID: -471627703
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_33
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0ccbae71e58ade4198cdb1a4be42b9e
+      internalID: -1445050084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_34
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25d49894b30b5194fa5e48e2337305fa
+      internalID: -1826671239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_35
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6e3703acf4ff0ab4da4e5df90182fc34
+      internalID: -1274400944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_36
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d32d752ed69832548bab75a9b8b4d14d
+      internalID: 2129569191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_37
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a95ddcb311a5b444baf1e67b3e3ce831
+      internalID: 1487343551
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_38
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 67e5220771be6f94f8b3c1f6c203fa20
+      internalID: 1836221758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_39
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a54a58d5857abf47bc7136587f47875
+      internalID: 667482179
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_40
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4dcdce8c06e03c943a38d61cc4ae1022
+      internalID: 244644935
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_41
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e719025ab934cf45b9bc067142a4177
+      internalID: -1749888846
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_42
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0793fa89d32c5d94592aced8291929c5
+      internalID: 973608094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_43
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2c38351573843a4083ca0df1f7a09be
+      internalID: 1316855872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_44
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 132e38fd6a5402840bf4b97f9ffebad0
+      internalID: 919963290
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_45
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c64c2ff0d1836104caf780720c880938
+      internalID: -320705139
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_46
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58c89a05b0beeed46bbedef0bcf94571
+      internalID: 693053487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_47
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 941
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 15132eb54c871014f952cd045c92c8ac
+      internalID: -1381051881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_48
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9a3c02a08529a0749b0bfbc61f9600b2
+      internalID: 1864613217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_49
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc3952608fa8337488874b59b6a497d8
+      internalID: -105054649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_50
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 590cf4d7fc91d734b812513988bc6db2
+      internalID: -29107359
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_51
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d675b8ad7a7abd43b9794436fba7619
+      internalID: 1909102504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_52
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee0fab8fe7b0d064db936a99eef4c838
+      internalID: 303489567
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_53
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e00b92d124d891847a7681a133fed82e
+      internalID: -1634336684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_54
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a02e8993f7239ef4d9e44b04fa2b2fc4
+      internalID: -100641189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_55
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a054460e9fcb7784da5fda68aca3a780
+      internalID: 458875936
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_56
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b62bd5725b10c79448559f05ce17537c
+      internalID: 984594418
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_57
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c1348ebc16aa48b45b1c2be78ba39264
+      internalID: -1915944876
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_58
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4728de4354a1444d92bf0df817fd128
+      internalID: 925932091
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_59
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c2587ff06fdc7d40838026d571c3507
+      internalID: -1687330436
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_60
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31f0fab40f16a4c4eaa4f2fe7420152b
+      internalID: -1660387914
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_61
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cef514c8abd30434bbcf46b51d338070
+      internalID: 310215904
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_62
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d2bd3c43d9d636147a0f7c5e22f87687
+      internalID: -1015696347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_63
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 877
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0fdbaa19bfbc41340bed87c58797a466
+      internalID: -1773823093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_64
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eeb7b14efe43b6b4aac98d20403722bc
+      internalID: 570068167
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_65
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a45ce89b36d14f043ad2a8236f645626
+      internalID: -1419867840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_66
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4743d2b9880cb5d46987e9cb2aa3e8d8
+      internalID: -1877985728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_67
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6b1bcdabcbbf392408ba4dd1585c53fe
+      internalID: 223673303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_68
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9c3b4d9d37c6e24ea62236e5a2bd0ea
+      internalID: -1721338440
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_69
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4bdfd69dbd0d4a478bf591d4097774b
+      internalID: -1124406557
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_70
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd8dfa1b6d6708f4091e30e356f79514
+      internalID: 632440031
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_71
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d87249e4c99a28468ddb08cb4e38562
+      internalID: -1270343840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_72
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 04c4949c90364614b9ab912944f44c6c
+      internalID: -1470675054
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_73
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c89120c6947c5446a6b6698baa3f2f2
+      internalID: -1894552531
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_74
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a259a5c53493aa4a92b0cb51b70782b
+      internalID: -350107315
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_75
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d7f82ecfc0066343ac56bd05d3df5a8
+      internalID: 864580318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_76
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 82ffec27b6cfb354ca5a28bf10f87eaa
+      internalID: 1026339502
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_77
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 42d9eb43c03513c4c8dd569416a5c661
+      internalID: 2021900677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_78
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca1dc62213c8ce747b7e5535319579b8
+      internalID: -1096278635
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_79
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 813
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d32137ba155da9542b208f5a8cbbb5b4
+      internalID: -1177449446
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_80
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7146bfaa32d61ab459f545c1703618d5
+      internalID: -152165410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_81
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6caf58f64e5735e46be70dd096c475a0
+      internalID: 760298029
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_82
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81a46f65b3f632a49b48edcdf26c02b7
+      internalID: 137146537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_83
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddd78facb01405e4ebf4972000590962
+      internalID: -1587827420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_84
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5bb3a62dee311944ebacd88f15aba924
+      internalID: 888120024
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_85
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 032015e36c1d92b4aae9594caac3c3c4
+      internalID: 1667205678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_86
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a18ae9c768d21443967cc2098215d37
+      internalID: 1406105387
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_87
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d190ce4355eaa694b84431e875a4cfa8
+      internalID: 1977712668
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_88
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d93d00be039a534c8c1863f073a1a1a
+      internalID: -648170382
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_89
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8343b97de0ae86c4389537bc466f57d8
+      internalID: -1174332323
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_90
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dd4d99c633604645aea72fddcc83a9f
+      internalID: -1996236296
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_91
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4184e46d9b04c764a8bea857073ddb6f
+      internalID: 471990663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_92
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 24d441f3d9d425546a5109d1e0c85dd5
+      internalID: 495153559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_93
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66ffb822329557949bb4d23153f16e6e
+      internalID: -211683995
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_94
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b1e1d46527da2e47a2469b19fb1a5a4
+      internalID: 1745584287
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_95
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 749
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 38f861a79607a524699c4fdefafe3786
+      internalID: -1795862449
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_96
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f399f01f756c77547ac13a08a53d0ea3
+      internalID: 2023381837
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_97
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e69a921abf3653e43877c49cd69acc19
+      internalID: 578533743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_98
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a130a50a0f2f58a45a6fae53c3c077b4
+      internalID: 1540619439
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_99
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fe9b26780d9608a4597cd8d7a9ea7ba6
+      internalID: -1697410752
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_100
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 63b793eda9cc6d645820540e704ba300
+      internalID: 1614464154
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_101
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a34f457b8c677744baefe99d17729f70
+      internalID: 890982260
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_102
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e65bef839c9f7504f8ed57badaa35b18
+      internalID: 2750081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_103
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f811090c1ec2fd44b516dce1281fcc9
+      internalID: -196293855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_104
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ffb25c5d5178a32458df8afb679a1186
+      internalID: 1240621657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_105
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d5d15a71d06630a4ba2875716fb85368
+      internalID: 1212080053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_106
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec4a5ebdd1b26c840b900769354afc09
+      internalID: 1303794432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_107
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6589121eb92f8f24ba89465ba346ec2a
+      internalID: 664246552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_108
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9ef6474663bbfe4bbb6e0eadab7eefd
+      internalID: 754980975
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_109
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 101910795c300754d94ead5b8700d268
+      internalID: -1206669751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_110
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77c4e2fb1461e004d8df10b166a32ed1
+      internalID: 701214053
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_111
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 685
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3a44bd38a4e8b442839a0b595c6fa81
+      internalID: -2123023860
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_112
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f20536afa76a87b4e8e7c84da2060e69
+      internalID: 594469861
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_113
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfebf31886a593a4095afed92dd680f0
+      internalID: 1781253851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_114
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 800a39e6b50bd5a4597461abb74ffc46
+      internalID: -177413663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_115
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c83f9d8e12a68864da8f3d20925405a1
+      internalID: -626360947
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_116
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 562e38abb8a50b446a108127c3f0722f
+      internalID: 1515141000
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_117
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4418635fe8695cd4b89e0787dcb46a38
+      internalID: -411004504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_118
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bf2b3fde16db27e469368d60c84a92d6
+      internalID: 704589980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_119
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bb42b56662cf194287d1e93ad374ab1
+      internalID: -1962633074
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_120
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c0bd32c15bbf7d640be67e9dd1e0f2d8
+      internalID: -1543220612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_121
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61137ca63f45af84c8f57d73d9953bf3
+      internalID: -1410159268
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_122
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93549b1e9c68c5e40ad86be024ba04f9
+      internalID: 1979486254
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_123
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 275f63c213f057b42b580c9f7aa2f34f
+      internalID: -1866724850
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_124
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50c5b6638844aee419115490480900ef
+      internalID: 1498257360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_125
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c89016fc529c4d4d85622cadc240e7d
+      internalID: -1078443415
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_126
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 01314cb1e31ab924a905523ae8828703
+      internalID: -1451873134
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_127
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 621
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4899eb136ae9d04485fbe47a135d0f2
+      internalID: 812009615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_128
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: de7a4a0dec5a26d43a789dec6e888cfb
+      internalID: 346559422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_129
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11bc6354421475c46b9fda95a6e4e370
+      internalID: 1235206429
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_130
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4049d64ba966d1c4eb009fb7962c9edd
+      internalID: 698897441
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_131
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc23a7ae4aa14f44a875e9ca40327426
+      internalID: -174163474
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_132
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc9ad79a1f0645145adce000d4833f1c
+      internalID: -1227400783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_133
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: efda2f13c8b7fed4c9866fbd92406571
+      internalID: -644111665
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_134
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3fea91b0321e36949908ed655891594f
+      internalID: -104343332
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_135
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d70b53092f466314590bdfc7d680d39f
+      internalID: 122726559
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_136
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 23ba5436ac798a4458f493b97fa6b4af
+      internalID: 1506590838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_137
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4d96fa9944907eb4587390649888f8ff
+      internalID: 1275717704
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_138
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f39f8549b0f9693498dd165f4cc34766
+      internalID: 323537881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_139
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b57d8953acc947b43b751c81fb5e2a94
+      internalID: -1796884795
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_140
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 59b3378867d66174e925b20c3137fbd5
+      internalID: 934508146
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_141
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b760da75791c9af478d43284cb62dcbf
+      internalID: 806427007
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_142
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2bdf60a43e8cc9c4fb9bd64b36462e79
+      internalID: -1158601343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_143
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 557
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfb9028581fa2234cbe5f0c37ed3fa98
+      internalID: 2118706394
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_144
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7857c52ebd30ebb40b8ef1e4f14c578e
+      internalID: 562089327
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_145
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af17356473bc9134a83d2eb83ef82979
+      internalID: 2092269356
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_146
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 18329903329083c4fb3aa5a0e676c885
+      internalID: -1067696069
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_147
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b433826e53af73848b09b4b7f8a983d8
+      internalID: 396468877
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_148
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4fa0b81a1010a4a48a3ac0b0fe8af246
+      internalID: -386284774
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_149
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 62711aa11182c984cadf9fe82e690791
+      internalID: -1237362639
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_150
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e7b9e06ca0f85df4ba8610f3789bc1d2
+      internalID: -867910420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_151
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5937cc909b7909a46b8f2ebe3f1ea943
+      internalID: 2079304917
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_152
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43421040409fd584c940d3ee8977655c
+      internalID: -1812618476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_153
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c0a445db76965f41986e6221f3b7ba7
+      internalID: -637422885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_154
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f79c0f7979372d943992ae22ba3a1ff9
+      internalID: 325637872
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_155
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 933919bbda196cc40b0295318dac1c12
+      internalID: 1767464288
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_156
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c86fd8e9210d56845b7caf26403bf4bf
+      internalID: -814252893
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_157
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4188ab677b45e1d49bbbc9c2f5e5f57c
+      internalID: 2073791497
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_158
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6175fb1dacd7c884cad391ad61e2c8bc
+      internalID: 2049903710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_159
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 493
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1f60d280fe270b74a8d83a50fdb6bbe5
+      internalID: -1592172801
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_160
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fd96f54836c4d644ea1112d4c97f3ec1
+      internalID: 219121498
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_161
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: baf48927ba1d96d41bd52886d3b077fb
+      internalID: 2118284540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_162
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f255434854312f84aa66b9e8c6cf7550
+      internalID: 1411296408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_163
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c618dca62692a5a49a4574c834492939
+      internalID: 843615136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_164
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b0947b5eed823e54fae757dae0f05b80
+      internalID: -306485500
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_165
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd2a385a4e292f140aa70f977faebdd1
+      internalID: -1762019868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_166
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b74f2ec21274ac4b96d046d5f5b07ed
+      internalID: 1940697584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_167
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 557b575f85e8cb04aae9a5ee07576b2b
+      internalID: 1566551715
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_168
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5c1e383dbad22964caa9e3cfb0a1e421
+      internalID: 997174333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_169
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57fbd78d55e5cfe4fa42e1c1bef74f33
+      internalID: -462216108
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_170
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7bf1d32951152fd459d0ff5bd951546e
+      internalID: -1180712790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_171
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: adeb6e3a6ecc0e544a773afd875c90d5
+      internalID: -1756742728
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_172
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc56b2a5c1bfa16409fbbd9f4b4fc35c
+      internalID: 1844489252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_173
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4358fbdbf229b3042adf9f9b0e4e5cf2
+      internalID: 2000980009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_174
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dfa2e6fa88ec2f743a5004300fd12ceb
+      internalID: 884294230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_175
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 429
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c84313aab49cf074598e9366ca90069c
+      internalID: 171971786
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_176
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 93100f335a27d914da7587a25e7e5988
+      internalID: -1672628244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_177
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: feb5c0da9e5d1c749b8620d19f0b4c59
+      internalID: 623526982
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_178
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c320a0d86e9061742856ef10f5e1e03e
+      internalID: 689200063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_179
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 617fd16d4d596fe47a10a30c8fa08fa6
+      internalID: -594626087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_180
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bd9eb8a7c9290b84bac03dd77350fc75
+      internalID: -1737244245
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_181
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 81102558dee31c74da1edce5ba30a048
+      internalID: -335158681
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_182
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b466d9272c313744a925b0653ed3219e
+      internalID: -1789514252
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_183
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d66e7a027eaec12489b0dc0645256cb9
+      internalID: -264389790
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_184
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aef19d43e896f9f478915e3b86a8fa91
+      internalID: 1042089303
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_185
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b6b8c2397e781f45964d3a278cb0be0
+      internalID: -330257504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_186
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6acedbcdf0e794f4bba327d521f351b1
+      internalID: 2029820364
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_187
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 72d8b312f153861498d83e7b3d428219
+      internalID: 1189168554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_188
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e67717cc34c0c89448aa65e1f921aaf3
+      internalID: 1952979406
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_189
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b78297cb7447cb44aaf9765721082fd
+      internalID: -1268809787
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_190
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1caeda42c1a111d45a4936fc73257321
+      internalID: -1909083921
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_191
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 365
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e0f3a01a89a84364d99f7c1d45672e61
+      internalID: 1850066075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_192
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a4dec6ee88d1f143847182f1bc87966
+      internalID: 359454816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_193
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6477c46e7855d1141ad855e8c617707d
+      internalID: 94221608
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_194
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d7a9b4470341e11409aa986b09297623
+      internalID: -2087889647
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_195
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33c2c7b154c2d804e94fc31c481fbd9e
+      internalID: -1639531360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_196
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f24755e5d6782fa42a8efe4c7b15fdab
+      internalID: 760069427
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_197
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 303a0c8ef4968a14ea9ded17fe06833f
+      internalID: -1808214335
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_198
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7b08caf61cb04a84b859d424f0c2d6e4
+      internalID: -141990918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_199
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0454053f3e02ea945a50f711c919bc8a
+      internalID: 1902221670
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_200
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65d137f390eca5a4381b17f6950e9fce
+      internalID: 534436881
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_201
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dbd9886c076038241b5158ac7aea58d3
+      internalID: -1066880845
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_202
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c4613640b09acd041bf5a4598c73106a
+      internalID: 962921946
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_203
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48e489ae56b56614c85a373eb92867a8
+      internalID: -1768841658
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_204
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bcb8fd4d1cd9b045820bc20d145d327
+      internalID: -1970778554
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_205
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77d6a989eb3bab14ca9fdc0a493025b3
+      internalID: -836167699
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_206
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 750ad119f8c7f8d48afd85cdc0bcd8c0
+      internalID: 261891712
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_207
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 301
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79818f290d49c68438038a6a80c81cfc
+      internalID: 1464039044
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_208
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc493c4ce0bdb4a43a5cae9abfec5189
+      internalID: 344565997
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_209
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7526857fd7cc573418ff0ee0ed638349
+      internalID: 1499371981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_210
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f96c31ef791a8f94182e919841668495
+      internalID: -819740763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_211
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c6d9a191f08a58499bf273b4baabdaf
+      internalID: -1896579424
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_212
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8280f5379c919a54686a5586dc23fcbf
+      internalID: 369418242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_213
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 68a735cb62d77164580e560ef531f8ff
+      internalID: -867680970
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_214
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bf68823676d2f044aad83dc9f587204
+      internalID: 1711817627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_215
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5cc397e83c5d494cac56785cbc679a5
+      internalID: 985622654
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_216
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 41b82d81c0c3b0c46847cf800eb332a6
+      internalID: 119517430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_217
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8fd8984cbf2da8d448601934e06af2b7
+      internalID: -1490621271
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_218
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66fc49d65ff37244daa7e04026ceca37
+      internalID: -1238337304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_219
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 921255ef512dd6d45a3fbf1f893df039
+      internalID: 1037967353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_220
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bbfbf2e87eb6ac24ba5a2364b3c94c64
+      internalID: -1723916084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_221
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4558341d641e4e9448897b00ad967a94
+      internalID: 1791967196
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_222
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 22e1310a2432d784b91ca9e9334eefbf
+      internalID: 2108480660
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_223
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 237
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 406296ef9bc240d4e854951533d73f21
+      internalID: -466216376
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_224
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9fe2b84cd4181de4c8022ad21d49b1fc
+      internalID: -1239848667
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_225
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 33276ea0df30be346b55dfcaf18c1c77
+      internalID: -627564709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_226
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a8f1d71ce8c975428e21218361a120d
+      internalID: 1591306230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_227
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a07e7eed739a494e9ee5a936c2dfbbd
+      internalID: -887939949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_228
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 09cd853c252698846ac9e76158a3990d
+      internalID: 1850256649
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_229
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8dd6a1c5c51c47b44afe40f5eae23606
+      internalID: -798497378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_230
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0bdde73509566d243b63b970e1b23770
+      internalID: 880313769
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_231
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 60cc7e4535eecb243896f6bf4338ec97
+      internalID: 1580590086
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_232
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9c6e66e53af68c49a452280a16e5a5d
+      internalID: 1142145318
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_233
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2a1384a4f9c606b458ff6066b5b8dcf0
+      internalID: 32599119
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_234
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: db78a25b821ba314f8e42d0df06edbb2
+      internalID: 1298405573
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_235
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44301ee74ec1b35419a9f9839ef02574
+      internalID: 1830492068
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_236
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ab2c801c62c511441910f77e8c4eeffb
+      internalID: -515382375
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_237
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2c85d7e379fb96a4495289c5a6b63f6d
+      internalID: 1939059763
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_238
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57ae91418c703774a937520e8601a838
+      internalID: -1439847013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_239
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 173
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c9e587f2bd76bc447bf9cdf988bd0da7
+      internalID: -1597676732
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_240
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6460dab3e261e5247b773e77bacb30f7
+      internalID: -492769920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_241
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75ca6b897e1bb224a8f6cf34d0c1706e
+      internalID: -402461677
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_242
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e16efbd2daca2e64ea26bf40f15fb51c
+      internalID: 1801168018
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_243
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4882df6cf48a7634e8fb649f20760791
+      internalID: 822529919
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_244
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f23234b3ea9dd84f8682da9d76f4887
+      internalID: -1030057882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_245
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fea51258aed4f2043bb22122a04bafec
+      internalID: 1003605188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_246
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a63ea32039d3c5146841ec2fe7da6139
+      internalID: -1044931839
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_247
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 607233f660c090b478778a9f4613169a
+      internalID: 259774855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_248
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d6b33fdd8b0c4f4aabe06586fc9062d
+      internalID: -702151124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_249
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d237f57a853ed9c469c1072608261118
+      internalID: -1820650033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_250
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ce3c766b85b48042aa61eeb2cec0f2d
+      internalID: 1629743222
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_251
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 94c9e08ce6a6fbc43bd656056df7e5d0
+      internalID: 1323615338
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_252
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6cdd76670234ec843bb6cecd696e2ec8
+      internalID: -881502537
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_253
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9d49ed671a495ae468b7d1274a6d5289
+      internalID: 951176590
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_254
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa0d63c8194a2b64ebb0168c32ec85cb
+      internalID: -430063306
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_255
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 109
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ac998e5636cbfd04ebc242167e3d55a6
+      internalID: -109591792
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_256
+      rect:
+        serializedVersion: 2
+        x: 4
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b5ffdeb1d0adf214cac2982ea1cde7c7
+      internalID: -1282136684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_257
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9df6a506836fd024297825aa32329a3e
+      internalID: 734390188
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_258
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 78e36270b0f6f4e4bac617e4ab5687a4
+      internalID: -91620283
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_259
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0efae9b45981d514397d21a1259e2216
+      internalID: -1637526360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_260
+      rect:
+        serializedVersion: 2
+        x: 260
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 61fb66d33c8fd0548a2f82a4d1494b3f
+      internalID: 1013561152
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_261
+      rect:
+        serializedVersion: 2
+        x: 324
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75377fa4cccbf9d4fb00f21b37ba8956
+      internalID: -1067257977
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_262
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c317998849a2ae40937e96eda5ef8c2
+      internalID: 1064450298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_263
+      rect:
+        serializedVersion: 2
+        x: 452
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a10b564a2c6972c42a7ef8333f3aa138
+      internalID: 771711673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_264
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f40a29e44ec832449580c5f7c67abcc
+      internalID: -1558886430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_265
+      rect:
+        serializedVersion: 2
+        x: 580
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 672347ae7be53864aaf72ecebb7af574
+      internalID: 794261800
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_266
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e42323880a8a39348b871d01d1154038
+      internalID: -731453773
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_267
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0d393984f5c8bec42b36da137c902250
+      internalID: -1229658438
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_268
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1bcd4a9c2b68e75408e3a693f6c70b4e
+      internalID: 1650178632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_269
+      rect:
+        serializedVersion: 2
+        x: 836
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 36fab70fe5c3ed746ae40c65e8f325c1
+      internalID: 2067973065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_270
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a95335ac33d4ad9408e6292edfa42ca5
+      internalID: -1665123340
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: park1 1_271
+      rect:
+        serializedVersion: 2
+        x: 964
+        y: 45
+        width: 64
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07844d8f71851c34792bd69cf5b6c8e8
+      internalID: 391153443
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    nameFileIdTable:
+      park1 1_0: -1605386427
+      park1 1_1: 1766984279
+      park1 1_10: 1849915579
+      park1 1_100: 1614464154
+      park1 1_101: 890982260
+      park1 1_102: 2750081
+      park1 1_103: -196293855
+      park1 1_104: 1240621657
+      park1 1_105: 1212080053
+      park1 1_106: 1303794432
+      park1 1_107: 664246552
+      park1 1_108: 754980975
+      park1 1_109: -1206669751
+      park1 1_11: 819090018
+      park1 1_110: 701214053
+      park1 1_111: -2123023860
+      park1 1_112: 594469861
+      park1 1_113: 1781253851
+      park1 1_114: -177413663
+      park1 1_115: -626360947
+      park1 1_116: 1515141000
+      park1 1_117: -411004504
+      park1 1_118: 704589980
+      park1 1_119: -1962633074
+      park1 1_12: 447775687
+      park1 1_120: -1543220612
+      park1 1_121: -1410159268
+      park1 1_122: 1979486254
+      park1 1_123: -1866724850
+      park1 1_124: 1498257360
+      park1 1_125: -1078443415
+      park1 1_126: -1451873134
+      park1 1_127: 812009615
+      park1 1_128: 346559422
+      park1 1_129: 1235206429
+      park1 1_13: 266944809
+      park1 1_130: 698897441
+      park1 1_131: -174163474
+      park1 1_132: -1227400783
+      park1 1_133: -644111665
+      park1 1_134: -104343332
+      park1 1_135: 122726559
+      park1 1_136: 1506590838
+      park1 1_137: 1275717704
+      park1 1_138: 323537881
+      park1 1_139: -1796884795
+      park1 1_14: -332980480
+      park1 1_140: 934508146
+      park1 1_141: 806427007
+      park1 1_142: -1158601343
+      park1 1_143: 2118706394
+      park1 1_144: 562089327
+      park1 1_145: 2092269356
+      park1 1_146: -1067696069
+      park1 1_147: 396468877
+      park1 1_148: -386284774
+      park1 1_149: -1237362639
+      park1 1_15: -210739581
+      park1 1_150: -867910420
+      park1 1_151: 2079304917
+      park1 1_152: -1812618476
+      park1 1_153: -637422885
+      park1 1_154: 325637872
+      park1 1_155: 1767464288
+      park1 1_156: -814252893
+      park1 1_157: 2073791497
+      park1 1_158: 2049903710
+      park1 1_159: -1592172801
+      park1 1_16: -1664474978
+      park1 1_160: 219121498
+      park1 1_161: 2118284540
+      park1 1_162: 1411296408
+      park1 1_163: 843615136
+      park1 1_164: -306485500
+      park1 1_165: -1762019868
+      park1 1_166: 1940697584
+      park1 1_167: 1566551715
+      park1 1_168: 997174333
+      park1 1_169: -462216108
+      park1 1_17: 1763295295
+      park1 1_170: -1180712790
+      park1 1_171: -1756742728
+      park1 1_172: 1844489252
+      park1 1_173: 2000980009
+      park1 1_174: 884294230
+      park1 1_175: 171971786
+      park1 1_176: -1672628244
+      park1 1_177: 623526982
+      park1 1_178: 689200063
+      park1 1_179: -594626087
+      park1 1_18: -480273800
+      park1 1_180: -1737244245
+      park1 1_181: -335158681
+      park1 1_182: -1789514252
+      park1 1_183: -264389790
+      park1 1_184: 1042089303
+      park1 1_185: -330257504
+      park1 1_186: 2029820364
+      park1 1_187: 1189168554
+      park1 1_188: 1952979406
+      park1 1_189: -1268809787
+      park1 1_19: 1159605521
+      park1 1_190: -1909083921
+      park1 1_191: 1850066075
+      park1 1_192: 359454816
+      park1 1_193: 94221608
+      park1 1_194: -2087889647
+      park1 1_195: -1639531360
+      park1 1_196: 760069427
+      park1 1_197: -1808214335
+      park1 1_198: -141990918
+      park1 1_199: 1902221670
+      park1 1_2: -90568144
+      park1 1_20: 2103176980
+      park1 1_200: 534436881
+      park1 1_201: -1066880845
+      park1 1_202: 962921946
+      park1 1_203: -1768841658
+      park1 1_204: -1970778554
+      park1 1_205: -836167699
+      park1 1_206: 261891712
+      park1 1_207: 1464039044
+      park1 1_208: 344565997
+      park1 1_209: 1499371981
+      park1 1_21: -855145901
+      park1 1_210: -819740763
+      park1 1_211: -1896579424
+      park1 1_212: 369418242
+      park1 1_213: -867680970
+      park1 1_214: 1711817627
+      park1 1_215: 985622654
+      park1 1_216: 119517430
+      park1 1_217: -1490621271
+      park1 1_218: -1238337304
+      park1 1_219: 1037967353
+      park1 1_22: 250147986
+      park1 1_220: -1723916084
+      park1 1_221: 1791967196
+      park1 1_222: 2108480660
+      park1 1_223: -466216376
+      park1 1_224: -1239848667
+      park1 1_225: -627564709
+      park1 1_226: 1591306230
+      park1 1_227: -887939949
+      park1 1_228: 1850256649
+      park1 1_229: -798497378
+      park1 1_23: 1285680816
+      park1 1_230: 880313769
+      park1 1_231: 1580590086
+      park1 1_232: 1142145318
+      park1 1_233: 32599119
+      park1 1_234: 1298405573
+      park1 1_235: 1830492068
+      park1 1_236: -515382375
+      park1 1_237: 1939059763
+      park1 1_238: -1439847013
+      park1 1_239: -1597676732
+      park1 1_24: 1972569982
+      park1 1_240: -492769920
+      park1 1_241: -402461677
+      park1 1_242: 1801168018
+      park1 1_243: 822529919
+      park1 1_244: -1030057882
+      park1 1_245: 1003605188
+      park1 1_246: -1044931839
+      park1 1_247: 259774855
+      park1 1_248: -702151124
+      park1 1_249: -1820650033
+      park1 1_25: -925965168
+      park1 1_250: 1629743222
+      park1 1_251: 1323615338
+      park1 1_252: -881502537
+      park1 1_253: 951176590
+      park1 1_254: -430063306
+      park1 1_255: -109591792
+      park1 1_256: -1282136684
+      park1 1_257: 734390188
+      park1 1_258: -91620283
+      park1 1_259: -1637526360
+      park1 1_26: -141971220
+      park1 1_260: 1013561152
+      park1 1_261: -1067257977
+      park1 1_262: 1064450298
+      park1 1_263: 771711673
+      park1 1_264: -1558886430
+      park1 1_265: 794261800
+      park1 1_266: -731453773
+      park1 1_267: -1229658438
+      park1 1_268: 1650178632
+      park1 1_269: 2067973065
+      park1 1_27: 1357950093
+      park1 1_270: -1665123340
+      park1 1_271: 391153443
+      park1 1_28: 1537750208
+      park1 1_29: 271677955
+      park1 1_3: -223857740
+      park1 1_30: 1304219158
+      park1 1_31: -1300188212
+      park1 1_32: -471627703
+      park1 1_33: -1445050084
+      park1 1_34: -1826671239
+      park1 1_35: -1274400944
+      park1 1_36: 2129569191
+      park1 1_37: 1487343551
+      park1 1_38: 1836221758
+      park1 1_39: 667482179
+      park1 1_4: 641480472
+      park1 1_40: 244644935
+      park1 1_41: -1749888846
+      park1 1_42: 973608094
+      park1 1_43: 1316855872
+      park1 1_44: 919963290
+      park1 1_45: -320705139
+      park1 1_46: 693053487
+      park1 1_47: -1381051881
+      park1 1_48: 1864613217
+      park1 1_49: -105054649
+      park1 1_5: 1012306504
+      park1 1_50: -29107359
+      park1 1_51: 1909102504
+      park1 1_52: 303489567
+      park1 1_53: -1634336684
+      park1 1_54: -100641189
+      park1 1_55: 458875936
+      park1 1_56: 984594418
+      park1 1_57: -1915944876
+      park1 1_58: 925932091
+      park1 1_59: -1687330436
+      park1 1_6: -1646623294
+      park1 1_60: -1660387914
+      park1 1_61: 310215904
+      park1 1_62: -1015696347
+      park1 1_63: -1773823093
+      park1 1_64: 570068167
+      park1 1_65: -1419867840
+      park1 1_66: -1877985728
+      park1 1_67: 223673303
+      park1 1_68: -1721338440
+      park1 1_69: -1124406557
+      park1 1_7: -993231288
+      park1 1_70: 632440031
+      park1 1_71: -1270343840
+      park1 1_72: -1470675054
+      park1 1_73: -1894552531
+      park1 1_74: -350107315
+      park1 1_75: 864580318
+      park1 1_76: 1026339502
+      park1 1_77: 2021900677
+      park1 1_78: -1096278635
+      park1 1_79: -1177449446
+      park1 1_8: 1266974819
+      park1 1_80: -152165410
+      park1 1_81: 760298029
+      park1 1_82: 137146537
+      park1 1_83: -1587827420
+      park1 1_84: 888120024
+      park1 1_85: 1667205678
+      park1 1_86: 1406105387
+      park1 1_87: 1977712668
+      park1 1_88: -648170382
+      park1 1_89: -1174332323
+      park1 1_9: -1351728293
+      park1 1_90: -1996236296
+      park1 1_91: 471990663
+      park1 1_92: 495153559
+      park1 1_93: -211683995
+      park1 1_94: 1745584287
+      park1 1_95: -1795862449
+      park1 1_96: 2023381837
+      park1 1_97: 578533743
+      park1 1_98: 1540619439
+      park1 1_99: -1697410752
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

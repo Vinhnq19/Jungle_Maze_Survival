@@ -107,3 +107,11 @@ InitTestScene*.unity*
 
 # Auto-generated cache in Assets folder
 /[Aa]ssets/[Ss]ceneDependencyCache*
+
+/JSurvivUnity/Library/
+/JSurvivUnity/Temp/
+/JSurvivUnity/Logs/
+/JSurvivUnity/UserSettings/
+/JSurvivUnity/Obj/
+/JSurvivUnity/Build/
+/JSurvivUnity/Builds/

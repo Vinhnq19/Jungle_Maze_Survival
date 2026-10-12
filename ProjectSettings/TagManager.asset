@@ -3,19 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Item
+  - Projectile
+  - Weapon
+  - Border
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Destructible
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Player
+  - HealingItem
+  - Armor
+  - Building
   - 
   - 
   - 
@@ -38,6 +42,18 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Ground
+    uniqueID: 1440993361
+    locked: 0
+  - name: Weapon
+    uniqueID: 1691392677
+    locked: 0
+  - name: Enemy
+    uniqueID: 2606665595
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: VFX
+    uniqueID: 2616002819
     locked: 0
