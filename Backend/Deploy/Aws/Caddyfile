@@ -1,0 +1,15 @@
+{
+    email {$ACME_EMAIL}
+    # Security Group chỉ mở TCP 443: không bật HTTP/3 UDP 443.
+    servers {
+        protocols h1 h2
+    }
+}
+
+{$PUBLIC_DOMAIN} {
+    @swagger path /swagger /swagger/*
+    basic_auth @swagger {
+        {$SWAGGER_USER} {$SWAGGER_HASH}
+    }
+    reverse_proxy api:5000
+}

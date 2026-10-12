@@ -115,3 +115,12 @@ InitTestScene*.unity*
 /JSurvivUnity/Obj/
 /JSurvivUnity/Build/
 /JSurvivUnity/Builds/
+Backend/.env
+Backend/.env.aws
+Backend/**/bin/
+Backend/**/obj/
+Backend/out/
+
+# Backend là project .NET viết tay; không bỏ qua như csproj/sln Unity sinh tự động.
+!Backend/**/*.csproj
+!Backend/*.sln

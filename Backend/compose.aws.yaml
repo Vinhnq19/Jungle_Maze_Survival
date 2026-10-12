@@ -1,0 +1,80 @@
+# Standalone: không merge compose.yaml Local, tránh publish nhầm API/MongoDB.
+name: junglemaze-aws
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+services:
+  mongo:
+    image: ${MONGO_IMAGE:?Load release images first}
+    restart: unless-stopped
+    mem_limit: 768m
+    command: ["mongod", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes: ["mongo-data:/data/db"]
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    logging: *logging
+  api:
+    image: ${API_IMAGE:?Load release images first}
+    restart: unless-stopped
+    mem_limit: 384m
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+      ASPNETCORE_ENVIRONMENT: Production
+      PUBLIC_HOSTING: "true"
+      Mongo__ConnectionString: mongodb://mongo:27017
+      Mongo__Database: jungle_maze
+      Jwt__Issuer: JungleMaze.Local
+      Jwt__Audience: JungleMaze.Game
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?Run configure.sh}
+      Swagger__Enabled: "true"
+    depends_on:
+      mongo: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "dotnet", "Api.dll", "--healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    logging: *logging
+  game-server:
+    image: ${GAME_IMAGE:?Load release images first}
+    restart: unless-stopped
+    mem_limit: 256m
+    ports: ["0.0.0.0:7777:7777/udp"]
+    environment:
+      PUBLIC_HOSTING: "true"
+      GAME_BIND_ADDRESS: 0.0.0.0
+      GAME_PORT: "7777"
+      MAX_PLAYERS: "10"
+      TICK_RATE: "30"
+      AUTH_MODE: ${AUTH_MODE:-RoomCode}
+      ROOM_CODE: ${ROOM_CODE:?Run configure.sh}
+      METRICS_INTERVAL_SECONDS: "5"
+    logging: *logging
+  caddy:
+    image: ${CADDY_IMAGE:?Load release images first}
+    restart: unless-stopped
+    mem_limit: 128m
+    ports: ["0.0.0.0:80:80/tcp", "0.0.0.0:443:443/tcp"]
+    environment:
+      PUBLIC_DOMAIN: ${PUBLIC_DOMAIN:?Run configure.sh}
+      ACME_EMAIL: ${ACME_EMAIL:?Run configure.sh}
+      SWAGGER_USER: ${SWAGGER_USER:?Run configure.sh}
+      SWAGGER_HASH: ${SWAGGER_HASH:?Run configure.sh}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      api: { condition: service_healthy }
+    logging: *logging
+volumes:
+  mongo-data:
+  caddy-data:
+  caddy-config:

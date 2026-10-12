@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- C# Dev Kit 11.3.30 có task ghi cache ProjectData cần runtime .NET 10.
+         Backend/global.json dùng SDK 8: build trong terminal VS Code có thể bị
+         MSB4062 nếu extension bật task này qua biến môi trường.
+         Chỉ tắt cache phụ trên build thường; giữ net8.0 và pipeline build gameplay.
+         ProjectDataBuild do IDE chủ động gọi vẫn hoạt động theo target của extension. -->
+    <EnableProjectDataOnBuild>false</EnableProjectDataOnBuild>
+  </PropertyGroup>
+</Project>

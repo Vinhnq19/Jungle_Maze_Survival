@@ -1,29 +1,30 @@
+
 # Kết quả tích hợp JSurviv — 12/10/2026
 
-Đã nhập toàn bộ `JSurvivUnity/Assets` vào `Assets/Imported/JSurviv`, giữ nguồn đối chiếu và toàn bộ GUID gốc. Dự án compile được trong Unity 6000.3.15f1 với URP. Đợt này hoàn thành việc nhập và kiểm chứng tham khảo; dữ liệu nguồn còn lỗi được ghi riêng dưới đây.
+Đây là báo cáo tại thời điểm tích hợp: đã nhập toàn bộ `JSurvivUnity/Assets` vào `Assets/Imported/JSurviv`, đối chiếu với nguồn và bảo toàn GUID. Dự án compile được trong Unity 6000.3.15f1 với URP. Nguồn riêng `JSurvivUnity` hiện không còn trong workspace; vùng nhập là nơi tái sử dụng. Các số đo dưới đây là kết quả bàn giao lịch sử, không tự xác nhận gameplay hoặc networking mới sau các lần sửa tiếp theo.
 
 ## Kết quả kiểm tra
 
-| Kiểm tra | Kết quả |
-| --- | --- |
-| Tệp nguồn được sao chép | 44.557 tệp, gồm 22.675 `.meta` |
-| GUID / scene / prefab | 0 tệp bị bỏ sót, 0 GUID thay đổi hoặc trùng với assets gốc; scene và prefab giữ nguyên nội dung nguồn |
-| C# / assembly | Compile xong; Console có 0 lỗi sau chuyển material và mở scene |
-| Prefab | 759 prefab được quét; 0 missing script |
-| Resources | `GameConfig` và `VfxConfig` tải được |
-| Material | 127 material đổi bằng Unity MaterialUpgrader hoặc sang URP Particle Unlit; chỉ sửa vùng nhập |
-| Package | Cinemachine 3.1.3, Newtonsoft.Json 3.2.2, SocketIOUnity đúng commit khóa |
-| Renderer | GraphicsSettings và QualitySettings giữ nguyên so với bản chụp trước nhập; pipeline UniversalRP |
-| Input / tag / layer | Input Both; tên, chỉ số layer và ID sorting layer nguồn được giữ |
-| Kết nối cũ | NetworkManager mới có AutoConnectLegacy = false; gọi InitSocket hai lần không tạo socket, thông báo tham khảo chỉ khởi tạo một lần |
+| Kiểm tra                     | Kết quả                                                                                                                                        |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tệp nguồn được sao chép | 44.557 tệp, gồm 22.675`.meta`                                                                                                                |
+| GUID / scene / prefab         | 0 tệp bị bỏ sót, 0 GUID thay đổi hoặc trùng với assets gốc; scene và prefab giữ nguyên nội dung nguồn                             |
+| C# / assembly                 | Compile xong; Console có 0 lỗi sau chuyển material và mở scene                                                                              |
+| Prefab                        | 759 prefab được quét; 0 missing script                                                                                                       |
+| Resources                     | `GameConfig` và `VfxConfig` tải được                                                                                                    |
+| Material                      | 127 material đổi bằng Unity MaterialUpgrader hoặc sang URP Particle Unlit; chỉ sửa vùng nhập                                             |
+| Package                       | Cinemachine 3.1.3, Newtonsoft.Json 3.2.2, SocketIOUnity đúng commit khóa                                                                      |
+| Renderer                      | GraphicsSettings và QualitySettings giữ nguyên so với bản chụp trước nhập; pipeline UniversalRP                                         |
+| Input / tag / layer           | Input Both; tên, chỉ số layer và ID sorting layer nguồn được giữ                                                                        |
+| Kết nối cũ                 | NetworkManager mới có AutoConnectLegacy = false; gọi InitSocket hai lần không tạo socket, thông báo tham khảo chỉ khởi tạo một lần |
 
-| Scene đã mở | Missing script | Tham chiếu object lỗi | Quan sát ảnh |
-| --- | ---: | ---: | --- |
-| GameConfig | 0 | 0 | Nền, font và form cấu hình hiển thị |
-| GameMain | 0 | 21 | UI lobby, ảnh bản đồ và font hiển thị; không có material hồng |
-| GameMainTrial | 4 | 34 | UI thử nghiệm hiển thị; một ô ảnh trống từ dữ liệu nguồn |
-| CreateMap | 0 | 5 | Sprite cổng hiển thị; còn đối tượng trắng/tham chiếu thiếu trong dữ liệu nguồn |
-| SampleScene của dự án gốc | 0 | 0 | Mở và render được; scene hiện chỉ có nền camera |
+| Scene đã mở                | Missing script | Tham chiếu object lỗi | Quan sát ảnh                                                                               |
+| ----------------------------- | -------------: | ----------------------: | -------------------------------------------------------------------------------------------- |
+| GameConfig                    |              0 |                       0 | Nền, font và form cấu hình hiển thị                                                    |
+| GameMain                      |              0 |                      21 | UI lobby, ảnh bản đồ và font hiển thị; không có material hồng                      |
+| GameMainTrial                 |              4 |                      34 | UI thử nghiệm hiển thị; một ô ảnh trống từ dữ liệu nguồn                         |
+| CreateMap                     |              0 |                       5 | Sprite cổng hiển thị; còn đối tượng trắng/tham chiếu thiếu trong dữ liệu nguồn |
+| SampleScene của dự án gốc |              0 |                       0 | Mở và render được; scene hiện chỉ có nền camera                                     |
 
 Ảnh là kết quả render tĩnh trong editor, chưa chứng minh gameplay hoạt động. Scene được mở thêm để kiểm tra rồi đóng, không lưu thay đổi chụp ảnh và không đóng scene đang làm việc của người dùng.
 

@@ -1,6 +1,8 @@
 # JSurvivUnity đã nhập vào Jungle Maze Survival
 
-Mã nguồn tham khảo nằm tại `Assets/Imported/JSurviv`. Thư mục `JSurvivUnity` ban đầu được giữ nguyên để đối chiếu. Dự án gốc tiếp tục dùng Unity **6000.3.15f1** và URP; đợt nhập này không chuyển backend Socket.IO sang LiteNetLib và không cung cấp demo chơi offline.
+Mã nguồn và assets tham khảo hiện nằm tại `Assets/Imported/JSurviv`; thư mục nguồn riêng `JSurvivUnity` không còn trong workspace hiện tại. Dự án gốc tiếp tục dùng Unity **6000.3.15f1** và URP. Phần nhập assets chưa chuyển Socket.IO sang LiteNetLib và chưa cung cấp demo gameplay offline hoàn chỉnh.
+
+Backend mới và AWS được mô tả trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Setup, phát triển, chạy lại server và test theo [hướng dẫn vận hành chung](Phase1_First4Tasks.vi.md); Unity client hiện chưa được nối với backend LiteNetLib đó. Tài liệu này chỉ hướng dẫn sử dụng assets/scene tham khảo.
 
 ## Mở và kiểm tra
 
@@ -57,11 +59,13 @@ Lỗi compile có sẵn trong nguồn đã xử lý ở bản nhập: `Throwable
 
 Menu Unity: **Tools → JSurviv → Convert Imported Materials and Validate**. Công cụ chỉ chuyển material trong vùng nhập; mở bốn scene tham khảo và SampleScene, kiểm tra missing script/reference, Resources và tạo ảnh đối chiếu. Không lưu thay đổi scene tạm thời dùng để chụp ảnh.
 
-Kết quả máy đọc được tại `Library/JSurvivIntegration/validation.json`; ảnh tại cùng thư mục. Kiểm tra file/GUID và thiết lập gốc bằng:
+Kết quả máy đọc được tại `Library/JSurvivIntegration/validation.json`; ảnh tại cùng thư mục. Script sau là đối chiếu lịch sử với nguồn `JSurvivUnity/Assets` và snapshot `Library/JSurvivIntegration/Backup`, chạy từ **thư mục gốc project Unity**, chỉ khi hai phần đối chiếu còn tồn tại:
 
 ```powershell
 python Tools/validate_jsurviv_import.py
 ```
+
+Workspace hiện không còn thư mục nguồn `JSurvivUnity`, nên script đối chiếu này không phải bước setup/test thường ngày. Để kiểm tra vùng assets nhập hiện tại, dùng menu Unity ở trên; muốn đối chiếu nguồn gốc thì cần bản nguồn/snapshot phù hợp từ bản lưu riêng. Không đưa lại nguồn cũ vào Assets hoặc ghi đè bản nhập chỉ để chạy kiểm tra.
 
 Snapshot các thiết lập trước nhập nằm tại `Library/JSurvivIntegration/Backup`; thư mục Library là cache nên không thay thế Git backup lâu dài. Các script chỉ phục vụ lần tích hợp và file kết nối tạm đã được dọn; giữ công cụ kiểm chứng để kiểm tra lại khi cần.
 

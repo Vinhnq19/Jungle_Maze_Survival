@@ -1,717 +1,715 @@
-# Hướng dẫn chi tiết bốn task đầu giai đoạn 1
+# Hướng dẫn setup, phát triển và kiểm thử Jungle Maze
 
-Phạm vi: dự án lớp học, tối đa 10 người một phòng. Theo Tracking đã đọc: INF-01, NET-01, SRV-01 và SRV-02. Bản chỉnh sửa Google Sheets ở lượt trước chưa được xác nhận đã lưu.
+Cập nhật **12/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md).
 
-Đây là hướng dẫn bạn thực hiện, không phải backend đã được triển khai. Đoạn ghi “giả mã” cần chuyển thành C#. Các lệnh kiểm tra chỉ chạy được sau khi bạn viết phần tương ứng.
+## 1. Phạm vi hiện tại và cách chọn môi trường
 
-## 0. Hệ thống đang xây và nơi làm việc
+Dự án phục vụ bài học với **một phòng, tối đa 10 phiên kết nối**. Dev phát triển/debug trên máy mình; AWS là server chung, chỉ bật cho buổi test online đã hẹn.
 
-~~~text
-Client thử → API đăng nhập → MongoDB kiểm tra tài khoản
-          ← JWT
-Client thử → UDP handshake chứa JWT → GameServer xác minh
-          ← Accepted hoặc Rejected
-GameServer chạy 30 lần mô phỏng mỗi giây
-~~~
+**Đã có:** API đăng ký/đăng nhập/JWT, MongoDB users, Swagger, LiteNetLib 2.1.4, handshake, giới hạn phòng, ping/pong, khung tick 30Hz, Docker local và triển khai AWS qua HTTPS.
 
-| Thành phần | Tác dụng | Chạy ở đâu |
+**Chưa có:** Unity client LiteNetLib, đồng bộ nhân vật/gameplay, snapshot/prediction, trận chơi multiplayer hoàn chỉnh. `NetSmokeClient` là chương trình console kiểm tra mạng. `GameServer/Program.cs` có `Tick` chưa mô phỏng gameplay; scene JSurviv vẫn là mã tham khảo Socket.IO, `AutoConnectLegacy` mặc định tắt. Play scene không tự kết nối backend mới.
+
+| Bạn cần làm gì? | Môi trường / quyền cần có | Đọc phần nào? |
 | --- | --- | --- |
-| Unity | Hiển thị game, nhận thao tác | Unity Editor; nối mạng ở CLI-01 sau này |
-| API | Đăng ký, đăng nhập, cấp token | Container api |
-| MongoDB | Lưu tài khoản và password hash | Container mongo |
-| GameServer | Nhận kết nối, chạy mô phỏng | Container game-server |
-| NetSmokeClient | Thử mạng trước khi nối Unity | Console trên máy bạn |
+| Dev mới tự chạy backend và test một client | PC riêng, Docker Desktop, SDK .NET 8 | [Setup local](#3-thiết-lập-local-lần-đầu) |
+| Dev quay lại làm việc sau khi bật máy | Local; AWS có thể giữ Stopped | [Chạy local hằng ngày](#4-chạy-local-những-lần-sau) |
+| Tester thử kết nối từ nhà/lớp | Client + endpoint + mã phòng; không cần SSH | [Buổi test AWS](#7-bật-và-dừng-aws-cho-mỗi-buổi-test) |
+| Admin tạo/triển khai server AWS lần đầu | AWS Console, key SSH riêng, DuckDNS token | [Setup AWS](#6-thiết-lập-aws-lần-đầu) |
+| Admin cập nhật backend hoặc cứu dữ liệu | Release mới, SSH, backup | [Cập nhật và backup](#11-cập-nhật-aws-backup-và-restore) |
+| Dev kiểm tra UI/animation hoặc chuẩn bị multiplayer Unity | Unity 6000.3.15f1 / URP | [Phát triển và test game](#10-phát-triển-và-test-game-trong-unity) |
 
-JWT là vé truy cập có chữ ký. API cấp vé, server kiểm tra vé; JWT không tự mã hóa đường truyền.
+Hai nhánh auth không tự thay thế nhau:
 
-### 0.1. Mở ứng dụng nào?
+- **RoomCode:** nhập mã phòng → server cấp Guid PlayerId → JoinAccepted → Ping/Pong. Không cần account/API cho việc join.
+- **Jwt:** nhập mã phòng và account → API login → AuthRequired → gửi JWT → server xác minh sub → JoinAccepted. Dùng cho Local hoặc VPN phù hợp. Cả mã phòng và JWT phải đúng.
+- **AWS public chỉ RoomCode.** API account AWS vẫn test qua HTTPS, nhưng token account chưa được dùng cho UDP public vì UDP hiện chưa mã hóa. `PUBLIC_HOSTING=true` chặn `AUTH_MODE=Jwt` ở GameServer.
 
-1. Mở Docker Desktop, đợi Docker Engine sẵn sàng.
-2. Mở VS Code hoặc Visual Studio.
-3. Trong editor, mở thư mục D:\Unity\Jungle_Maze_Survival. VS Code dùng File → Open Folder.
-4. Mở PowerShell. Trong VS Code: Terminal → New Terminal → chọn PowerShell.
-5. Chưa cần sửa scene hay script Unity trong bốn task này.
+## 2. Chuẩn bị và quy ước nơi chạy lệnh
 
-**Vị trí dự kiến:**
+| Máy / vai trò | Cần cài hoặc nhận | Tác dụng |
+| --- | --- | --- |
+| Dev backend trên Windows | SDK .NET 8.0.403 hoặc patch mới hơn cùng nhánh 8.0.4xx; Docker Desktop với Linux containers | Build client/debug; chạy server và Mongo local |
+| Dev Unity | Unity **6000.3.15f1**, package URP của project; bộ công cụ backend ở trên khi test mạng | Phát triển client game |
+| Tester chạy client từ source | SDK phù hợp + thư mục Backend đầy đủ | Chạy NetSmokeClient |
+| Tester nhận client self-contained | Cả thư mục output publish | Không cần SDK, Docker hoặc SSH |
+| Người xem DB | MongoDB Compass | Đọc users Local hoặc qua SSH tunnel AWS |
+| Người chạy test tự động | Python **3.11+**, Docker Desktop, SDK .NET 8 | Test core và kiểm tra release bằng standard library |
+| EC2 | Ubuntu **24.04 x86_64**, Docker/Compose do bootstrap cài | Chạy image đã build trên PC; không build SDK trên EC2 |
 
-~~~text
-D:\Unity\Jungle_Maze_Survival\
-  Assets\                        ← code Unity
-  Backend\                       ← code server
-    global.json
-    JungleBackend.sln
-    compose.yaml
-    .env
-    .env.example
-    .dockerignore
-    README.md
-    Api\
-      Api.csproj
-      Program.cs
-      Dockerfile
-      Models\User.cs
-      Contracts\AuthRequests.cs
-      Data\UserRepository.cs
-      Auth\TokenService.cs
-      Endpoints\AuthEndpoints.cs
-    GameServer\
-      GameServer.csproj
-      Program.cs
-      Dockerfile
-      Networking\NetworkHost.cs
-      Networking\HandshakeValidator.cs
-      Simulation\FixedTickLoop.cs
-      Diagnostics\ServerMetrics.cs
-    NetSmokeClient\
-      NetSmokeClient.csproj
-      Program.cs
-  Docs\
-    Phase1_TestResults.md
-~~~
+Mỗi dev lấy source mới nhất, bao gồm `Backend/Shared`, `Backend/global.json` và `Backend/Directory.Build.props`. Không copy `.env` hoặc private key của người khác. `global.json` chọn SDK 8.0.403/latestPatch; chỉ có SDK 9/10 hoặc 8.0.1xx chưa đáp ứng cấu hình này.
 
-Backend nằm ngoài Assets vì Unity tự import C# trong Assets; ASP.NET và GameServer là chương trình riêng. Tên file/class ở đây là đề xuất để phân chia trách nhiệm, tạo đến đâu triển khai đến đó.
+Trong hướng dẫn:
 
-**Quy tắc:** lệnh PowerShell dán vào terminal; C#, YAML, Dockerfile lưu bằng editor. Đầu mỗi terminal chạy Get-Location để kiểm tra thư mục. Các lệnh dưới đây chạy ở Backend trừ khi ghi khác.
+- **PC / PowerShell tại Backend:** terminal nằm ở thư mục `Backend` của checkout của bạn. Ví dụ máy chủ dự án dùng `D:/Unity/Jungle_Maze_Survival/Backend`; dev khác thay đường dẫn theo checkout của mình.
+- **SSH EC2:** terminal đã đăng nhập bằng user `ubuntu`, thường có prompt `ubuntu@ip-...`. Chỉ chạy lệnh Bash/Linux tại đây.
+- **AWS Console:** thao tác trên trình duyệt, region Sydney `ap-southeast-2`.
+- Copy các lệnh trong code block; không copy phần prompt `PS ...>` hoặc `ubuntu@...$` từ log.
 
----
+**PC, kiểm tra công cụ:**
 
-## 1. INF-01 — Local dev và Docker
-
-**Mục đích:** bật API, DB và server bằng một lệnh trên máy bạn. Sau bước này môi trường nền hoạt động, UDP thật sẽ làm ở bước 3.
-
-### 1.1. Kiểm tra công cụ
-
-**Nơi làm:** Docker Desktop và PowerShell tại thư mục bất kỳ.
-
-~~~powershell
-dotnet --list-sdks
+```powershell
+Set-Location 'D:/Unity/Jungle_Maze_Survival/Backend'
+dotnet --version
 docker version
 docker compose version
-docker info
-~~~
-
-**Kết quả:** Docker có cả phần Client và Server, Compose trả version, có SDK .NET. Máy hiện tại đã phát hiện SDK 8.0.403, 9.0.318, 10.0.401 và Compose; chưa xác nhận Engine đang chạy.
-
-Nếu cannot connect hoặc thiếu phần Server, kiểm tra Docker Desktop trước; chưa cần sửa code.
-
-### 1.2. Tạo solution và ba project
-
-**Nơi làm:** PowerShell. Chạy từng dòng, gặp lỗi thì dừng sửa.
-
-~~~powershell
-Set-Location 'D:\Unity\Jungle_Maze_Survival'
-New-Item -ItemType Directory -Path Backend -Force
-Set-Location '.\Backend'
-dotnet new globaljson --sdk-version 8.0.403 --roll-forward latestPatch
-dotnet new sln -n JungleBackend
-dotnet new web -n Api -o Api -f net8.0
-dotnet new console -n GameServer -o GameServer -f net8.0
-dotnet new console -n NetSmokeClient -o NetSmokeClient -f net8.0
-dotnet sln JungleBackend.sln add Api/Api.csproj GameServer/GameServer.csproj NetSmokeClient/NetSmokeClient.csproj
 dotnet build JungleBackend.sln
-~~~
+```
 
-| Thành phần/lệnh | Tác dụng |
-| --- | --- |
-| global.json | Chọn SDK 8 để khớp GDD dù máy có nhiều SDK |
-| solution | Gom project để mở/build chung |
-| web | API ASP.NET Core tối thiểu |
-| console GameServer | Server chạy độc lập Unity |
-| console NetSmokeClient | Công cụ thử kết nối |
-| sln add | Đưa project vào solution |
-| build | Phát hiện lỗi C#/cấu hình trước Docker |
+Docker Desktop phải mở và Engine ready. `dotnet --version` cần chọn 8.0.4xx khi đứng ở Backend. Package đã khai báo trong csproj; không cần chạy lại `dotnet new` hoặc `dotnet add package` theo hướng dẫn cũ.
 
-Nếu project đã tồn tại, mở kiểm tra thay vì tạo đè. Máy khác cần SDK thực sự cài khớp global.json. .NET 8 được chọn để khớp Tracking; khi đổi framework cần đổi package và Docker image cùng nhau.
+## 3. Thiết lập local lần đầu
 
-### 1.3. API kết nối DB và có /health
+### 3.1. Tạo cấu hình riêng một lần
 
-**Nơi làm:** PowerShell tại Backend:
+**PC / PowerShell tại Backend:**
 
-~~~powershell
-dotnet add Api/Api.csproj package MongoDB.Driver
-~~~
+```powershell
+if (-not (Test-Path -LiteralPath '.env')) {
+    Copy-Item -LiteralPath '.env.example' -Destination '.env'
+}
+```
 
-Driver cho phép API giao tiếp MongoDB; Unity không cần driver này. Ghi lại version đã restore trong Api.csproj.
+Mở `.env` bằng editor. Đặt `ROOM_CODE` thành mã riêng; giữ `AUTH_MODE=RoomCode`, `PUBLISH_HOST=127.0.0.1`, `GAME_BIND_ADDRESS=0.0.0.0`, `GAME_PORT=7777`, `MAX_PLAYERS=10`, `TICK_RATE=30`.
 
-**Nơi sửa code:** Backend/Api/Program.cs. Thay mẫu bằng:
+`.env` chỉ ở máy host, đã ignore Git. Mã phòng là quyền vào buổi test, không dùng password tài khoản làm mã phòng. Với RoomCode chỉ chạy game-server, signing key mẫu chưa được dùng; nếu bật API/account phải tạo key thật theo mục 5.
 
-~~~csharp
-using MongoDB.Bson;
-using MongoDB.Driver;
+### 3.2. Build và bật GameServer local
 
-var builder = WebApplication.CreateBuilder(args);
-var connection = builder.Configuration["Mongo:ConnectionString"]
-    ?? throw new InvalidOperationException("Missing Mongo connection");
-var databaseName = builder.Configuration["Mongo:Database"] ?? "jungle_maze";
-
-builder.Services.AddSingleton<IMongoClient>(new MongoClient(connection));
-var app = builder.Build();
-
-app.MapGet("/health", async (IMongoClient mongo) =>
-{
-    try
-    {
-        await mongo.GetDatabase(databaseName).RunCommandAsync<BsonDocument>(
-            new BsonDocument("ping", 1));
-        return Results.Ok(new { status = "ok", database = "connected" });
-    }
-    catch
-    {
-        return Results.Json(
-            new { status = "unhealthy", database = "unavailable" },
-            statusCode: 503);
-    }
-});
-
-app.Run();
-~~~
-
-**Tác dụng:** health kiểm tra DB thật, trả 200 khi kết nối được, 503 khi lỗi. MongoClient singleton tái sử dụng connection pool, không tạo một client DB mới mỗi request.
-
-### 1.4. Tạo server stub
-
-**Nơi sửa:** Backend/GameServer/Program.cs:
-
-~~~csharp
-Console.WriteLine("GameServer stub started");
-await Task.Delay(Timeout.Infinite);
-~~~
-
-Stub giữ container chạy để nghiệm thu môi trường. Bước 3 thay bằng UDP/fixed tick.
-
-### 1.5. Dockerfile đóng gói ứng dụng
-
-**Nơi tạo:** Backend/Api/Dockerfile:
-
-~~~dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY Api/Api.csproj Api/
-RUN dotnet restore Api/Api.csproj
-COPY Api/ Api/
-RUN dotnet publish Api/Api.csproj -c Release -o /out --no-restore
-
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
-WORKDIR /app
-COPY --from=build /out .
-ENV ASPNETCORE_URLS=http://0.0.0.0:5000
-EXPOSE 5000
-ENTRYPOINT ["dotnet", "Api.dll"]
-~~~
-
-**Nơi tạo:** Backend/GameServer/Dockerfile:
-
-~~~dockerfile
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
-COPY GameServer/GameServer.csproj GameServer/
-RUN dotnet restore GameServer/GameServer.csproj
-COPY GameServer/ GameServer/
-RUN dotnet publish GameServer/GameServer.csproj -c Release -o /out --no-restore
-
-FROM mcr.microsoft.com/dotnet/runtime:8.0
-WORKDIR /app
-COPY --from=build /out .
-EXPOSE 7777/udp
-ENTRYPOINT ["dotnet", "GameServer.dll"]
-~~~
-
-**Giải thích:** SDK image có compiler; runtime image dùng chạy. COPY tính từ build context Backend. API nghe 0.0.0.0 để nhận request qua mạng container. EXPOSE mô tả port; Compose mới publish port ra Windows.
-
-Nếu thêm ProjectReference sau này, Dockerfile phải COPY project được tham chiếu trước restore/publish.
-
-### 1.6. Cấu hình môi trường
-
-**Nơi tạo:** Backend/.env.example:
-
-~~~dotenv
-Jwt__Issuer=JungleMaze.Local
-Jwt__Audience=JungleMaze.Game
-Jwt__SigningKey=REPLACE_WITH_RANDOM_KEY
-~~~
-
-Copy thành Backend/.env. Tạo khóa local trong PowerShell:
-
-~~~powershell
-$jwtKeyBytes = New-Object byte[] 32
-$jwtKeyGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
-$jwtKeyGenerator.GetBytes($jwtKeyBytes)
-$jwtKeyGenerator.Dispose()
-[Convert]::ToBase64String($jwtKeyBytes)
-~~~
-
-Dán kết quả vào Jwt__SigningKey trong .env. API và server dùng cùng key; không đưa key vào client hoặc ảnh nghiệm thu.
-
-Thêm vào .gitignore ở gốc project, giữ nguyên dòng cũ:
-
-~~~gitignore
-Backend/.env
-Backend/**/bin/
-Backend/**/obj/
-~~~
-
-Tạo Backend/.dockerignore:
-
-~~~text
-**/bin
-**/obj
-.env
-.git
-~~~
-
-**Tác dụng:** tránh commit secret và đưa file build/secret vào Docker build context.
-
-### 1.7. Compose nối các service
-
-**Nơi tạo:** Backend/compose.yaml:
-
-~~~yaml
-services:
-  mongo:
-    image: mongo:8.0
-    volumes:
-      - mongo-data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
-      interval: 5s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
-
-  api:
-    build:
-      context: .
-      dockerfile: Api/Dockerfile
-    env_file:
-      - .env
-    ports:
-      - "127.0.0.1:5000:5000"
-    environment:
-      Mongo__ConnectionString: mongodb://mongo:27017
-      Mongo__Database: jungle_maze
-    depends_on:
-      mongo:
-        condition: service_healthy
-
-  game-server:
-    build:
-      context: .
-      dockerfile: GameServer/Dockerfile
-    env_file:
-      - .env
-    ports:
-      - "127.0.0.1:7777:7777/udp"
-    environment:
-      GAME_PORT: "7777"
-      MAX_PLAYERS: "10"
-      TICK_RATE: "30"
-
-volumes:
-  mongo-data:
-~~~
-
-| Cấu hình | Tác dụng |
-| --- | --- |
-| env_file | Cùng cấu hình JWT cho API và server |
-| Mongo__Database | ASP.NET ánh xạ thành Mongo:Database |
-| mongodb://mongo:27017 | API tìm DB bằng tên service trong Docker |
-| service_healthy | Đợi DB sẵn sàng |
-| volume | Giữ DB qua lần thay container |
-| 127.0.0.1 ở host | Bốn bước đầu chỉ thử trên máy bạn |
-| /udp | Publish UDP; TCP cùng số port không thay thế |
-| MAX_PLAYERS/TICK_RATE | Code server phải đọc và áp dụng |
-
-localhost bên trong API container là chính API container, không phải DB. Mongo không cần publish ra Windows.
-
-### 1.8. Bật và kiểm tra
-
-**Nơi chạy:** PowerShell tại Backend:
-
-~~~powershell
-docker compose up -d --build
-docker compose ps
-docker compose logs --tail 50 api game-server
-Invoke-RestMethod -Uri 'http://localhost:5000/health'
-~~~
-
-**Cần thấy:** mongo healthy, api/game-server running; health trả ok/connected; log stub started.
-
-Sửa C# xong chạy lại up -d --build để container nhận DLL mới. File sửa trên Windows không tự cập nhật code đang chạy.
-
-**Kiểm tra volume:**
-
-~~~powershell
-docker compose exec mongo mongosh jungle_maze --quiet --eval 'db.inf01_probe.insertOne({ marker: 1 })'
-docker compose down
-docker compose up -d
-docker compose exec mongo mongosh jungle_maze --quiet --eval 'db.inf01_probe.findOne({ marker: 1 })'
-~~~
-
-Đợi DB healthy trước lệnh cuối. Phải đọc lại bản ghi marker bằng 1. Không dùng down -v khi muốn giữ volume.
-
-**Done INF-01:** Compose bật được, health kiểm tra DB thật, dữ liệu còn sau restart. Lưu log hoặc ảnh tại Docs/Phase1_TestResults.md.
-
----
-
-## 2. NET-01 — API đăng ký, đăng nhập và JWT
-
-**Tác dụng:** cấp danh tính đã xác thực cho người chơi. **Nơi làm chính:** Backend/Api. Bước này bạn cần viết các hàm theo luồng dưới đây; không phải chỉ tạo file rỗng.
-
-### 2.1. Thêm package
-
-**Nơi chạy:** PowerShell tại Backend:
-
-~~~powershell
-dotnet add Api/Api.csproj package Microsoft.AspNetCore.Authentication.JwtBearer --version "8.0.*"
-dotnet list Api/Api.csproj package
-~~~
-
-8.0.* chọn dòng ASP.NET Core 8; sau restore có thể pin chính xác version đã nhận. TokenService dùng JwtSecurityTokenHandler; kiểm tra dependency System.IdentityModel.Tokens.Jwt trước khi thêm trực tiếp.
-
-### 2.2. Tạo model và hợp đồng JSON
-
-**Nơi tạo bằng editor:**
-
-| File | Nội dung cần viết | Tác dụng |
-| --- | --- | --- |
-| Api/Models/User.cs | Id, Username, NormalizedUsername, PasswordHash, CreatedAtUtc | Bản ghi DB |
-| Api/Contracts/AuthRequests.cs | RegisterRequest/LoginRequest có username,password; LoginResponse có accessToken,userId,expiresAtUtc | Chốt JSON client/API |
-| Api/Data/UserRepository.cs | CreateAsync, FindByNormalizedUsernameAsync, EnsureIndexesAsync | Gom query DB |
-
-Dùng Guid string cho ID ở prototype, UTC cho ngày. Username chuẩn hóa bằng Trim và ToUpperInvariant; giữ tên hiển thị riêng.
-
-EnsureIndexesAsync tạo unique index trên NormalizedUsername khi API khởi động. Duplicate key lúc insert trả 409. Chỉ kiểm tra username tồn tại trước insert không đủ khi hai request đồng thời.
-
-### 2.3. Đăng ký và login
-
-**Nơi viết:** Api/Endpoints/AuthEndpoints.cs. Đăng ký service/endpoint trong Api/Program.cs.
-
-~~~text
-Register: kiểm tra request → chuẩn hóa → tạo ID → hash password → insert → 201
-Login: chuẩn hóa → tìm user → verify password → tạo JWT → 200
-~~~
-
-Dùng PasswordHasher<User> có sẵn:
-- HashPassword để lưu hash.
-- VerifyHashedPassword để kiểm tra lúc login.
-- Không lưu password thô và không trả hash cho client.
-- Request thiếu dữ liệu trả 400; username trùng 409; login sai 401.
-
-Trước builder.Build(), đăng ký UserRepository, TokenService và hasher vào DI. DI cung cấp service cho endpoint thay vì endpoint tự tạo mọi dependency.
-
-### 2.4. TokenService và /me
-
-**Nơi viết:** Api/Auth/TokenService.cs. Đọc Jwt:Issuer, Jwt:Audience, Jwt:SigningKey từ cấu hình.
-
-| Claim | Giá trị | Tác dụng |
-| --- | --- | --- |
-| sub | User ID từ DB | Danh tính |
-| iss | JungleMaze.Local | Nguồn cấp |
-| aud | JungleMaze.Game | Đối tượng sử dụng |
-| exp | UTC hiện tại + 60 phút | Hạn token |
-| jti | ID mới | Phân biệt token |
-| iat | Thời điểm cấp | Chẩn đoán |
-
-HS256 và key chung giữa API/server là lựa chọn cho prototype local đóng của bài lớp học, không phải hệ thống auth public hoàn chỉnh.
-
-**Trong Program.cs:**
-1. AddAuthentication + AddJwtBearer.
-2. Bật kiểm tra signing key, issuer, audience, lifetime; giới hạn thuật toán đã chốt.
-3. MapInboundClaims=false để đọc sub nhất quán.
-4. AddAuthorization.
-5. Sau Build gọi UseAuthentication rồi UseAuthorization.
-6. Register/login không yêu cầu token.
-7. GET /me có RequireAuthorization, lấy sub từ principal đã xác thực.
-
-TokenService tạo vé. Middleware kiểm tra vé cho HTTP. UDP cần validator riêng ở bước 4.
-
-### 2.5. Thử API
-
-**Nơi chạy:** PowerShell tại Backend, sau khi viết xong logic:
-
-~~~powershell
-docker compose up -d --build api
-$authPayload = @{ username = 'player01'; password = 'ClassDemo_123!' } | ConvertTo-Json
-Invoke-RestMethod -Method Post -Uri 'http://localhost:5000/auth/register' -ContentType 'application/json' -Body $authPayload
-$loginResult = Invoke-RestMethod -Method Post -Uri 'http://localhost:5000/auth/login' -ContentType 'application/json' -Body $authPayload
-Invoke-RestMethod -Uri 'http://localhost:5000/me' -Headers @{ Authorization = "Bearer $($loginResult.accessToken)" }
-~~~
-
-Response phải có accessToken theo hợp đồng. Token giữ trong biến, không in toàn bộ vào log. HTTP ở đây chỉ localhost và tài khoản demo, chưa gửi password qua LAN.
-
-**Done NET-01:** register mới 201; trùng username 409; login đúng 200; sai password 401; /me đúng user. Thiếu/giả/hết hạn token đều 401. Restart container vẫn login được. Để thử expiry, tạm TTL ngắn rồi phục hồi 60 phút.
-
----
-
-## 3. SRV-01 — LiteNetLib và fixed tick 30 Hz
-
-**Tác dụng:** nhận UDP và chạy mô phỏng theo nhịp cố định. **Nơi làm:** Backend/GameServer và NetSmokeClient; chưa sửa Unity.
-
-### 3.1. Package giống nhau
-
-**Nơi chạy:** PowerShell tại Backend:
-
-~~~powershell
-dotnet add GameServer/GameServer.csproj package LiteNetLib --version 2.1.4
-dotnet add NetSmokeClient/NetSmokeClient.csproj package LiteNetLib --version 2.1.4
-dotnet build JungleBackend.sln
-~~~
-
-2.1.4 là version xác minh trên NuGet khi viết hướng dẫn. Nếu thay, thay cả hai và đọc mẫu API đúng version.
-
-### 3.2. File và trách nhiệm
-
-| File trong GameServer | Việc cần viết |
-| --- | --- |
-| Program.cs | Đọc GAME_PORT,MAX_PLAYERS,TICK_RATE; khởi tạo; xử lý dừng |
-| Networking/NetworkHost.cs | Socket, connect/disconnect/receive, ping/pong |
-| Simulation/FixedTickLoop.cs | Đồng hồ, accumulator, tick counter, catch-up |
-| Diagnostics/ServerMetrics.cs | Gom số đo, báo cáo định kỳ |
-
-NetSmokeClient/Program.cs chứa client thử. Đọc cấu hình bằng Environment.GetEnvironmentVariable, parse/kiểm tra trước khi chạy. Environment trong Compose không tự áp giới hạn nếu code bỏ qua.
-
-Khi thêm gameplay sau này, receive đưa input vào hàng đợi để Tick xử lý; không đặt toàn bộ gameplay trong callback mạng.
-
-### 3.3. Viết NetworkHost
-
-Dùng mẫu chính thức LiteNetLib ở cuối tài liệu. API cần dùng:
-- EventBasedNetListener nhận sự kiện.
-- NetManager.Start(port) mở socket.
-- ConnectionRequestEvent accept/reject.
-- PeerConnectedEvent/PeerDisconnectedEvent theo dõi peer.
-- NetworkReceiveEvent đọc packet.
-- PollEvents đưa sự kiện tới code.
-- NetDataWriter và peer.Send gửi packet.
-- Stop đóng socket.
-
-Bước này local có thể dùng key cố định tạm để thử UDP, bước 4 phải thay bằng JWT.
-
-Chốt packet:
-~~~text
-Ping: byte messageType=1, int sequence
-Pong: byte messageType=2, int sequence
-~~~
-
-Pong giữ sequence để client ghép thời điểm gửi/nhận. Dùng Unreliable cho ping để thấy packet có thể mất. Timeout không đồng nghĩa server crash.
-
-Kiểm tra đủ byte trước đọc; recycle reader theo cấu hình, tránh double-recycle nếu bật tự recycle. Trước accept kiểm tra số peer; đủ 10 thì reject.
-
-### 3.4. Fixed tick: cách viết và vì sao
-
-**Nơi viết:** Simulation/FixedTickLoop.cs. 30 Hz là 30 lần mô phỏng/giây, delta=1/30 giây=33,333 ms; không phải FPS Unity.
-
-**Giả mã cần chuyển thành C#:**
-~~~text
-previous = Stopwatch hiện tại
-accumulator = 0
-
-while server chạy:
-    now = Stopwatch hiện tại
-    accumulator += now - previous
-    previous = now
-    PollEvents()
-    steps = 0
-
-    while accumulator >= 1/30 giây và steps < 5:
-        Tick(delta=1/30)
-        đo thời gian thực thi
-        accumulator -= 1/30 giây
-        tăng tick counter và steps
-
-    nếu backlog vẫn quá lớn:
-        ghi overload, áp chính sách giới hạn backlog cho prototype
-        không coi phần mô phỏng bỏ qua là thành công
-
-    chờ ngắn nếu chưa tới tick kế tiếp
-~~~
-
-Stopwatch đo thời gian trôi thật; accumulator giữ phần dư; fixed delta giúp gameplay nhất quán. Giới hạn catch-up tránh vòng lặp vô tận. Chờ ngắn giảm idle CPU, nhưng không coi Sleep(33) là lịch tick chính xác.
-
-Đo riêng thời gian Tick và toàn vòng gồm callback mạng. Callback chậm cũng làm trễ tick dù Tick rất nhanh.
-
-### 3.5. Viết client thử
-
-**Nơi viết:** NetSmokeClient/Program.cs:
-1. Đọc args host/port, mặc định 127.0.0.1:7777.
-2. Tạo listener/NetManager, Connect với key tạm.
-3. PollEvents thường xuyên.
-4. Sau connected, mỗi giây Ping; lưu Stopwatch theo sequence.
-5. Nhận Pong tính RTT.
-6. Báo timeout/reject/disconnect.
-7. Ctrl+C đóng NetManager.
-
-**Terminal A tại Backend:**
-~~~powershell
+```powershell
 docker compose up -d --build game-server
-docker compose logs -f game-server
-~~~
+docker compose ps
+docker compose logs --tail 20 game-server
+```
 
-**Terminal B tại Backend:**
-~~~powershell
-dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- 127.0.0.1 7777
-~~~
+Cần thấy game-server Up và log `[ready] ... maxPlayers=10 tickRate=30 authMode=RoomCode protocol=1`. Lần đầu Docker tải image SDK/runtime và restore dependency. Server bind trong container `0.0.0.0:7777`; Windows publish mặc định `127.0.0.1:7777/udp`.
 
-Args chỉ hoạt động khi bạn đã viết phần đọc args. Ctrl+C ở logs chỉ ngừng xem, container vẫn chạy; ở client dừng client.
+RoomCode không cần Mongo/API chạy. Docker Desktop → Containers → nhóm Compose thường tên `backend` → game-server → Logs cũng xem được log. `docker compose logs -f game-server` theo dõi liên tục; Ctrl+C chỉ thoát xem log.
 
-Thử 10 instance bằng 10 terminal hoặc chế độ nhiều client trong công cụ. Peer thứ 11 phải reject.
+### 3.3. Test client local ở terminal PC thứ hai
 
-### 3.6. Đo nghiệm thu
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local.json --name Dev01 --duration 30
+```
 
-**Nơi xem:** ServerMetrics/log và Docker:
-~~~powershell
-docker stats --no-stream
-~~~
+Nhập mã phòng trong `.env`. Ký tự không hiện khi gõ là bình thường. Cần thấy JoinAccepted, Pong và summary `requested=1 connected=1 joined=1 failed=0`.
 
-Lấy nhiều mẫu trong 5 phút. Docker CPU theo core có thể khác tỷ lệ tổng trong Task Manager; ghi cách đo và cấu hình máy.
+`transportConnected=true` mới là kết nối transport; **JoinAccepted + Pong** mới xác nhận server cho vào phòng và trao đổi UDP được. Nếu lỗi, dùng mục 12 trước khi thử AWS.
 
-Log mỗi vài giây: peers, ticks/s, tick p95/p99, full-loop time, overrun. p95/p99 là mức 95%/99% mẫu không vượt. Không log từng tick.
+## 4. Chạy local những lần sau
 
-**Done SRV-01:** ping/pong hoạt động; nhịp gần 30 Hz ổn định; 10 peer và reject peer 11; idle CPU dưới 5% theo cách đo ghi lại. Đo tick time so ngân sách 33,3 ms. Đây chưa phải benchmark gameplay.
+### 4.1. Bắt đầu một buổi phát triển
 
----
+1. Mở Docker Desktop, đợi Engine ready; mở đúng source và terminal tại Backend.
+2. Chạy `docker compose up -d game-server` để bật lại bằng image đã có; kiểm tra log ready.
+3. Chạy client local ở mục 3.3. Nếu cần account/API, dùng mục 5.1 trước.
+4. Với phần Unity không phụ thuộc mạng, mở scene kiểm thử tương ứng. Xem mục 10 về giới hạn hiện tại.
 
-## 4. SRV-02 — Handshake xác thực JWT
+Docker local **không có restart policy tự bật sau boot**. Qua Docker Desktop có thể Start game-server; nhánh account: Start Mongo → đợi healthy → Start API → kiểm tra /health → Start game-server. Nếu container chưa tạo hoặc config/source đổi, dùng Compose.
 
-**Tác dụng:** thay key tạm bằng danh tính đã kiểm tra. **Phụ thuộc:** NET-01 và SRV-01.
+### 4.2. Lệnh nào dùng khi sửa gì?
 
-### 4.1. Tạo validator ở server
+| Thay đổi / tình huống | Thao tác tại PC / Backend |
+| --- | --- |
+| Bật lại, source/config không đổi | `docker compose up -d game-server` |
+| Sửa C# GameServer hoặc Shared chạy trong Docker | `docker compose up -d --build game-server` |
+| Sửa API chạy Docker | `docker compose --profile account up -d --build api` |
+| Sửa `.env` / port / mode | Recreate service liên quan, ví dụ `docker compose up -d --force-recreate game-server`; account dùng `--profile account` |
+| Sửa NetSmokeClient source | `dotnet run` build lại client trên PC |
+| Sửa JSON endpoint client | Chạy lại client; không cần build |
+| Sửa Unity asset/script client | Play/build lại Unity theo tính năng; server chỉ rebuild khi code server đổi |
+| Pull source mới | Build solution; rebuild image của service có code/dependency thay đổi |
 
-**Nơi tạo:** GameServer/Networking/HandshakeValidator.cs.
+Nút Restart container dùng image/env cũ, không thay cho build hoặc recreate. Nếu API/game cùng dùng JWT và đổi key, recreate cả hai với cùng cấu hình.
 
-Console server không có middleware HTTP. Cần package System.IdentityModel.Tokens.Jwt. Tại Backend:
-~~~powershell
-dotnet list Api/Api.csproj package --include-transitive
-~~~
+### 4.3. Kết thúc buổi local
 
-Đọc version package đó từ output, thêm cùng version vào GameServer.csproj rồi restore. Không dán placeholder version vào lệnh.
+Dừng client bằng Ctrl+C hoặc đợi duration kết thúc. Sau đó:
 
-Đọc environment Jwt__Issuer, Jwt__Audience, Jwt__SigningKey do cùng .env cung cấp.
+```powershell
+docker compose stop game-server
+```
 
-Validate(token) cần kiểm tra signature, algorithm, issuer, audience và expiry; RequireExpirationTime/RequireSignedTokens; ClockSkew rõ ràng, đề xuất 30 giây. MapInboundClaims=false, lấy sub không rỗng. Catch lỗi xác thực, trả reason thay vì crash.
+Nếu đã bật account:
 
-ReadJwtToken chỉ đọc nội dung, không xác minh chữ ký.
+```powershell
+docker compose --profile account stop
+```
 
-### 4.2. Chốt handshake client/server
+Stop giữ named volume Mongo. `docker compose down` xóa container/network nhưng giữ named volumes; `down -v` xóa volume và có thể mất account. Giữ project name/volume cũ khi dùng lại dữ liệu. Trên máy riêng của mỗi dev, dữ liệu Local độc lập với AWS.
 
-**Nơi sửa:** NetworkHost.cs và NetSmokeClient/Program.cs:
-~~~text
-ushort protocolVersion = 1
-string accessToken = JWT từ API
-~~~
+## 5. API account, Jwt và xem dữ liệu local
 
-Hai bên ghi/đọc cùng thứ tự. Đề xuất tổng payload <=4096 byte, token <=2048 ký tự; đo token thật và kiểm tra giới hạn LiteNetLib/MTU.
+### 5.1. Bật API/Mongo để test tài khoản
 
-Nếu JWT không vừa connection request, dùng peer pending có timeout/giới hạn, gửi Auth packet ReliableOrdered rồi mới chuyển authenticated. Pending không được gửi gameplay input. Transport connected không đồng nghĩa authenticated.
+API luôn cần signing key hợp lệ, kể cả game-server đang RoomCode. Tạo key trên **PC / PowerShell**, dùng được với Windows PowerShell 5.1:
 
-### 4.3. Accept/reject và mapping phiên
+```powershell
+$jwtBytes = New-Object byte[] 48
+$jwtGenerator = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$jwtGenerator.GetBytes($jwtBytes)
+$jwtGenerator.Dispose()
+[Convert]::ToBase64String($jwtBytes)
+```
 
-**Nơi viết:** NetworkHost.cs, xử lý connection request/auth:
-~~~text
-Kích thước → parse → version → Validate JWT → sub
-→ phiên trùng → sức chứa → accept/map peer-user
-~~~
+Dán kết quả vào `Jwt__SigningKey` trong `.env` bằng editor; giữ key ổn định qua lần bật máy. Đây là secret của server, không gửi cho tester hoặc chụp màn hình. `Jwt__Issuer=JungleMaze.Local`, `Jwt__Audience=JungleMaze.Game`, expiry mặc định 60 phút.
 
-Lưu dictionary peerId→userId và userId→peerId. Tối đa 10 authenticated; cùng user không tạo phiên thứ hai; disconnect dọn cả hai mapping.
+```powershell
+docker compose --profile account up -d --build
+docker compose --profile account ps
+```
 
-Chỉ Accept sau kiểm tra; với pending chỉ gửi AuthAccepted khi toàn bộ kiểm tra đạt.
+Mongo cần healthy; API cần trả `{"status":"ok","database":"connected"}` tại `http://127.0.0.1:5000/health`. Compose Local chỉ có healthcheck của Mongo; API Up chưa thay thế GET /health. Game có thể giữ RoomCode, còn API được test độc lập.
 
-Log reason: InvalidToken, TokenExpired, VersionMismatch, DuplicateSession, RoomFull, MalformedHandshake. Không log token/password.
+### 5.2. Swagger / Postman
 
-Xác minh bằng key sẵn có ở server, ngoài hàm Tick. Không gọi API/DB đồng bộ trên từng packet/tick.
+Local Docker: `http://127.0.0.1:5000/swagger`. AWS: `https://junglemaze.duckdns.org/swagger`; browser hỏi **Swagger admin** đã đặt khi deploy. Đó là Basic auth mở UI, khác account game và JWT Authorize.
 
-### 4.4. Client login trước UDP
-
-**Nơi sửa:** NetSmokeClient/Program.cs:
-1. Nhập username/password demo bằng console, không dùng command-line args.
-2. HttpClient POST localhost:5000/auth/login.
-3. API lỗi thì không nối UDP.
-4. Deserialize accessToken/userId, giữ token trong bộ nhớ.
-5. NetDataWriter ghi version rồi token.
-6. Connect bằng handshake đã chốt.
-7. Chờ Accepted/AuthAccepted rồi ping.
-8. Giữ vòng PollEvents và xử lý reject.
-
-HTTP chỉ localhost ở bốn bước này; chưa mở password ra LAN.
-
-### 4.5. Chạy và kiểm tra
-
-**Nơi chạy:** Backend:
-~~~powershell
-docker compose up -d --build api game-server
-docker compose logs -f game-server
-~~~
-
-Terminal khác:
-~~~powershell
-dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- 127.0.0.1 7777
-~~~
-
-Client hỏi tài khoản sau khi bạn viết phần nhập console.
-
-| Ca | Cách tạo | Kết quả |
+| Bước | Thao tác | Kết quả |
 | --- | --- | --- |
-| Hợp lệ | Login user demo | Accepted đúng ID |
-| Thiếu token | Test chuỗi rỗng | Reject |
-| Giả token | Sửa ký tự phần chữ ký | Reject |
-| Hết hạn | TTL ngắn, chờ qua exp+ClockSkew | Reject |
-| Sai issuer/audience | Token test cấu hình khác | Reject |
-| Sai version | Gửi 99 | Reject |
-| Gói lỗi | Thiếu trường/quá giới hạn | Reject, server không crash |
-| Trùng user | Hai client cùng user | Client thứ hai reject |
-| Đủ phòng | 10 user khác nhau, thêm user 11 | RoomFull |
-| Disconnect | Đóng client, thử user đó lại | Mapping cũ được dọn |
+| 1 | POST /api/auth/register, nhập account demo riêng | 201, id/username/createdAtUtc; không trả hash |
+| 2 | Đăng ký lại tên cùng hoa/thường | 409; thiếu/sai DTO → 400 |
+| 3 | POST /api/auth/login bằng account vừa tạo | 200, accessToken/userId/expiresAtUtc; sai credentials → 401 |
+| 4 | Authorize, dán riêng accessToken | Swagger tự thêm Bearer |
+| 5 | GET /api/me | 200 đúng user; bỏ token/sửa token → 401 |
 
-**Done SRV-02:** login→JWT→UDP authenticated hoạt động; ca lỗi reject; không còn đường gameplay bằng key tạm. Dọn phiên cơ bản chưa phải reconnect giữ HP/inventory trong trận, sẽ làm sau khi có match state.
+Tên đăng ký sau Trim dài 3–32 ký tự, tra cứu không phân biệt hoa/thường. Password đăng ký 8–128 ký tự; password login bắt buộc và tối đa 128 ký tự. Password giữ khoảng trắng và chỉ lưu hash có salt. Reload Swagger cần Authorize lại; register không tự login/join UDP.
 
----
+Postman dùng cùng endpoint và JSON; /api/me chọn Bearer Token. Có thể import `/swagger/v1/swagger.json`; bản AWS cần Basic auth admin để tải tài liệu này. Không nhập signing key vào Postman/client.
 
-## 5. Khi nào chuyển sang LAN?
+AWS public: register/login dùng chung **60 request/phút toàn server**, vượt trả 429; body tối đa 16KB (Content-Length quá lớn trả 413). /health và /api/me không tiêu hạn mức auth. Local mặc định không áp dụng limiter này. Tránh burst đăng ký/login trên server lớp; để test tự động các ca giới hạn trên Docker local.
 
-Hoàn thành local trước, sau đó CLI-01 và thử máy thứ hai.
+### 5.3. Nếu cần test Jwt join local
 
-**Máy server:** PowerShell ipconfig lấy IPv4 của mạng lớp; đổi host mapping UDP từ 127.0.0.1:7777:7777/udp thành 7777:7777/udp; recreate container; cấu hình firewall UDP 7777 cho mạng lớp/private.
+Sửa `.env` `AUTH_MODE=Jwt`; API và game-server dùng cùng issuer/audience/key. Sửa `NetSmokeClient/client.local.json` `authMode` thành `Jwt`, giữ apiBaseUrl Local. Recreate game-server bằng lệnh account và chạy client: nhập mã phòng, username, password → API login → UDP Auth → JoinAccepted/Pong.
 
-**Máy client:** dùng IP máy server, không localhost. localhost là chính máy đang chạy client.
+Khi quay về RoomCode, đổi cả server và JSON client cho khớp. Token lỗi không fallback. Một JWT account chỉ giữ một phiên trong cùng GameServer; muốn 10 phiên Jwt cần 10 account khác nhau, không dùng một account với `--clients 10`.
 
-Đăng nhập từ máy khác cần API HTTPS và chứng chỉ đúng hostname/IP được máy đó tin cậy; không chỉ mở API HTTP chứa password ra LAN. JWT UDP không tự mã hóa; khi triển khai LAN cần chốt bảo vệ đường truyền hoặc ticket vào trận ngắn hạn. Đây là phần chuyển LAN, chưa được hoàn thành chỉ bằng code local.
+### 5.4. Compass local
 
-Nếu Wi-Fi lớp cách ly client/chặn UDP, cần hỗ trợ mạng từ quản trị viên.
+Start Mongo local, mở Compass → Add new connection → `mongodb://127.0.0.1:27018` → lưu tên Jungle Maze Local. Vào `jungle_maze → users → Documents`, Filter `{}`, Refresh sau khi register.
 
-## 6. Lỗi thường gặp và nơi kiểm tra
+Có thể đặt Project `{ "PasswordHash": 0 }`, Sort `{ "CreatedAtUtc": -1 }`, hoặc Filter `{ "NormalizedUsername": "PLAYER01" }`. Project chỉ ẩn hash trên màn hình. Dữ liệu có `_id` (Guid string), Username, NormalizedUsername, PasswordHash, CreatedAtUtc. Tạo user qua API để giữ validation/hash/index đúng.
 
-| Lỗi | Nơi xem | Hướng xử lý |
+Mongo trong container dùng 27017, Windows mặc định dùng 27018. Nếu cổng đã bị chiếm, sửa MONGO_PORT rồi recreate Mongo, cập nhật URI Compass/API trực tiếp. Mongo Local chỉ publish loopback; account giữ trong volume thường tên `backend_mongo-data`.
+
+## 6. Thiết lập AWS lần đầu
+
+Chỉ admin cần làm phần này. Dev/tester dùng server đã có đi thẳng mục 7. **AWS phục vụ test chung; dựng backend và chạy test tự động trên PC trước khi bật EC2.**
+
+### 6.1. Cấu hình hạ tầng bằng AWS Console
+
+| Mục | Cấu hình đang dùng / cần xác nhận |
+| --- | --- |
+| Account / region | AWS (new), giữ Free Plan; Sydney ap-southeast-2; kiểm tra credits/thời hạn trong Billing |
+| EC2 | Một instance Ubuntu 24.04 x86_64, t3.small 2 vCPU/2GB; CPU credit mode Standard |
+| Storage | Root EBS gp3 20GB, mã hóa; bật termination protection |
+| Network | Default VPC, subnet public có route Internet Gateway, auto-assign public IPv4 |
+| SSH | Key pair riêng, user ubuntu; TCP 22 từ IP public của admin được phép |
+| Public dịch vụ | TCP 80/443 và UDP 7777 từ Anywhere IPv4 |
+| Nội bộ | Không mở API 5000 hoặc Mongo 27017/27018 public |
+| DNS | DuckDNS hostname junglemaze.duckdns.org; token admin giữ riêng |
+
+Xác nhận t3.small được console cho phép/eligible đối với **tài khoản của bạn**. Free Tier mới dùng credits, không áp bảng micro 750 giờ/tháng cho mọi tài khoản. AWS project của account hiện gán Sydney; giữ Free Plan, không activate advanced features để đổi region. Không tạo thêm Elastic IP, NAT Gateway, Load Balancer, RDS hoặc Route53 cho buổi test lớp. Xem [EC2 Free Tier](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-free-tier-usage.html) và [AWS project regions](https://docs.aws.amazon.com/accounts/latest/reference/project-regions.html).
+
+Trước khi SSH: EC2 Running, status checks đạt, key pair đúng, TCP 22 My IP khớp mạng PC hiện tại. Đổi Wi-Fi/hotspot có thể phải cập nhật nguồn TCP 22. Bật MFA tài khoản AWS; không gửi password console/private key cho tester.
+
+### 6.2. Tạo release trên PC
+
+**PC / PowerShell tại Backend**, Docker Desktop đang chạy:
+
+```powershell
+dotnet build JungleBackend.sln
+powershell -NoProfile -ExecutionPolicy Bypass -File Deploy/build-aws-release.ps1 -Domain junglemaze.duckdns.org
+python -X utf8 Tests/verify_aws_release.py out/aws/release.tar.gz
+```
+
+Nếu Python không có trong PATH, dùng đường dẫn Python 3.11+ trên máy như mục 9. Builder build API/game Linux AMD64, lấy MongoDB **7.0.43** và Caddy 2, tag bằng release ID mới, đóng bốn image cùng scripts/config public/docs. Nó tạo:
+
+- `Backend/out/aws/release.tar.gz` và `release.tar.gz.sha256` để upload.
+- Trong gói: `manifest.json` với image IDs/version, `release.env` public, `SHA256SUMS`, `images.tar.gz`, client AWS JSON, hai tài liệu chính và hồ sơ nhập/kiểm chứng JSurviv để các liên kết trong docs dùng được. Assets Unity không nằm trong gói server.
+
+Mỗi release có ID riêng; không dùng cùng ID cho nội dung khác. Không dùng `-SkipBuild` nếu chưa chủ động chuẩn bị đúng cả bốn image/tag; đó là tùy chọn tái đóng gói đã kiểm thử. Gói không chứa `.env`, token, SSH key hoặc dữ liệu Mongo. Thay tài liệu/Unity client không bắt buộc deploy lại server; backend/protocol đổi mới cần release tương ứng.
+
+### 6.3. SSH lần đầu và upload
+
+**PC / PowerShell tại Backend**. Các prompt sau yêu cầu giá trị thật; nhập đường dẫn key không có dấu ngoặc kép bao quanh:
+
+```powershell
+$ec2Key = Read-Host 'Duong dan tuyet doi file .pem cua ban'
+$ec2Ip = Read-Host 'Public IPv4 hien tai cua EC2 trong Console'
+if (-not (Test-Path -LiteralPath $ec2Key)) { throw 'Khong tim thay file key; sua duong dan.' }
+if (-not $ec2Ip) { throw 'Can nhap Public IPv4 EC2.' }
+ssh -i $ec2Key ("ubuntu@" + $ec2Ip)
+```
+
+Dùng Public IPv4 hiện tại, không dùng IP private `172.31...`, không để dấu `< >`. Hostname DuckDNS dùng được sau khi DNS đã cập nhật đúng IP.
+
+Nếu hỏi `Are you sure you want to continue connecting (yes/no/[fingerprint])?`: AWS → instance → **Actions → Monitor and troubleshoot → Get system log** → tìm `BEGIN SSH HOST KEY FINGERPRINTS`; so với fingerprint cùng loại khóa đang hiển thị. Khớp thì gõ đầy đủ `yes` và Enter. Không bỏ kiểm tra host key. [Hướng dẫn AWS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/connection-prereqs-general.html).
+
+Thấy `ubuntu@ip-...` là đã vào EC2. Chạy `exit` để trở lại PowerShell PC, rồi upload bằng **cùng terminal PC** vẫn có hai biến trên:
+
+```powershell
+scp -i $ec2Key .\out\aws\release.tar.gz .\out\aws\release.tar.gz.sha256 ("ubuntu@" + $ec2Ip + ":~/")
+ssh -i $ec2Key ("ubuntu@" + $ec2Ip)
+```
+
+Nếu mở terminal PC mới, nhập lại ec2Key/ec2Ip trước. SCP chạy ở PC; đường dẫn `out/aws` không tồn tại trong phiên SSH trước khi upload. Không nhầm fingerprint host với fingerprint key pair/private key.
+
+### 6.4. Bootstrap và deploy lần đầu trên EC2
+
+**SSH EC2:**
+
+```bash
+cd ~
+sha256sum -c release.tar.gz.sha256
+release_dir="$(mktemp -d "$HOME/junglemaze-release.XXXXXX")"
+tar -xzf release.tar.gz -C "$release_dir"
+cd "$release_dir"
+sha256sum -c SHA256SUMS
+sudo bash scripts/bootstrap.sh
+sudo bash scripts/deploy.sh "$PWD"
+```
+
+Hai lượt checksum phải OK trước khi chạy script. Bootstrap kiểm tra Ubuntu 24.04/x86_64, cài Docker/Compose từ repo Docker, Python/curl/OpenSSL và swap 1GB. Không cài SDK .NET hay compile trên EC2. Deploy load image, kiểm tra guard volume, cài `/opt/junglemaze/releases/<release-id>`, giữ Compose project **junglemaze-aws**, tạo systemd/DuckDNS timer và khởi động services.
+
+Nếu `.env.aws` chưa có, deploy hỏi cấu hình:
+
+| Prompt | Nhập / tác dụng |
+| --- | --- |
+| DuckDNS hostname | Enter giữ junglemaze.duckdns.org, hoặc hostname thuộc tài khoản admin |
+| DuckDNS token | Token trên tài khoản DuckDNS, nhập ẩn |
+| Email for HTTPS certificate | Email thật cho ACME |
+| Swagger admin username | Enter giữ teacher hoặc đặt riêng |
+| Swagger password / repeat | 12–64 ký tự ASCII, nhập ẩn; chỉ lưu bcrypt hash |
+| Room code | 8–64 ký tự chữ/số/_/-; Enter để tạo ngẫu nhiên |
+
+JWT signing key được tự tạo. Config private ở `/opt/junglemaze/config/.env.aws`, quyền 0600; code/release tách khỏi config. Mã phòng cần gửi riêng cho người test:
+
+```bash
+sudo grep '^ROOM_CODE=' /opt/junglemaze/config/.env.aws
+```
+
+Giữ nguyên token/key/password qua các lần bật máy. `configure.sh` chỉ tạo lần đầu và từ chối ghi đè config đã có. Server/client JSON không nhận secrets từ file này. DB AWS mới, không tự copy DB Local.
+
+### 6.5. Kiểm tra trước khi cho team vào
+
+```bash
+sudo bash /opt/junglemaze/current/scripts/status.sh
+sudo systemctl status junglemaze --no-pager
+sudo systemctl list-timers junglemaze-dns.timer --no-pager
+```
+
+Mongo/API phải healthy; game-server Up và log ready; Caddy Up. Systemd `active (exited)` là bình thường với service Type=oneshot; các tiến trình thật nằm trong Docker. Không coi game-server/Caddy Up là đã test UDP/TLS.
+
+**PC / browser:** mở `https://junglemaze.duckdns.org/health`, phải có certificate hợp lệ và `status=ok, database=connected`. Sau đó test Swagger theo mục 5.2 và UDP theo mục 7.2. Caddy cấp/renew ACME qua DNS đúng và TCP 80/443; deploy thành công chưa tự chứng minh certificate public đã sẵn sàng.
+
+### 6.6. MongoDB và kernel EC2
+
+Bản AWS hiện khóa MongoDB **7.0.43**. Release đầu dùng 8.0.32 bị chặn trên kernel **7.0.0-1014-aws**; Docker local dùng kernel WSL 5.15 nên không bắt lỗi đó. Container dùng kernel host. [MongoDB SERVER-125742](https://jira.mongodb.org/browse/SERVER-125742) xác nhận nhánh7.0 không bị lỗi allocator này; kernel Ubuntu có fix nhận diện riêng ở [SERVER-131779](https://jira.mongodb.org/browse/SERVER-131779).
+
+Nếu chuyển từ release 8/unknown sang7, `check-mongo-volume.sh` chỉ cho phép volume trống hoàn toàn. Volume có file thì dừng trước đổi current/service, cần migration có backup trên host tương thích. Không xóa file để vượt guard hoặc cho MongoDB 7 đọc data files của MongoDB 8. Cập nhật7→7 dùng lại volume; rollback khác major bị chặn. **Local Compose và core test vẫn dùng mongo:8.0 theo code**, chỉ AWS builder khóa7.0.43.
+
+Nếu đang có release đầu bị lỗi, upload gói mới, giải nén vào thư mục mới như mục 6.4 rồi chạy **deploy**; bootstrap/configure không cần làm lại trên EC2 đã setup. Hướng dẫn thường ngày ở mục 7 không chạy lại bước này.
+
+## 7. Bật và dừng AWS cho mỗi buổi test
+
+### 7.1. Admin bật server đã cài
+
+1. **AWS Console:** xem Billing/credits, thống nhất thời gian test với team; EC2 → chọn instance → Instance state → **Start instance** nếu đang Stopped.
+2. Đợi Running/status checks. Systemd đã enable sẽ bật Docker services và cập nhật DuckDNS lúc boot, timer retry mỗi phút.
+3. Mở HTTPS /health. Nếu cần SSH, dùng Public IPv4 mới hoặc hostname sau khi DNS cập nhật; key vẫn là key của instance.
+4. Kiểm tra `status.sh`; nếu đã Stop app thủ công khi EC2 vẫn Running, dùng `sudo systemctl start junglemaze` rồi kiểm tra lại.
+5. Chỉ cho tester vào khi /health đúng, game ready, room code đúng. Không chạy lại bootstrap/deploy để bật server cũ.
+
+Nếu chưa sẵn sàng, xem mục 12. IP/DNS có thể cần chờ; không tắt xác minh certificate. Khi bật lại, TLS data/config Mongo vẫn nằm trên EBS/named volumes, không đăng ký lại account chỉ vì restart.
+
+### 7.2. Tester test online từ PC
+
+Tester nhận source Backend hoặc client self-contained, hostname/cổng, mã phòng, release/protocol và lịch test. Tester không cần Docker, AWS account, key SSH hoặc DuckDNS token.
+
+**PC / PowerShell tại Backend:**
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.aws.json --name Tester01 --duration 30
+```
+
+Nhập mã phòng AWS. Cần JoinAccepted/Pong, summary joined=1/failed=0. AWS config là Online, `junglemaze.duckdns.org:7777`, RoomCode, protocol 1. Chạy ở mạng nhà/lớp/hotspot để ghi RTT và phát hiện mạng chặn UDP. HTTPS health thành công không thay cho bài UDP này; `Test-NetConnection -Port 7777` chỉ kiểm tra TCP.
+
+Sau bài một client, dùng bài 10/11 ở mục 8. Lệnh `--duration` dừng **client**, không dừng AWS. Không bật một EC2 riêng cho mỗi tester.
+
+### 7.3. Kết thúc buổi: dừng app và Stop EC2
+
+1. Tester dừng client hoặc đợi duration kết thúc; admin lưu kết quả và backup khi cần.
+2. **SSH EC2:**
+
+```bash
+sudo systemctl stop junglemaze
+```
+
+3. **AWS Console:** EC2 → instance → **Instance state → Stop instance → Stop** thông thường. Đợi trạng thái **Stopped** và ghi nhận đã dừng. Terminate có thể xóa root EBS; không dùng khi còn cần dữ liệu.
+
+Nếu mất SSH, vẫn dùng Stop thông thường từ Console để AWS thực hiện shutdown. Chỉ thoát SSH/đóng VS Code/dừng Docker chưa dừng compute của EC2 đang Running. [AWS Stop/Start](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Stop_Start.html).
+
+### 7.4. Những khoản tiêu hao credits và cách hạn chế
+
+| Khoản của phương án này | Running | Stopped |
 | --- | --- | --- |
-| Docker không chạy | Docker Desktop/docker info | Engine ready |
-| Không tìm Compose | Get-Location | Chuyển Backend |
-| API không thấy DB | Compose/api logs | Hostname mongo, DB healthy |
-| Health 503 | Mongo logs/config | Kiểm tra connection string |
-| Port đã dùng | Docker Desktop/tiến trình local | Dừng bản trùng hoặc đổi host port |
-| Code mới chưa chạy | API/server logs | up -d --build |
-| JWT API đúng, UDP sai | .env/validator/token service | Key/issuer/audience/algorithm/clock thống nhất |
-| UDP không nhận | Mapping/host/PollEvents | Đúng /udp, port, host và poll |
-| CPU cao | Fixed loop/log | Tránh busy loop/log từng tick |
-| Docker lỗi sau ProjectReference | Dockerfile | COPY project tham chiếu trước restore |
+| Compute t3.small | Tính theo thời gian chạy, kể cả idle/app lỗi | Ngừng compute |
+| IPv4 public tự cấp | Phát sinh phí IP được cấp | AWS giải phóng IP khi Stop |
+| EBS gp3 20GB | Phí dung lượng đã cấp | Vẫn tính để giữ OS/config/DB |
+| Transfer | Có thể tính phần usage ngoài allowance | Instance không truyền dữ liệu khi Stopped |
 
-## 7. Ghi kết quả và cập nhật Tracking
+Credits bù phí usage đủ điều kiện. Stop EC2 giảm phần lớn usage nhưng EBS vẫn tồn tại. Giữ CPU **Standard** theo kế hoạch; CPU credits T3 là quota burst khác credits USD trong Billing. [EC2 lifecycle](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html), [IPv4](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html), [T3 modes](https://aws.amazon.com/ec2/instance-types/t3/).
 
-Tạo Docs/Phase1_TestResults.md trong editor:
-~~~markdown
-| Task | Ngày | Máy | Kiểm tra | Kết quả | Log/commit |
-| --- | --- | --- | --- | --- | --- |
-| INF-01 | | | Compose + health + volume | | |
-| NET-01 | | | Register/login + JWT lỗi | | |
-| SRV-01 | | | UDP + 30 Hz + 10 client | | |
-| SRV-02 | | | Handshake + reject cases | | |
-~~~
+Trước/sau buổi test vào **Billing and Cost Management → Home / Free Tier / Credits**, xem plan, số dư và hạn. **Free Plan kết thúc sau 6 tháng hoặc khi hết credits**, điều kiện đến trước; mất quyền truy cập khi account đóng. Paid Plan có thể tính phí vượt credits. Credits có hạn riêng 12 tháng, không kéo dài Free Plan 6 tháng. [AWS plans](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html), [credits expiry](https://aws.amazon.com/free/free-tier-faqs/).
 
-Trong 02. GDD Tracking tìm task theo ID. Bắt đầu thì In Progress nếu dropdown có; chỉ Done sau nghiệm thu. Không thêm status ngoài validation.
+Quy tắc vận hành của team:
 
-Có thể mỗi buổi một task; chưa đạt thì sửa trước khi chuyển bước. Cuối giai đoạn ghi Backend/README.md: lệnh bật, port, cách chạy client thử để bạn học làm lại.
+- Dev/debug, core tests, kiểm tra limiter và build release trên PC; chỉ bật AWS để nghiệm thu từ xa.
+- Chuẩn bị client/source/mã phòng trước khi Start; test một client 30 giây trước khi test10 phiên300 giây. Dừng theo lịch, không để server qua đêm vì quên.
+- Sau buổi, một admin xác nhận **Stopped**; đóng cửa sổ client hoặc thấy website ngừng chưa chứng minh EC2 đã dừng.
+- Không tạo thêm instance/IP/dịch vụ trả phí cho bài lớp. Ngưỡng nội bộ: còn<10 USD hoặc còn<7 ngày tới hạn thì backup và dừng để xem lại kế hoạch, không tự nâng Paid Plan.
+- Định kỳ tải backup về PC; stopped disk vẫn tiêu usage và account hết hạn có thể mất quyền truy cập. Không đổi policy/xóa volume để giảm phí nếu chưa có bản sao dữ liệu cần giữ.
 
-## Tài liệu chính thức
+## 8. Bài kiểm thử và ghi kết quả
 
-- [Docker Compose startup/health check](https://docs.docker.com/compose/how-tos/startup-order/)
-- [MongoDB C# driver](https://www.mongodb.com/docs/drivers/csharp/current/connect/mongoclient/)
-- [ASP.NET Core JWT](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/configure-jwt-bearer-authentication?view=aspnetcore-10.0)
-- [LiteNetLib server/client](https://github.com/RevenantX/LiteNetLib)
-- [LiteNetLib 2.1.4 NuGet](https://www.nuget.org/packages/LiteNetLib/2.1.4)
+### 8.1. Một client và ca lỗi
+
+Dùng JSON đúng môi trường. `--duration 30` nghĩa 30 giây; bỏ duration/đặt 0 chạy tới Ctrl+C. `--clients` nhận 1–11. Tên hiển thị 1–32 ký tự sau Trim; mã phòng client/server 1–64 ký tự, AWS configure yêu cầu 8–64.
+
+| Bài | Kết quả cần ghi |
+| --- | --- |
+| Đúng room/mode/protocol | JoinAccepted + Pong, joined=1/failed=0 |
+| Sai room | InvalidRoomCode; không giữ slot |
+| Mode client khác server | AuthModeMismatch; không fallback |
+| JSON protocolVersion sai | Client báo config trước connect; test tự động kiểm tra server reject |
+| Login Jwt sai password | HTTP 401, dừng trước UDP |
+| JWT giả/hết hạn/sai key/issuer/audience | InvalidToken |
+| Cùng JWT account đang nối, thêm phiên | DuplicateSession; phiên đầu giữ nguyên |
+| Dừng client rồi join lại | Trả slot; RoomCode Guid mới, Jwt cùng sub |
+| Dừng host/mất mạng | Timeout/disconnect; không tự reconnect |
+
+Packet thiếu/thừa/fragmentation, pending chưa Auth và auth deadline được test tự động; không sửa code sản phẩm để gửi byte thử bằng tay. Client exit 0 khi tất cả phiên đã join, có Pong và không lỗi; exit 1 cho reject/không có Pong, kể cả bài cố ý thử thứ 11; hủy nhập/login có thể trả 130.
+
+### 8.2. RoomCode 10/11 phiên
+
+Phòng phải trống trước khi đo. **PC / Backend**, ví dụ AWS (Local thay file config thành client.local.json):
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.aws.json --name Capacity --clients 10 --duration 300
+```
+
+Nhập mã phòng; cần joined=10/failed=0 và server active=10/pending=0. Trong lúc đó, terminal khác chạy bài một client: **RoomFull**, exit 1 là đúng. Khi client đã dừng/trả slot, chạy lại bài một client cần thành công.
+
+Có thể thử burst 11 với `--clients 11 --duration 15`: phòng trống thì joined=10/failed=1. Các console đang mở đều chiếm slot; một tool 10 phiên không phải 10 người chơi thật. Sau smoke test mới tổ chức 10 máy thực, mỗi máy tên riêng, ghi OS/build/mạng và endpoint.
+
+### 8.3. Số đo cần ghi
+
+| Số đo | Ý nghĩa / đọc đúng |
+| --- | --- |
+| joined/failed, sent/pongs/timedOut/outstanding | Kết quả client; outstanding cuối lượt chưa tự coi là mất |
+| rttMs / rttP95Ms | Mạng + scheduling hai đầu; không phải FPS |
+| active/pending/peers | Tổng slot active+pending tối đa10 |
+| ticksPerSecond | Gần 30 theo cửa sổ; tick server không phải render FPS |
+| tickP95Ms/p99, loopP95Ms/p99 | Tick và poll+tick work; so budget 33.33ms |
+| cpuOneCorePercent | CPU process chuẩn một core; 100% = một core bận, có thể>100% |
+| tickOverruns/droppedTicks | Quá ngân sách/bỏ backlog; nếu>0 ghi tình trạng quá tải |
+
+Đo idle riêng và 10 client riêng khoảng 5 phút; mục tiêu idle CPU <5% theo chuẩn một core là mục tiêu cần đo, không tự ghi đạt. AWS xem `status.sh`, game logs và Docker stats; Local xem Docker Desktop. Ghi cách tính CPU khi so Task Manager/Docker Stats.
+
+Tick hiện rỗng, ping khoảng 1 lần/giây/client; bài này chưa đại diện combat/FPS/full match. Không cam kết độ mượt từ một Pong hoặc từ việc dùng AWS; Sydney→Việt Nam phải đo RTT thực tế.
+
+## 9. Test tự động và gửi client cho tester
+
+### 9.1. Core suite trên PC
+
+Docker Desktop ready, SDK .NET 8, Python 3.11+. Lần đầu cần image Mongo local/core test:
+
+```powershell
+docker pull mongo:8.0
+.\Tests\run_all.cmd
+```
+
+Script build solution, chạy NetworkChecks và auth_smoke; dừng nếu fail. Nếu `python` không ở PATH, đặt `PYTHON_EXE` trỏ tới Python thật, ví dụ hỏi đường dẫn:
+
+```powershell
+$env:PYTHON_EXE = Read-Host 'Duong dan executable Python 3.11+ tren may'
+.\Tests\run_all.cmd
+```
+
+Suite dùng process/container/DB/port riêng, không đọc `.env` hay DB team; logs trong `.utmp`. Mongo core test vẫn 8.0; nếu host kernel bị lỗi nhánh 8 thì xem mục 12, không xóa DB để sửa. Chạy riêng: `dotnet run --project Tests/NetworkChecks/NetworkChecks.csproj`, `python -X utf8 Tests/auth_smoke.py` sau build solution.
+
+### 9.2. AWS images và guard, chạy trên Docker PC
+
+Sau build release, lấy **Release ID** builder đã in, rồi:
+
+```powershell
+$releaseId = Read-Host 'Release ID vua build'
+python -X utf8 Tests/aws_smoke.py --release-id $releaseId
+python -X utf8 Tests/verify_aws_release.py out/aws/release.tar.gz
+```
+
+aws_smoke chạy bốn services trong project/volumes riêng, port loopback ngẫu nhiên; TLS test dùng internal CA có xác minh certificate, không sửa Caddy ACME của release. Nó test HTTPS/Swagger/413/429/JWT/DB backup-restore/persist và 10 UDP client. Không chạy suite này trên EC2 đang phục vụ lớp.
+
+Guard test cần Docker CLI Linux và MongoDB 7 image; chỉ dùng volume synthetic:
+
+```powershell
+docker pull docker:29-cli
+docker pull mongo:7.0.43
+python -X utf8 Tests/aws_mongo_guard.py
+```
+
+### 9.3. Tester không có SDK
+
+**PC admin/dev tại Backend:**
+
+```powershell
+dotnet publish NetSmokeClient/NetSmokeClient.csproj -c Release -r win-x64 --self-contained true -o out/NetSmokeClient
+```
+
+Gửi **cả thư mục** `out/NetSmokeClient`, không gửi `.env` hay key. Bốn file client.*.json được copy tự động. Tester mở terminal trong thư mục nhận:
+
+```powershell
+.\NetSmokeClient.exe --config .\client.aws.json --name Tester02 --duration 30
+```
+
+Local chọn client.local.json; LAN/VPN sửa IP mẫu rồi chọn file tương ứng. Endpoint JSON không chứa room/password/token; nhập mã phòng khi chạy. Đây là console smoke client, chưa phải build game Unity.
+
+## 10. Phát triển và test game trong Unity
+
+### 10.1. Việc dev làm hiện tại
+
+Mở project bằng Unity 6000.3.15f1/URP; tham khảo [hướng dẫn nhập JSurviv](JSurviv_Integration.vi.md). Test riêng UI, animation/effect/config và logic không phụ thuộc server trong scene kiểm thử phù hợp. `AutoConnectLegacy=false` giữ chế độ tham khảo; không bật Socket.IO cũ để thử AWS LiteNetLib. Không coi scene tham khảo là demo gameplay offline hoàn chỉnh.
+
+Nếu sửa backend, test local trước; nếu chỉ sửa Unity client, Play/build lại phần client. Khi mạng Unity chưa được nối, NetSmokeClient là công cụ nghiệm thu backend.
+
+### 10.2. Mốc cần triển khai tiếp
+
+1. Unity network client LiteNetLib: đọc endpoint, nhập room, join/disconnect, lỗi và PlayerId; khớp protocol backend.
+2. Hai client Unity (Editor + Windows build): server quản lý spawn/despawn, nhận input, mô phỏng vị trí và phát trạng thái; thấy nhau di chuyển.
+3. Thêm combat/HP/item/inventory/round state, snapshot/interpolation/prediction và đo jitter/loss/FPS theo GDD.
+4. Hai máy qua AWS rồi 10 máy thật. Gửi cả thư mục build game; tester không cần Unity Editor/SDK/SSH.
+
+Đây là định hướng, **chưa có menu chọn endpoint/UnityNetClient trong code hiện tại**. Endpoint dự kiến: Local 127.0.0.1:7777, LAN IP host, AWS junglemaze.duckdns.org:7777. Backend là .NET server độc lập, chưa chạy Unity physics/scene ở server; cần thiết kế phần mô phỏng phù hợp trước khi đồng bộ combat. Shared/protocol đổi thì cập nhật cả server/client cùng lượt; server chưa hỗ trợ nhiều version song song.
+
+## 11. Cập nhật AWS, backup và restore
+
+### 11.1. Release backend mới
+
+Dev test Local/core suite trước, admin build release trên PC theo mục 6.2. Giữ một admin triển khai trong buổi, báo tester dừng vì update có thể ngắt phiên. Upload hai file bằng SCP theo mục 6.3, SSH EC2:
+
+```bash
+cd ~
+sha256sum -c release.tar.gz.sha256
+release_dir="$(mktemp -d "$HOME/junglemaze-release.XXXXXX")"
+tar -xzf release.tar.gz -C "$release_dir"
+cd "$release_dir"
+sha256sum -c SHA256SUMS
+sudo bash scripts/deploy.sh "$PWD"
+sudo bash /opt/junglemaze/current/scripts/status.sh
+```
+
+Mỗi bundle dùng thư mục giải nén mới. Deploy giữ config/key/volume và trỏ current sang release mới; không gọi configure nếu config đã có. Giữ lại image/release trước để rollback; không prune image/volume tùy tiện.
+
+Bản cài `/opt/junglemaze/releases/...` đã bỏ `images.tar.gz` để giảm bản sao, nên **không chạy deploy từ current** hoặc checksum toàn bộ bản cài như bundle. Deploy phải nhận thư mục giải nén đầy đủ có images.tar.gz/SHA256SUMS. Sau update kiểm tra /health, Swagger và UDP; kết thúc vẫn Stop EC2.
+
+### 11.2. Backup DB và tải về PC
+
+**SSH EC2:**
+
+```bash
+sudo bash /opt/junglemaze/current/scripts/backup.sh
+```
+
+Backup mongodump chỉ DB `jungle_maze`; file private `/opt/junglemaze/backups/users-...archive.gz`. Chỉ file thành công mới được đặt tên cuối. Copy đúng đường dẫn script đã in để ubuntu có quyền tải:
+
+```bash
+read -r -p 'Duong dan backup day du vua tao: ' backup_path
+sudo install -m 600 -o ubuntu -g ubuntu "$backup_path" /home/ubuntu/junglemaze-backup.archive.gz
+```
+
+**PC / Backend** (ec2Key/ec2Ip đã đặt trong terminal PC):
+
+```powershell
+scp -i $ec2Key ("ubuntu@" + $ec2Ip + ":~/junglemaze-backup.archive.gz") .\out\aws\
+```
+
+Backup chứa user/hash: giữ riêng, không commit/chia sẻ cho tester. Backup nằm cùng EBS chưa chống được mất account/volume, cần bản trên PC. DB dump không chứa private config/JWT signing key/DuckDNS token/Caddy cert; admin lưu secrets an toàn riêng để phục hồi. Backup Mongo không giữ game state hiện tại vì server chỉ có session trong RAM.
+
+### 11.3. Restore và rollback
+
+Restore chỉ dành cho admin đã có backup đúng. Upload backup vào EC2 rồi **SSH EC2**:
+
+```bash
+read -r -p 'Duong dan archive backup can restore: ' backup_path
+sudo bash /opt/junglemaze/current/scripts/restore.sh "$backup_path"
+```
+
+Nhập `RESTORE` vì script `--drop` các collection trong archive thuộc jungle_maze; API/Caddy tạm dừng và được bật lại khi script kết thúc. Game RoomCode vẫn độc lập account; test API/Compass lại và kiểm tra lỗi trước khi cho lớp dùng.
+
+Rollback: `sudo bash /opt/junglemaze/current/scripts/rollback.sh`. Cần previous release và image cũ còn trong Docker, cùng major MongoDB; rollback giữ DB/schema/config, không hoàn tác dữ liệu. No previous release hoặc khác major thì bị chặn. Mọi migration DB cần kế hoạch riêng, không dùng rollback code để ép hạ database.
+
+### 11.4. Compass AWS qua SSH tunnel
+
+**SSH EC2:** lấy IP Mongo nội bộ (không in env):
+
+```bash
+sudo docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' junglemaze-aws-mongo-1
+```
+
+**PC**, terminal riêng, dùng key/IP EC2 đã biết; nhập IP Mongo vừa lấy:
+
+```powershell
+$mongoIp = Read-Host 'IP container Mongo vua lay tu EC2'
+ssh -i $ec2Key -N -L ("127.0.0.1:27019:" + $mongoIp + ":27017") ("ubuntu@" + $ec2Ip)
+```
+
+Giữ terminal mở. Compass URI `mongodb://127.0.0.1:27019` → jungle_maze/users. Local là 27018, AWS tunnel là 27019. Recreate Mongo có thể đổi IP nội bộ: lấy lại và mở lại tunnel. Không mở Mongo port trong SG.
+
+### 11.5. Dev khác và quyền vận hành
+
+Mỗi dev có Local backend/DB/config riêng. Tester chỉ nhận build/config public/room và lịch; một server chung có 10 slot. Chỉ admin được SSH/deploy/backup/Stop-Start AWS; cấp key riêng cho admin bổ sung, không dùng chung private key hay account AWS. Khi cấp SSH thêm, admin phải cho phép đúng IP của dev trong rule TCP 22 và thêm public key của họ vào authorized_keys theo quy trình của team. Quyền sudo user ubuntu là quyền quản trị rộng, nên chỉ cấp cho người cần vận hành.
+
+## 12. Chẩn đoán và debug
+
+### 12.1. Lệnh lấy lỗi trên EC2
+
+```bash
+sudo journalctl -u junglemaze.service -b -n 80 --no-pager -o cat
+sudo docker ps -a --filter label=com.docker.compose.project=junglemaze-aws --format 'table {{.Names}}\t{{.Status}}'
+sudo docker logs --tail 80 junglemaze-aws-mongo-1
+sudo docker logs --tail 80 junglemaze-aws-api-1
+sudo docker logs --tail 80 junglemaze-aws-game-server-1
+sudo docker logs --tail 80 junglemaze-aws-caddy-1
+sudo journalctl -u junglemaze-dns -n 20 --no-pager
+```
+
+Chọn log của service lỗi; không dump `.env.aws`, docker inspect toàn bộ env hoặc bật Bash `-x` để chia sẻ. Mongo unhealthy sẽ làm API/Caddy chờ; cần đọc Mongo log trước. Dừng EC2 nếu kết thúc buổi debug để tránh quên Running.
+
+### 12.2. Bảng lỗi thường gặp
+
+| Hiện tượng | Kiểm tra / sửa |
+| --- | --- |
+| Could not resolve hostname `<>` | Nhập Public IPv4 thật bằng prompt ở mục 6.3; không để placeholder |
+| Host key verification failed sau câu hỏi yes/no | So fingerprint host rồi gõ yes; nếu báo key changed thì xác minh instance/DNS trước, không tắt kiểm tra hoặc xóa known_hosts mù |
+| SSH timeout / Permission denied | EC2 Running, Public IP mới, TCP 22 / My IP, user ubuntu, key pair đúng; file key tồn tại/quyền riêng |
+| Checksum FAIL | Upload lại gói/sha cùng phiên bản vào thư mục mới; dừng trước chạy script |
+| Release ID already exists with different contents | Build ID mới; không sửa/ghi đè release cũ |
+| Mongo Restarting(1), log kernel 6.19 | AWS dùng release MongoDB 7.0.43; xem mục 6.6 và guard, không xóa DB |
+| Refusing MongoDB 8/unknown→7 | Volume không trống; giữ data, cần migration riêng |
+| /health lỗi hoặc Mongo/API unhealthy | Container/log, config/key, Mongo index/connection; health pings DB |
+| HTTPS certificate lỗi | DuckDNS/IP mới, TCP 80/443, Caddy log; không bỏ kiểm certificate |
+| Swagger 401 trước mở UI AWS | Nhập admin Basic auth; /api/me 401 cần Bearer JWT account |
+| API 429 / body 413 | Hạn mức 60/phút chung auth / body 16KB; sửa payload/chờ cửa sổ, test burst ở Local |
+| Local được, LAN/AWS UDP timeout | JSONhost/port, mappingUDP, SG/firewall; TCP health không chứng minhUDP |
+| RoomFull / DuplicateSession | Phiên cũ/pending hoặc cùngJWTsub; dừng/chờ cleanup rồi thử |
+| InvalidToken | Key/issuer/audience/HS256/lifetime/đồng hồ; không fallback RoomCode |
+| Compass thiếu user | Đúng DB/port Local-vs-AWS, filter {}, refresh; dữ liệu hai môi trường khác nhau |
+| CPU/tick backlog | Đọc p95/p99/overrun/drop, CPU/RAM; record tải thực, không tự đánh đạt |
+
+### 12.3. MSB4062 do C# Dev Kit
+
+C# Dev Kit 11.3.30 chèn task `WriteProjectDataSliceTask` cần runtime 10 vào build SDK 8. `Backend/Directory.Build.props` đặt `EnableProjectDataOnBuild=false` cho build thường; giữ file này khi clone. Máy có SDK 10 vẫn dùng SDK 8 theo global.json.
+
+Nếu chưa cập nhật file props, dùng tạm trên **PC / Backend**:
+
+```powershell
+dotnet build NetSmokeClient/NetSmokeClient.csproj -p:EnableProjectDataOnBuild=false
+dotnet NetSmokeClient/bin/Debug/net8.0/NetSmokeClient.dll --config NetSmokeClient/client.aws.json --name Tester01 --duration 30
+```
+
+Chỉ chạy DLL sau build thành công. Có thể đối chiếu PowerShell từ Start ngoài VS Code để tránh môi trường extension. Không sửa target framework/DLL extension để giải quyết bài test này.
+
+### 12.4. Debug backend trực tiếp bằng .NET trên PC
+
+`.NET run` trực tiếp **không tự đọc Backend/.env**. Docker mới nạp env_file. Giữ terminal riêng cho server và client, để nhập secret bằng console tương tác.
+
+GameServer RoomCode: dừng container game để tránh chiếm port; **PC / Backend**:
+
+```powershell
+docker compose stop game-server
+$env:GAME_BIND_ADDRESS = '127.0.0.1'
+$env:GAME_PORT = '7777'
+$env:MAX_PLAYERS = '10'
+$env:TICK_RATE = '30'
+$env:AUTH_MODE = 'RoomCode'
+$env:PUBLIC_HOSTING = 'false'
+$env:ROOM_CODE = [System.Net.NetworkCredential]::new('', (Read-Host 'Room code local' -AsSecureString)).Password
+dotnet run --project GameServer/GameServer.csproj
+foreach ($settingName in @('ROOM_CODE', 'GAME_BIND_ADDRESS', 'GAME_PORT', 'MAX_PLAYERS', 'TICK_RATE', 'AUTH_MODE', 'PUBLIC_HOSTING')) {
+    Remove-Item -LiteralPath ("Env:" + $settingName) -ErrorAction SilentlyContinue
+}
+```
+
+Ctrl+C dừng server; lệnh cleanup bên dưới dotnet run xóa các biến vừa đặt để chúng không override `.env` khi quay về Docker. Có thể đóng terminal debug rồi mở terminal PC mới. Jwt debug còn cần issuer/audience/key giống API. Docker quay lại bằng `docker compose up -d game-server` từ môi trường sạch.
+
+API: bật Mongo, dừng API container để tránh nhầm endpoint, cấp môi trường debug:
+
+```powershell
+docker compose --profile account up -d mongo
+docker compose --profile account stop api
+$env:Mongo__ConnectionString = 'mongodb://127.0.0.1:27018'
+$env:Mongo__Database = 'jungle_maze'
+$env:Jwt__Issuer = 'JungleMaze.Local'
+$env:Jwt__Audience = 'JungleMaze.Game'
+$env:PUBLIC_HOSTING = 'false'
+$env:Jwt__SigningKey = [System.Net.NetworkCredential]::new('', (Read-Host 'Signing key local trong .env' -AsSecureString)).Password
+dotnet run --project Api/Api.csproj --launch-profile http
+foreach ($settingName in @('Jwt__SigningKey', 'Jwt__Issuer', 'Jwt__Audience', 'Mongo__ConnectionString', 'Mongo__Database', 'PUBLIC_HOSTING')) {
+    Remove-Item -LiteralPath ("Env:" + $settingName) -ErrorAction SilentlyContinue
+}
+```
+
+Profile http dùng `http://localhost:5204/swagger`; nếu client Jwt login API này, apiBaseUrl phải dùng cổng 5204. Mongo container hostname `mongo` chỉ dùng trong Docker; API Windows dùng loopback 27018. Compass vẫn đọc cùng DB Local.
+
+### 12.5. LAN hoặc VPN, nhánh tùy chọn
+
+LAN RoomCode: host lấy IPv4 Wi-Fi/Ethernet thật, đổi PUBLISH_HOST trong `.env` thành IP đó, giữ bind container 0.0.0.0, recreate game-server. Tester sửa client.lan.json tới IP/cổng host. Admin Windows mở UDP 7777 cho LocalSubnet trên profile Private bằng firewall; không tắt firewall. Wi-Fi trường có thể client isolation hoặc chặn UDP.
+
+Ví dụ **PowerShell Run as administrator trên host LAN**, khi GAME_PORT mặc định 7777 và mạng được phép dùng profile Private:
+
+```powershell
+$lanHostIp = Read-Host 'IPv4 Wi-Fi/Ethernet cua host LAN'
+New-NetFirewallRule -DisplayName 'Jungle Maze LAN UDP 7777' -Direction Inbound -Action Allow -Protocol UDP -LocalPort 7777 -LocalAddress $lanHostIp -RemoteAddress LocalSubnet -Profile Private
+```
+
+Nếu host publish cổng khác, thay LocalPort cho khớp. Mạng trường Public cần chính sách/rule được quản trị cho phép, không tự đổi profile để vượt hạn chế. Tester chạy bài mục 3.3 với `client.lan.json` sau khi sửa IP/cổng. Muốn Jwt trong LAN, client cần API HTTPS hoặc đường VPN được cấu hình; chỉ mở cổng HTTP LAN chưa đủ.
+
+VPN: chỉ khi team chọn nhánh này, cấu hình quyền VPN/firewall trước; IP Tailscale 100.64.0.0/10 trong client.online.json không tự bật VPN. Client Jwt cho phép HTTP qua IP này khi mode Online, nhưng admin phải xác nhận VPN thực tế. API và UDP cần quyền tới đúng cổng; Mongo vẫn loopback. Kiểm tra điều kiện gói/quyền sharing hiện hành tại [Tailscale sharing](https://tailscale.com/docs/features/sharing) trước buổi lớp. AWS public là nhánh online chính của dự án, không cần VPN cho tester.
+
+## 13. Cấu hình tham chiếu và kết quả đã biết
+
+### 13.1. Server và endpoint
+
+| Trường | Local / Docker | AWS |
+| --- | --- | --- |
+| Config private | Backend/.env, từng máy | /opt/junglemaze/config/.env.aws, root-only |
+| Game bind / host port | 0.0.0.0:7777 trong container; PUBLISH_HOST:GAME_PORT trên Windows | 0.0.0.0:7777/udp public |
+| API | PUBLISH_HOST:API_PORT, mặc định 127.0.0.1:5000 | HTTPS 443 qua Caddy; API 5000 private |
+| Mongo | MongoDB 8.0, host loopback MONGO_PORT mặc định 27018 | MongoDB 7.0.43 private 27017; Compass qua SSH 27019 |
+| Auth mode / PUBLIC_HOSTING | RoomCode/Jwt; mặc định false | RoomCode/true |
+| MAX_PLAYERS / TICK_RATE | 1–10 / bắt buộc 30 | 10 / 30 |
+| ROOM_CODE | 1–64 ký tự không trống | Configure 8–64 chữ/số/_/- |
+| AUTH_TIMEOUT_MS | 500–30000, mặc định 5000, pending Jwt | RoomCode không dùng pending Jwt |
+| METRICS_INTERVAL_SECONDS | 1–60, mặc định 5 | 5 |
+| Jwt issuer/audience/key | Key ≥32 UTF-8 byte khi API/Jwt bật | API key riêng; game RoomCode không nhận JWT key |
+| Jwt__ExpiryMinutes | 1–1440, mặc định 60 | API mặc định 60 |
+| Swagger | SWAGGER_ENABLED trong Local Compose | Bật API, proxy Basic auth UI/JSON |
+
+Client JSON có `mode` Local/LAN/Online, `gameServerHost` (IP/hostname không có scheme/port), `gameServerPort` 1–65535, `authMode` RoomCode/Jwt, `protocolVersion` 1, `connectTimeoutMs` 500–60000. apiBaseUrl chỉ cần với Jwt: localhost HTTP, hoặc HTTPS hợp lệ, hoặc mode Online/Tailscale đã có VPN. Sửa JSON không cần build; không thêm secret hay trường lạ vì parser từ chối unknown field.
+
+### 13.2. Bằng chứng và nghiệm thu còn lại
+
+Ghi nhận trong phiên ngày 12/10/2026: build solution 0 warning/error; **69 network checks +48 API/e2e checks** đã qua trên Local. Images AWS MongoDB 7 đã qua **35 AWS Docker checks +8 volume guard checks**; gói release được kiểm checksum/file/images/không private config. Đã tái hiện và sửa MSB4062 bằng target C# Dev Kit thật.
+
+Admin báo đã triển khai bản MongoDB 7 lên EC2; **HTTPS /health đã được gọi thành công, status=ok, database=connected**, ở thời điểm kiểm tra trong phiên. Đây là ghi nhận lịch sử, không khẳng định server đang Running khi bạn đọc. Chưa có log nghiệm thu UDP online 10 máy, tải gameplay hoặc FPS Unity; phải ghi kết quả khi thực hiện.
+
+| ID Tracking | Có trong code | Team cần ghi kết quả thực |
+| --- | --- | --- |
+| INF-01 | Docker/config Local và AWS, release/HTTPS/volume/systemd | Endpoint thật, boot/Stop-Start, UDP hai máy, dữ liệu tồn tại |
+| NET-01 | Register/login/JWT/hash/index/Swagger | Account API từ xa nếu dùng, Compass đúng DB |
+| SRV-01 | LiteNetLib/30Hz/metrics/10 slot/ping-pong | Idle / 10 client / 5 phút, RTT/CPU/RAM/p95/p99/drop |
+| SRV-02 | Version/room/mode/identity/auth deadline/duplicate/cleanup | Reject, mất mạng, trả slot, protocol client-server khớp |
+
+Mỗi lượt ghi ngày/giờ, OS/CPU/RAM, source/release ID, endpoint/authmode, số client, đường mạng, logs đã che secrets và kết quả. Giữ đúng bốn ID này; không đánh Done phần gameplay chỉ vì smoke test qua. Mốc tiếp theo là nối Unity và đồng bộ hai nhân vật như mục 10.

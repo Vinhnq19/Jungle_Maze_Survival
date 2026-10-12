@@ -1,0 +1,52 @@
+services:
+  mongo:
+    image: mongo:8.0
+    profiles: ["account"]
+    # Compass trên Windows truy cập được; không mở MongoDB ra LAN/Internet.
+    ports:
+      - "127.0.0.1:${MONGO_PORT:-27018}:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  api:
+    profiles: ["account"]
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PUBLISH_HOST:-127.0.0.1}:${API_PORT:-5000}:5000/tcp"
+    environment:
+      Mongo__ConnectionString: mongodb://mongo:27017
+      Mongo__Database: jungle_maze
+      Swagger__Enabled: "${SWAGGER_ENABLED:-true}"
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  game-server:
+    build:
+      context: .
+      dockerfile: GameServer/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${PUBLISH_HOST:-127.0.0.1}:${GAME_PORT:-7777}:7777/udp"
+    environment:
+      GAME_BIND_ADDRESS: "${GAME_BIND_ADDRESS:-0.0.0.0}"
+      GAME_PORT: "7777"
+      MAX_PLAYERS: "${MAX_PLAYERS:-10}"
+      TICK_RATE: "${TICK_RATE:-30}"
+      AUTH_MODE: "${AUTH_MODE:-RoomCode}"
+      AUTH_TIMEOUT_MS: "${AUTH_TIMEOUT_MS:-5000}"
+      METRICS_INTERVAL_SECONDS: "${METRICS_INTERVAL_SECONDS:-5}"
+
+volumes:
+  mongo-data:
