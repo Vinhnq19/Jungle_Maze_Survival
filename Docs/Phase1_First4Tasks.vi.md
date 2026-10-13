@@ -2,6 +2,8 @@
 
 Cập nhật **12/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md).
 
+Hướng dẫn thao tác nhanh trên server đã triển khai: [Đăng nhập EC2, test Swagger và xem MongoDB bằng Compass](AWS_SSH_Swagger_Compass.vi.md).
+
 ## 1. Phạm vi hiện tại và cách chọn môi trường
 
 Dự án phục vụ bài học với **một phòng, tối đa 10 phiên kết nối**. Dev phát triển/debug trên máy mình; AWS là server chung, chỉ bật cho buổi test online đã hẹn.

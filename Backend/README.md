@@ -4,6 +4,7 @@ Backend .NET 8 phục vụ dự án lớp học, một phòng tối đa 10 phiê
 
 - [Hướng dẫn setup, phát triển và kiểm thử chung](../Docs/Phase1_First4Tasks.vi.md): setup lần đầu, chạy lại hằng ngày, Docker, API/Compass, AWS SSH/deploy/Start-Stop, credits, kiểm thử và giao client cho dev/tester.
 - [Kiến trúc mạng đã thực hiện](../Docs/Network_Architecture.vi.md): project/module, session/identity, packet, tick và luồng triển khai.
+- [Thực hành AWS: SSH, Swagger và Compass](../Docs/AWS_SSH_Swagger_Compass.vi.md): đăng nhập bằng alias `junglemaze`, test account API và xem DB qua SSH tunnel.
 
 Local RoomCode chỉ cần game-server; account/Jwt dùng thêm profile account với MongoDB 8.0. AWS public chỉ RoomCode, API HTTPS qua Caddy, MongoDB 7.0.43 đã khóa trong release builder. Lấy source đầy đủ gồm Shared/global.json/Directory.Build.props; mỗi dev tạo .env riêng.
 

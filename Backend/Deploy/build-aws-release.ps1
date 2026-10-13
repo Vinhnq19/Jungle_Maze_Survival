@@ -48,7 +48,7 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Aws/scripts') -Destination $taskStage -Recurse
     New-Item -ItemType Directory -Path (Join-Path $taskStage 'docs') | Out-Null
     # Kèm tài liệu assets vì hai hướng dẫn chính có liên kết tới bản đồ module JSurviv.
-    foreach ($taskDocName in @('Phase1_First4Tasks.vi.md', 'Network_Architecture.vi.md', 'JSurviv_Integration.vi.md', 'JSurviv_Verification.vi.md')) {
+    foreach ($taskDocName in @('Phase1_First4Tasks.vi.md', 'Network_Architecture.vi.md', 'AWS_SSH_Swagger_Compass.vi.md', 'JSurviv_Integration.vi.md', 'JSurviv_Verification.vi.md')) {
         Copy-Item -LiteralPath (Join-Path $taskBackend "../Docs/$taskDocName") -Destination (Join-Path $taskStage 'docs')
     }
     $taskClient = [ordered]@{ mode='Online'; apiBaseUrl="https://$Domain"; gameServerHost=$Domain; gameServerPort=7777; authMode='RoomCode'; protocolVersion=1; connectTimeoutMs=5000 }
