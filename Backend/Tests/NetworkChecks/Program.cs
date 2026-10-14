@@ -12,6 +12,8 @@ using GameServer.Simulation;
 using JungleBackend.Protocol;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using GameServer.Rooms;
+using JungleBackend.Rooms;
 
 // Kiểm tra socket thật trên loopback/cổng ngẫu nhiên; không chạm .env, MongoDB hay container của team.
 var backend = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../../../"));
@@ -267,6 +269,40 @@ try
     Check(RunClient(configPath).Code == 1, "JSON lỗi bị từ chối");
     Check(RunClient(Path.Combine(temp, "missing.json")).Code == 1, "File config không tồn tại bị từ chối");
     File.WriteAllText(configPath, JsonSerializer.Serialize(config));
+    // Kiểm tra CLI room-plan ngay trong suite mạng, không cần script Python riêng.
+    // --clients xung đột với plan: input hợp lệ cũng dừng trước khi mở socket.
+    Dictionary<string, object?> PlanRoom(int count = 1) => new()
+        { ["roomId"] = Guid.NewGuid(), ["roomCode"] = "TESTAB", ["clients"] = count };
+    var duplicateRoom = PlanRoom();
+    var emptyIdRoom = PlanRoom(); emptyIdRoom["roomId"] = Guid.Empty;
+    var emptyCodeRoom = PlanRoom(); emptyCodeRoom["roomCode"] = " ";
+    var nullCodeRoom = PlanRoom(); nullCodeRoom["roomCode"] = null;
+    var longCodeRoom = PlanRoom(); longCodeRoom["roomCode"] = new string('X', 65);
+    var unknownFieldRoom = PlanRoom(); unknownFieldRoom["password"] = "must-not-echo";
+    var roomPlanPath = Path.Combine(temp, "private-plan.json");
+    foreach (var (label, payload, valid) in new (string, object?, bool)[]
+    {
+        ("null-list", null, false), ("empty-list", Array.Empty<object>(), false),
+        ("null-entry", new object?[] { null }, false), ("empty-id", new[] { emptyIdRoom }, false),
+        ("empty-code", new[] { emptyCodeRoom }, false), ("null-code", new[] { nullCodeRoom }, false),
+        ("long-code", new[] { longCodeRoom }, false), ("zero-clients", new[] { PlanRoom(0) }, false),
+        ("too-many-per-room", new[] { PlanRoom(257) }, false),
+        ("too-many-total", new[] { PlanRoom(128), PlanRoom(129) }, false),
+        ("duplicate-id", new[] { duplicateRoom, duplicateRoom }, false),
+        ("too-many-rooms", Enumerable.Range(0, 33).Select(_ => PlanRoom()).ToArray(), false),
+        ("unknown-field", new[] { unknownFieldRoom }, false),
+        ("valid-single-256", new[] { PlanRoom(256) }, true),
+        ("valid-multi-256", new[] { PlanRoom(128), PlanRoom(128) }, true),
+        ("valid-32-rooms", Enumerable.Range(0, 32).Select(_ => PlanRoom()).ToArray(), true)
+    })
+    {
+        File.WriteAllText(roomPlanPath, JsonSerializer.Serialize(payload));
+        var result = RunClient(configPath, "--room-plan", roomPlanPath, "--clients", "1");
+        var validPlan = result.Text.Contains("supplies its own client counts");
+        Check(result.Code == 1 && validPlan == valid && result.Text.Contains("[client-error]")
+            && !result.Text.Contains("[config]") && !result.Text.Contains("must-not-echo"), "Room-plan CLI: " + label);
+    }
+    File.Delete(roomPlanPath);
     var timeout = RunClient(configPath);
     Check(timeout.Code == 1 && (timeout.Text.Contains("ConnectTimeout") || timeout.Text.Contains("ConnectionFailed")), "Server không chạy: client timeout, không exit thành công giả");
 
@@ -292,6 +328,134 @@ try
         }
         finally { foreach (var item in saved) Environment.SetEnvironmentVariable(item.Key, item.Value); }
         Check(rejected, $"Server config sai {name}: dừng trước khi mở socket");
+    }
+
+    // Multi-room: controllable time tests the full 10-minute TTL without sleeping.
+    var clock = new TestClock();
+    var roomConfig = new RoomOptions(MaxTotalPlayers: 12);
+    var roomOptions = new ServerOptions(IPAddress.Loopback, FreeUdpPort(), 10, 30, 1, "RoomCode", TestRoom, Rooms: roomConfig);
+    var registry = new RoomManager(roomOptions, clock);
+    RoomView Create(string owner, int size = 2) => (RoomView)registry.Create(new() { OwnerId = owner, Name = "Test", MaxPlayers = size }).Body!;
+    var a = Create("alice"); var b = Create("alice");
+    Check(registry.Create(new() { OwnerId = "alice", Name = "Third", MaxPlayers = 2 }).Status == 409, "Owner quota: at most 2 added rooms");
+    Check(registry.Create(new() { OwnerId = "bob", Name = "Too large", MaxPlayers = 13 }).Status == 400, "Room capacity cannot exceed total server capacity");
+    Check(a.RoomCode != b.RoomCode && Regex.IsMatch(a.RoomCode!, "^[A-HJ-NP-Z2-9]{6}$") && Regex.IsMatch(b.RoomCode!, "^[A-HJ-NP-Z2-9]{6}$"), "Distinct six-character readable join codes");
+    var aliceRooms = (RoomView[])registry.List("alice").Body!;
+    Check(aliceRooms.Length == 3 && aliceRooms.Single(r => r.IsDefault).RoomCode is null, "Owner list includes default without its code");
+    Check(((RoomView[])registry.List("bob").Body!).Length == 1, "Other user cannot list private rooms or codes");
+    Check(registry.Delete(a.Id, "bob").Status == 403, "Non-owner cannot delete room");
+    Check(registry.Delete(aliceRooms.Single(r => r.IsDefault).Id, "alice").Status == 409, "Default room cannot be deleted");
+    var live = registry.Find(a.RoomCode!)!;
+    registry.Reserve(live, 9000, false);
+    Check(registry.Delete(a.Id, "alice").Status == 409, "Pending JWT also prevents deleting a room");
+    clock.Advance(599); registry.ExpireEmpty();
+    Check(registry.Count == 3, "Empty rooms survive before TTL");
+    clock.Advance(1); registry.ExpireEmpty();
+    Check(registry.Count == 2 && registry.Find(a.RoomCode!) is not null, "600s expires empty rooms, preserves occupied/default");
+    registry.Release(live, 9000); clock.Advance(599); registry.ExpireEmpty();
+    Check(registry.Count == 2, "Empty TTL starts again after last pending/active peer leaves");
+    clock.Advance(1); registry.ExpireEmpty();
+    Check(registry.Count == 1, "Released room expires after full empty TTL");
+    Check(new RoomManager(roomOptions).Count == 1, "Restart restores only default room");
+    for (var i = 0; i < 4; i++) Create("owner" + i);
+    Check(registry.Count == 5 && registry.Create(new() { OwnerId = "another", Name = "Sixth", MaxPlayers = 1 }).Status == 409, "Maximum 5 rooms includes default; reject sixth");
+    var queue = new RoomCommands();
+    var queued = Enumerable.Range(0, 129).Select(_ => queue.Submit(r => r.List("alice"), CancellationToken.None)).ToArray();
+    Check(queued[128].IsCompletedSuccessfully && queued[128].Result.Status == 503, "Bounded control queue rejects overflow");
+    for (var i = 0; i < 8; i++) queue.Drain(registry);
+    Check(Task.WhenAll(queued).GetAwaiter().GetResult().Take(128).All(r => r.Status == 200), "Control commands drain on UDP application thread");
+    using (var cancelled = new CancellationTokenSource())
+    {
+        var ghost = queue.Submit(r => r.Delete(a.Id, "alice"), cancelled.Token);
+        cancelled.Cancel(); ghost.GetAwaiter().GetResult(); queue.Drain(registry);
+        Check(registry.Count == 5, "Cancelled queued operation does not mutate room registry");
+    }
+
+    // Current product caps are enforced even when stale env values request more.
+    new RoomOptions().Validate(10);
+    Check(new RoomOptions().MaxTotalPlayers == 50 && new RoomOptions().MaxRooms == 5,
+        "Selected policy defaults: 10 players/room, 5 rooms, 50 total, 2 created rooms/user");
+    foreach (var invalid in new[] { new RoomOptions(MaxRoomPlayers: 11), new RoomOptions(MaxTotalPlayers: 51),
+        new RoomOptions(MaxRooms: 6), new RoomOptions(MaxRoomsPerUser: 3) })
+    {
+        var rejectedLimit = false;
+        try { invalid.Validate(10); } catch (ArgumentException) { rejectedLimit = true; }
+        Check(rejectedLimit, "Reject configuration above the selected room policy");
+    }
+    var totalGuard = new RoomManager(roomOptions with { MaxPlayers = 2, Rooms = new RoomOptions(MaxTotalPlayers: 3) });
+    Check(totalGuard.Create(new() { OwnerId = "owner", Name = "Too large for total", MaxPlayers = 4 }).Status == 400, "Created room cannot exceed configured total capacity");
+
+    var multiPort = FreeUdpPort();
+    using var multi = new NetworkHost(roomOptions with { Port = multiPort, MaxPlayers = 2, Rooms = roomConfig with { MaxTotalPlayers = 3 } }, new ServerMetrics());
+    hosts.Add(multi); multi.Start();
+    var second = (RoomView)multi.Rooms.Create(new() { OwnerId = "owner", Name = "B", MaxPlayers = 2 }).Body!;
+    Probe Multi(string room)
+    {
+        var probe = new Probe(); probes.Add(probe);
+        probe.Start(multiPort, NetworkProtocol.WriteConnect(JoinAuthMode.RoomCode, room, "Multi")); return probe;
+    }
+    var ma = new[] { Multi(TestRoom), Multi(TestRoom), Multi(TestRoom) };
+    PumpUntil(() => ma.All(p => p.Joined || p.DisconnectReason is not null));
+    Check(ma.Count(p => p.Joined) == 2 && ma.Single(p => !p.Joined).DisconnectReason == "RoomFull", "Room A reaches its own capacity");
+    var mb = Multi(second.RoomCode!); PumpUntil(() => mb.Joined);
+    Check(multi.ReservedPeers == 3, "Full room A does not block room B");
+    var overflow = Multi(second.RoomCode!); PumpUntil(() => overflow.DisconnectReason is not null);
+    Check(overflow.DisconnectReason == "ServerFull" && multi.ReservedPeers == 3, "Total server capacity includes all rooms");
+    Check(multi.Rooms.Delete(second.Id, "owner").Status == 409, "Occupied room cannot be deleted");
+    mb.Dispose(); PumpUntil(() => multi.ReservedPeers == 2);
+    Check(multi.Rooms.Find(TestRoom)!.Peers.Count == 2 && multi.Rooms.Find(second.RoomCode!)!.Peers.Count == 0, "Disconnect returns only the correct room slot");
+    Check(multi.Rooms.Delete(second.Id, "owner").Status == 204, "Owner can delete empty room");
+    foreach (var p in ma) p.Dispose(); PumpUntil(() => multi.ReservedPeers == 0);
+    var aa = Enumerable.Range(0, 2).Select(_ => Multi(TestRoom)).ToArray();
+    var rr = (RoomView)multi.Rooms.Create(new() { OwnerId = "owner", Name = "C", MaxPlayers = 2 }).Body!;
+    var bb = Enumerable.Range(0, 2).Select(_ => Multi(rr.RoomCode!)).ToArray();
+    PumpUntil(() => aa.Concat(bb).All(p => p.Joined || p.DisconnectReason is not null));
+    Check(aa.Concat(bb).Count(p => p.Joined) == 3 && multi.ReservedPeers == 3, "Simultaneous joins across rooms never exceed total cap");
+    foreach (var p in aa.Concat(bb)) p.Dispose(); PumpUntil(() => multi.ReservedPeers == 0);
+    Check(RoomControlHost.Start(new RoomOptions(), new RoomCommands()) is null, "Missing control secret keeps default UDP available without HTTP");
+    var shortSecretRejected = false;
+    try { new RoomOptions(ControlToken: "short").Validate(10); } catch (ArgumentException) { shortSecretRejected = true; }
+    Check(shortSecretRejected, "Configured control secret must contain at least 32 bytes");
+    var pendingPort = FreeUdpPort();
+    using var multiJwt = new NetworkHost(roomOptions with { Port = pendingPort, MaxPlayers = 2, AuthMode = "Jwt", Jwt = jwtSettings,
+        AuthTimeoutMs = 3000, Rooms = roomConfig with { MaxTotalPlayers = 3 } }, new ServerMetrics());
+    hosts.Add(multiJwt); multiJwt.Start();
+    var pendingRoom = (RoomView)multiJwt.Rooms.Create(new() { OwnerId = "owner", Name = "Pending B", MaxPlayers = 2 }).Body!;
+    Probe Pending(string code, string? auth = null)
+    {
+        var p = new Probe { AuthToken = auth }; probes.Add(p);
+        p.Start(pendingPort, NetworkProtocol.WriteConnect(JoinAuthMode.Jwt, code, "PendingTest")); return p;
+    }
+    var p1 = Pending(TestRoom); var p2 = Pending(TestRoom);
+    PumpUntil(() => p1.AuthRequested && p2.AuthRequested);
+    var p3 = Pending(TestRoom); PumpUntil(() => p3.DisconnectReason is not null);
+    Check(p3.DisconnectReason == "RoomFull" && multiJwt.PendingPeers == 2, "JWT pending occupies capacity in its own room");
+    var p4 = Pending(pendingRoom.RoomCode!); PumpUntil(() => p4.AuthRequested);
+    var p5 = Pending(pendingRoom.RoomCode!); PumpUntil(() => p5.DisconnectReason is not null);
+    Check(p5.DisconnectReason == "ServerFull" && multiJwt.PendingPeers == 3, "JWT pending in multiple rooms occupies total server capacity");
+    PumpUntil(() => multiJwt.ReservedPeers == 0, 6000);
+    Check(multiJwt.Rooms.Find(TestRoom)!.Peers.Count == 0 && multiJwt.Rooms.Find(pendingRoom.RoomCode!)!.Peers.Count == 0, "JWT auth deadline returns the correct slots across rooms");
+    var authenticated = Pending(pendingRoom.RoomCode!, Token("multi-user", jwtKey));
+    PumpUntil(() => authenticated.Joined);
+    Check(multiJwt.ActivePeers == 1 && multiJwt.Rooms.Find(pendingRoom.RoomCode!)!.Peers.Values.Single(), "JWT activation after timeout uses the selected room");
+    authenticated.Dispose(); PumpUntil(() => multiJwt.ReservedPeers == 0);
+    using (var tcp = new TcpListener(IPAddress.Loopback, 0))
+    {
+        tcp.Start(); var controlPort = ((IPEndPoint)tcp.LocalEndpoint).Port; tcp.Stop();
+        var secret = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+        var control = RoomControlHost.Start(new RoomOptions(ControlToken: secret, ControlPort: controlPort), multi.Commands)!;
+        try
+        {
+            using var http = new HttpClient { BaseAddress = new Uri($"http://127.0.0.1:{controlPort}") };
+            Check((int)http.GetAsync("/internal/rooms?ownerId=owner").GetAwaiter().GetResult().StatusCode == 401, "Private control requires its own secret");
+            http.DefaultRequestHeaders.Add("X-Room-Control-Key", "wrong");
+            Check((int)http.GetAsync("/internal/rooms?ownerId=owner").GetAwaiter().GetResult().StatusCode == 401, "Wrong private secret rejected");
+            http.DefaultRequestHeaders.Remove("X-Room-Control-Key"); http.DefaultRequestHeaders.Add("X-Room-Control-Key", secret);
+            var task = http.GetAsync("/internal/rooms?ownerId=owner");
+            PumpUntil(() => task.IsCompleted);
+            Check(task.GetAwaiter().GetResult().IsSuccessStatusCode, "Authorized HTTP control completes through UDP command queue");
+        }
+        finally { control.StopAsync().GetAwaiter().GetResult(); control.DisposeAsync().AsTask().GetAwaiter().GetResult(); }
     }
 
     Console.WriteLine($"PASS {passed} network checks. Không nghiệm thu LAN/VPN hoặc gameplay.");
@@ -331,7 +495,7 @@ try
         PumpUntil(() => watch.ElapsedMilliseconds >= milliseconds, milliseconds + 1000);
     }
 
-    (int Code, string Text) RunClient(string path)
+    (int Code, string Text) RunClient(string path, params string[] extraArguments)
     {
         var start = new ProcessStartInfo("dotnet")
         {
@@ -339,6 +503,7 @@ try
             CreateNoWindow = true
         };
         foreach (var argument in new[] { clientDll, "--config", path, "--duration", "2" }) start.ArgumentList.Add(argument);
+        foreach (var argument in extraArguments) start.ArgumentList.Add(argument);
         start.Environment["NET_ROOM_CODE"] = TestRoom;
         start.Environment["NET_DISPLAY_NAME"] = "ConfigTest";
         using var process = Process.Start(start)!;
@@ -449,4 +614,11 @@ sealed class Probe : IDisposable
     public void StopSilently() { _disposed = true; _manager.Stop(false); }
     public void Poll() { if (!_disposed) _manager.PollEvents(); }
     public void Dispose() { if (!_disposed) { _disposed = true; _manager.Stop(); } }
+}
+
+sealed class TestClock : TimeProvider
+{
+    private DateTimeOffset _now = DateTimeOffset.UtcNow;
+    public override DateTimeOffset GetUtcNow() => _now;
+    public void Advance(int seconds) => _now = _now.AddSeconds(seconds);
 }

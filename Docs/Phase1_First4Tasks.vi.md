@@ -1,12 +1,12 @@
 # Hướng dẫn setup, phát triển và kiểm thử Jungle Maze
 
-Cập nhật **12/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md).
+Cập nhật **14/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md). Tạo nhiều phòng và đo sức chứa: xem mục 14. Bản mở rộng này chưa deploy hoặc chạy tải AWS.
 
 Hướng dẫn thao tác nhanh trên server đã triển khai: [Đăng nhập EC2, test Swagger và xem MongoDB bằng Compass](AWS_SSH_Swagger_Compass.vi.md).
 
 ## 1. Phạm vi hiện tại và cách chọn môi trường
 
-Dự án phục vụ bài học với **một phòng, tối đa 10 phiên kết nối**. Dev phát triển/debug trên máy mình; AWS là server chung, chỉ bật cho buổi test online đã hẹn.
+Dự án phục vụ bài học: **tối đa 10 phiên/phòng, 5 phòng gồm mặc định và tổng 50 phiên active/pending**. Phòng tạo qua API có mã 6 ký tự chữ hoa/số; mỗi user tối đa 2 phòng tạo thêm. Đây là giới hạn cấu hình backend, chưa là bằng chứng sức chứa gameplay. Dev phát triển/debug trên máy mình; AWS là server chung, chỉ bật cho buổi test online đã hẹn. Source/Compose đã cập nhật 5/50; EC2 chưa được deploy bản này.
 
 **Đã có:** API đăng ký/đăng nhập/JWT, MongoDB users, Swagger, LiteNetLib 2.1.4, handshake, giới hạn phòng, ping/pong, khung tick 30Hz, Docker local và triển khai AWS qua HTTPS.
 
@@ -378,7 +378,7 @@ Quy tắc vận hành của team:
 
 ### 8.1. Một client và ca lỗi
 
-Dùng JSON đúng môi trường. `--duration 30` nghĩa 30 giây; bỏ duration/đặt 0 chạy tới Ctrl+C. `--clients` nhận 1–11. Tên hiển thị 1–32 ký tự sau Trim; mã phòng client/server 1–64 ký tự, AWS configure yêu cầu 8–64.
+Dùng JSON đúng môi trường. `--duration 30` nghĩa đo 30 giây sau warm-up (mặc định warm-up 0); bỏ duration/đặt 0 chạy tới Ctrl+C. `--clients` nhận 1–256. Ping mặc định 1Hz; `--ping-rate 30` cho benchmark, `--quiet` giảm log. Tên hiển thị 1–32 ký tự sau Trim; mã phòng client/server 1–64 ký tự, AWS configure yêu cầu 8–64.
 
 | Bài | Kết quả cần ghi |
 | --- | --- |
@@ -396,6 +396,8 @@ Packet thiếu/thừa/fragmentation, pending chưa Auth và auth deadline đư�
 
 ### 8.2. RoomCode 10/11 phiên
 
+Giới hạn **phòng mặc định** là **10 phiên đang kết nối cùng lúc**, không phải tổng 10 lượt join từ khi server bật. Phòng tạo thêm có sức chứa riêng; tổng mọi phòng còn chịu `MAX_TOTAL_PLAYERS`. `--duration 30` kết thúc thì client disconnect và trả slot; chạy lại liên tục vẫn join được là đúng. RoomCode cấp ID mới cho mỗi phiên, không khóa theo tên hiển thị hay IP. Khi mất mạng đột ngột, slot được trả sau timeout.
+
 Phòng phải trống trước khi đo. **PC / Backend**, ví dụ AWS (Local thay file config thành client.local.json):
 
 ```powershell
@@ -403,6 +405,20 @@ dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeCl
 ```
 
 Nhập mã phòng; cần joined=10/failed=0 và server active=10/pending=0. Trong lúc đó, terminal khác chạy bài một client: **RoomFull**, exit 1 là đúng. Khi client đã dừng/trả slot, chạy lại bài một client cần thành công.
+
+Ví dụ **Local**, mở hai terminal PowerShell tại Backend. Terminal A giữ đủ 10 phiên đến khi nhấn Ctrl+C:
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local.json --name HoldRoom --clients 10 --duration 0
+```
+
+Đợi đủ 10 dòng `JoinAccepted` và có `Pong`. Giữ terminal A chạy, terminal B thử thêm một phiên:
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local.json --name ExtraPlayer --duration 10
+```
+
+Kỳ vọng terminal B: `disconnectedOrRejected reason=RoomFull`, summary `joined=0 failed=1`. Trong Docker Desktop, Logs của game-server có `[rejected] reason=RoomFull` và `serverSlots=10/30` theo mặc định. Có thể chạy B lại khi A còn chạy: vẫn phải RoomFull. Sau Ctrl+C ở A, chạy B lại phải join/Pong thành công. Đảm bảo hai terminal dùng cùng config/endpoint và mã phòng.
 
 Có thể thử burst 11 với `--clients 11 --duration 15`: phòng trống thì joined=10/failed=1. Các console đang mở đều chiếm slot; một tool 10 phiên không phải 10 người chơi thật. Sau smoke test mới tổ chức 10 máy thực, mỗi máy tên riêng, ghi OS/build/mạng và endpoint.
 
@@ -412,7 +428,7 @@ Có thể thử burst 11 với `--clients 11 --duration 15`: phòng trống thì
 | --- | --- |
 | joined/failed, sent/pongs/timedOut/outstanding | Kết quả client; outstanding cuối lượt chưa tự coi là mất |
 | rttMs / rttP95Ms | Mạng + scheduling hai đầu; không phải FPS |
-| active/pending/peers | Tổng slot active+pending tối đa10 |
+| active/pending/peers | Tổng slot active+pending mọi phòng, tối đa 30; xem roomSlots cho từng phòng |
 | ticksPerSecond | Gần 30 theo cửa sổ; tick server không phải render FPS |
 | tickP95Ms/p99, loopP95Ms/p99 | Tick và poll+tick work; so budget 33.33ms |
 | cpuOneCorePercent | CPU process chuẩn một core; 100% = một core bận, có thể>100% |
@@ -571,7 +587,7 @@ Giữ terminal mở. Compass URI `mongodb://127.0.0.1:27019` → jungle_maze/use
 
 ### 11.5. Dev khác và quyền vận hành
 
-Mỗi dev có Local backend/DB/config riêng. Tester chỉ nhận build/config public/room và lịch; một server chung có 10 slot. Chỉ admin được SSH/deploy/backup/Stop-Start AWS; cấp key riêng cho admin bổ sung, không dùng chung private key hay account AWS. Khi cấp SSH thêm, admin phải cho phép đúng IP của dev trong rule TCP 22 và thêm public key của họ vào authorized_keys theo quy trình của team. Quyền sudo user ubuntu là quyền quản trị rộng, nên chỉ cấp cho người cần vận hành.
+Mỗi dev có Local backend/DB/config riêng. Tester chỉ nhận build/config public/room và lịch; phòng mặc định server chung có 10 slot. Phòng bổ sung cần bản mở rộng đã được admin triển khai và xác nhận mức tải. Chỉ admin được SSH/deploy/backup/Stop-Start AWS; cấp key riêng cho admin bổ sung, không dùng chung private key hay account AWS. Khi cấp SSH thêm, admin phải cho phép đúng IP của dev trong rule TCP 22 và thêm public key của họ vào authorized_keys theo quy trình của team. Quyền sudo user ubuntu là quyền quản trị rộng, nên chỉ cấp cho người cần vận hành.
 
 ## 12. Chẩn đoán và debug
 
@@ -715,3 +731,149 @@ Admin báo đã triển khai bản MongoDB 7 lên EC2; **HTTPS /health đã đư
 | SRV-02 | Version/room/mode/identity/auth deadline/duplicate/cleanup | Reject, mất mạng, trả slot, protocol client-server khớp |
 
 Mỗi lượt ghi ngày/giờ, OS/CPU/RAM, source/release ID, endpoint/authmode, số client, đường mạng, logs đã che secrets và kết quả. Giữ đúng bốn ID này; không đánh Done phần gameplay chỉ vì smoke test qua. Mốc tiếp theo là nối Unity và đồng bộ hai nhân vật như mục 10.
+
+## 14. Tạo nhiều phòng và đo sức chứa backend
+
+### 14.1. Bật chức năng tạo phòng trên local
+
+Thực hiện trong PowerShell tại **Backend**, sau khi tạo `.env` ở mục 3 và thiết lập `Jwt__SigningKey` random hợp lệ theo mục 5.1 (API cần key này kể cả game đang RoomCode). Script dưới đây thêm secret điều khiển phòng vào `.env` nếu thiếu/trống, giữ nguyên secret và cấu hình đang có. Secret này khác JWT key và mã join; không gửi cho tester.
+
+```powershell
+Set-Location 'D:\Unity\Jungle_Maze_Survival\Backend'
+powershell -ExecutionPolicy Bypass -File Tools/Enable-RoomControl.ps1
+docker compose --profile account up -d --build
+docker compose ps
+docker compose logs --tail 30 game-server api
+```
+
+Mở `http://localhost:5000/swagger`. Nếu đổi `API_PORT`, dùng cổng tương ứng. Trong Swagger:
+
+1. `POST /api/auth/register`: tạo account nếu chưa có.
+2. `POST /api/auth/login`: lấy `accessToken` → **Authorize** → dán token, không thêm chữ Bearer.
+3. `POST /api/rooms` → Try it out, nhập ví dụ:
+
+```json
+{ "name": "Team A", "maxPlayers": 10 }
+```
+
+Response **201** có `id`, `name`, `maxPlayers`, `roomCode`, `activePlayers`, `pendingPlayers`. `roomCode` phòng tạo thêm có đúng 6 ký tự chữ hoa/số, ví dụ `K7M2Q9`; nhập đúng chữ hoa, không có I/O/0/1. Chia sẻ mã cho người cần vào phòng; không chia sẻ JWT/control secret. Chủ phòng lấy từ JWT `sub`, không nhập user ID. Bỏ `maxPlayers` thì dùng 10; yêu cầu 11 trở lên trả 400.
+
+4. `GET /api/rooms`: xem phòng mặc định và phòng của mình. Mã phòng mặc định không xuất hiện; lấy từ người vận hành. Mã phòng tạo thêm chỉ trả về cho chủ phòng; không có danh sách phòng của người khác.
+5. `DELETE /api/rooms/{id}`: nhập ID phòng của mình. Chỉ xóa được khi không còn active/pending; thành công **204**. Không xóa được phòng mặc định.
+
+API HTTP dùng JWT để quản lý phòng; UDP vẫn dùng chế độ auth chung của server. Khi `AUTH_MODE=RoomCode`, người chơi chỉ cần mã join, không cần gửi JWT qua UDP. Nếu cố ý test `AUTH_MODE=Jwt` local/VPN, mỗi phiên cần account riêng; quota tạo phòng không giới hạn số phiên RoomCode của chủ phòng.
+
+| Kết quả/lỗi | Ý nghĩa và cách xử lý |
+| --- | --- |
+| 400 | Tên sau trim 1–48 ký tự; capacity 1–10 và không vượt tổng server |
+| 401 | Thiếu/JWT sai hoặc hết hạn; login và Authorize lại |
+| 403 NotRoomOwner | Bạn không phải chủ phòng |
+| 404 RoomNotFound | Phòng không tồn tại, đã xóa/thu hồi hoặc server vừa restart |
+| 409 UserRoomLimitReached | Mỗi user tối đa 2 phòng bổ sung; xóa phòng trống trước |
+| 409 RoomLimitReached | Tổng server tối đa 5 phòng tính cả phòng mặc định |
+| 409 RoomNotEmpty / DefaultRoomProtected | Ngắt client, chờ slot được trả; phòng mặc định không xóa |
+| 429 | Tối đa 5 POST/phút/user, kể cả yêu cầu validation/quota lỗi; đợi cửa sổ mới |
+| 503 | Chưa có ROOM_CONTROL_TOKEN, secret hai bên không khớp, server/control chưa sẵn sàng hoặc queue quá tải |
+
+Cập nhật `.env` cũ theo phương án: `MAX_ROOM_PLAYERS=10`, `MAX_TOTAL_PLAYERS=50`, `MAX_ROOMS=5`, `MAX_ROOMS_PER_USER=2`. Có thể giảm các giá trị cho buổi test nhỏ; code từ chối cấu hình vượt các trần này. Mã phòng mặc định trong `ROOM_CODE` được giữ nguyên, không bắt buộc 6 ký tự. Không có control secret thì UDP phòng mặc định vẫn hoạt động; API phòng trả 503. Sau khi đổi cấu hình, recreate API/game-server; phòng tạm cần tạo lại. TCP 7780 chỉ ở Docker network, không publish và không mở Security Group.
+
+### 14.2. Join phòng tạo thêm bằng NetSmokeClient
+
+Mở terminal khác tại Backend. Dùng cùng JSON endpoint với server; khi chương trình hỏi mã phòng, nhập **roomCode của phòng vừa tạo**, không nhập `ROOM_CODE` mặc định:
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local.json --name TeamA --clients 10 --duration 30
+```
+
+Thử thêm một phiên khi phòng đang đủ 10: nhận `RoomFull`. Phòng khác còn chỗ vẫn join được, trừ khi tổng active+pending mọi phòng chạm `MAX_TOTAL_PLAYERS` thì nhận `ServerFull`. Khi cả phòng và server đều đầy ưu tiên `RoomFull`. Join lại sau khi client dừng là hành vi đúng vì slot được trả.
+
+Phòng tạo thêm chỉ ở RAM, không có collection rooms trong Compass. Restart/recreate GameServer mất các phòng này; phòng mặc định được tạo lại từ `.env`. Phòng tạo thêm trống liên tục 600 giây tự thu hồi; có người hoặc pending thì không bị thu hồi, rời hết sẽ bắt đầu đếm lại. API/Mongo restart riêng không làm mất phòng nếu GameServer vẫn chạy.
+
+### 14.3. Cấu hình sức chứa
+
+| Biến | Mặc định | Tác dụng |
+| --- | ---: | --- |
+| MAX_PLAYERS | 10 | Phòng mặc định, cho phép 1–10; giữ tương thích bản trước |
+| MAX_ROOM_PLAYERS | 10 | Sức chứa tối đa được yêu cầu cho mỗi phòng tạo thêm, 1–10 |
+| MAX_TOTAL_PLAYERS | 50 | Tổng phiên active+pending mọi phòng, 1–50 |
+| MAX_ROOMS | 5 | Số phòng tính cả mặc định, 1–5 |
+| MAX_ROOMS_PER_USER | 2 | Số phòng tạo thêm của một account, 1–2 |
+| ROOM_EMPTY_TTL_SECONDS | 600 | Thời gian phòng tạo thêm trống trước thu hồi |
+| ROOM_CONTROL_TOKEN | trống | Secret random ít nhất 32 UTF-8 byte; trống tắt HTTP control |
+| ROOM_CONTROL_BIND_ADDRESS / PORT | Compose: 0.0.0.0 / 7780 | Bind nội bộ container; chạy .NET trực tiếp mặc định 127.0.0.1 |
+| RoomControl__BaseUrl | Compose: http://game-server:7780 | Địa chỉ API gọi GameServer, không phải địa chỉ client |
+
+Tổng server được kiểm theo **phiên đồng thời thực tế**, gồm pending. Năm phòng 10 slot cho phép tối đa 50 phiên khi dùng các giá trị mặc định; có thể giảm giới hạn cho buổi test nhỏ. Một user chỉ tạo được hai phòng bổ sung, cần ít nhất hai user để tạo đủ bốn phòng ngoài mặc định. Các trần 10/5/50 là chính sách vận hành, chưa chứng minh gameplay năm phòng đầy sẽ đạt hiệu năng yêu cầu.
+
+### 14.4. Chạy bài đo local riêng
+
+Chỉ giữ [báo cáo mới nhất](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md), cùng JSON/CSV và bằng chứng thô nén. Báo cáo gồm kết quả một/nhiều phòng, phương án 5/50 đã áp dụng và kiểm tra triển khai. Không diễn giải các lượt này thành sức chứa gameplay/EC2.
+
+Docker Desktop Linux engine, SDK .NET 8, Python 3.11+ phải hoạt động. Core chức năng trước, sau đó benchmark:
+
+```powershell
+dotnet build JungleBackend.sln
+dotnet run --project Tests/NetworkChecks/NetworkChecks.csproj
+python -X utf8 Tests/auth_smoke.py
+python -X utf8 Tools/room_benchmark.py
+```
+
+Nếu Python không ở PATH, dùng đường dẫn Python của máy như mục 9. Harness tự build image và tạo Compose project `room-bench-<timestamp>-<random>`: Mongo/DB mới, API mới, GameServer mới; cổng loopback ngẫu nhiên. Không đọc `.env` dev, không dùng DB/phòng dev, không bật hoặc gọi AWS. GameServer giới hạn **256MiB**, không swap cho benchmark. Mongo 768MiB/API 384MiB nằm riêng; đây là Docker Desktop trên máy dev, không mô phỏng CPU/đường truyền EC2.
+
+Harness hiện kiểm API/quota/quyền sở hữu, mã 6 ký tự, ngưỡng 10/11 và chức năng **5 phòng × 10 phiên** đồng thời trong lượt ngắn 6 giây; phòng thứ sáu bị từ chối. Bài hiệu năng một phòng chạy **5 → 10** phiên; mỗi mức warm-up **15 giây**, đo **60 giây** ở **30Hz**, xác nhận ứng viên **180 giây**. Client chờ tối đa 5.2 giây cho Pong cuối. Nếu máy phát tải gửi dưới 28.5Hz/client (95% của 30Hz), đánh dấu **INVALID_GENERATOR** và dừng. Muốn dò vượt policy dùng công cụ ở mục 14.5.
+
+Điều kiện đạt: tất cả join, không disconnect ngoài dự kiến, timeout <1%, RTT p95 local ≤50ms, tick trung bình 29–31Hz, dropped tick=0, CPU cao nhất theo cửa sổ đo ≤85% một core, RAM cgroup lấy mẫu ≤80% giới hạn, đủ telemetry. CPU process không chia cho số core. RAM cgroup (hỗ trợ v1/v2) có thể lớn hơn WorkingSet process. Ngưỡng RTT 50ms là ngưỡng **local**; khi đo Sydney cần chốt tiêu chí RTT riêng trước.
+
+Kết quả tại `Backend/out/room-bench/<run>/report.md`, kèm `report.json`, `report.csv`, log và JSON từng client. Có thông tin môi trường, commit, fingerprint source, image ID/giới hạn container, tiêu chí đạt/trượt. Harness đóng client, xóa phòng do nó tạo và `down --volumes` **đúng stack riêng**, kể cả khi lỗi/Ctrl+C. Tắt cưỡng bức process/PC có thể ngăn cleanup: tìm project có đúng tên run rồi dọn bằng Compose của run, không chạy lệnh xóa mọi container/volume.
+
+`--functional-only` chạy kiểm thử phòng, ngưỡng 10/11 và 3 × 10 phiên ngắn; chưa là xác nhận hiệu năng nhiều phòng. `--levels` chỉ nhận mức tăng dần 1–10; `--seconds`, `--warmup`, `--confirm-seconds` dành cho bài tự chọn, báo cáo phải ghi đúng tham số. Tick hiện chưa có gameplay; phải đo lại khi thêm movement/combat/snapshot và khi xác nhận nhiều phòng trên môi trường đích.
+
+### 14.5. Thử vượt chính sách trên bản GameServer local riêng
+
+`Tools/local_capacity_probe.py` dùng để tìm vùng tải đạt tiêu chí, không sửa giới hạn vận hành 10/5/50. Công cụ sao chép riêng GameServer/Shared vào `out/capacity-probe`, chỉ nới bốn hằng `RoomLimits` trong bản sao lên 256 người/phòng, tổng 256 phiên, 32 phòng và 31 phòng/user. API/Swagger của dự án giữ nguyên giới hạn 10/5/50.
+
+Chạy từ **Backend** khi Docker Desktop Linux engine đã mở:
+
+```powershell
+python -X utf8 Tools/local_capacity_probe.py
+```
+
+Một tiến trình NetSmokeClient phát tải đồng thời vào các phòng. Hai nhóm đo lần lượt là một phòng tăng số phiên và nhiều phòng mỗi phòng 10 phiên. Trần công cụ là 256 phiên một phòng hoặc 25 phòng × 10; đây là phạm vi có thể thử, không phải kết quả đã xác nhận. Mỗi mức warm-up 15s/đo 60s, mức trượt được lặp lại, thu hẹp vùng đạt/trượt rồi xác nhận ứng viên 180s. Dừng tăng ở mức trượt lặp hoặc khi máy phát tải không đủ tốc độ; các mức sau đó không được coi là đã đo. Ngưỡng mỗi phòng là RTT p95 ≤50ms, cùng các tiêu chí CPU/RAM/tick/loss ở mục 14.4.
+
+Công cụ dùng Docker context `desktop-linux`, chỉ chấp nhận socket local; tạo container RAM 256MiB không swap, không hạn CPU, cổng loopback ngẫu nhiên. Nó không đọc `.env` của team, không chạy API/MongoDB, không gọi AWS và không đo luồng đăng nhập. TCP control chỉ mở trên loopback của stack thử nghiệm. Phòng được tạo qua control endpoint nội bộ bằng secret tạm.
+
+Kết quả ở `Backend/out/capacity-probe/<run>/report.md`, `.json`, `.csv`, kèm log và JSON từng lượt. JSON có số liệu từng phòng/client, tốc độ gửi thật, telemetry và hash source snapshot. Cuối lượt, công cụ đóng client, xóa phòng, dỡ container/network và image của chính lượt đó, xóa file mã phòng/secret tạm, kiểm lại policy và ID/image của ba container dev. Không dùng lệnh prune hoặc xóa volume của team. Nếu cưỡng bức tắt PC, cần tự kiểm tra cleanup đúng project của lượt.
+
+Chạy riêng một nhóm hoặc thay mức thử, ví dụ:
+
+```powershell
+python -X utf8 Tools/local_capacity_probe.py --skip-single --room-levels 3,5,10
+python -X utf8 Tools/local_capacity_probe.py --confirm-only --single-levels 50 --room-levels 5
+dotnet build JungleBackend.sln
+dotnet run --project Tests/NetworkChecks/NetworkChecks.csproj
+```
+
+`--confirm-only` chỉ chạy lượt dài 180s ở một mức chỉ định cho mỗi nhóm, không dò thêm; dùng để xác nhận phương án thấp hơn khi ứng viên cao trượt ở lượt dài. Ví dụ trên đo một phòng 50 phiên và năm phòng × 10. Có thể thêm `--skip-single` hoặc `--skip-multi` để chỉ đo một nhóm.
+
+NetSmokeClient có thêm `--room-plan <private.json>` cho công cụ này: mảng `{roomId, roomCode, clients}`, tổng 1–256 client, tối đa 32 phòng khác ID. Không dùng kèm `--clients` hoặc Jwt. Không commit/chia sẻ file chứa mã; report chỉ giữ ID phòng. Với dev test bình thường, tiếp tục dùng cách nhập mã ở mục 14.2.
+
+Báo cáo mới nhất: [Local capacity retest 14/10/2026](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md): sáu phòng × 10 đạt 180s; bảy phòng × 10 trượt RTT của một phòng. Phương án **năm phòng/tổng 50 đã áp dụng** vào source/config/local; chưa deploy EC2. 16 kiểm tra input room-plan đã nằm trong NetworkChecks. Kết quả ping/pong local không xác nhận sức chứa gameplay hoặc EC2; không tự áp dụng cấu hình cao hơn sau bài đo.
+
+### 14.6. Chuẩn bị AWS, chỉ thực hiện sau khi chốt lượt xác nhận
+
+Đợt này không tự tạo release mới, bật EC2, deploy hoặc chạy tải AWS. Sau báo cáo local, người quản lý chọn số phiên, thời gian và tiêu chí RTT Internet. Giữ phòng mặc định và buổi test dev riêng; phòng benchmark là phòng khác nhưng vẫn dùng chung tài nguyên EC2, nên cần lịch trống.
+
+Khi đã được chọn triển khai, builder mục 6.2 sẽ đóng code/Compose/scripts mới. `configure.sh` mới tạo control secret cho lần cài mới; `deploy.sh` mới gọi `enable-room-control.sh` để **chỉ thêm key còn thiếu**, giữ nguyên account/DNS/JWT/ROOM_CODE và volume hiện có. Không cần mở cổng 7780. Caddy giữ HTTPS và bảo vệ Swagger như cũ.
+
+Công cụ chuẩn bị chạy cùng tải trên server có sẵn:
+
+```powershell
+# Chỉ chạy SAU khi có lịch và mức tải AWS được thống nhất.
+# Cần Docker context quản trị từ xa đã cấu hình, client.aws.json đúng endpoint,
+# BENCH_ACCESS_TOKEN là JWT account riêng cho benchmark (không đặt trong argv/file commit).
+python -X utf8 Tools/room_benchmark.py --remote --docker-context junglemaze-admin --api-url https://junglemaze.duckdns.org --client-config NetSmokeClient/client.aws.json --server-container junglemaze-aws-game-server-1 --levels 10 --seconds 60 --confirm-seconds 180
+```
+
+`junglemaze-admin` là tên context cần admin tự cấu hình trước, không được tạo tự động bởi harness. Nhánh remote tạo/xóa **phòng của lượt đo**, đọc cgroup/log qua Docker context; không build/up/down/restart remote. Nó cần quyền admin Docker để đọc telemetry, không dành cho tester thông thường. Harness vẫn áp dụng RTT 50ms và các ngưỡng chuẩn để so sánh; báo cáo remote có thể trượt RTT do đường truyền, không suy ra lỗi xử lý server. Không chạy lệnh ví dụ trước khi chốt tải, chi phí và cách truy cập quản trị.
+
+Kết thúc: kiểm tra client đã đóng, phòng benchmark được xóa; admin **Stop instance** trong Console nếu hết buổi test. Đóng Swagger/SSH/client hoặc dừng container không dừng EC2, EBS vẫn có chi phí khi instance Stopped. Không nâng instance hoặc đổi gói AWS tự động để làm bài đo đạt.

@@ -6,7 +6,7 @@ COPY GameServer/ GameServer/
 COPY Shared/ Shared/
 RUN dotnet publish GameServer/GameServer.csproj -c Release -o /out --no-restore
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /out .
 EXPOSE 7777/udp

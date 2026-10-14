@@ -24,21 +24,29 @@ public sealed class SmokeSession : IDisposable
     private readonly string _displayName;
     private readonly string? _accessToken;
     private bool _authSent;
+    private readonly long _pingInterval;
+    private readonly bool _quiet;
+    private bool _sendEnabled = true;
+    public string? FailureReason { get; private set; }
     public string? PlayerId { get; private set; }
     public bool Joined => PlayerId is not null;
     public int Number { get; }
+    public string? RoomLabel { get; }
     public bool ConnectedOnce { get; private set; }
     public bool Finished { get; private set; }
     public bool Failed { get; private set; }
     public int Pongs { get; private set; }
 
-    public SmokeSession(int number, ClientOptions options, string roomCode, string displayName, string? accessToken = null)
+    public SmokeSession(int number, ClientOptions options, string roomCode, string displayName, string? accessToken = null, int pingRate = 1, bool quiet = false, string? roomLabel = null)
     {
         Number = number;
+        RoomLabel = roomLabel;
         _options = options;
         _roomCode = roomCode;
         _displayName = displayName;
         _accessToken = accessToken;
+        _pingInterval = Stopwatch.Frequency / pingRate;
+        _quiet = quiet;
         var listener = new EventBasedNetListener();
         _manager = new NetManager(listener)
         {
@@ -52,7 +60,7 @@ public sealed class SmokeSession : IDisposable
         {
             _peer = peer;
             ConnectedOnce = true;
-            Console.WriteLine($"[client {Number}] transportConnected=true awaitingJoin=true");
+            if (!_quiet) Console.WriteLine($"[client {Number}] transportConnected=true awaitingJoin=true");
         };
         listener.PeerDisconnectedEvent += (_, info) =>
         {
@@ -79,7 +87,7 @@ public sealed class SmokeSession : IDisposable
                     { Fail("MalformedJoinAccepted"); return; }
                 PlayerId = id;
                 _nextPing = Stopwatch.GetTimestamp();
-                Console.WriteLine($"[client {Number}] JoinAccepted playerId={PlayerId}");
+                if (!_quiet) Console.WriteLine($"[client {Number}] JoinAccepted playerId={PlayerId}");
                 return;
             }
             if (method == DeliveryMethod.ReliableOrdered && type == NetworkProtocol.JoinRejected)
@@ -95,8 +103,8 @@ public sealed class SmokeSession : IDisposable
             var rtt = Stopwatch.GetElapsedTime(timestamp).TotalMilliseconds;
             Pongs++;
             _rttSamples.Enqueue(rtt);
-            if (_rttSamples.Count > 1024) _rttSamples.Dequeue();
-            Console.WriteLine(FormattableString.Invariant($"[client {Number}] Pong sequence={sequence} rttMs={rtt:F2}"));
+            if (_rttSamples.Count > 16384) _rttSamples.Dequeue();
+            if (!_quiet) Console.WriteLine(FormattableString.Invariant($"[client {Number}] Pong sequence={sequence} rttMs={rtt:F2}"));
         };
         listener.NetworkErrorEvent += (_, error) => Fail($"SocketError:{error}");
     }
@@ -119,28 +127,51 @@ public sealed class SmokeSession : IDisposable
             Fail(ConnectedOnce ? "JoinTimeout" : "ConnectTimeout");
             return;
         }
-        if (Joined && _peer?.ConnectionState == ConnectionState.Connected && now >= _nextPing)
+        if (_sendEnabled && Joined && _peer?.ConnectionState == ConnectionState.Connected && now >= _nextPing)
         {
             NetworkProtocol.Write(_writer, NetworkProtocol.Ping, ++_sequence);
             _sentAt[_sequence] = now;
             _peer.Send(_writer, DeliveryMethod.Unreliable);
             _sent++;
-            _nextPing = now + Stopwatch.Frequency;
+            // Absolute schedule avoids accumulating the sleep/poll delay at 30Hz.
+            // Never burst to hide a stalled generator; its actual send rate is reported.
+            _nextPing += _pingInterval;
+            if (_nextPing < now - _pingInterval) _nextPing = now + _pingInterval;
         }
         foreach (var expired in _sentAt.Where(pair =>
             Stopwatch.GetElapsedTime(pair.Value).TotalMilliseconds >= PongTimeoutMs).Select(pair => pair.Key).ToArray())
         {
             _sentAt.Remove(expired);
             _lost++;
-            Console.WriteLine($"[client {Number}] PongTimeout sequence={expired}");
+            if (!_quiet) Console.WriteLine($"[client {Number}] PongTimeout sequence={expired}");
         }
     }
 
     private void Fail(string reason)
     {
         Failed = true;
+        FailureReason = reason;
         Finished = true;
         Console.Error.WriteLine($"[client {Number}] disconnectedOrRejected reason={reason}");
+    }
+
+    // A synchronized measurement boundary across all clients, excluding warm-up traffic.
+    public void BeginMeasurement()
+    {
+        _sentAt.Clear(); _rttSamples.Clear(); _sent = _lost = Pongs = 0;
+        _nextPing = Stopwatch.GetTimestamp();
+    }
+    public void StopSending() => _sendEnabled = false;
+    public int Outstanding => _sentAt.Count;
+    public object Report(double measuredSeconds)
+    {
+        var sorted = _rttSamples.Order().ToArray();
+        double? Percentile(double p) => sorted.Length == 0 ? null : sorted[(int)Math.Ceiling(sorted.Length * p) - 1];
+        return new { client = Number, room = RoomLabel, connected = ConnectedOnce, joined = Joined,
+            rejected = Failed && !Joined, disconnected = Failed && Joined,
+            failed = Failed, reason = FailureReason, sent = _sent, pongs = Pongs, timedOut = _lost,
+            outstanding = _sentAt.Count, actualHz = measuredSeconds > 0 ? _sent / measuredSeconds : 0,
+            rttP95Ms = Percentile(.95), rttP99Ms = Percentile(.99), rttMs = _rttSamples.ToArray() };
     }
 
     public void PrintSummary()

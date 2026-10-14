@@ -32,6 +32,9 @@ if (publicHosting) builder.WebHost.ConfigureKestrel(options => options.Limits.Ma
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("room-create", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.User.FindFirst("sub")?.Value ?? "anonymous", _ => new FixedWindowRateLimiterOptions
+        { PermitLimit = 5, Window = TimeSpan.FromMinutes(1), QueueLimit = 0, AutoReplenishment = true }));
     // Một hạn mức chung cho register/login; không tin X-Forwarded-For từ client public.
     // Local dùng NoLimiter để giữ hành vi cũ. Tên policy tồn tại ở cả hai môi trường.
     options.AddPolicy("public-auth", _ => publicHosting
@@ -53,6 +56,7 @@ builder.Services.AddSingleton<IOptions<JwtOptions>>(Options.Create(jwt));
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddHttpClient<RoomControlClient>(client => client.Timeout = TimeSpan.FromSeconds(5));
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer(); // Đưa cả minimal endpoint /health vào Swagger.
@@ -60,9 +64,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Jungle Maze Account API",
+        Title = "Jungle Maze Account & Rooms API",
         Version = "v1",
-        Description = "Test theo thứ tự: register → login → copy accessToken → Authorize → /api/me."
+        Description = "Test: register → login → Authorize → POST /api/rooms → join UDP bằng roomCode 6 ký tự. Tối đa 10 người/phòng, 5 phòng gồm mặc định, tổng 50 phiên. Mỗi user tối đa 2 phòng bổ sung."
     });
     options.IncludeXmlComments(typeof(AuthService).Assembly);
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -132,8 +136,8 @@ if (app.Configuration.GetValue<bool?>("Swagger:Enabled") ?? app.Environment.IsDe
     });
 }
 app.UseRouting();
-app.UseRateLimiter();
 app.UseAuthentication(); // Xác minh token trước khi kiểm tra quyền truy cập.
+app.UseRateLimiter(); // Policy room-create cần sub đã xác minh để chia quota theo user.
 app.UseAuthorization();
 app.MapControllers();
 

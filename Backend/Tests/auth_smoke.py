@@ -231,6 +231,8 @@ def main():
                   request('POST', '/api/auth/login', {'username': name, 'password': 'WrongPassword'})[0] == 401)
         status, me = request('GET', '/api/me', token=token)
         check('authorized me reads authenticated user', status == 200 and me == user)
+        check('room API without control secret reports unavailable', request('GET', '/api/rooms', token=token)[0] == 503)
+        check('room API still requires JWT when not configured', request('GET', '/api/rooms')[0] == 401)
         check('missing bearer token rejected', request('GET', '/api/me')[0] == 401)
         check('malformed token rejected', request('GET', '/api/me', token='not-a-jwt')[0] == 401)
         tampered = claims.copy()

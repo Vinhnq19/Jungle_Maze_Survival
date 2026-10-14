@@ -3,6 +3,7 @@ using GameServer.Diagnostics;
 using GameServer.Networking;
 using GameServer.Simulation;
 using System.Runtime.InteropServices;
+using GameServer.Rooms;
 
 // Composition root: cấu hình -> mở UDP -> poll + tick -> đóng socket khi dừng.
 try
@@ -24,10 +25,12 @@ try
     var metrics = new ServerMetrics();
     using var network = new NetworkHost(options, metrics);
     network.Start();
+    var roomControl = RoomControlHost.Start(options.Rooms ?? new(), network.Commands);
     var loop = new FixedTickLoop(options.TickRate, metrics);
-    loop.Run(network.PollEvents, Tick,
+    try { loop.Run(network.PollEvents, Tick,
         () => metrics.ReportIfDue(network.ReservedPeers, options.MetricsIntervalSeconds,
-            network.ActivePeers, network.PendingPeers), shutdown.Token);
+            network.ActivePeers, network.PendingPeers, network.Rooms.Count, network.Rooms.Occupancy()), shutdown.Token); }
+    finally { if (roomControl is not null) { await roomControl.StopAsync(); await roomControl.DisposeAsync(); } }
     return 0;
 }
 catch (Exception error) when (error is ArgumentException or InvalidOperationException

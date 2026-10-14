@@ -6,7 +6,7 @@ namespace GameServer.Configuration;
 /// <summary>Đọc biến môi trường trước khi mở socket; cấu hình sai thì dừng ngay.</summary>
 public sealed record ServerOptions(IPAddress BindAddress, int Port, int MaxPlayers, int TickRate,
     int MetricsIntervalSeconds, string AuthMode, string RoomCode, int AuthTimeoutMs = 5000, JwtSettings? Jwt = null,
-    bool PublicHosting = false)
+    bool PublicHosting = false, RoomOptions? Rooms = null)
 {
     public JungleBackend.Protocol.JoinAuthMode Mode => AuthMode == "Jwt"
         ? JungleBackend.Protocol.JoinAuthMode.Jwt : JungleBackend.Protocol.JoinAuthMode.RoomCode;
@@ -26,13 +26,14 @@ public sealed record ServerOptions(IPAddress BindAddress, int Port, int MaxPlaye
             ReadInt("METRICS_INTERVAL_SECONDS", 5, 1, 60), authMode,
             Environment.GetEnvironmentVariable("ROOM_CODE") ?? string.Empty,
             ReadInt("AUTH_TIMEOUT_MS", 5000, 500, 30000), authMode == "Jwt" ? JwtSettings.FromEnvironment() : null,
-            ReadBool("PUBLIC_HOSTING"));
+            ReadBool("PUBLIC_HOSTING"), RoomOptions.FromEnvironment());
         result.Validate();
         return result;
     }
 
     public void Validate()
     {
+        (Rooms ?? new RoomOptions()).Validate(MaxPlayers);
         // Kiểm tra cả options được tạo trực tiếp (test/DI), không chỉ đường FromEnvironment.
         if (BindAddress.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork || Port is < 1 or > 65535
             || MaxPlayers is < 1 or > 10 || TickRate != 30 || MetricsIntervalSeconds is < 1 or > 60

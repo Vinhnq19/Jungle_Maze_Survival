@@ -119,6 +119,7 @@ Backend/.env
 Backend/.env.aws
 Backend/**/bin/
 Backend/**/obj/
+Backend/**/__pycache__/
 Backend/out/
 
 # Backend là project .NET viết tay; không bỏ qua như csproj/sln Unity sinh tự động.

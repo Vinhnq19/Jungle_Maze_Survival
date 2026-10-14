@@ -1,17 +1,17 @@
 # Kiến trúc mạng Jungle Maze
 
-Cập nhật **12/10/2026**, đối chiếu source Backend và cấu hình Unity hiện tại. Các bước setup/start/stop/test nằm trong [hướng dẫn vận hành chung](Phase1_First4Tasks.vi.md); file này giải thích hệ thống và giới hạn của nó.
+Cập nhật **14/10/2026**, đối chiếu source Backend và cấu hình Unity hiện tại. Các bước setup/start/stop/test nằm trong [hướng dẫn vận hành chung](Phase1_First4Tasks.vi.md); file này giải thích hệ thống và giới hạn của nó. Phần nhiều phòng thuộc bản source mới, chưa triển khai hoặc chạy tải trên AWS.
 
 ## 1. Định hướng và trạng thái triển khai
 
-Mục tiêu: dự án lớp học, **một phòng tối đa 10 phiên**. Local dùng cho dev/debug; AWS dùng chung để test online theo lịch. LAN/VPN là nhánh tùy chọn. Hệ thống dùng mô hình client–server với GameServer .NET độc lập, chuẩn bị cho server authoritative.
+Mục tiêu: dự án lớp học, **tối đa 10 phiên/phòng**, 5 phòng gồm mặc định, tổng server tối đa 50 phiên active/pending. Phòng bổ sung có mã join 6 ký tự chữ hoa/số; mỗi user tối đa 2 phòng tạo thêm. Đây là hạn mức, chưa phải cam kết game chạy mượt. Local dùng cho dev/debug; AWS dùng chung để test online theo lịch. Source/Compose và local đã áp dụng 5/50, chưa deploy EC2. LAN/VPN là nhánh tùy chọn. Hệ thống dùng mô hình client–server với GameServer .NET độc lập, chuẩn bị cho server authoritative.
 
 | Thành phần | Đã thực hiện | Phạm vi chưa thực hiện |
 | --- | --- | --- |
 | Account API | Register/login, hash có salt, unique username, JWT, /api/me, /health, Swagger | Refresh token, thu hồi token, quản lý account đầy đủ |
-| GameServer | UDP LiteNetLib, auth handshake, PlayerId, 10 slot, cleanup, fixed tick 30Hz, metrics | Entity/world simulation, spawn/movement/combat/snapshot |
+| GameServer | UDP LiteNetLib, auth handshake, PlayerId, RoomManager nhiều phòng, cleanup, fixed tick 30Hz, metrics | Entity/world simulation, spawn/movement/combat/snapshot |
 | NetSmokeClient | Đọc JSON, nhập room/account, login nếu Jwt, join/ping/pong/RTT/capacity | Render hoặc chơi game |
-| AWS vận hành | Bốn services, HTTPS Caddy, DuckDNS, systemd, release/backup/guard | Autoscale/multi-room, mã hóa UDP public, matchmaking |
+| AWS vận hành | Bốn services, HTTPS Caddy, DuckDNS, systemd, release/backup/guard; source chuẩn bị control phòng private | Deploy bản nhiều phòng, đo tải AWS, autoscale, mã hóa UDP public, matchmaking |
 | Unity | Unity 6000.3.15f1/URP, JSurviv imported để tái sử dụng | Unity client LiteNetLib và multiplayer gameplay với backend này |
 
 Hiện server quyết định quyền vào phòng, PlayerId và sức chứa. `Tick` chưa có gameplay nên authoritative movement/combat chưa hoạt động. JSurviv `NetworkManager` vẫn dùng Socket.IO cũ, `AutoConnectLegacy=false`; không giao tiếp được với wire protocol LiteNetLib hiện tại.
@@ -42,6 +42,7 @@ flowchart LR
     C <-->|"127.0.0.1:7777 UDP"| G
     C -->|"Jwt: HTTP loopback API"| A
     A -->|"mongo:27017"| M
+    A -->|"HTTP private 7780 + control secret"| G
     V -->|"127.0.0.1:27018"| M
     U -.->|"Tích hợp ở giai đoạn tiếp theo"| G
 ```
@@ -61,13 +62,14 @@ flowchart LR
         P["Caddy TCP 80/443 / HTTPS / Basic auth Swagger"]
         A["API private TCP 5000"]
         M[("MongoDB 7.0.43 private 27017 / named volume")]
-        G["GameServer public UDP 7777 / RoomCode / 10 slot / 30Hz"]
+        G["GameServer public UDP 7777 / RoomCode / mặc định 10 slot / 30Hz"]
         S["systemd + DuckDNS timer"]
     end
     C -->|"DNS lookup"| DNS
     C -->|"HTTPS account và Swagger"| P
     P -->|"Reverse proxy"| A
     A --> M
+    A -->|"Bản mở rộng: HTTP private 7780 + secret"| G
     C <-->|"Connect / Join / Ping-Pong"| G
     ADM -->|"SSH TCP 22"| E
     S -->|"Cập nhật IPv4 khi start và mỗi phút"| DNS
@@ -127,9 +129,12 @@ Backend/
 | API Controller → Service → Repository, DI | HTTP validation/status; hash/verify; query/unique index Mongo |
 | TokenService/JwtOptions | HS256 JWT, sub/issuer/audience/nbf/exp/iat/jti; secret chỉ server |
 | GameServer/Program, composition root | Đọc options, tạo metrics/network/loop, xử lý dừng và dispose |
-| ServerOptions/JwtSettings | Validate IPv4/port/auth/10 slot/30Hz/deadline; guard public RoomCode |
+| ServerOptions/JwtSettings/RoomOptions | Validate IPv4/port/auth, phòng mặc định 1–10, tổng phiên/phòng, control key, 30Hz/deadline; guard public RoomCode |
 | HandshakeValidator | Validate request và token; không gọi DB/API |
 | NetworkHost | Listener events, peer → session, userId → peerId, reserve/reject/cleanup |
+| RoomManager | Nguồn dữ liệu phòng trong RAM: code → phòng, owner/quota/TTL/slot từng phòng |
+| RoomCommands/RoomControlHost | HTTP secret riêng, queue tối đa 128 yêu cầu, drain tối đa 16/vòng trên thread UDP |
+| API RoomsController/RoomControlClient | JWT sub → owner; chuyển CRUD phòng qua HTTP private, 5 create/phút/user |
 | FixedTickLoop | Accumulator, fixed delta 1/30, giới hạn catch-up |
 | ServerMetrics | CPU/tick/loop/slot/reject/invalid/drop theo cửa sổ |
 | Shared/NetworkProtocol | Hợp đồng byte; Compile Link vào server/client, không phải service |
@@ -149,7 +154,7 @@ sequenceDiagram
     participant C as Client
     participant G as GameServer
     C->>G: Connect(version 1, RoomCode, roomCode, displayName)
-    G->>G: Validate và reserve slot nếu tổng dưới 10
+    G->>G: Tra phòng theo code; reserve nếu phòng và tổng server còn slot
     G->>G: Cấp Guid PlayerId
     G-->>C: JoinAccepted(playerId), ReliableOrdered
     C->>G: Ping(sequence), Unreliable
@@ -191,6 +196,18 @@ Client Jwt từ xa chỉ chấp nhận HTTPS hợp lệ hoặc Online/IP Tailsca
 
 API public: body limit 16KiB, register/login dùng chung fixed window 60 request/phút, queue 0, trả 429 khi quá quota. Local dùng NoLimiter. Không tin X-Forwarded-For do client gửi để chia quota. Swagger admin Basic auth và account JWT là hai quyền riêng.
 
+### 4.4. Quản lý nhiều phòng
+
+Luồng tạo phòng: **Swagger JWT → RoomsController → HTTP private TCP 7780 → queue → RoomManager trên thread UDP**. Account `sub` là chủ phòng; không tin user ID gửi trong body. API cung cấp POST/GET/DELETE `/api/rooms`; GET trả phòng mặc định (ẩn code) và phòng của chính user, code bổ sung chỉ trả cho chủ. DELETE yêu cầu phòng của mình, trống cả active/pending; phòng mặc định được bảo vệ.
+
+RoomManager là nguồn dữ liệu phòng duy nhất trong process, sinh mã 6 ký tự bằng bộ sinh mật mã và kiểm không trùng, gồm cả mã mặc định. Dùng bảng chữ hoa/số `ABCDEFGHJKLMNPQRSTUVWXYZ23456789`, nhập đúng chữ hoa; loại I/O/0/1 để giảm nhầm lẫn. Mỗi phòng giữ ID/tên/chủ/sức chứa/danh sách peer riêng. Giữ mã mặc định từ `ROOM_CODE` và `MAX_PLAYERS=10`; phòng bổ sung tối đa 10, tổng phiên 50, tối đa 5 phòng gồm mặc định, 2 phòng bổ sung/user. Cần ít nhất hai user để tạo đủ bốn phòng ngoài mặc định. `RoomLimits` dùng chung để API/Swagger và GameServer thống nhất giới hạn; cấu hình vượt phương án bị từ chối khi khởi động. Không dùng Mongo để lưu phòng tạm; restart GameServer mất phòng bổ sung. Phòng bổ sung trống liên tục 600 giây sẽ thu hồi, thời gian trống bắt đầu lại khi peer cuối rời đi.
+
+HTTP nội bộ dùng `ROOM_CONTROL_TOKEN` random ≥32 byte riêng, so sánh fixed-time; không truyền JWT player tới control. Cổng 7780 không publish ra host/Internet và không mở Security Group. HTTP handler chỉ enqueue vào bounded queue 128, tối đa 16 lệnh/vòng poll, deadline 3s; UDP app xử lý tuần tự để kiểm quota và slot không bị race. Không gọi HTTP/Mongo trong Tick. Hết hạn trước khi xử lý thì bỏ lệnh; API trả 503 khi chưa cấu hình/busy/unavailable. Thiếu secret vẫn cho chạy UDP phòng mặc định.
+
+POST giới hạn fixed window 5 yêu cầu/phút theo JWT sub, kể cả yêu cầu validation/quota lỗi. Tên 1–48 ký tự, capacity không vượt giới hạn một phòng hoặc tổng server. Mã join/secret/JWT/password không ghi log; metrics chỉ ghi room ID và occupancy. API không cung cấp endpoint chuyển phòng: client disconnect rồi join với code mới. Các phòng dùng chung process/CPU/tick; chưa có world gameplay riêng hay cách ly hiệu năng giữa phòng, chưa phải matchmaking/multi-server.
+
+GameServer dùng thêm ASP.NET Core shared framework; Docker runtime `aspnet:8.0`. Local API/GameServer nhận cùng secret từ `.env`. AWS Compose đã chuẩn bị đường private và script thêm key nếu thiếu, nhưng triển khai/đo tải AWS là lượt riêng sau báo cáo local. Cách setup, thông số và bài đo nằm ở mục 14 của hướng dẫn chung.
+
 ## 5. Session, slot và packet
 
 ```mermaid
@@ -207,7 +224,7 @@ stateDiagram-v2
     Closed --> [*]
 ```
 
-- Reserve ngay khi Accept request, trước callback PeerConnected, nên burst không vượt 10 active + pending.
+- Reserve ngay khi Accept request, trước callback PeerConnected, nên burst không vượt sức chứa từng phòng hoặc tổng server. Pending JWT chiếm slot ở cả hai mức.
 - Pending deadline mặc định 5000ms; kiểm tra trong receive và sau mỗi PollEvents. Chỉ nhận Auth ở channel 0/ReliableOrdered.
 - Sau JoinAccepted client mới gửi Ping. Packet active thiếu/thừa/lạ bị đếm/bỏ; server tiếp tục xử lý packet hợp lệ.
 - Mapping userId được reserve/activate trong cùng callback, không await giữa kiểm tra và ghi. Cleanup idempotent, chỉ xóa mapping đúng owner.
@@ -224,9 +241,11 @@ stateDiagram-v2
 
 Dùng NetDataWriter/NetDataReader của LiteNetLib, channel 0. Kiểm đủ byte/length/trailing bytes; Unicode phải thỏa cả char và byte. Auth gửi riêng khỏi request để hỗ trợ token fragmentation. AutoRecycle=true nên không recycle reader lần hai.
 
-Reason có MalformedRequest, PayloadTooLarge, UnsupportedVersion, AuthModeMismatch, InvalidRoomCode, InvalidDisplayName, RoomFull, AuthenticationRequired, InvalidToken, AuthTimeout, DuplicateSession. Key smoke cũ `JungleMaze.SRV01.v1` không còn dùng. Đổi wire protocol phải cập nhật server/client; hiện chỉ hỗ trợ version 1.
+Reason có MalformedRequest, PayloadTooLarge, UnsupportedVersion, AuthModeMismatch, InvalidRoomCode, InvalidDisplayName, RoomFull, ServerFull, AuthenticationRequired, InvalidToken, AuthTimeout, DuplicateSession. Nếu phòng đã đầy ưu tiên RoomFull; nếu phòng còn slot nhưng tổng server đầy trả ServerFull. Key smoke cũ `JungleMaze.SRV01.v1` không còn dùng. Giữ nguyên packet version 1 để client hiện có tiếp tục vào phòng mặc định.
 
 ## 6. Vòng tick, số đo và giới hạn tải
+
+[Báo cáo mới nhất](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md) xác nhận một phòng 50 phiên, năm phòng × 10 và sáu phòng × 10 qua 180s; sáu phòng có p95 phòng chậm nhất 48,21ms. Bảy phòng × 10 trượt p95 của một phòng ở 55,71ms; một phòng 95 và chín phòng × 10 cũng trượt lượt dài. Bài đo dùng source snapshot nới policy. Sau đó đã áp dụng **10 người/phòng, 5 phòng/tổng 50** vào source/config/local và kiểm tra chức năng năm phòng × 10 đồng thời; chưa chứng minh sức chứa gameplay/EC2. Chỉ giữ một báo cáo với JSON/CSV và dữ liệu thô nén, không dùng số của lượt cũ làm trần cố định.
 
 Application thread: **PollEvents → Tick → metrics report → sleep ngắn**. LiteNetLib có thread transport nội bộ nhưng app không bật unsynced events; callback/session mappings và Tick được xử lý tuần tự.
 
@@ -234,7 +253,9 @@ Stopwatch/accumulator giữ thời gian dư, mỗi Tick dùng delta 1/30 giây. 
 
 Metrics mặc định mỗi 5 giây: active/pending/peers, ticksPerSecond, tick và work loop p95/p99, cpuOneCorePercent, overrun/drop, ping/invalid/reject. Work loop loại sleep/log; CPU chuẩn một core, 100% là một core bận, có thể >100%. Samples có giới hạn và bộ đếm cửa sổ reset sau report.
 
-NetSmokeClient ping khoảng 1 lần/giây/phiên. Theo dõi sequence, timeout Pong 5000ms, RTT p95 trên tối đa 1024 mẫu. Client chưa chứng minh FPS, loss/jitter gameplay đầy đủ, combat hoặc khả năng 10 người chơi thật; benchmark hiện là khung mạng/tick rỗng. Mục tiêu CPU idle và độ mượt cần nghiệm thu riêng sau khi có mô phỏng.
+NetSmokeClient hỗ trợ 1–256 phiên, ping mặc định 1Hz, cấu hình 1–60Hz. Benchmark dùng 30Hz, ít log, warm-up 15s rồi đo 60s (xác nhận 180s), thống kê join/reject/disconnect, ping/pong/timeout và RTT p95/p99. Mỗi client giữ tối đa 16.384 mẫu RTT gần nhất; bài đo 180s/30Hz nằm trong giới hạn. Tốc độ gửi thực tế dưới 95% yêu cầu làm lượt đo không hợp lệ. Client chưa chứng minh FPS hoặc combat; phải đo lại khi có movement/combat/snapshot.
+
+`--room-plan` nhận file riêng tư gồm ID/mã/số client từng phòng, để một process phát tải nhiều phòng đồng thời; report chỉ ghi ID, không ghi mã. Công cụ `local_capacity_probe.py` chạy trên Docker local riêng, dùng control endpoint để provision, không dùng API account/MongoDB và không đo JWT hoặc rate limit Swagger. Trần thử nghiệm 256 phiên/32 phòng là phạm vi công cụ, không phải sức chứa đã xác nhận. Cách chạy và cleanup ở mục 14.5 của hướng dẫn chung.
 
 ## 7. Release, dữ liệu và vòng đời vận hành
 

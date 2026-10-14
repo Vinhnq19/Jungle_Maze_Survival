@@ -37,8 +37,7 @@ public sealed class HandshakeValidator
     {
         if (request.Version != NetworkProtocol.Version) return "UnsupportedVersion";
         if (request.Mode != _options.Mode) return "AuthModeMismatch";
-        if (string.IsNullOrWhiteSpace(request.RoomCode) || request.RoomCode.Length > NetworkProtocol.MaxRoomChars
-            || !string.Equals(request.RoomCode, _options.RoomCode, StringComparison.Ordinal)) return "InvalidRoomCode";
+        if (string.IsNullOrWhiteSpace(request.RoomCode) || request.RoomCode.Length > NetworkProtocol.MaxRoomChars) return "InvalidRoomCode";
         if (string.IsNullOrWhiteSpace(request.DisplayName) || request.DisplayName.Length > NetworkProtocol.MaxNameChars)
             return "InvalidDisplayName";
         return null;

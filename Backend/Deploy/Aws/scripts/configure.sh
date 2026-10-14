@@ -33,6 +33,7 @@ key="$(openssl rand -base64 48 | tr -d '\n')"
   printf "PUBLIC_DOMAIN='%s'\nACME_EMAIL='%s'\nDUCKDNS_TOKEN='%s'\n" "$domain" "$email" "$token"
   printf "SWAGGER_USER='%s'\nSWAGGER_HASH='%s'\nJWT_SIGNING_KEY='%s'\n" "$admin" "$hash" "$key"
   printf "AUTH_MODE='RoomCode'\nROOM_CODE='%s'\n" "$room"
+  printf "ROOM_CONTROL_TOKEN='%s'\n" "$(openssl rand -hex 32)"
 } > "$CONFIG_FILE"
 chmod 600 "$CONFIG_FILE"
 python3 - "$ROOT/client.aws.json" "$domain" <<'PY'

@@ -33,6 +33,8 @@ services:
       Jwt__Audience: JungleMaze.Game
       Jwt__SigningKey: ${JWT_SIGNING_KEY:?Run configure.sh}
       Swagger__Enabled: "true"
+      RoomControl__BaseUrl: http://game-server:7780
+      ROOM_CONTROL_TOKEN: ${ROOM_CONTROL_TOKEN:-}
     depends_on:
       mongo: { condition: service_healthy }
     healthcheck:
@@ -56,6 +58,14 @@ services:
       AUTH_MODE: ${AUTH_MODE:-RoomCode}
       ROOM_CODE: ${ROOM_CODE:?Run configure.sh}
       METRICS_INTERVAL_SECONDS: "5"
+      ROOM_CONTROL_TOKEN: ${ROOM_CONTROL_TOKEN:-}
+      ROOM_CONTROL_BIND_ADDRESS: 0.0.0.0
+      ROOM_CONTROL_PORT: "7780"
+      MAX_ROOM_PLAYERS: "${MAX_ROOM_PLAYERS:-10}"
+      MAX_TOTAL_PLAYERS: "${MAX_TOTAL_PLAYERS:-50}"
+      MAX_ROOMS: "${MAX_ROOMS:-5}"
+      MAX_ROOMS_PER_USER: "${MAX_ROOMS_PER_USER:-2}"
+      ROOM_EMPTY_TTL_SECONDS: "${ROOM_EMPTY_TTL_SECONDS:-600}"
     logging: *logging
   caddy:
     image: ${CADDY_IMAGE:?Load release images first}

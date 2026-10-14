@@ -5,18 +5,20 @@ using GameServer.Diagnostics;
 using JungleBackend.Protocol;
 using LiteNetLib;
 using LiteNetLib.Utils;
+using GameServer.Rooms;
 
 namespace GameServer.Networking;
 
 /// <summary>UDP/handshake trên thread PollEvents; slot bao gồm cả pending và active.</summary>
 public sealed class NetworkHost : IDisposable
 {
-    private sealed class Session(NetPeer peer, JoinRequest request, long deadline, string? playerId)
+    private sealed class Session(NetPeer peer, JoinRequest request, long deadline, string? playerId, RoomManager.Room room)
     {
         public NetPeer Peer { get; } = peer;
         public JoinRequest Request { get; } = request;
         public long Deadline { get; } = deadline;
         public string? PlayerId { get; set; } = playerId;
+        public RoomManager.Room Room { get; } = room;
         public bool Active => PlayerId is not null;
     }
 
@@ -30,10 +32,13 @@ public sealed class NetworkHost : IDisposable
     public int ReservedPeers => _sessions.Count;
     public int ActivePeers => _sessions.Values.Count(session => session.Active);
     public int PendingPeers => ReservedPeers - ActivePeers;
+    public RoomManager Rooms { get; }
+    public RoomCommands Commands { get; } = new();
 
     public NetworkHost(ServerOptions options, ServerMetrics metrics)
     {
         _options = options;
+        Rooms = new RoomManager(options);
         _metrics = metrics;
         _handshake = new HandshakeValidator(options);
         var listener = new EventBasedNetListener();
@@ -48,7 +53,7 @@ public sealed class NetworkHost : IDisposable
         listener.PeerDisconnectedEvent += (peer, info) =>
         {
             ReleaseSlot(peer.Id);
-            Console.WriteLine($"[disconnected] peer={peer.Id} reason={info.Reason} slots={ReservedPeers}/{_options.MaxPlayers}");
+            Console.WriteLine($"[disconnected] peer={peer.Id} reason={info.Reason} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
         };
         listener.NetworkReceiveEvent += OnReceive;
         listener.NetworkErrorEvent += (_, error) => Console.Error.WriteLine($"[network-error] socket={error}");
@@ -71,13 +76,17 @@ public sealed class NetworkHost : IDisposable
         var invalid = _handshake.ValidateRequest(join!);
         if (invalid is not null) { RejectRequest(request, invalid); return; }
         // Tuần tự trên PollEvents: giữ slot ngay khi Accept, trước callback Connected.
-        // Pending JWT chiếm chỗ như active, nên burst request không vượt 10.
-        if (ReservedPeers >= _options.MaxPlayers) { RejectRequest(request, "RoomFull"); return; }
+        // Tra đúng phòng và giữ slot trước Connected: cả pending/active tính vào phòng và server.
+        var room = Rooms.Find(join!.RoomCode);
+        if (room is null) { RejectRequest(request, "InvalidRoomCode"); return; }
+        var capacityError = Rooms.CapacityError(room);
+        if (capacityError is not null) { RejectRequest(request, capacityError); return; }
         var peer = request.Accept();
         if (peer is null) return;
         var playerId = _options.Mode == JoinAuthMode.RoomCode ? Guid.NewGuid().ToString() : null;
         _sessions[peer.Id] = new Session(peer, join!, Stopwatch.GetTimestamp()
-            + (long)(_options.AuthTimeoutMs / 1000.0 * Stopwatch.Frequency), playerId);
+            + (long)(_options.AuthTimeoutMs / 1000.0 * Stopwatch.Frequency), playerId, room);
+        Rooms.Reserve(room, peer.Id, playerId is not null);
     }
 
     private void OnPeerConnected(NetPeer peer)
@@ -89,7 +98,7 @@ public sealed class NetworkHost : IDisposable
             var writer = new NetDataWriter();
             writer.Put(NetworkProtocol.AuthRequired);
             peer.Send(writer, DeliveryMethod.ReliableOrdered);
-            Console.WriteLine($"[pending] peer={peer.Id} slots={ReservedPeers}/{_options.MaxPlayers}");
+            Console.WriteLine($"[pending] peer={peer.Id} roomId={session.Room.Id} roomSlots={session.Room.Peers.Count}/{session.Room.MaxPlayers} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
         }
     }
 
@@ -113,6 +122,7 @@ public sealed class NetworkHost : IDisposable
             if (_users.ContainsKey(playerId)) { RejectPeer(session, "DuplicateSession"); return; }
             _users[playerId] = peer.Id;
             session.PlayerId = playerId;
+            Rooms.Activate(session.Room, peer.Id);
             AcceptSession(session);
             return;
         }
@@ -131,7 +141,7 @@ public sealed class NetworkHost : IDisposable
     private void AcceptSession(Session session)
     {
         session.Peer.Send(NetworkProtocol.StringMessage(NetworkProtocol.JoinAccepted, session.PlayerId!), DeliveryMethod.ReliableOrdered);
-        Console.WriteLine($"[joined] peer={session.Peer.Id} playerId={session.PlayerId} active={ActivePeers} pending={PendingPeers} slots={ReservedPeers}/{_options.MaxPlayers}");
+        Console.WriteLine($"[joined] peer={session.Peer.Id} playerId={session.PlayerId} roomId={session.Room.Id} active={ActivePeers} pending={PendingPeers} roomSlots={session.Room.Peers.Count}/{session.Room.MaxPlayers} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
     }
 
     private void RejectRequest(ConnectionRequest request, string reason)
@@ -152,19 +162,22 @@ public sealed class NetworkHost : IDisposable
 
     private void ReleaseSlot(int peerId)
     {
-        if (_sessions.Remove(peerId, out var session) && session.PlayerId is not null
-            && _users.TryGetValue(session.PlayerId, out var owner) && owner == peerId)
+        if (!_sessions.Remove(peerId, out var session)) return;
+        Rooms.Release(session.Room, peerId);
+        if (session.PlayerId is not null && _users.TryGetValue(session.PlayerId, out var owner) && owner == peerId)
             _users.Remove(session.PlayerId);
     }
 
     private void LogReject(string reason)
     {
         _metrics.RecordRejection();
-        Console.WriteLine($"[rejected] reason={reason} slots={ReservedPeers}/{_options.MaxPlayers}");
+        Console.WriteLine($"[rejected] reason={reason} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
     }
 
     public void PollEvents()
     {
+        Commands.Drain(Rooms);
+        Rooms.ExpireEmpty();
         _manager.PollEvents();
         var now = Stopwatch.GetTimestamp();
         foreach (var session in _sessions.Values.Where(session => !session.Active && now >= session.Deadline).ToArray())
@@ -174,6 +187,7 @@ public sealed class NetworkHost : IDisposable
     public void Dispose()
     {
         _manager.Stop();
+        foreach (var session in _sessions.Values) Rooms.Release(session.Room, session.Peer.Id);
         _sessions.Clear();
         _users.Clear();
         Console.WriteLine("[stopped] UDP socket đã đóng.");
