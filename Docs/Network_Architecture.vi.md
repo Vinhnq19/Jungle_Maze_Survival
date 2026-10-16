@@ -1,17 +1,17 @@
 # Kiến trúc mạng Jungle Maze
 
-Cập nhật **14/10/2026**, đối chiếu source Backend và cấu hình Unity hiện tại. Các bước setup/start/stop/test nằm trong [hướng dẫn vận hành chung](Phase1_First4Tasks.vi.md); file này giải thích hệ thống và giới hạn của nó. Phần nhiều phòng thuộc bản source mới, chưa triển khai hoặc chạy tải trên AWS.
+Cập nhật **16/10/2026**, đối chiếu source Backend và cấu hình Unity hiện tại. Các bước setup/start/stop/test nằm trong [hướng dẫn vận hành chung](Phase1_First4Tasks.vi.md); file này giải thích hệ thống và giới hạn của nó. Phần nhiều phòng đã triển khai trên EC2; phạm vi kiểm chứng được tách rõ trong báo cáo chung.
 
 ## 1. Định hướng và trạng thái triển khai
 
-Mục tiêu: dự án lớp học, **tối đa 10 phiên/phòng**, 5 phòng gồm mặc định, tổng server tối đa 50 phiên active/pending. Phòng bổ sung có mã join 6 ký tự chữ hoa/số; mỗi user tối đa 2 phòng tạo thêm. Đây là hạn mức, chưa phải cam kết game chạy mượt. Local dùng cho dev/debug; AWS dùng chung để test online theo lịch. Source/Compose và local đã áp dụng 5/50, chưa deploy EC2. LAN/VPN là nhánh tùy chọn. Hệ thống dùng mô hình client–server với GameServer .NET độc lập, chuẩn bị cho server authoritative.
+Mục tiêu: dự án lớp học, **tối đa 10 phiên/phòng**, 5 phòng gồm mặc định, tổng server tối đa 50 phiên active/pending. Phòng bổ sung có mã join 6 ký tự chữ hoa/số; mỗi user tối đa 2 phòng tạo thêm. Đây là hạn mức, chưa phải cam kết game chạy mượt. Local dùng cho dev/debug; AWS dùng chung để test online theo lịch. Source/Compose, local và EC2 đã áp dụng 5/50. LAN/VPN là nhánh tùy chọn. Hệ thống dùng mô hình client–server với GameServer .NET độc lập, chuẩn bị cho server authoritative.
 
 | Thành phần | Đã thực hiện | Phạm vi chưa thực hiện |
 | --- | --- | --- |
 | Account API | Register/login, hash có salt, unique username, JWT, /api/me, /health, Swagger | Refresh token, thu hồi token, quản lý account đầy đủ |
-| GameServer | UDP LiteNetLib, auth handshake, PlayerId, RoomManager nhiều phòng, cleanup, fixed tick 30Hz, metrics | Entity/world simulation, spawn/movement/combat/snapshot |
-| NetSmokeClient | Đọc JSON, nhập room/account, login nếu Jwt, join/ping/pong/RTT/capacity | Render hoặc chơi game |
-| AWS vận hành | Bốn services, HTTPS Caddy, DuckDNS, systemd, release/backup/guard; source chuẩn bị control phòng private | Deploy bản nhiều phòng, đo tải AWS, autoscale, mã hóa UDP public, matchmaking |
+| GameServer | UDP LiteNetLib + binary WebSocket, SessionHub/handshake, PlayerId, RoomManager, cleanup, fixed tick 30Hz, metrics | Entity/world simulation, spawn/movement/combat/snapshot |
+| NetSmokeClient | JSON/env, Udp/Wss/Auto, room/account, join/ping/pong/RTT/capacity | Render hoặc chơi game |
+| AWS vận hành | Bốn services, HTTPS Caddy, DuckDNS, systemd, release/backup/guard, control phòng private, đo ping/pong 5×10 ngay trong EC2 | Nghiệm thu đường UDP PC→EC2, autoscale, mã hóa UDP public, matchmaking |
 | Unity | Unity 6000.3.15f1/URP, JSurviv imported để tái sử dụng | Unity client LiteNetLib và multiplayer gameplay với backend này |
 
 Hiện server quyết định quyền vào phòng, PlayerId và sức chứa. `Tick` chưa có gameplay nên authoritative movement/combat chưa hoạt động. JSurviv `NetworkManager` vẫn dùng Socket.IO cũ, `AutoConnectLegacy=false`; không giao tiếp được với wire protocol LiteNetLib hiện tại.
@@ -40,6 +40,7 @@ flowchart LR
     end
     V["Compass trên PC"]
     C <-->|"127.0.0.1:7777 UDP"| G
+    C <-->|"ws://127.0.0.1:7781/game; Local"| G
     C -->|"Jwt: HTTP loopback API"| A
     A -->|"mongo:27017"| M
     A -->|"HTTP private 7780 + control secret"| G
@@ -57,7 +58,7 @@ Windows publish port lấy từ `.env`; server trong container luôn dùng GAME_
 flowchart LR
     C["PC tester / NetSmokeClient"]
     DNS["DuckDNS junglemaze.duckdns.org"]
-    ADM["Admin: SSH từ IP được cho phép"]
+    ADM["Admin: SSH qua Session Manager / HTTPS"]
     subgraph E["EC2 Sydney / Ubuntu 24.04 x86_64 / t3.small"]
         P["Caddy TCP 80/443 / HTTPS / Basic auth Swagger"]
         A["API private TCP 5000"]
@@ -68,10 +69,12 @@ flowchart LR
     C -->|"DNS lookup"| DNS
     C -->|"HTTPS account và Swagger"| P
     P -->|"Reverse proxy"| A
+    C <-->|"WSS /game qua TLS 443"| P
+    P <-->|"WebSocket private 7781/game"| G
     A --> M
-    A -->|"Bản mở rộng: HTTP private 7780 + secret"| G
+    A -->|"HTTP private 7780 + secret"| G
     C <-->|"Connect / Join / Ping-Pong"| G
-    ADM -->|"SSH TCP 22"| E
+    ADM -->|"SSM outbound HTTPS; không cần PC vào TCP 22"| E
     S -->|"Cập nhật IPv4 khi start và mỗi phút"| DNS
 ```
 
@@ -87,6 +90,22 @@ flowchart LR
 Security group: TCP 22 chỉ IP admin; TCP 80/443 và UDP 7777 public IPv4. API/Mongo không có host port. Caddy dùng h1/h2, không publish UDP 443. Root EBS gp3 20GB mã hóa giữ Docker data/config; swap 1GiB dự phòng. Tổng giới hạn RAM container là 1.5GiB; phải đo thực tế trên EC2, không coi giới hạn này là bằng chứng game 10 người mượt.
 
 API account AWS dùng HTTPS. Proxy Basic auth chỉ bảo vệ `/swagger` và `/swagger/*`. /api/me vẫn cần Bearer JWT; register/login cho phép anonymous theo API contract. Mongo chưa bật auth trong cấu hình hiện tại: được bảo vệ bằng private network và quyền SSH/admin, không expose DB.
+
+### 2.3. UDP chính, WSS dự phòng dùng chung phòng
+
+Backend cung cấp UDP LiteNetLib 7777 và WebSocket binary nội bộ 7781 tại `/game`; Caddy chuyển tiếp `wss://junglemaze.duckdns.org/game` qua HTTPS 443. Listener WebSocket 7781 và control 7780 không publish trên AWS. API/Swagger/Mongo giữ cấu hình cũ; Basic auth chỉ bảo vệ Swagger, không áp vào đường game.
+
+`SessionHub` sở hữu identity, RoomManager và slot; UDP và WebSocket là hai adapter cùng gọi vào nó. Các thao tác phòng/session chạy tuần tự trên application loop; Kestrel chỉ enqueue byte qua queue 1024 sự kiện, drain tối đa 256/vòng. Mỗi socket có queue gửi 64 message, send timeout 2s; socket chậm bị đóng/trả slot. Không await socket/API/DB trong tick. Socket chưa gửi handshake bị giới hạn riêng tối đa 2×MAX_TOTAL_PLAYERS và timeout 5s; chưa có phòng/PlayerId nên chưa phải slot player. Sau handshake hợp lệ, cả pending auth và active của hai transport cùng chịu 10/phòng, 50/server.
+
+Protocol UDP v1 vẫn được nhận. V2 thêm 16 byte mã lượt kết nối ngẫu nhiên sau payload connect cũ, tối đa 272 byte; WSS yêu cầu v2 và dùng chính application messages Join/Auth/Ping/Pong, không bọc packet LiteNetLib. WebSocket ghép fragment tối đa 4096 byte và chỉ nhận binary. Mã lượt kết nối không được log, không phải account ID hoặc PlayerId.
+
+Auto thử UDP trong 5s; lỗi transport trước JoinAccepted mới chuyển WSS (tối đa 10s mở và 5s join). Mã sai/phòng đầy/phiên bản sai không kích hoạt fallback. V2 cho phép chuyển một lần từ UDP chưa có thông điệp ứng dụng hợp lệ sang WSS, giữ PlayerId và tối đa một slot. Route UDP cũ bị tháo trước, callback đến muộn không giải phóng/tạo lại slot. Sau thông điệp ứng dụng đầu tiên, attempt bị khóa; nonce của phiên đã kết thúc được giữ 30s để chặn replay, tối đa 4096 records. Khi đã join, client giữ tuyến, mất mạng báo lỗi và reconnect bằng attempt/PlayerId mới; chưa có resume gameplay.
+
+NET_TRANSPORT và NET_WS_URL override `transport`/`webSocketUrl` trong JSON. Config cũ thiếu transport mặc định Udp; Wss/Auto cần v2. Remote bắt buộc wss/certificate hợp lệ; ws chỉ được dùng loopback. Hai môi trường Local/AWS dùng code/secret/DB riêng. Các profile `client.local-auto.json`, `client.lan-v2.json`, `client.aws-auto.json` chuẩn bị cho tích hợp Unity sau này; client Unity chưa được triển khai.
+
+`webSocketConnectIp` / NET_WS_CONNECT_IP là pin TCP tùy chọn, rõ ràng trong config/report: SocketsHttpHandler nối tới IP chỉ định, giữ URI/SNI và xác minh certificate chain/hostname mặc định. Không sửa hosts/DNS toàn máy; ws chỉ được pin loopback. Bài AWS dùng pin để tránh dòng hosts cũ trên PC; đó là kiểm transport public, không tự chứng minh resolver PC đã đúng. Profile LAN Auto cần TLS hợp lệ tới cùng server LAN, không fallback sang AWS khác server.
+
+Tạo/list/xóa phòng vẫn HTTPS + JWT; account ID ở sub, còn join RoomCode nhận PlayerId ngẫu nhiên do server cấp. API account không nằm trên đường ping/tick. SSM chỉ quản trị, Tailscale là công cụ tùy chọn cũ, không yêu cầu cài cho người chơi. WSS cần mạng cho phép HTTPS/Upgrade và DNS đúng; không đảm bảo truy cập được khi cả hostname/443 bị chặn. Xem mục 16 trong hướng dẫn chung và báo cáo mới nhất để biết tuyến nào đã thực sự kiểm chứng.
 
 ## 3. Project, công nghệ và trách nhiệm
 
@@ -104,7 +123,7 @@ Backend/
   GameServer/
     Program.cs, Dockerfile
     Configuration/ServerOptions.cs, JwtSettings.cs
-    Networking/NetworkHost.cs, HandshakeValidator.cs
+    Networking/NetworkHost.cs, SessionHub.cs, IGamePeer.cs, WebSocketHost.cs, HandshakeValidator.cs
     Simulation/FixedTickLoop.cs, Diagnostics/ServerMetrics.cs
   Shared/NetworkProtocol.cs
   NetSmokeClient/
@@ -112,7 +131,7 @@ Backend/
     client.local.json, client.lan.json, client.online.json, client.aws.json
     Configuration/ClientOptions.cs
     Services/CredentialInput.cs, AccountLogin.cs
-    Networking/SmokeSession.cs
+    Networking/SmokeSession.cs, WebSocketClientTransport.cs
   Deploy/
     build-aws-release.ps1
     Aws/Caddyfile
@@ -131,7 +150,8 @@ Backend/
 | GameServer/Program, composition root | Đọc options, tạo metrics/network/loop, xử lý dừng và dispose |
 | ServerOptions/JwtSettings/RoomOptions | Validate IPv4/port/auth, phòng mặc định 1–10, tổng phiên/phòng, control key, 30Hz/deadline; guard public RoomCode |
 | HandshakeValidator | Validate request và token; không gọi DB/API |
-| NetworkHost | Listener events, peer → session, userId → peerId, reserve/reject/cleanup |
+| NetworkHost / WebSocketHost | Adapter UDP / binary WebSocket; socket async đưa sự kiện vào hàng đợi |
+| SessionHub / IGamePeer | Session, handshake, PlayerId, slot chung; chuyển lượt UDP → WSS, chống callback cũ |
 | RoomManager | Nguồn dữ liệu phòng trong RAM: code → phòng, owner/quota/TTL/slot từng phòng |
 | RoomCommands/RoomControlHost | HTTP secret riêng, queue tối đa 128 yêu cầu, drain tối đa 16/vòng trên thread UDP |
 | API RoomsController/RoomControlClient | JWT sub → owner; chuyển CRUD phòng qua HTTP private, 5 create/phút/user |
@@ -139,7 +159,7 @@ Backend/
 | ServerMetrics | CPU/tick/loop/slot/reject/invalid/drop theo cửa sổ |
 | Shared/NetworkProtocol | Hợp đồng byte; Compile Link vào server/client, không phải service |
 | ClientOptions/CredentialInput/AccountLogin | Endpoint JSON, nhập secret, HTTP login tùy mode |
-| SmokeSession | Một UDP peer, handshake, ping sequence, timeout/RTT; không tự reconnect |
+| SmokeSession / WebSocketClientTransport | Một lượt kết nối Udp/Wss/Auto; fallback trước join, ping/RTT, hàng đợi socket có giới hạn; không tự reconnect sau join |
 
 Backend target **net8.0**, SDK chọn **8.0.403/latestPatch**. GameServer/NetSmokeClient dùng LiteNetLib **2.1.4**. API dùng MongoDB.Driver **3.12.0**, JwtBearer **8.0.31**, Swashbuckle **10.3.0**; GameServer JWT **7.7.3** khớp dependency token của API. `Directory.Build.props` tắt `EnableProjectDataOnBuild` khi build thường để tránh task cache .NET 10 của C# Dev Kit 11.3.30 bị nạp vào SDK 8.
 
@@ -148,6 +168,8 @@ Pooling/command/state trong assets JSurviv là nguồn tham khảo gameplay; ch�
 ## 4. Account, identity và hai luồng join
 
 ### 4.1. RoomCode, dùng trên AWS
+
+Sơ đồ dưới mô tả UDP v1 tương thích cũ. UDP v2 thêm attempt ID; WSS v2 dùng cùng nội dung handshake/application message qua binary WebSocket. Ping/Pong qua WSS có thứ tự và độ tin cậy của TCP, không dùng gói Unreliable của LiteNetLib.
 
 ```mermaid
 sequenceDiagram
@@ -206,7 +228,7 @@ HTTP nội bộ dùng `ROOM_CONTROL_TOKEN` random ≥32 byte riêng, so sánh fi
 
 POST giới hạn fixed window 5 yêu cầu/phút theo JWT sub, kể cả yêu cầu validation/quota lỗi. Tên 1–48 ký tự, capacity không vượt giới hạn một phòng hoặc tổng server. Mã join/secret/JWT/password không ghi log; metrics chỉ ghi room ID và occupancy. API không cung cấp endpoint chuyển phòng: client disconnect rồi join với code mới. Các phòng dùng chung process/CPU/tick; chưa có world gameplay riêng hay cách ly hiệu năng giữa phòng, chưa phải matchmaking/multi-server.
 
-GameServer dùng thêm ASP.NET Core shared framework; Docker runtime `aspnet:8.0`. Local API/GameServer nhận cùng secret từ `.env`. AWS Compose đã chuẩn bị đường private và script thêm key nếu thiếu, nhưng triển khai/đo tải AWS là lượt riêng sau báo cáo local. Cách setup, thông số và bài đo nằm ở mục 14 của hướng dẫn chung.
+GameServer dùng thêm ASP.NET Core shared framework; Docker runtime `aspnet:8.0`. Local API/GameServer nhận cùng secret từ `.env`. AWS Compose cấu hình đường private và migration thêm key nếu thiếu; bài đo AWS là lượt riêng, không dùng số local thay cho số EC2. Cách setup, thông số và bài đo nằm ở mục 14 của hướng dẫn chung.
 
 ## 5. Session, slot và packet
 
@@ -241,11 +263,11 @@ stateDiagram-v2
 
 Dùng NetDataWriter/NetDataReader của LiteNetLib, channel 0. Kiểm đủ byte/length/trailing bytes; Unicode phải thỏa cả char và byte. Auth gửi riêng khỏi request để hỗ trợ token fragmentation. AutoRecycle=true nên không recycle reader lần hai.
 
-Reason có MalformedRequest, PayloadTooLarge, UnsupportedVersion, AuthModeMismatch, InvalidRoomCode, InvalidDisplayName, RoomFull, ServerFull, AuthenticationRequired, InvalidToken, AuthTimeout, DuplicateSession. Nếu phòng đã đầy ưu tiên RoomFull; nếu phòng còn slot nhưng tổng server đầy trả ServerFull. Key smoke cũ `JungleMaze.SRV01.v1` không còn dùng. Giữ nguyên packet version 1 để client hiện có tiếp tục vào phòng mặc định.
+Reason có MalformedRequest, PayloadTooLarge, UnsupportedVersion, AuthModeMismatch, InvalidRoomCode, InvalidDisplayName, RoomFull, ServerFull, AuthenticationRequired, InvalidToken, AuthTimeout, DuplicateSession. Nếu phòng đã đầy ưu tiên RoomFull; nếu phòng còn slot nhưng tổng server đầy trả ServerFull. Key smoke cũ `JungleMaze.SRV01.v1` không còn dùng. Giữ định dạng UDP v1 cho client hiện có; v2 bổ sung nonce cho UDP/WSS Auto như mục 2.3.
 
 ## 6. Vòng tick, số đo và giới hạn tải
 
-[Báo cáo mới nhất](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md) xác nhận một phòng 50 phiên, năm phòng × 10 và sáu phòng × 10 qua 180s; sáu phòng có p95 phòng chậm nhất 48,21ms. Bảy phòng × 10 trượt p95 của một phòng ở 55,71ms; một phòng 95 và chín phòng × 10 cũng trượt lượt dài. Bài đo dùng source snapshot nới policy. Sau đó đã áp dụng **10 người/phòng, 5 phòng/tổng 50** vào source/config/local và kiểm tra chức năng năm phòng × 10 đồng thời; chưa chứng minh sức chứa gameplay/EC2. Chỉ giữ một báo cáo với JSON/CSV và dữ liệu thô nén, không dùng số của lượt cũ làm trần cố định.
+[Báo cáo mới nhất](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md) giữ riêng local 14/10 và AWS 16/10. Local dùng source snapshot nới policy: một phòng 50, năm phòng ×10 và sáu phòng ×10 đạt 180s; bảy phòng ×10 trượt p95 một phòng 55,71ms. AWS t3.small xác nhận 5 phòng ×10 trong 180s với generator cùng EC2, không loss/drop; UDP từ PC chưa thông nên chưa nghiệm thu RTT Internet hoặc gameplay. Policy hiện tại 10/50/5/2 đã áp dụng source/config/local/EC2. Không dùng số local 6 phòng làm hạn mức triển khai.
 
 Application thread: **PollEvents → Tick → metrics report → sleep ngắn**. LiteNetLib có thread transport nội bộ nhưng app không bật unsynced events; callback/session mappings và Tick được xử lý tuần tự.
 
@@ -292,12 +314,26 @@ AWS (new)/Free Plan hiện ở Sydney, một EC2 t3.small. Admin giữ CPU Stand
 
 Compute phát sinh usage khi EC2 Running, kể cả idle/app đã stop. `systemctl stop` dừng container, chưa Stop EC2. Stop từ Console giữ EBS nhưng ngừng compute; IPv4 tự cấp được giải phóng, EBS 20GB vẫn có phí giữ data. Free Plan có hạn 6 tháng hoặc đến khi credits cạn; Paid Plan có thể tính phí vượt credits. Các bước kiểm Billing, lịch test, backup và Stop xác nhận nằm ở mục 7 của hướng dẫn. [AWS lifecycle](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html), [AWS plans](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/free-tier-plans.html).
 
-Chạy test ngắn/có duration, một client trước 10 phiên. Client duration=0 không có nghĩa server sẽ tự tắt. Người quản lý xác nhận Stopped sau buổi. Backend chưa có automation tự Stop EC2 hoặc giới hạn chi tiêu; cần thao tác admin.
+Chạy test ngắn/có duration, một client trước 10 phiên. Client duration=0 không có nghĩa server sẽ tự tắt. Người quản lý xác nhận Stopped sau buổi. Script test-aws-rooms.ps1 có Stop trong finally, watchdog PC và timer EC2 30 phút cho buổi benchmark. Buổi thông thường dùng open-aws-session.ps1 với thời lượng bắt buộc để đặt timer/watchdog; nếu bật thủ công từ Console thì admin phải tự quản lý giờ Stop. Đây không phải trần chi tiêu toàn tài khoản.
 
 ## 9. Bằng chứng và hướng phát triển tiếp
 
 Trong phiên 12/10/2026 đã ghi nhận 69 network +48 API/e2e checks, 35 AWS Docker checks với Mongo 7 và 8 volume guard checks; bundle được verify. Build và workaround MSB4062 đã kiểm tra. Admin báo EC2 deploy qua; HTTPS /health đã trả ok/database connected. Đây là kết quả tại thời điểm kiểm tra; runtime hiện tại phải xem Console/health.
 
-Chưa có bằng chứng từ team cho UDP online 10 máy, CPU/RAM/tick 5 phút trên EC2 hoặc FPS/full match Unity. Nghiệm thu bốn task INF-01/NET-01/SRV-01/SRV-02 theo bảng trong hướng dẫn; không suy ra gameplay Done.
+Đã có phép đo backend 5 phòng ×10 trên EC2 với xác nhận 3 phút và generator dùng chung máy qua SSM. Chưa có bằng chứng UDP online 10 máy từ lớp, lượt gameplay 5 phút hoặc FPS/full match Unity. Nghiệm thu bốn task INF-01/NET-01/SRV-01/SRV-02 theo bảng trong hướng dẫn; không suy ra gameplay Done.
 
-Thứ tự tiếp theo: Unity network client/endpoint/join → server world và hai nhân vật đồng bộ input/movement → combat/HP/item/round → snapshot/interpolation/prediction/reconnect → đo 10 máy thực. Phải thiết kế mô phỏng/collision cho .NET server độc lập, không giả định server đã có Unity physics. Public JWT game/encryption và account revocation là phạm vi riêng, chưa bật.
+Rà soát mới nhất: Local UDP/WebSocket 10 phiên/300s PASS; 132 network, 44 dual-transport và 50 account checks. PC → EC2 WSS public với TCP IP pin/TLS hợp lệ đạt 10 phiên/300s, Auto fallback và Stop–Start rejoin PASS; EC2 đã Stopped. UDP public vẫn BLOCKED trên mạng này. Public DNS từ EC2 đúng sau cả hai Start; hosts PC còn ghim IP cũ, nên hostname mặc định trên PC vẫn BLOCKED, không coi IP pin là đã sửa DNS. WAN RTT p95 khoảng 591ms: ổn định transport, chưa kết luận gameplay mượt. Hai PC thật/10 người thật vẫn NOT_TESTED. Chi tiết và lượt PC mất mạng được giữ trong báo cáo chung; hướng dẫn mới ở mục 16.
+
+Thứ tự tiếp theo: xử lý DNS/hosts PC và nghiệm thu hai PC thật → Unity network client UDP/WSS/endpoint/join → server world và hai nhân vật đồng bộ input/movement → combat/HP/item/round → snapshot/interpolation/prediction/reconnect → đo 10 máy thực. Phải thiết kế mô phỏng/collision cho .NET server độc lập, không giả định server đã có Unity physics. Public JWT game/encryption và account revocation là phạm vi riêng, chưa bật.
+
+### Kiểm chứng nhiều phòng trên AWS
+
+Luồng tạo phòng luôn là HTTPS + Bearer JWT → API xác minh chữ ký/issuer/audience/expiry → lấy chủ từ sub → HTTP private có control secret → hàng đợi UDP → RoomManager. Swagger Basic auth chỉ mở giao diện, không thay thế JWT. UDP public tiếp tục dùng RoomCode; mã 6 ký tự không phải token đăng nhập.
+
+Chính sách vận hành là 10 phiên/phòng, 5 phòng gồm phòng mặc định, tổng 50 active/pending, 2 phòng bổ sung/user. Đo AWS dùng chính chính sách này, không nới hằng giới hạn. Hai owner tạo bốn phòng, user thứ ba kiểm hạn mức tổng/rate; fixture accounts lưu Mongo, còn phòng ở RAM và được dọn cuối buổi. TTL phòng được kiểm local để tránh chờ 10 phút trên EC2.
+
+Admin dùng Deploy/test-aws-rooms.ps1 quản vòng đời EC2, Tools/room_benchmark.py đo API/UDP và room-test.sh thu telemetry/đổi JWT tạm thời. Không có endpoint test public mới. Chỉ cập nhật image API/GameServer; control TCP 7780 và Mongo không publish. Override JWT dưới /run, có timer khôi phục; base config và key không đổi.
+
+Bài đo có thể chạy từ PC khi UDP thông: tăng 10 → 30 → 50 phiên, xác nhận mức đạt trong 3 phút. RTT p95 xét từng phòng so với baseline Internet +50ms, tốc độ phát xét từng client; CPU/RAM/tick/drop lấy từ server/cgroup. Quy trình có Stop trong finally, watchdog PC và timer shutdown EC2 30 phút (chỉ khi shutdown=stop). Chi tiết thao tác ở mục 14.7 của hướng dẫn vận hành; kết quả thực đo ở báo cáo chung, không suy ra sức chứa gameplay.
+
+Khi mạng PC chặn UDP, chế độ GeneratorOnServer dùng SSH qua SSM cho quản trị, tunnel TCP loopback tới Caddy 443 cho HTTPS API, và đặt NetSmokeClient trong container tạm trên EC2 (256MiB, 0.75 core). GameServer vẫn giữ 256MiB; Mongo/Caddy giữ nguyên. Đây là phép đo backend trong cùng EC2, có cạnh tranh tài nguyên với generator; RTT là nội bộ host. Không có tunnel UDP công khai, không chuyển JWT sang UDP và không coi bài này là nghiệm thu đường Internet/10 máy lớp học.

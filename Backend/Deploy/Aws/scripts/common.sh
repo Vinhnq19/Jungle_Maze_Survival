@@ -5,7 +5,13 @@ ROOT=/opt/junglemaze
 CONFIG_FILE="$ROOT/config/.env.aws"
 RELEASE_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 require_root() { [[ $EUID -eq 0 ]] || { echo 'Run this command with sudo.' >&2; exit 1; }; }
-load_release() { set -a; source "$RELEASE_DIR/release.env"; set +a; }
+load_release() {
+  set -a
+  # Apps-only releases reuse installed Mongo/Caddy tags, never replace their volumes.
+  [[ ! -f "$RELEASE_DIR/base-images.env" ]] || source "$RELEASE_DIR/base-images.env"
+  source "$RELEASE_DIR/release.env"
+  set +a
+}
 load_config() {
   [[ -f "$CONFIG_FILE" ]] || { echo 'Run configure.sh first.' >&2; exit 1; }
   set -a; source "$CONFIG_FILE"; set +a
@@ -13,6 +19,8 @@ load_config() {
   [[ "${PUBLIC_DOMAIN:-}" =~ ^[a-z0-9-]+\.duckdns\.org$ ]] || { echo 'Invalid DuckDNS hostname.' >&2; exit 1; }
 }
 compose() {
+  # Export reused base images for interpolation; private config remains in its existing file.
+  load_release
   docker compose --project-name junglemaze-aws --project-directory "$RELEASE_DIR" \
     --env-file "$RELEASE_DIR/release.env" --env-file "$CONFIG_FILE" -f "$RELEASE_DIR/compose.aws.yaml" "$@"
 }

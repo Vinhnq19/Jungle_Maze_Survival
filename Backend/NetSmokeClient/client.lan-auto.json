@@ -1,0 +1,11 @@
+{
+  "mode": "LAN",
+  "apiBaseUrl": "https://junglemaze-lan.example.com",
+  "gameServerHost": "192.168.1.10",
+  "gameServerPort": 7777,
+  "authMode": "RoomCode",
+  "protocolVersion": 2,
+  "connectTimeoutMs": 5000,
+  "transport": "Auto",
+  "webSocketUrl": "wss://junglemaze-lan.example.com/game"
+}

@@ -7,6 +7,9 @@
 }
 
 {$PUBLIC_DOMAIN} {
+    handle /game {
+        reverse_proxy game-server:7781
+    }
     @swagger path /swagger /swagger/*
     basic_auth @swagger {
         {$SWAGGER_USER} {$SWAGGER_HASH}

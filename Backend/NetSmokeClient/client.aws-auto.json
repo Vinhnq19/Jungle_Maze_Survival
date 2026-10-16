@@ -1,0 +1,11 @@
+{
+  "mode": "Online",
+  "gameServerHost": "junglemaze.duckdns.org",
+  "gameServerPort": 7777,
+  "apiBaseUrl": "https://junglemaze.duckdns.org",
+  "authMode": "RoomCode",
+  "protocolVersion": 2,
+  "connectTimeoutMs": 5000,
+  "transport": "Auto",
+  "webSocketUrl": "wss://junglemaze.duckdns.org/game"
+}

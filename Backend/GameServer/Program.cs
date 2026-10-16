@@ -25,9 +25,10 @@ try
     var metrics = new ServerMetrics();
     using var network = new NetworkHost(options, metrics);
     network.Start();
+    await using var webSocket = await WebSocketHost.StartFromEnvironment(network.Hub, (options.Rooms ?? new()).MaxTotalPlayers);
     var roomControl = RoomControlHost.Start(options.Rooms ?? new(), network.Commands);
     var loop = new FixedTickLoop(options.TickRate, metrics);
-    try { loop.Run(network.PollEvents, Tick,
+    try { loop.Run(() => { webSocket?.PollEvents(); network.PollEvents(); }, Tick,
         () => metrics.ReportIfDue(network.ReservedPeers, options.MetricsIntervalSeconds,
             network.ActivePeers, network.PendingPeers, network.Rooms.Count, network.Rooms.Occupancy()), shutdown.Token); }
     finally { if (roomControl is not null) { await roomControl.StopAsync(); await roomControl.DisposeAsync(); } }

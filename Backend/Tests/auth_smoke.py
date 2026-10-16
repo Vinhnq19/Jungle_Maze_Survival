@@ -10,6 +10,7 @@ import secrets
 import socket
 import subprocess
 import time
+import sys
 import urllib.error
 import urllib.request
 
@@ -352,6 +353,24 @@ def main():
                                              env=missing_jwt_key, capture_output=True, timeout=10)
         check('JWT GameServer refuses startup without signing key', missing_key_process.returncode == 1
               and b'Jwt' in missing_key_process.stderr)
+        if '--short-lifetime' in sys.argv:
+            # Same real JWT path used on AWS; no forged expired token and no production key.
+            stop_game(); stop_api()
+            start_api(dict(env, Jwt__ExpiryMinutes='1'), 'api-short-token')
+            status, short_login = request('POST','/api/auth/login',credentials)
+            short_token=short_login['accessToken']; short_claims=decode(short_token.split('.')[1])
+            check('real API issues one-minute JWT',status==200 and short_claims['exp']-short_claims['iat']==60)
+            check('short JWT reaches authenticated room handler before expiry',
+                  request('POST','/api/rooms',{'name':'ShortLocal','maxPlayers':10},short_token)[0]==503)
+            stop_api();start_api(env,'api-normal-lifetime')
+            check('restoring lifetime keeps old token signature valid',request('GET','/api/me',token=short_token)[0]==200)
+            wait=short_claims['exp']+35-time.time()
+            if wait>0: time.sleep(wait)
+            check('real expired JWT cannot create room after clock skew',
+                  request('POST','/api/rooms',{'name':'ExpiredLocal','maxPlayers':10},short_token)[0]==401)
+            status, normal=request('POST','/api/auth/login',credentials)
+            nc=decode(normal['accessToken'].split('.')[1])
+            check('normal 60-minute JWT issuance restored',status==200 and nc['exp']-nc['iat']==3600)
         print(f'{passed} checks passed; isolated API, GameServer, clients and MongoDB will be cleaned up.', flush=True)
     finally:
         if held_client is not None and held_client.poll() is None:

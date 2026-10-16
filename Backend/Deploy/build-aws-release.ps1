@@ -2,7 +2,8 @@ param(
     [string]$Domain = 'junglemaze.duckdns.org',
     [string]$OutputDirectory = '',
     [string]$ReleaseId = ('aws-' + [DateTime]::UtcNow.ToString('yyyyMMdd-HHmmss')),
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [switch]$AppsOnly
 )
 $ErrorActionPreference = 'Stop'
 $taskBackend = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -26,17 +27,22 @@ try {
         Invoke-Docker @('build', '--platform', 'linux/amd64', '-t', $taskGameImage, '-f', (Join-Path $taskBackend 'GameServer/Dockerfile'), $taskBackend)
         # MongoDB 7 không dùng allocator bị lỗi với kernel 6.19/7.0 của EC2.
         # Khóa patch cụ thể; deploy kiểm tra volume trước khi chuyển từ release dùng MongoDB 8.
+        if (-not $AppsOnly) {
         Invoke-Docker @('pull', '--platform', 'linux/amd64', 'mongo:7.0.43')
         Invoke-Docker @('pull', '--platform', 'linux/amd64', 'caddy:2')
         Invoke-Docker @('tag', 'mongo:7.0.43', $taskMongoImage)
         Invoke-Docker @('tag', 'caddy:2', $taskCaddyImage)
+        }
     }
-    $taskImageNames = @($taskApiImage, $taskGameImage, $taskMongoImage, $taskCaddyImage)
+    $taskImageNames = @($taskApiImage, $taskGameImage)
+    if (-not $AppsOnly) { $taskImageNames += @($taskMongoImage, $taskCaddyImage) }
     # Nhận hết stdout rồi mới lấy version; Select-Object -First ngay trên process gây SIGPIPE ở PowerShell 5.
+    if (-not $AppsOnly) {
     $taskMongoInfo = & docker run --rm --network none --entrypoint mongod $taskMongoImage --version
     if ($LASTEXITCODE -ne 0) { throw 'Cannot read MongoDB version.' }
     $taskMongoVersion = ($taskMongoInfo | Select-Object -First 1).Trim()
     if ($taskMongoVersion -notmatch '^db version v7\.0\.43$') { throw 'AWS release requires MongoDB 7.0.43; retag the correct Mongo image.' }
+    }
     $taskImages = foreach ($taskName in $taskImageNames) {
         $taskInspect = (& docker image inspect $taskName | ConvertFrom-Json)[0]
         if ($LASTEXITCODE -ne 0 -or $taskInspect.Os -ne 'linux' -or $taskInspect.Architecture -ne 'amd64') { throw 'Every release image must be Linux amd64.' }
@@ -53,8 +59,13 @@ try {
     }
     $taskClient = [ordered]@{ mode='Online'; apiBaseUrl="https://$Domain"; gameServerHost=$Domain; gameServerPort=7777; authMode='RoomCode'; protocolVersion=1; connectTimeoutMs=5000 }
     $taskClient | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskStage 'client.aws.json') -Encoding utf8
-    @("RELEASE_ID=$ReleaseId", "DEFAULT_DOMAIN=$Domain", "API_IMAGE=$taskApiImage", "GAME_IMAGE=$taskGameImage", "MONGO_IMAGE=$taskMongoImage", 'MONGO_MAJOR=7', "CADDY_IMAGE=$taskCaddyImage") | Set-Content -LiteralPath (Join-Path $taskStage 'release.env') -Encoding utf8
-    [ordered]@{ releaseId=$ReleaseId; builtAtUtc=[DateTime]::UtcNow.ToString('o'); domain=$Domain; region='ap-southeast-2'; images=@($taskImages); mongoVersion='7.0.43'; databaseMigration='new/empty AWS database only when switching from MongoDB 8'; publicGameAuth='RoomCode' } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $taskStage 'manifest.json') -Encoding utf8
+    $taskAutoClient = [ordered]@{ mode='Online'; apiBaseUrl="https://$Domain"; gameServerHost=$Domain; gameServerPort=7777; authMode='RoomCode'; protocolVersion=2; connectTimeoutMs=5000; transport='Auto'; webSocketUrl="wss://$Domain/game" }
+    $taskAutoClient | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskStage 'client.aws-auto.json') -Encoding utf8
+    $taskReleaseEnv = @("RELEASE_ID=$ReleaseId", "DEFAULT_DOMAIN=$Domain", "API_IMAGE=$taskApiImage", "GAME_IMAGE=$taskGameImage")
+    if ($AppsOnly) { $taskReleaseEnv += 'APPS_ONLY=1' }
+    else { $taskReleaseEnv += @("MONGO_IMAGE=$taskMongoImage", 'MONGO_MAJOR=7', "CADDY_IMAGE=$taskCaddyImage") }
+    $taskReleaseEnv | Set-Content -LiteralPath (Join-Path $taskStage 'release.env') -Encoding utf8
+    [ordered]@{ releaseId=$ReleaseId; builtAtUtc=[DateTime]::UtcNow.ToString('o'); domain=$Domain; region='ap-southeast-2'; images=@($taskImages); appsOnly=[bool]$AppsOnly; mongoVersion=$(if ($AppsOnly) {'reuse-existing-7'} else {'7.0.43'}); databaseMigration='none in apps-only mode'; publicGameAuth='RoomCode' } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $taskStage 'manifest.json') -Encoding utf8
     # Chuẩn hóa LF/UTF-8 không BOM để Bash Linux chạy được dù editor trên Windows dùng CRLF.
     foreach ($taskTextFile in Get-ChildItem -LiteralPath $taskStage -File -Recurse) {
         $taskText = [IO.File]::ReadAllText($taskTextFile.FullName).Replace("`r`n", "`n")

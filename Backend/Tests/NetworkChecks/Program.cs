@@ -246,6 +246,43 @@ try
         ["protocolVersion"] = 1, ["connectTimeoutMs"] = 500
     };
     var configPath = Path.Combine(temp, "client.json");
+    File.WriteAllText(configPath, JsonSerializer.Serialize(config));
+    var endpointKeys = new[] { "NET_MODE", "NET_GAME_SERVER_HOST", "NET_GAME_SERVER_PORT", "NET_API_BASE_URL" };
+    var endpointSaved = endpointKeys.ToDictionary(key => key, Environment.GetEnvironmentVariable);
+    try
+    {
+        foreach (var key in endpointKeys) Environment.SetEnvironmentVariable(key, null);
+        var originalEndpoint = NetSmokeClient.Configuration.ClientOptions.Load(configPath);
+        Check(originalEndpoint.Mode == "Local" && originalEndpoint.GameServerHost == "127.0.0.1", "Endpoint JSON dùng khi không có env");
+        Environment.SetEnvironmentVariable("NET_MODE", "Online");
+        Environment.SetEnvironmentVariable("NET_GAME_SERVER_HOST", "100.80.1.20");
+        Environment.SetEnvironmentVariable("NET_GAME_SERVER_PORT", "17777");
+        Environment.SetEnvironmentVariable("NET_API_BASE_URL", "https://junglemaze.duckdns.org");
+        var overridden = NetSmokeClient.Configuration.ClientOptions.Load(configPath);
+        Check(overridden.Mode == "Online" && overridden.GameServerHost == "100.80.1.20"
+            && overridden.GameServerPort == 17777 && overridden.ApiBaseUrl == "https://junglemaze.duckdns.org"
+            && overridden.AuthMode == "RoomCode" && overridden.ProtocolVersion == 1, "Env override endpoint, giữ auth và wire v1");
+        foreach (var (key, value) in new[] { ("NET_MODE", "bad"), ("NET_GAME_SERVER_HOST", "http://bad:7777"),
+            ("NET_GAME_SERVER_PORT", "abc"), ("NET_GAME_SERVER_PORT", "65536"), ("NET_GAME_SERVER_HOST", " ") })
+        {
+            var savedValue = Environment.GetEnvironmentVariable(key);
+            Environment.SetEnvironmentVariable(key, value);
+            var refused = false;
+            try { NetSmokeClient.Configuration.ClientOptions.Load(configPath); } catch (ArgumentException) { refused = true; }
+            finally { Environment.SetEnvironmentVariable(key, savedValue); }
+            Check(refused, "Env endpoint sai bị từ chối, không fallback JSON: " + key + "/" + value);
+        }
+        var jwtConfig = new Dictionary<string, object?>(config) { ["authMode"] = "Jwt" };
+        File.WriteAllText(configPath, JsonSerializer.Serialize(jwtConfig));
+        Environment.SetEnvironmentVariable("NET_API_BASE_URL", "http://192.168.1.20:5000");
+        var unsafeRefused = false;
+        try { NetSmokeClient.Configuration.ClientOptions.Load(configPath); } catch (ArgumentException) { unsafeRefused = true; }
+        Check(unsafeRefused, "Env override API vẫn kiểm tra bảo vệ JWT từ xa");
+    }
+    finally
+    {
+        foreach (var item in endpointSaved) Environment.SetEnvironmentVariable(item.Key, item.Value);
+    }
     foreach (var (field, invalid) in new (string, object?)[]
     {
         ("mode", "bad"), ("gameServerHost", "http://localhost:7777"), ("gameServerPort", 0),

@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../GameServer/GameServer.csproj" />
+    <Compile Include="../../NetSmokeClient/Configuration/ClientOptions.cs" Link="ClientOptions.cs" />
   </ItemGroup>
 </Project>

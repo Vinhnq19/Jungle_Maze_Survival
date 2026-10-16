@@ -6,12 +6,12 @@ Hướng dẫn dùng server đã triển khai tại `junglemaze.duckdns.org`. Kh
 
 - Có MongoDB Compass và Windows OpenSSH (`ssh` chạy được trong PowerShell).
 - Có private key EC2 của chính bạn. Máy Vinh dùng `D:/AWS/junglemaze.pem`.
-- Security Group của EC2 cho phép TCP 22 từ Public IP của máy bạn, TCP 80/443 cho API HTTPS. Không mở MongoDB 27017/27018/27019 ra Internet.
+- Trên máy Vinh, SSH/Compass đi SSM HTTPS, không cần PC vào TCP 22. Chỉ SSH trực tiếp mới cần SG TCP 22 từ Public IP admin; API HTTPS dùng TCP 80/443. Không mở MongoDB 27017/27018/27019 ra Internet.
 - Có username/password bảo vệ Swagger đã nhập khi chạy `configure.sh`.
 
 ### Alias SSH
 
-Máy Vinh đã có cấu hình sau trong `C:/Users/Vinh/.ssh/config`. Dev khác tạo `%USERPROFILE%/.ssh/config`, thêm block này và thay đường dẫn key của mình. Giữ cấu hình host khác, lưu file tên `config`, không có đuôi `.txt`.
+Máy Vinh hiện dùng alias qua **Session Manager**, như mục 7.8: `ssh junglemaze` không phụ thuộc DuckDNS/TCP 22. Block bên dưới chỉ dành cho **SSH trực tiếp**, không chép đè alias SSM hiện có. Dev khác tạo `%USERPROFILE%/.ssh/config`, thêm block này và thay đường dẫn key của mình. Giữ cấu hình host khác, lưu file tên `config`, không có đuôi `.txt`.
 
 ```sshconfig
 Host junglemaze
@@ -69,7 +69,6 @@ sudo journalctl -u junglemaze -n 80 --no-pager
 **Trình duyệt trên PC:** mở [Swagger AWS](https://junglemaze.duckdns.org/swagger).
 
 Trình duyệt hỏi username/password của Swagger: dùng thông tin đã tạo trong `configure.sh`. Đây là Basic auth bảo vệ trang, khác tài khoản người chơi và JWT ở nút Authorize.
- j
 
 ### 3.1. Kiểm tra sức khỏe
 
@@ -174,7 +173,7 @@ Nếu recreate Mongo, IP container có thể đổi: Ctrl+C tunnel cũ, chạy l
 | Lỗi                                      | Cách kiểm tra / xử lý                                                                                                                                                                            |
 | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | SSH timeout                               | EC2 Running, Public IP đúng, SG TCP 22 cho phép Public IP hiện tại của bạn. Mạng đổi thì rule My IP có thể cần cập nhật.                                                             |
-| DuckDNS chưa trỏ đúng                 | Đợi dịch vụ DNS cập nhật. Trong PowerShell dùng`Resolve-DnsName junglemaze.duckdns.org`; có thể truy cập tạm `ssh -o HostName=PUBLIC_IPV4 junglemaze` sau khi thay PUBLIC_IPV4 thật. |
+| DuckDNS chưa trỏ đúng                 | Đợi dịch vụ DNS cập nhật. Trong PowerShell dùng`Resolve-DnsName junglemaze.duckdns.org`; có thể truy cập tạm `ssh -o ProxyCommand=none -o HostName=PUBLIC_IPV4 junglemaze` sau khi thay PUBLIC_IPV4 thật. |
 | Unprotected private key / bad permissions | Quyền file key quá rộng. Máy Vinh đã sửa chỉ Vinh được đọc. Nếu tái xuất hiện, kiểm tra ACL và chỉ cấp đọc cho tài khoản sở hữu; không chia sẻ key.                     |
 | Permission denied (publickey)             | Kiểm tra đúng key của instance và user ubuntu. Alias không thay thế key hợp lệ.                                                                                                             |
 | Swagger hỏi mật khẩu liên tục        | Dùng tài khoản bảo vệ Swagger trong configure.sh, không dùng account player.                                                                                                                  |
@@ -187,7 +186,7 @@ Khi cần hỗ trợ, gửi lỗi/status đã che secrets. Không gửi private 
 
 ## 7. Xử lý khi mạng chặn truy cập EC2
 
-Cập nhật phương án ngày **14/10/2026**. Các bước dưới đây do admin thực hiện trên máy đã có; không tạo EC2 mới hay sửa code game. Chưa cấu hình hoặc nghiệm thu Instance Connect/Session Manager trên tài khoản thật trong phiên viết tài liệu.
+Cập nhật phương án ngày **14/10/2026**. Các bước dưới đây do admin thực hiện trên máy đã có; không tạo EC2 mới hay sửa code game. Session Manager/SSH qua SSM đã cấu hình và kiểm chứng trên máy Vinh; quy trình tổng quát cho máy mới vẫn cần quyền IAM và agent như bên dưới.
 
 ### 7.1. Chọn phương án
 
@@ -204,13 +203,13 @@ Chưa kết luận mạng chặn chỉ từ một lần timeout. Không chuyển
 
 **AWS Console:** kiểm tra EC2 Running, status checks đạt; lấy Public IPv4 hiện tại, không dùng lại IP cũ sau Stop/Start. Xác nhận Security Group đang gắn vào đúng instance có SSH 22 từ My IP hiện tại.
 
-**PC / PowerShell**, nhập IP vừa lấy:
+**PC / PowerShell**, đoạn sau chỉ chẩn đoán đường SSH trực tiếp (tắt ProxyCommand cho đúng phép thử); dùng `ssh junglemaze` không thêm override để quản trị qua SSM. Nhập IP vừa lấy:
 
 ```powershell
 $ec2Ip = Read-Host 'Public IPv4 hien tai cua EC2'
 Resolve-DnsName junglemaze.duckdns.org -Type A
 Test-NetConnection -ComputerName $ec2Ip -Port 22
-ssh -o ConnectTimeout=10 -o "HostName=$ec2Ip" junglemaze
+ssh -o ProxyCommand=none -o ConnectTimeout=10 -o "HostName=$ec2Ip" junglemaze
 ```
 
 | Kết quả                                          | Diễn giải / bước tiếp                                                                                           |
@@ -362,7 +361,7 @@ Nhánh remote-host forwarding cần SSM Agent **3.1.1374.0 trở lên**. EC2 hos
 - Không thay đổi rule UDP 7777 hoặc code gameplay chỉ để sửa đường quản trị. SSM port forwarding là TCP, không chuyển tiếp UDP LiteNetLib. Nếu mạng lớp chặn UDP, cần đo/test bằng NetSmokeClient trên mạng được phép; truy cập được Swagger chưa chứng minh chơi game được.
 - Dịch vụ Session Manager cho EC2 không có phụ phí sử dụng theo bảng giá AWS, nhưng EC2/EBS/IPv4 và dịch vụ phụ trợ vẫn có usage. Không bật thêm CloudWatch/S3 logging, NAT/endpoint theo mặc định trong phương án này. Luôn Stop EC2 khi hết lịch test; không nâng cấp plan chỉ để mở đường quản trị. [Giá Systems Manager](https://aws.amazon.com/systems-manager/pricing/)
 
-Đây là hướng dẫn thiết lập và tiêu chí kiểm tra, không phải xác nhận các đường truy cập mới đã được cấu hình trên AWS. Thực hiện mục 7.2 rồi 7.3 trước; chỉ triển khai 7.5–7.6 nếu cần đường quản trị thường xuyên từ mạng chặn SSH.
+Các bước tổng quát cần thực hiện trên máy mới; kết quả cấu hình thực của máy Vinh nằm ở mục 7.8. Thực hiện mục 7.2 rồi 7.3 trước; chỉ triển khai 7.5–7.6 nếu cần đường quản trị thường xuyên từ mạng chặn SSH.
 
 ### 7.8. Bộ kết nối trên máy Vinh đã thiết lập ngày 14/10/2026
 
@@ -409,3 +408,35 @@ EC2 dùng role `JungleMazeEC2SSMRole` / instance profile `JungleMazeEC2SSMProfil
 Trong phiên thiết lập đã kiểm chứng HTTPS health, `ssh junglemaze` qua SSM, Mongo ping và collection users qua tunnel; quan sát thấy kết nối Compass trong MongoDB trên EC2. Người dùng xác nhận đã mở được danh sách API Swagger. Không sửa dữ liệu account. Endpoint Instance Connect cùng rule/SG tạm dùng để khởi động lại agent đã được gỡ; đường dùng hằng ngày là SSM. Không cần deploy lại backend cho thay đổi kết nối PC này.
 
 Các xác nhận trên là kết quả tại thời điểm thiết lập, không thay thế kiểm tra Running/SSM Online mỗi buổi. EC2 không tự Stop khi đóng app hoặc tunnel; admin vẫn Stop trong AWS Console khi team dùng xong.
+
+## 8. Tạo phòng, join UDP và mạng chặn VPN
+
+Swagger: register/login → copy accessToken → Authorize → `POST /api/rooms` với tên phòng và `maxPlayers: 10`. Thiếu JWT/sai/hết hạn trả 401; login lại rồi Authorize. `GET /api/rooms` xem phòng của mình và mặc định; chỉ chủ phòng tạo thêm thấy RoomCode. `DELETE /api/rooms/{id}` chỉ xóa phòng của mình đang trống, không xóa mặc định. Không đăng endpoint join HTTP: NetSmokeClient join **UDP** bằng RoomCode nhận được, không dùng JWT Swagger.
+
+Từ PC, `client.aws.json` thử AWS trực tiếp; `client.aws-vpn.json` chỉ dùng sau khi PC/EC2 đã có Tailscale và thay IP mẫu. Cách setup VPN, cấp policy UDP 7777/HTTPS 443, test hai PC và chạy có watchdog ở [mục 15 hướng dẫn chính](Phase1_First4Tasks.vi.md#15-nghiệm-thu-phase-1-local-và-pc--ec2). Test HTTPS/Compass thành công không chứng minh UDP thông.
+
+Ngày 16/10 mạng PC trả 94.140.14.33 cho endpoint tải/đăng nhập Tailscale, HTTPS handshake thất bại. Chưa cài/enroll VPN; cần mạng được phép/hotspot hoặc quản trị mạng cho phép endpoint. Không bỏ xác minh TLS, không chuyển SSH sang 443 đang dùng cho Caddy. SSM vẫn là phương án quản trị; việc chạy client trong EC2 không giải quyết được client Unity trên PC.
+
+Khi bắt đầu buổi: chuẩn bị client/config trước → bật EC2 → đợi SSM/HTTPS healthy → chọn endpoint và test một client → mới thử 10 phiên. Khi kết thúc: dừng client/tunnel → dọn phòng test → Stop EC2 → xác nhận Stopped. EBS còn tính lưu trữ; đóng app không kết thúc Running usage.
+
+## 9. Kết nối game qua WSS
+
+Luồng mới dùng `client.aws-auto.json`: UDP 7777 trước, WSS `wss://junglemaze.duckdns.org/game` dự phòng khi UDP timeout. Không cần Tailscale/SSH cho người chơi. Cần client v2; config UDP v1 cũ không tự có WebSocket. JWT Swagger vẫn chỉ dùng cho account/quản lý phòng, join dùng RoomCode.
+
+Nếu PC có hosts ghim IP cũ và chưa sửa được bằng quyền Windows, có thể chỉ định IP cho **client test** (không thay DNS/trình duyệt):
+
+```powershell
+# Đứng tại Backend; lấy đúng Public IPv4 sau lần Start hiện tại.
+$ec2Ip = (Read-Host 'Public IPv4 hien tai tu AWS Console').Trim()
+$env:NET_GAME_SERVER_HOST=$ec2Ip
+$env:NET_WS_CONNECT_IP=$ec2Ip
+try {
+    dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.aws-auto.json --name Tester01 --duration 30
+} finally {
+    Remove-Item Env:NET_GAME_SERVER_HOST,Env:NET_WS_CONNECT_IP -ErrorAction SilentlyContinue
+}
+```
+
+NET_WS_CONNECT_IP pin TCP tới IP đó, vẫn dùng URI/SNI và certificate `junglemaze.duckdns.org` hợp lệ; không tắt TLS. Hai endpoint phải là cùng EC2. Config/report ghi IP pin; không coi kết quả đó là DNS hệ thống đã được sửa. Nếu HTTPS/WSS tới IP cũng bị mạng chặn thì BLOCKED. Tester có DNS hoạt động dùng profile mặc định, không cần pin.
+
+Setup, test có watchdog, kiểm hosts/IP cũ và bật theo lịch bằng `open-aws-session.ps1 -Minutes 60` nằm ở **mục 16 hướng dẫn chính**. SSM giữ vai trò quản trị. Kết quả WSS thực phải xem báo cáo mới nhất; HTTPS /health đơn thuần chưa chứng minh WebSocket join thành công.

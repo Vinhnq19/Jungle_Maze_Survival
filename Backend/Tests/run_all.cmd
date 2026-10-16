@@ -6,6 +6,8 @@ dotnet build JungleBackend.sln
 if errorlevel 1 goto failed
 dotnet run --project Tests/NetworkChecks/NetworkChecks.csproj
 if errorlevel 1 goto failed
+dotnet run --project Tests/DualTransportChecks/DualTransportChecks.csproj
+if errorlevel 1 goto failed
 rem Co the dat PYTHON_EXE la duong dan Python 3 rieng tren may.
 if not defined PYTHON_EXE set "PYTHON_EXE=python"
 "%PYTHON_EXE%" -X utf8 Tests/auth_smoke.py

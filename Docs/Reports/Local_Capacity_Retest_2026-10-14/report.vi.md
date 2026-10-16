@@ -1,170 +1,289 @@
-# Đo lại sức chứa backend local — 14/10/2026
+# Báo cáo UDP/WSS, Local Docker và AWS — 16/10/2026
 
-**Kết quả: đã xác nhận 6 phòng × 10 = 60 phiên qua 180s theo tiêu chí mạng local; 7 phòng × 10 trượt p95 của một phòng. Một phòng 50 phiên cũng đạt 180s, còn 95 phiên trượt. Đã chọn và áp dụng 5 phòng × 10, tổng 50 phiên vào source/config/local.** Đây là mức đã xác nhận trong bài đo, không phải trần phần cứng hay sức chứa gameplay/EC2. Chỉ giữ báo cáo mới nhất này theo cấu trúc bảy phần, kèm JSON/CSV và bằng chứng thô nén.
+**Kết quả mới nhất UDP/WSS: PASS; Local UDP/WebSocket 10 phiên/300s PASS. PC → EC2 WSS (IP pin, TLS đúng), Auto và Stop–Start đã qua; EC2 đã Stopped. DNS/hosts riêng trên PC vẫn BLOCKED.**
+
+Một báo cáo chung; giữ thư mục cũ để các link đang có hoạt động. Bảng vận hành dùng UTC+7, dữ liệu thô dùng UTC. Đã xác nhận EC2 **Stopped** sau tất cả các lượt có bật máy.
 
 ## 1. Mục đích và phạm vi
 
-Đo lại số phiên trong một phòng và nhiều phòng hoạt động đồng thời, thay vì coi cấu hình 3 phòng/30 phiên là giới hạn phần cứng. Đây là phép đo GameServer/control/UDP ping–pong, tick 30Hz chưa mô phỏng gameplay. Không đo Unity, movement, combat, quái, đạn, snapshot, broadcast giữa người chơi, API tài khoản hoặc MongoDB. Không bật EC2, deploy hay chạy tải AWS.
+Kiểm tra tạo phòng bắt buộc login/JWT, giữ phòng mặc định và hạn mức 10 phiên/phòng, 5 phòng gồm mặc định, tổng 50 active/pending, 2 phòng bổ sung/user. Đo LiteNetLib ping/pong 30Hz và tick backend; chưa mô phỏng gameplay.
 
-**Trạng thái hiện tại:** 10 người/phòng, 5 phòng tính cả mặc định, tổng 50 active/pending; mỗi user tối đa 2 phòng tạo thêm. Đã build/recreate API và GameServer local, giữ MongoDB. Source/Compose AWS được cập nhật nhưng chưa deploy EC2. Tại thời điểm chạy 22 lượt đo bên dưới, bản dev còn 3/30; không sửa dữ liệu lịch sử đó thành kết quả đo trên cấu hình mới.
+Theo yêu cầu xử lý mạng chặn, dùng lại **SSH qua Session Manager**: API HTTPS qua tunnel TCP tới Caddy, NetSmokeClient chạy UDP ngay trong EC2. Đây là phép đo backend với generator dùng chung máy. **Chưa xác nhận UDP Internet từ PC/lớp, FPS hoặc trận Unity.** Dữ liệu local 14/10 giữ riêng, không đổi nhãn thành AWS.
+
+### Bổ sung UDP/WSS ngày 16/10/2026
+
+Đợt mới bổ sung UDP chính và WebSocket binary qua WSS 443 làm đường dự phòng, không yêu cầu tester cài VPN. Backend/NetSmokeClient dùng chung phòng, PlayerId và tổng slot; chưa chuyển gameplay Unity. Các kết quả UDP/co-located và Tailscale ở các đoạn cũ là lịch sử, không đại diện tuyến WSS mới.
+
 
 ## 2. Những việc thực hiện trước khi kết luận
 
-1. Kiểm tra Docker context là engine local qua `npipe:////./pipe/dockerDesktopLinuxEngine`. Ghi ID/image của API, GameServer và MongoDB dev để đối chiếu sau lượt đo. Giữ các container này chạy nguyên trạng.
-2. Vì `RoomLimits` tại thời điểm đo chặn 10/3/30, tạo bản sao chỉ gồm source GameServer/Shared và file build cần thiết trong thư mục tạm `Backend/out/capacity-probe/<run>/source`. Chỉ thay bốn hằng giới hạn trong bản sao; không đổi thuật toán xử lý mạng, protocol v1 hoặc tick. Source snapshot và dữ liệu thô đã được nén vào `evidence.zip`, thư mục tạm đã dọn.
-3. Build image và container dùng riêng cho phép đo: RAM 256MiB, không swap, CPU không quota, UDP và HTTP control trên cổng loopback ngẫu nhiên. Không dùng `.env`, DB, phòng hay secret của team.
-4. Tạo phòng qua HTTP control bằng secret tạm. Bài một phòng dùng một phòng tạo thêm với 256 slot, phòng mặc định vẫn tồn tại nhưng trống. Bài nhiều phòng dùng cả phòng mặc định, mỗi phòng đúng 10 client. Vì thế cột “phòng hoạt động” không đồng nghĩa số phòng đã đăng ký trong bài một phòng.
-5. Bổ sung `NetSmokeClient --room-plan` để một tiến trình phát tải đồng thời vào các phòng. Mỗi phiên vẫn có socket/LiteNetLib manager riêng. File đầu vào có mã phòng riêng tư; report chỉ giữ ID phòng, không giữ mã.
-6. Chạy theo mức tăng dần. Mỗi mức warm-up 15 giây rồi đo 60 giây; mức trượt được lặp, thu hẹp vùng đạt/trượt theo bước 5 phiên hoặc 1 phòng, xác nhận ứng viên trong 180 giây. Khi mức tăng trượt lặp, không chạy tiếp các mức cao hơn. Sau khi ứng viên 95/một phòng và 9 phòng trượt lượt dài, chạy xác nhận thấp hơn: một phòng 50, năm phòng × 10, bảy phòng × 10, rồi sáu phòng × 10. Mức 7 trượt nên không chạy xác nhận 8. Không diễn giải danh sách mức dự kiến thành mức đã thử.
-7. Thu RTT từng client/phòng, tốc độ phát thật, ping/pong/loss, join/disconnect; CPU, RAM cgroup, tick/drop và room occupancy từ GameServer. Không chạy build/test regression nặng trong cửa sổ đo.
-8. Dọn tài nguyên của từng lượt, đối chiếu bản dev/policy. Sau khi chốt 5/50, sửa policy/config/Swagger, build/recreate local và chạy lại bộ kiểm tra đầy đủ. Gộp 16 kiểm tra room-plan vào NetworkChecks, bỏ script Python riêng; nén bằng chứng rồi dọn report/script tạm dư.
+1. Đọc source/cấu hình và công cụ quản trị. Bật Docker Desktop; AWS CLI hết hạn được đăng nhập lại bằng xác nhận trực tiếp của người dùng. Phát hiện EC2 đã Running trước buổi, đã Stop trong lúc chuẩn bị local.
+2. Build solution không lỗi; chạy 225 checks hiện có: 124 network, 50 account, 9 migration secret, 42 API/phòng/Docker. Bổ sung test JWT thật một phút: **55/55 account checks**, gồm năm kiểm tra lifetime/khôi phục, dùng backend và Mongo local riêng.
+3. Kiểm thêm migration numeric giữ secret/idempotent/chặn key trùng; RTT từng phòng, tốc độ từng client; khởi tạo harness khi HTTP lỗi; mã thoát Windows; Stop/retry/quyền sở hữu. Client Linux được chạy UDP thật trong container read-only 256MiB/0.75 core trước khi dùng AWS.
+4. Thêm test-aws-rooms.ps1 quản vòng đời: Stopped/exclusive, EBS x86_64, CPU Standard, shutdown=stop, DryRun quyền Start/Stop. Watchdog PC được đặt trước Start, timer shutdown EC2 khi SSM Online; finally luôn Stop và xác nhận Stopped. Không nâng instance hoặc tạo EC2/LB/monitoring mới.
+5. Thêm AppsOnly vào builder/verifier/deployer. Gói **89,7 MiB** chỉ có API/GameServer, kiểm SHA-256, giữ Mongo 7/Caddy và volume. Sửa upload SSM chậm sang SFTP tiếp tục file tên theo hash; cho phép tái sử dụng đúng release đã cài sau khi đối chiếu manifest.
+6. Migration chỉ thêm control secret nếu thiếu và đặt numeric 10/50/5/2, không ghi đè các trường DNS/JWT key/room mặc định/Swagger/DB. Cổng control 7780 không publish. Mongo giữ container ID c45883bfaf88; Caddy giữ image/volume, container được tạo lại khi boot với đường mount release mới.
+7. Hai probe UDP từ PC không connected/join, không pong. SG mở UDP 7777, docker-proxy lắng nghe 0.0.0.0:7777, UFW inactive; cửa sổ bắt gói 20s không ghi nhận gói tới port. Chưa xác định chính xác đoạn mạng chặn; không mở thêm cổng hoặc đổi transport gameplay.
+8. Theo yêu cầu, chuyển sang GeneratorOnServer. HTTPS vẫn xác minh certificate junglemaze.duckdns.org qua SSH/SSM. Room plan đi qua SSH stdin, không lên argv/log; client/container/file /run được dọn sau bài.
+9. AWS đạt **39/39 kiểm tra chức năng/JWT** và tải 10 PASS. Harness sau đó lỗi cleanup: phòng đã xóa bằng JWT mới nhưng record cũ còn giữ JWT ngắn. Đã sửa theo ID phòng, thêm regression, giữ nguyên dữ liệu/lỗi cũ.
+10. Lượt bổ sung kiểm hash bằng chứng chức năng/10 PASS và image GameServer trùng, đăng nhập/tạo phòng lại, đo baseline mới rồi chạy 30/50 và xác nhận 50 trong 180s. Không thử >50 và không tìm trần cuối.
+11. Cập nhật hướng dẫn mục 14.7 (trước đây đánh số trùng 14.4) và Network Architecture; gộp JSON/CSV/bằng chứng vào báo cáo này. Không sửa Unity.
 
-### Giới hạn chỉ dùng trong source snapshot
+### Bổ sung sau yêu cầu thông UDP và rà soát Phase 1
 
-| Hằng | Source tại thời điểm đo | Bản sao thử nghiệm |
-| --- | ---: | ---: |
-| PlayersPerRoom | 10 | 256 |
-| TotalPlayers | 30 | 256 |
-| Rooms, gồm mặc định | 3 | 32 |
-| RoomsPerUser | 2 | 31 |
+12. Đối chiếu bốn task với source, tách JWT quản lý phòng khỏi RoomCode join. Bổ sung bốn biến endpoint NET_MODE/NET_GAME_SERVER_HOST/NET_GAME_SERVER_PORT/NET_API_BASE_URL, ưu tiên env rồi JSON, validate sau merge và không tự đổi tuyến. Thêm 8 regression network: **132/132** network checks; giữ protocol v1.
+13. Thêm metadata endpoint/host phát/PlayerId/cổng UDP/transport packet/RTT p50 vào báo cáo client. Tách GAME_PUBLISH_HOST và API_PUBLISH_HOST với fallback PUBLISH_HOST, kiểm Compose loopback/legacy/VPN/private Mongo. Không publish control 7780.
+14. Chạy lại suite Local: **132 network, 50 account, 9 migration gốc và các nhóm bổ sung, 42 kiểm tra phòng**. Sau đó chạy stack riêng: down/up giữ volume, login bằng account cũ thành công; có **43 kiểm tra chức năng** và lượt 10 phiên/300s/30Hz. Lượt đầu công cụ dùng ID container cũ sau down/up nên lỗi inspect; đã lấy lại ID, giữ nguyên report lỗi và chạy lại, không tính lỗi công cụ thành server quá tải.
+15. Docker Desktop ban đầu tắt được bật lại. Cài Tailscale bằng winget thất bại 0x80072f7d; thử HTTPS bằng Python cũng TLSV1_ALERT_INTERNAL_ERROR. Cả pkgs/dl/login/controlplane.tailscale.com trả 94.140.14.33. Người dùng xác nhận chưa thể đổi hotspot và yêu cầu thử trực tiếp/ghi phần chặn. Chỉ chuẩn bị setup script và cấu hình VPN mẫu; **không cài/enroll EC2** khi PC chưa dùng được.
+16. EC2 ban đầu Stopped, sau đó được bật ngoài lượt này. Preflight từ chối can thiệp. Sau khi người dùng xác nhận không ai dùng và cho phép test rồi Stop, tiếp quản máy Running. Lượt đầu tunnel SSM thoát trước UDP; lượt sau HTTPS/JWT qua nhưng lệnh Bash stdin từ Windows bị CRLF/exit 2. Đã ghi các lượt lỗi, tăng thời gian bắt tay/giữ log SSH và chuyển stdin thành UTF-8 bytes LF, thêm regression. Mỗi lượt đều Stop và xác nhận Stopped.
+17. Lượt cuối dùng NetSmokeClient trên **PC vật lý**, Public IPv4 hiện tại, quan sát header trên ens5 tại EC2 trong cùng bài thử. Client ghi 10 transport packet gửi, 0 nhận; 0 connected/join/pong. Observer không thấy UDP 7777 tới/đi; listener và Docker publish 0.0.0.0:7777 có mặt. Chưa xác định chính xác PC/firewall/router/ISP/chính sách mạng nào làm mất gói; không đổi SG hoặc mở thêm port không có bằng chứng.
+18. AWS cuối đạt **8/8 kiểm tra quản trị/API**: HTTPS certificate/DB health, reuse/register, login, JWT thiếu/sai/sửa chữ ký bị 401, chỉ có mặc định lúc bắt đầu, JWT hợp lệ tạo phòng 10 slot với mã 6 ký tự. Phòng test đã xóa, cleanupErrors rỗng. Không chạy tải WAN/Stop–Start rejoin vì UDP BLOCKED. Đã đóng gói client Windows cần .NET 8 Runtime cho PC thứ hai; chưa có PC thứ hai để nghiệm thu. Không deploy hoặc nâng instance trong đợt này.
 
-Trong 22 lượt đo, API công khai/Swagger của bản dev không được nới giới hạn. Bài đo provision trực tiếp qua control endpoint nên không đánh giá throughput/rate limit tạo phòng qua Swagger hoặc JWT. Việc áp dụng 5/50 và kiểm tra API được thực hiện sau đó, ghi riêng ở phần 6–7.
+Các lượt bị dừng và thời gian của chúng được giữ trong mục 7.
+
+### Bổ sung UDP/WSS ngày 16/10/2026
+
+19. Xác minh CRC, manifest SHA-256 và checksum archive 94 file trước khi đụng dữ liệu; giữ nguyên bằng chứng cũ. Kiểm kê bảy thư mục `.utmp` có thể tái tạo, tổng 814,27MiB. Automatic approval review từ chối xóa đệ quy với “blocked by policy”, nên không dùng công cụ khác để lách. Chạy Docker build-cache prune chỉ phần cũ hơn bảy ngày, thu hồi 0B; giữ bốn container dev đang dừng, Mongo volumes, images và releases rollback.
+20. Tách `SessionHub` khỏi adapter LiteNetLib; thêm WebSocket 7781 `/game`, binary ≤4KiB, outbound queue 64/session, event queue giới hạn. I/O bất đồng bộ không chạy trong tick. Hai transport dùng chung RoomManager, JWT pending, timeout, PlayerId và chính sách 10/50/5/2.
+21. Giữ UDP v1, thêm v2 với nonce 128 bit cho một lượt kết nối. Chuyển UDP → WSS trước application message đầu tiên giữ một slot/PlayerId; callback UDP cũ không giải phóng phiên mới. Giữ tombstone 30s, từ chối replay hoặc takeover sau commit. Không ghi nonce/code/token vào log.
+22. Thêm client Udp/Wss/Auto, env ưu tiên JSON; Auto chờ UDP tối đa 5s rồi WSS 10s connect +5s join. Từ chối nghiệp vụ không fallback; không chuyển giữa trận. Remote bắt buộc WSS với certificate đúng, WS chỉ loopback.
+23. Chạy suite: 132 network, 50 account, 42 room, các nhóm migration/evaluator/lifecycle; suite dual cuối cùng 44 checks. Kiểm socket WebSocket thật, UDP v2 thật, Auto khi UDP không có server, mixed 10/11, global cap, callback/replay, fragmented/text/oversize/malformed. Một lượt dual từng thất bại do CloseOutputAsync làm client thấy reset; sửa graceful CloseAsync, thêm kiểm pin IP và từ chối TLS self-signed, lượt cuối 44/44. Giữ log lỗi cũ.
+24. Stack Local riêng đạt 43 checks chức năng/restart/account, rồi đo riêng UDP v2 và WebSocket: 15s warm-up +300s, 10 client ×30Hz, server 256MiB. Image bài đo được build trước hai sửa nhỏ graceful close/callback guard; các sửa đó có regression và suite final-image/Caddy riêng. Không gán nhầm fingerprint hai image.
+25. Build release apps-only 89,7MiB; kiểm 27 file/checksum, Linux amd64 và không có private config. Dùng image cuối kiểm 35 Caddy/AWS Docker checks, HTTPS certificate CA nội bộ, Swagger Basic auth, API JWT, account persistence và legacy UDP. Caddy chỉ route chính xác `/game`, không áp Swagger Basic auth vào game; cổng 7780/7781/Mongo/API không publish AWS.
+26. AWS qua SSM để quản trị/upload, client WSS chạy trên PC thật qua Internet 443. Helper Windows chỉ cập nhật dòng Jungle Maze sau TLS/health thật và backup hosts; không bỏ kiểm TLS. Lượt đầu lỗi SFTP put -a khi file đích chưa tồn tại, chưa deploy; Stop được xác nhận. Sửa phân biệt upload mới/resume. Lượt hai upload chỉ khoảng 40KiB/s, mới truyền 11MiB sau hơn 4 phút, nên chủ động ngắt để Stop, không chờ truyền hết 89,7MiB.
+27. Chuẩn bị delta khoảng 0,42MiB khi EC2 tắt: dùng lại tám runtime layer từ hai image cũ được ghim ID, chỉ gửi layer/config mới. Kiểm SHA-256 delta liên kết release đầy đủ; restore local xác nhận từng SHA layer và runtime config trùng. Đóng gói OCI sang Docker legacy có thể đổi manifest/image ID; lưu cả source/restored ID và config hash, không tuyên bố image ID byte-identical. Trên EC2 export đúng base, dựng lại archive, kiểm nội dung rồi mới chạy deploy/checksum chuẩn; thiếu base/layer thì dừng. Gói release đầy đủ vẫn giữ để rollback.
+28. Lượt đã deploy join WSS thật, Auto fallback và 10/11 PASS; nhưng bài 300s bị mất cả 10 kết nối tại 167,6s và SSM không lấy được snapshot. Client Local đồng thời vẫn hoàn thành 300s. Người dùng xác nhận có Sleep hoặc mất/đổi mạng; không tính bài ngắt thành PASS, không dùng nó để kết luận server yếu. Stop qua CLI tại 15:11 không xác nhận được, timer EC2 độc lập vẫn hoạt động; truy vấn sau phục hồi lúc 16:01 xác nhận Stopped/InstanceInitiatedShutdown. Giữ nguyên lifecycle stoppedConfirmed=false của lượt cũ và thêm bằng chứng xác nhận sau, không sửa lịch sử.
+29. Bổ sung giữ PC khỏi tự idle Sleep trong thời gian test, trả lại khi xong; không chặn Sleep thủ công hoặc đổi mạng. Lượt chạy lại dùng đúng provenance/image đang cài, không upload/deploy/tải 50–100 lần nữa; ngân sách mềm 18 phút, timer độc lập cứng 20 phút để giảm rủi ro tiêu credits khi mất PC. Kiểm Stop–Start yêu cầu đăng ký lại fixture trả 409 và login được, tránh nhầm việc tạo account mới thành DB đã được giữ.
+30. Lượt tiếp theo bị hủy ở UAC sửa hosts, chưa phát tải; finally Stop xác nhận. Thay yêu cầu quyền Administrator bằng pin TCP riêng trong client (webSocketConnectIp/NET_WS_CONNECT_IP): SocketsHttpHandler nối tới IPv4 được chỉ định, URI/SNI và certificate chain/hostname vẫn mặc định. Có test TLS không tin cậy bị từ chối. Chạy lại không UAC, không sửa DNS/hosts, không deploy lại; config/report ghi rõ IP pin. Public DNS được hỏi riêng từ EC2; resolver/hosts PC vẫn là hạn chế riêng, không hứa tester ở mạng chặn DNS tự kết nối bằng hostname được.
+
 
 ## 3. Môi trường và cách tính
 
-| Thành phần | Cấu hình |
+| Thành phần | Cấu hình thực tế |
 | --- | --- |
-| Máy phát tải/host | Windows, AMD Ryzen 7 4800H, 16 logical CPU, RAM vật lý 16.558.178.304 byte ≈15,42GiB |
-| Docker Desktop | Engine 29.5.3, WSL2 kernel 5.15.167.4, 16 vCPU hiển thị, VM RAM 8.021.950.464 byte ≈7,47GiB |
-| Cgroup | v1; đọc memory.usage_in_bytes khoảng mỗi giây |
-| GameServer | .NET 8, LiteNetLib 2.1.4; 256MiB memory, memory+swap 256MiB, không CPU quota |
-| Client | .NET SDK 8.0.403; một tiến trình console trên Windows, nhiều socket tới Docker loopback |
-| Tải | Unreliable Ping/Pong 30Hz mỗi phiên, không payload gameplay; protocol v1, RoomCode |
-| Cấu hình phụ | Metrics 1s; TTL phòng trống 3.600s để không thu hồi giữa các lượt; phòng mặc định 10 slot |
-| Thời gian | Warm-up 15s; đo thường 60s; xác nhận 180s; chờ Pong cuối tối đa 5,2s |
+| EC2 | t3.small, ap-southeast-2, 2 vCPU, CPU credits Standard |
+| OS | Linux 7.0.0-1014-aws, x86_64, RAM OS thấy 1906.0MiB |
+| Storage | gp3 20GiB mã hóa; trước deploy còn khoảng 11GB filesystem |
+| GameServer | 256MiB, tick 30Hz, RoomCode public; 10/50/5/2 |
+| Generator | Một process trong container EC2, 256MiB/0.75 core, UDP loopback qua host 7777, dùng chung tài nguyên với server |
+| API/control | HTTPS + JWT qua SSM; HTTP control private giữa API/GameServer |
+| Release | aws-rooms-20261016 |
+| Archive SHA-256 | 51f3cb8a571b2315076d18559e79c9ce8c410d54630ae92ebf1b654c0c6f3b5a |
+| GameServer image | sha256:edd96d3c3b0c44b66cb3efb95890bdd80bcdf63200abd6e28e77a6f9552004b5 |
+| Baseline p95 | Lượt chức năng 30.3493ms; lượt bổ sung 30.5476ms |
 
-CPU GameServer là CPU process quy đổi một core: 100% tương ứng một core bận, không phải phần trăm tổng 16 CPU. Giá trị báo cáo là đỉnh cửa sổ metrics khoảng một giây. RAM là đỉnh mẫu cgroup so với 256MiB, không chỉ WorkingSet và không gồm toàn bộ stack/API/Mongo hoặc RAM host.
+Baseline: 1 client, warm-up 5s, đo 30s. Đây là baseline trong EC2. Một nhãn console cũ còn ghi “Internet baseline”; metadata generatorOnServer=true và topology thực tế xác định đúng phạm vi, không phải RTT Việt Nam–Sydney.
 
-RTT được tính từ lúc client gửi tới khi ứng dụng client đọc Pong; bao gồm client, transport, Windows/WSL/Docker và lịch poll. Không phải số đo riêng thời gian xử lý GameServer. Percentile dùng nearest rank; cột p95 chung gom mẫu mọi phiên, cột p95 phòng tệ nhất lấy giá trị lớn nhất trong các phòng. Mỗi phòng phải đạt, không dùng trung bình các phòng để che phòng chậm.
+Tải 10/30/50: warm-up 10s, đo 45/45/60s; xác nhận warm-up 10s + đo 180s. Mức 10 và 30/50 thuộc **hai lần boot riêng**, không ghép thành chuỗi không restart. Đã đo baseline riêng và đối chiếu image; mỗi lượt vẫn login/tạo phòng bằng JWT.
 
-### Tiêu chí đạt
+Tiêu chí: đủ join, không disconnect ngoài dự kiến; timeout <1%; p95 **từng phòng** ≤ baseline +50ms; tick 29–31Hz, không dropped tick/OOM/restart; CPU server ≤85% một core; RAM cgroup ≤80% của 256MiB. Từng client phải phát ≥28.5Hz, nếu không là INVALID_GENERATOR. CPU là peak cửa sổ metrics 5s, RAM cgroup lấy khoảng 1s. Chỉ dùng cửa sổ metrics nằm trọn thời gian đo; RTT nearest-rank, loại warm-up và đợi pong cuối.
 
-| Chỉ số | Điều kiện |
-| --- | --- |
-| Kết nối | Đủ mọi phiên join, không reject/disconnect ngoài dự kiến |
-| Timeout/loss Pong | Dưới 1% số Ping, sau khi đợi Pong cuối |
-| RTT | p95 **mỗi phòng** ≤50ms local; p99 ghi nhận nhưng không dùng làm điều kiện đạt |
-| Tick | Trung bình 29–31Hz; dropped tick = 0 |
-| CPU/RAM | Đỉnh CPU ≤85% một core; RAM cgroup ≤80% giới hạn |
-| Telemetry | Có mẫu server trong cửa sổ đo và mẫu RAM |
-| Máy phát tải | Gửi ≥28,5Hz/phiên và đo đủ ≥99% thời lượng yêu cầu; không đạt thì không quy kết server yếu |
+Generator dùng chung EC2 có thể cạnh tranh CPU/RAM; không so thẳng với phát tải từ máy độc lập.
 
-Telemetry server chỉ lấy cửa sổ nằm trong giai đoạn đo, loại chuyển tiếp warm-up. Không có CPU quota tương đương một EC2 micro/small: cùng giới hạn RAM container không làm hai môi trường tương đương.
+### Bổ sung UDP/WSS ngày 16/10/2026
+
+Local: Windows/Docker Desktop, GameServer 256MiB, .NET 8/LiteNetLib 2.1.4. AWS giữ t3.small/CPU Standard/Mongo 7/Caddy volumes, không thêm instance/LB. Client AWS chạy trên PC vật lý; WSS dùng TLS public hostname, không đi trong tunnel SSM. RTT Local xét ≤50ms p95; RTT Sydney/WSS chỉ báo thực đo. Các tiêu chí khác: đủ join, không disconnect ngoài dự kiến, pong timeout <1%, từng client ≥28,5Hz, tick 29–31Hz, không drop/OOM/restart, CPU ≤85% một core, RAM ≤80% giới hạn. Full per-client samples và image/source hash nằm trong JSON/archive.
+
 
 ## 4. Các lượt đo và kết quả
 
-Đã chạy **22 lượt**, gồm **34 phút cửa sổ đo** và 15s warm-up mỗi lượt, trên bốn container thử nghiệm nối tiếp. Mức lớn nhất đã đo là **100 phiên**, tối đa **10 phòng hoạt động**. Các mức 150/200/256 phiên và 15/20/25 phòng trong kế hoạch công cụ không được chạy do đã trượt ở mức trước.
+### Chức năng/JWT AWS
 
-Trong toàn bộ cửa sổ đo: **4.319.700 Ping và đủ 4.319.700 Pong**, không timeout/outstanding còn lại, không reject/disconnect ngoài dự kiến và không dropped tick. Mọi lượt gửi hợp lệ; tốc độ thấp nhất ở cả tổng/phiên là **29,933Hz**, vượt yêu cầu 28,5Hz. Tick trung bình từng lượt **29,987–30,017Hz**. Đỉnh CPU GameServer **16% một core**, đỉnh RAM cgroup **51,17MiB ≈19,99% của 256MiB**. CPU client cao nhất tính theo trung bình cả cửa sổ là khoảng **26,92% một core**; không tương đương đỉnh CPU một giây của server.
-
-Tất cả các lượt FAIL dưới đây chỉ trượt tiêu chí **p95 mỗi phòng ≤50ms**. Các tiêu chí join, loss, tick, CPU/RAM và telemetry còn lại đều đạt. p99 không phải tiêu chí đạt nhưng được ghi để quan sát các đợt tăng độ trễ.
-
-`measure`: tăng tải ban đầu; `repeat`: lặp mức trượt; `refine`: thu hẹp bằng lượt 60s; `confirm`: ứng viên cao nhất ngắn hạn; `confirm-only`: đo dài cố định ở mức thấp hơn. Một lượt 60s PASS không thay thế xác nhận dài. RAM giữa các lượt không tăng đều theo số phiên vì process có lịch sử cấp phát/GC khác nhau và mỗi probe khởi động container mới.
-
-| Lượt | Phòng hoạt động | Phiên | Đo (s) | Kết quả | RTT p95/p99 (ms) | p95 phòng tệ nhất | Hz/phiên | CPU core % | RAM MiB |
-| --- | ---: | ---: | ---: | --- | ---: | ---: | ---: | ---: | ---: |
-| single-10-measure | 1 | 10 | 60 | PASS | 46.96/47.86 | 46.96 | 29.99 | 5.97 | 36.01 |
-| single-30-measure | 1 | 30 | 60 | PASS | 46.99/60.64 | 46.99 | 29.99 | 8.00 | 36.17 |
-| single-50-measure | 1 | 50 | 60 | PASS | 47.26/61.01 | 47.26 | 29.99 | 7.00 | 37.17 |
-| single-100-measure | 1 | 100 | 60 | FAIL | 60.43/96.22 | 60.43 | 30.00 | 12.99 | 40.20 |
-| single-100-repeat | 1 | 100 | 60 | FAIL | 60.88/96.07 | 60.88 | 30.00 | 13.00 | 41.30 |
-| single-75-refine | 1 | 75 | 60 | PASS | 48.28/61.60 | 48.28 | 29.93 | 12.93 | 43.25 |
-| single-85-refine | 1 | 85 | 60 | PASS | 47.92/61.10 | 47.92 | 30.00 | 11.00 | 43.89 |
-| single-90-refine | 1 | 90 | 60 | PASS | 47.21/60.67 | 47.21 | 29.99 | 10.00 | 44.98 |
-| single-95-refine | 1 | 95 | 60 | PASS | 47.26/60.98 | 47.26 | 30.00 | 11.00 | 47.17 |
-| single-95-confirm | 1 | 95 | 180 | FAIL | 59.92/81.98 | 59.92 | 30.00 | 13.99 | 47.32 |
-| multi-3-measure | 3 | 30 | 60 | PASS | 46.68/60.29 | 46.72 | 30.00 | 6.00 | 47.95 |
-| multi-5-measure | 5 | 50 | 60 | PASS | 47.65/61.17 | 47.82 | 29.99 | 7.00 | 47.80 |
-| multi-10-measure | 10 | 100 | 60 | FAIL | 59.84/62.84 | 60.04 | 29.99 | 12.98 | 49.00 |
-| multi-10-repeat | 10 | 100 | 60 | FAIL | 61.74/141.64 | 62.08 | 29.99 | 15.00 | 49.73 |
-| multi-7-refine | 7 | 70 | 60 | PASS | 47.16/60.97 | 47.33 | 30.00 | 8.00 | 49.99 |
-| multi-8-refine | 8 | 80 | 60 | PASS | 47.23/60.70 | 47.43 | 30.00 | 9.00 | 49.94 |
-| multi-9-refine | 9 | 90 | 60 | PASS | 47.33/60.97 | 47.77 | 30.00 | 11.00 | 50.58 |
-| multi-9-confirm | 9 | 90 | 180 | FAIL | 60.31/217.75 | 60.50 | 30.00 | 16.00 | 51.17 |
-| single-50-confirm-only | 1 | 50 | 180 | PASS | 47.34/61.03 | 47.34 | 30.00 | 9.99 | 34.86 |
-| multi-5-confirm-only | 5 | 50 | 180 | PASS | 47.26/60.97 | 47.43 | 30.00 | 7.00 | 37.96 |
-| multi-7-confirm-only | 7 | 70 | 180 | FAIL | 48.27/61.79 | 55.71 | 30.00 | 12.00 | 35.87 |
-| multi-6-confirm-only | 6 | 60 | 180 | PASS | 48.03/61.66 | 48.21 | 30.00 | 10.94 | 38.92 |
-
-### Mức đã xác nhận và vùng chưa kết luận
-
-| Câu hỏi | Kết luận từ dữ liệu |
+| Nội dung | Kết quả |
 | --- | --- |
-| Tổng phiên đã xác nhận dài cao nhất | 60 phiên, chia 6 phòng × 10, RTT p95 phòng chậm nhất 48,21ms, p99 gộp 61,66ms, CPU đỉnh 10,94% một core, RAM 38,92MiB |
-| Mức nhiều phòng kế tiếp | 7 phòng × 10 trượt 180s vì một phòng p95 55,71ms; không khẳng định 70 phiên chắc chắn không thể tối ưu để đạt |
-| Một phòng | Xác nhận 50 phiên ở 180s; 95 phiên trượt 180s. Các mức 75/85/90 chỉ đo 60s, chưa xác định trần dài hạn giữa 50 và 95 |
-| 8 phòng × 10 | Chỉ đạt lượt 60s; chưa xác nhận 180s, không nội suy là đạt từ mức 9 hoặc 6 |
-| 100 phiên | Join đủ cả bố cục một phòng và 10 phòng, nhưng trượt độ trễ ở hai lượt 60s của mỗi bố cục |
-| Trần phần cứng/gameplay | Chưa tìm ra; bài này không ép CPU/RAM tới cạn và chưa có mô phỏng gameplay |
+| JWT thiếu / sai định dạng / sửa chữ ký | POST trả 401, không tạo phòng |
+| JWT thật lifetime 1 phút | Tạo được trước expiry; exp +35s trả 401, không tạo phòng |
+| Khôi phục | Token cấp lại 60 phút, giữ signing key |
+| Owner | Lấy từ sub, bỏ qua ownerId giả; user khác không thấy phòng/mã |
+| Xóa | Chủ xóa phòng trống 204; khác chủ 403; mặc định/đang có người 409 |
+| Sức chứa | Max 10; đề nghị 11 trả 400; client thứ 11 bị RoomFull |
+| Quota | 2 phòng thêm/user; tổng 5 gồm mặc định; phòng thứ 6 bị RoomLimitReached |
+| Rate limit | Request thứ 6/phút/user trả 429 |
+| Cấu hình | RoomCode public, 7780 private, 256MiB, policy 10/50/5/2 |
+| Lượt bổ sung | Tạo đủ 4 phòng bằng JWT hợp lệ, kiểm đúng image và policy |
 
-“Cao nhất đã xác nhận” là trong những trường hợp đã đo, không phải bảo đảm mọi tổ hợp ít người hơn đều đạt hoặc kết quả sẽ lặp y hệt trên máy khác. Chưa đo đầy đủ mọi số người/phòng, cấu hình transport, soak nhiều giờ hoặc nhiều máy phát tải.
+TTL 10 phút, JWT pending và ServerFull khi tổng server thấp hơn tổng slot phòng được kiểm local; không chờ 10 phút trên AWS. Các client thứ 11 bị từ chối có chủ ý nằm trong file riêng, không tính là lỗi performance.
 
-## 5. Diễn giải giới hạn
+### Performance trong EC2
 
-“Join được” chỉ chứng minh nhận kết nối/slot. “Đạt bài đo” còn yêu cầu đủ tốc độ gửi, độ trễ, loss, tick và tài nguyên theo bảng trên. Không dùng số cấu hình 256 phiên/32 phòng hoặc số client join thành công để tuyên bố sức chứa ổn định.
+| Lượt | Phòng hoạt động | Joined | Đo s | Kết quả | RTT p95/p99 ms | p95 phòng chậm nhất | Hz/client thấp nhất | Tick Hz | CPU peak % core | RAM peak % |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| load-10 | 1 | 10/10 | 45 | PASS | 30.28/34.63 | 30.28 | 30.00 | 29.99 | 6.20 | 38.75 |
+| load-30 | 3 | 30/30 | 45 | PASS | 30.53/36.07 | 30.67 | 30.00 | 30.02 | 7.80 | 37.88 |
+| load-50 | 5 | 50/50 | 60 | PASS | 31.70/36.59 | 31.85 | 30.03 | 30.01 | 8.40 | 38.33 |
+| confirm-50 | 5 | 50/50 | 180 | PASS | 30.86/39.67 | 30.96 | 30.00 | 30.00 | 10.97 | 39.33 |
 
-Lượt xác nhận **7 phòng × 10** minh họa vì sao phải đo từng phòng: RTT p95 gộp khoảng **48,27ms** đạt 50ms, nhưng phòng chậm nhất **55,71ms** nên toàn lượt vẫn trượt. Không lấy p95 gộp để kết luận mọi phòng đều đạt. Lượt **9 phòng × 10** có p99 gộp khoảng **217,75ms**, dù không mất Pong; việc nhận đủ gói không loại trừ các đợt tăng độ trễ.
+Tổng cửa sổ performance: **414,107 ping**, 0 mất/timeout, 0 dropped tick. Peak CPU 10.97% một core; RAM 39.33% = 100.69MiB; client chậm nhất 30.00Hz.
 
-Nếu chỉ RTT trượt trong khi CPU/RAM/tick/loss vẫn đạt, kết luận là đường ping/pong local chưa đạt tiêu chí độ trễ tại mức đó. Chưa đủ căn cứ quy nguyên nhân cho CPU server hoặc coi đó là trần phần cứng. Cần đo nhiều máy phát tải, phân tích transport/poll/scheduling, lặp ở điều kiện máy khác và chạy soak dài hơn nếu cần tìm nguyên nhân.
+**5 phòng ×10 đạt lượt xác nhận 180s**, không OOM/restart trong các cửa sổ đánh giá. P95 được xét từng phòng, không chỉ toàn bộ sample gộp.
 
-Số đo còn phụ thuộc thời điểm và điều kiện máy phát tải. Không so một kết quả cũ với kết quả này để tuyên bố code nhanh lên theo tỷ lệ cụ thể; báo cáo cũ đã được bỏ để chỉ giữ một bản kết quả mới nhất.
+### Đối chiếu local 14/10
 
-Khi thêm gameplay, mỗi phòng cần world/entity riêng, xử lý input/collision/combat và gửi snapshot tới các client. Bài ping/pong hiện tại không có các chi phí đó; phải đo lại trước khi cam kết số người chơi thực hoặc chuyển kết quả sang EC2/Internet.
+Giữ 22 lượt, 4.319.700 ping/pong, không loss/drop. Source snapshot local nới policy để đo: một phòng 50, năm phòng ×10 và sáu phòng ×10 đạt 180s; bảy phòng ×10 trượt p95 một phòng 55,71ms; một phòng 95/chín phòng ×10 cũng trượt lượt dài. Đây là số local cũ, không phải cấu hình/trần EC2. API hiện tại chỉ cho 10 người/phòng.
 
-## 6. Phương án chọn và triển khai
+### Bài ổn định Local Phase 1 mới nhất
 
-**Đã áp dụng cho backend local: 10 người/phòng, tối đa 5 phòng gồm 1 mặc định + 4 phòng tạo thêm, tổng 50 active/pending.** Giữ quota 2 phòng tạo thêm/user, TTL phòng trống 600s và mã phòng mới 6 ký tự. Cần ít nhất hai user để tạo đủ bốn phòng ngoài mặc định; quota của một user không phải số phòng tối đa của server.
+Stack Docker/DB/secret riêng, không dùng DB dev hoặc AWS. Một phòng 10 phiên từ PC, warm-up 15s, đo **300s**, 30 ping/s/phiên; đây là 10 socket trên một PC, không phải 10 người/máy.
 
-Lý do:
-
-1. Tổng 50 phiên đã đạt cả một phòng và năm phòng trong lượt 180s, với RTT p95 khoảng 47,3ms; không chọn chỉ từ một lượt 60s. Bài chia năm phòng đo trực tiếp phương án đề xuất.
-2. Giữ 10 người/phòng đúng mục tiêu lớp học. Chưa có cơ sở nâng một phòng lên 50–100 người khi chưa đo gameplay và gửi trạng thái giữa người chơi.
-3. Năm phòng cho dev nhiều nhóm test riêng hơn ba phòng, thấp hơn mức sáu phòng/tổng 60 đã xác nhận. Không dùng mức cao nhất làm mặc định; bảy phòng đã có một phòng trượt, vùng 90–100 phiên còn kém ổn định hơn. Không coi chênh lệch 10 slot là lượng dự phòng hiệu năng gameplay cố định.
-4. Có thể tăng tiếp sau khi đo Unity/gameplay thật và thời gian dài hơn. Số phiên chưa sử dụng không thể quy đổi thành một tỷ lệ dự phòng CPU cho quái, đạn hoặc combat.
-
-**Với AWS:** source/Compose đã chuẩn bị policy 5/50 nhưng chưa build release/deploy EC2 hoặc chạy tải AWS. Không suy ra cấu hình runtime hiện tại trên EC2. Khi triển khai sau này, đo từ một phòng 10 người thực trên Internet trước, chọn tiêu chí RTT theo môi trường đích rồi mới mở tải nhiều phòng. Có thể cấu hình giới hạn thấp hơn trần 5/50 cho buổi test đầu; bài này không xác nhận EC2 chịu được 50 hoặc 80 người.
-
-**Khi bắt đầu gameplay:** nghiệm thu trước một phòng 10 người, sau đó nhiều phòng có world/quái/đạn/snapshot thực. Chưa cam kết chơi mượt 50 người chỉ từ ping/pong. Nên chạy soak dài hơn và dùng nhiều máy phát tải độc lập khi đánh giá phát hành.
-
-Các thay đổi triển khai:
-
-| Hạng mục | Kết quả |
+| Chỉ số | Kết quả |
 | --- | --- |
-| RoomLimits dùng chung | TotalPlayers=50, Rooms=5; PlayersPerRoom=10, RoomsPerUser=2 giữ nguyên |
-| Validation và Swagger | Từ chối cấu hình tổng >50/phòng >5; mô tả POST và Swagger ghi đúng 5/50, maxPlayers tối đa 10 |
-| Cấu hình | `.env.example`, defaults Compose local/AWS và hai khóa số trong `.env` local cập nhật 5/50; không ghi đè secret |
-| Runtime local | Build/recreate API/GameServer, `/health` trả ok/database connected; UDP client join/Pong thành công; Mongo giữ nguyên ID/image |
-| Kiểm thử chức năng | Năm phòng đồng thời đủ 10 active, 50 client có Pong; chủ phòng khác chưa có phòng cũng bị từ chối tạo phòng thứ sáu |
-| Dọn file | Bỏ report cũ, script tổng hợp dùng một lần và script kiểm tra room-plan tách riêng; giữ một report này và bằng chứng nén |
+| Joined / lỗi client | 10/10; 0 lỗi |
+| Ping/pong / timeout | 90.000 /90.000; 0 mất/timeout |
+| Tốc độ từng client thấp nhất | 29,9996Hz, đạt ≥28,5Hz |
+| RTT p50 /p95 /p99 | 30,7685 /46,8849 /60,4903ms |
+| Tick trung bình /dropped tick | 30,0029Hz /0 |
+| CPU peak một core /RAM cgroup | 7,0% /14,57% của 256MiB (~37,29MiB) |
+| Khởi động lại và dữ liệu account | Down/up giữ volume, login lại được |
+| Kết quả | PASS theo tiêu chí Local; không suy ra FPS/gameplay |
 
-Kiểm tra năm phòng × 10 sau triển khai là lượt chức năng **6 giây**, không phải một lượt đo hiệu năng 180s mới. Bảng 22 lượt ở phần 4 vẫn là dữ liệu đo trước khi áp dụng policy; không thay số liệu hoặc fingerprint để coi như vừa đo lại dài trên image mới.
+Bài Local ban đầu lỗi ID container trong công cụ, chưa có stage 300s; giữ riêng trong JSON và archive. Không gộp thành một lượt PASS không gián đoạn.
 
-## 7. Bằng chứng, kiểm tra và chạy lại
+### Đường thực PC → EC2 và trạng thái bốn task
 
-- [Dữ liệu JSON](report.json): môi trường, source/image fingerprint, mọi tiêu chí, số đo server và từng phòng của các lượt.
-- [Bảng CSV](report.csv): mọi mức đạt/trượt và thời lượng; không bỏ các lượt trượt hoặc lặp lại.
-- [Bằng chứng nén](evidence.zip): JSON RTT từng client, log server, source snapshot và log kiểm tra triển khai; có manifest SHA256 bên trong.
-- [Cách chạy công cụ, file riêng tư và cleanup](../../Phase1_First4Tasks.vi.md#145-thử-vượt-chính-sách-trên-bản-gameserver-local-riêng).
-- Source công cụ: `Backend/Tools/local_capacity_probe.py`, `Backend/Tools/room_benchmark.py`, `Backend/NetSmokeClient/Configuration/RoomLoadTarget.cs`; kiểm tra input đã gộp trong `Backend/Tests/NetworkChecks/Program.cs`.
+Bài UDP cuối khoảng **13:28 ngày 16/10 (UTC+7)** dùng PC DESKTOP-JDQDIQH → 16.176.205.217:7777, không phát tải trong EC2. IP là địa chỉ tại lượt đó, **không dùng lại sau Stop–Start**. Observer được arm trước khi chạy client; đồng hồ UTC hai host có độ lệch nhỏ, vì vậy đối chiếu cả thứ tự chạy/cửa sổ chồng lấp, không dùng timestamp từ hai máy để suy ra độ trễ một chiều.
 
-Kết quả kiểm tra cuối:
+| Phần kiểm tra | Trạng thái / bằng chứng |
+| --- | --- |
+| Public UDP từ PC | **BLOCKED**: transportSent=10, received=0, ConnectTimeout; observer ens5 incoming/outgoing=0 trong cửa sổ 12s |
+| Bind/Docker | UDP 0.0.0.0:7777, docker-proxy và publish đúng; DOCKER-USER không có rule chặn bổ sung; kiểm lại SG mở UDP 7777, NACL allow và route Internet Gateway khi EC2 đã Stopped |
+| Tailscale | **BLOCKED** ở PC: DNS chung 94.140.14.33 và lỗi HTTPS; chưa có direct/DERP để đo |
+| API HTTPS/JWT AWS | **PASS 8/8** qua quản trị SSM/TLS đúng certificate, không phải bằng chứng UDP public |
+| INF-01 | Local setup/restart/data/env PASS; hai PC LAN/VPN, chạy đồng thời Local/AWS và Stop–Start rejoin còn NOT_TESTED |
+| NET-01 | API/JWT/tạo phòng PASS; JWT thật hết hạn đã kiểm trong lượt AWS trước và suite Local hiện tại, không đổi TTL AWS lần này; không mở lại UI Compass |
+| SRV-01 | Local 10/300s PASS; AWS co-located 5×10/180s cũ PASS; PC→AWS 10/300s **NOT_TESTED** |
+| SRV-02 | Local version/payload/mã sai/capacity/pending/timeout/trả slot PASS; handshake/reconnect qua WAN/VPN **NOT_TESTED** |
+| INF-02 /Unity | 10 máy/người và gameplay **NOT_TESTED**, chưa có client Unity LiteNetLib |
 
-- Build `JungleBackend.sln`: **0 warning, 0 error**.
-- **124 network checks** qua: gồm 16 room-plan checks đã gộp; kiểm tương thích client, RoomCode/JWT, pending/timeout/trả slot, policy 5/50, từ chối phòng thứ sáu và HTTP control. Các case room-plan hợp lệ/không hợp lệ dừng trước khi mở session mạng.
-- **50 account/API checks**, **9 kiểm tra migration secret** và **42 kiểm tra Docker/API phòng** qua. Tổng **225 điểm kiểm tra**, không cộng trùng 16 case room-plan.
-- Audit độc lập **22 lượt** với JSON client thô: đối chiếu số join/sent/Pong/loss, tính lại p95/p99 và p95 từng phòng, kiểm tốc độ từng client và hash toàn bộ source snapshot. Không sửa số đo gốc.
-- Bốn lượt đo ban đầu ghi `productionPolicyUnchanged=true`, `devContainersUnchanged=true`, `cleanupErrors=[]` tại thời điểm đo. Sau khi áp dụng policy, API/GameServer được recreate có chủ đích; xác minh riêng `mongoContainerUnchanged=true`. Không deploy AWS hoặc xóa volume/DB của team.
+Máy đang dùng không chuyển mạng theo lựa chọn của người dùng, nên dừng ở bằng chứng BLOCKED, không chạy lại generator trong EC2 để thay thế. Chưa đủ cơ sở đánh Done toàn bộ Phase 1 cho cả Local và Online.
 
-Trong `evidence.zip`: `runs/<runId>/` chứa JSON/log thô của bốn lượt, `source/` lưu một bản snapshot dùng chung; `implementation/` chứa log build/core suite/local runtime và kết quả Docker/API sau áp dụng 5/50. Đã kiểm CRC toàn archive và SHA256 của **94 file bằng chứng** theo `manifest.sha256.json`. JSON báo cáo có hash archive, metadata của mọi lượt và xác minh runtime mới. Đã dọn thư mục raw/report/script tạm ngoài archive để không giữ nhiều bản trùng.
+### Bổ sung UDP/WSS ngày 16/10/2026
 
-Các lượt đo dùng cùng fingerprint source GameServer `7b98b2145812ab251eb55c9e6b940b1e6520d3461199d06aeebdc1149bce3b72`, HEAD `fd2b2e9a887d1cd87644165de62b73ee96f38042`. Đây là fingerprint **bản đo trước khi áp dụng 5/50**, không phải hash source hiện tại. Giữa lượt dò và lượt xác nhận thấp hơn chỉ bổ sung guard input `null` của room-plan trên client; hash binary từng đợt được giữ trong JSON. Workspace có thay đổi chưa commit nên commit HEAD một mình không định danh đầy đủ bản đo.
+| Môi trường / transport | Phiên / giây | Kết quả | Hz thấp nhất | RTT p50/p95/p99 (ms) | Tick Hz | CPU peak / RAM peak |
+| --- | --- | --- | --- | --- | --- | --- |
+| Local / Udp | 10 / 300 | PASS | 30.00 | 30.73/46.92/60.35 | 30.00 | 11.00% / 13.66% |
+| Local / Wss | 10 / 300 | PASS | 29.99 | 15.38/16.17/31.31 | 30.00 | 16.91% / 19.07% |
+| PC → EC2 / Wss | 10 / 300 | PASS | 30.00 | 404.06/591.35/774.27 | 30.00 | 9.40% / 42.43% |
+
+| Hạng mục | Trạng thái |
+| --- | --- |
+| localUdpV1 | PASS |
+| localUdpV2 | PASS |
+| localWebSocket | PASS |
+| localAutoBlockedUdp | PASS |
+| mixedRoomCapacity | PASS |
+| jwtRoomOwnershipQuotaRateLimit | PASS |
+| localAccountPersistsRestart | PASS |
+| publicWss | PASS |
+| publicAuto | PASS |
+| publicUdp | PASS |
+| localAwsConcurrent | PASS |
+| awsStopStartRejoin | PASS |
+| twoPhysicalPcs | NOT_TESTED |
+| unityMultiplayerGameplay | NOT_TESTED |
+| temporaryFileCleanup | BLOCKED |
+| ec2FinalStopped | PASS |
+| publicDnsFromEc2 | PASS |
+| pcSystemHostname | BLOCKED |
+| pinnedTlsRejectsUntrustedCertificate | PASS |
+
+Auto thực tế: {"transport": "Udp", "fallbackReason": null}.
+
+Lỗi harness được giữ: Process failed: sftp (1).
+
+Lỗi harness được giữ: Process failed: sftp (-1).
+
+Lỗi harness được giữ: AWS test incomplete; inspect test/report.json..
+
+Lỗi harness được giữ: This command cannot be run due to the error: The operation was canceled by the user..
+
+
+## 5. Diễn giải và giới hạn
+
+Đã xác nhận **ít nhất 50 phiên mạng, chia 5 phòng**, trên t3.small trong bài ping/pong 30Hz co-located. Không thử cao hơn, không tìm giới hạn cuối và không diễn giải thành 50 người chơi Unity mượt.
+
+Đường quản trị SSM/HTTPS API hoạt động; UDP public từ PC chưa thông. Chạy generator trong EC2 kiểm được backend khi mạng chặn, không sửa kết nối game từ lớp. Cần mạng cho UDP hoặc thiết kế transport/overlay riêng để nghiệm thu chơi online từ PC.
+
+Tick chưa mô phỏng world/combat/snapshot. Một máy phát tải không thay cho nhiều máy vật lý, FPS, WAN loss, reconnect hoặc nhiều trận gameplay độc lập. Phải đo lại khi có movement/combat và Unity client.
+
+Lỗi cleanup ở lượt security là lỗi công cụ, không phải server FAIL tải. Dữ liệu gốc giữ trạng thái incomplete; lượt bổ sung tham chiếu hash, chạy lại baseline, cleanup cuối không lỗi. Không sửa kết quả cũ thành PASS hoàn chỉnh.
+
+### Bổ sung UDP/WSS ngày 16/10/2026
+
+WSS là đường TCP/TLS có thứ tự; mất gói có thể gây chờ các message sau, nên bài ping/pong đạt không chứng minh movement/combat mượt. Lượt WAN đủ 300s có RTT p50 khoảng 404ms, p95 khoảng 591ms, p99 khoảng 774ms: kết nối ổn định nhưng độ trễ này có thể thấy rõ trong game real-time. Không tuyên bố đã chơi mượt; cần client Unity, prediction/interpolation và đo gameplay/mạng thực tiếp theo. Chưa đo 50 phiên WSS và chưa nghiệm thu hai PC vật lý/10 người thật. Account identity JWT dùng quản lý phòng; RoomCode join nhận PlayerId phiên, không gắn trực tiếp account. Nếu mạng chặn cả HTTPS/Upgrade tới IP thì kết nối vẫn BLOCKED. Đợt cuối pin TCP riêng trong client, không sửa hosts; DNS/hosts PC vẫn cần xử lý riêng khi dùng trình duyệt/hostname mặc định.
+
+
+## 6. Phương án chọn và lý do
+
+Giữ **10 người/phòng, 5 phòng gồm mặc định, tổng 50 active/pending; mỗi user tối đa 2 phòng thêm**, mã tạo thêm 6 ký tự. Chưa thay đổi chính sách sau bài kết nối mới; việc còn thiếu là đường mạng PC→EC2 và nghiệm thu hai PC thật. Tạo/list/xóa cần login và JWT hợp lệ; join UDP public vẫn RoomCode.
+
+Phù hợp lớp khoảng 10 người và cho các nhóm/dev test song song; local và phép đo backend EC2 đã có bằng chứng 5×10. Không tăng lên 6 phòng/60 từ source snapshot local vì chưa đo AWS tương ứng và gameplay sẽ phát sinh tải mới. 50 là hạn mức backend chọn hiện tại, không phải lời hứa sức chứa gameplay.
+
+Khi test gameplay đầu tiên, bắt đầu 1 phòng/10 máy thật trên mạng UDP hoạt động; đo movement/combat/snapshot/FPS/RTT WAN rồi mới nghiệm thu nhiều phòng. Không tự nâng instance/Unlimited để làm bài đạt.
+
+### Bổ sung UDP/WSS ngày 16/10/2026
+
+Chọn **10 người/phòng, 5 phòng gồm mặc định, tổng 50 active/pending, 2 phòng thêm/user**, dùng **UDP v2 chính + WSS dự phòng Auto**. Lý do: giữ tương thích UDP v1, không cần tester cài VPN, dùng chung slot nên fallback không vượt sức chứa; JWT bảo vệ quản lý phòng. Giữ giới hạn vận hành hiện tại; chỉ tuyên bố mức/transport đã đo trong bảng, không suy ra 50 người chơi gameplay. Admin mở buổi có thời lượng bằng open-aws-session.ps1; tester chỉ nhận client, endpoint và mã phòng.
+
+
+## 7. Bằng chứng, chi phí và chạy lại
+
+### Toàn bộ các lần bật có kiểm soát
+
+| Lượt | Start request UTC+7 | Stop request UTC+7 | Kết quả | Xác nhận |
+| --- | --- | --- | --- | --- |
+| lượt | 11:05:18 | 11:10:35 | Timed out: scp | Stopped |
+| lượt-final | 11:12:34 | 11:13:08 | Process failed: ssh () | Stopped |
+| lượt-run | 11:14:25 | 11:18:58 | AWS test incomplete; inspect test/report.json. | Stopped |
+| lượt-ssm | 11:22:47 | 11:29:31 | AWS test incomplete; inspect test/report.json. | Stopped |
+| lượt-capacity | 11:31:18 | 11:39:57 | Hoàn tất | Stopped |
+
+Có thêm preflight lỗi ACL Windows trước Start, không bật EC2. Các sửa lỗi: upload timeout → SFTP resume; Docker remote cần sudo/mã thoát Windows; biến http của harness; record cleanup JWT ngắn. Các lượt lỗi đều Stop, không Terminate.
+
+Tổng từ Start request tới Stop request của **5 lần bật: 25.77 phút**. Khoảng này vượt mốc mục tiêu 25 phút khoảng 46 giây do các lượt sửa lỗi. Đây là thời gian vòng vận hành có phần pending, không phải Running chốt hóa đơn. Usage của EC2 đã bật trước lúc chuẩn bị không nằm trong số này; bảng không loại các lần thất bại.
+
+Compute = giờ Running AWS ghi nhận × đơn giá t3.small Sydney của tài khoản; credits còn phụ thuộc ưu đãi/usage ledger. Không suy ra 0đ hoặc số credits còn lại từ test. AWS tính theo giây, tối thiểu 60s/lần Start; compute ngừng khi Stopping thường, EBS vẫn tính lưu trữ. [AWS lifecycle](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-lifecycle.html).
+
+IPv4 public niêm yết USD 0.005/giờ; riêng thành phần này theo khoảng vận hành trên xấp xỉ **USD 0.0021**, chưa gồm compute/EBS/transfer, chưa trừ ưu đãi. [AWS VPC pricing](https://aws.amazon.com/vpc/pricing/). CPU Standard không dùng dư Unlimited; CPU credits khác promotional credits. [AWS Standard mode](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-standard-mode.html).
+
+Lượt cuối: client đóng, phòng test xóa, collector dừng, cleanupErrors rỗng, API cấp token 60 phút. Giữ 3 fixture account để tái sử dụng; mật khẩu ở file ngoài repo, DACL chỉ user Windows hiện tại. EC2 **Stopped đã xác nhận**; EBS/Mongo/Caddy data và cấu hình được giữ. Timer 30 phút dành cho harness; bật EC2 thông thường vẫn cần admin tự Stop.
+
+### Các lượt bổ sung PC → EC2 và chi phí
+
+| Lượt | Tiếp quản/Start UTC+7 | Stop request UTC+7 | Kết quả | Xác nhận |
+| --- | --- | --- | --- | --- |
+| aws — tiếp quản Running sau xác nhận | 13:21:30 | 13:22:15 | Tunnel SSM thoát trước UDP | Stopped 13:22:43 |
+| aws-rerun | 13:24:18 | 13:25:17 | HTTPS/JWT qua, Bash stdin CRLF lỗi | Stopped 13:25:46 |
+| aws-probe | 13:27:22 | 13:28:42 | API 8/8; UDP trực tiếp BLOCKED; VPN prerequisites BLOCKED | Stopped 13:29:21 |
+
+Tổng khoảng **tiếp quản hoặc Start request → Stop request** của ba lượt mới: **3,06 phút**; chưa cộng vào bảng năm lượt trước thành một lượt chạy liên tục. Lượt tiếp quản đã được bật từ 13:16:29, khoảng **5,03 phút trước khi công cụ nhận quyền quản lý**; khoảng Running đó vẫn có usage, không được coi là miễn phí. Đây là timeline vận hành, không phải ledger Running AWS. Không tạo thêm EC2/resize/deploy; không chạy tải WAN không thể tới được hoặc lặp 50–100 phiên.
+
+Local stack/volume test đã được dọn, Docker không còn container test chạy. Phòng AWS mới tạo đã xóa, client/SSH tunnel/watchdog PC của bài đã đóng, EC2 **Stopped xác nhận lại**. EBS/data vẫn được giữ và có thể tiếp tục tiêu credits lưu trữ. Đây là kết luận lịch sử của lượt UDP-only; hướng hiện tại dùng WSS Auto ở phần bổ sung, Tailscale không bắt buộc. Hai PC thật vẫn cần riêng cho nghiệm thu LAN/VPN.
+
+### File và truy vết
+
+- [report.json](report.json): local cũ, AWS security gốc, stage/lỗi/dọn dẹp, lượt bổ sung, source/image fingerprint và lifecycle.
+- [report.csv](report.csv): giữ 22 dòng Local cũ +4 AWS co-located; thêm Local 10/300s và probe PC→EC2 BLOCKED, có environment để tránh diễn giải lẫn nhau.
+- [evidence.zip](evidence.zip): archive mới chứa dữ liệu còn phục hồi của lượt AWS cũ, Local/PC→EC2 mới, các lượt lỗi, timeline đã bỏ account ID và source công cụ; không kèm image/release archive hoặc credentials.
+- Archive trước đợt UDP/WSS có **94 file**; archive hiện tại có **287 file**, SHA-256 ở [evidence.zip.sha256](evidence.zip.sha256), metadata trong report.json. Kiểm CRC và SHA-256 từng file theo manifest trong archive.
+- Khi rà soát lượt mới, cả evidence.zip và evidence.zip.sha256 đã mô tả ở lần trước đều không có trên đĩa. Giữ metadata/hash lịch sử trong priorEvidenceArchive20261016; dựng archive mới từ raw còn trong Backend/out và số liệu JSON/CSV còn giữ. Không tuyên bố phục hồi byte-identical hoặc kiểm lại CRC archive cũ không có; raw local 14/10 cũng chỉ còn phần đã lưu trong báo cáo.
+- Không có JWT/password/room plan/.env/PEM trong gói; đã so với mật khẩu fixture thật. Bỏ AWS account ID khỏi lifecycle public. Lượt bổ sung tham chiếu đúng hash bằng chứng trước.
+
+Chạy lại theo [mục 14.4 hướng dẫn](../../Phase1_First4Tasks.vi.md) và [Network Architecture](../../Network_Architecture.vi.md). GeneratorOnServer dùng SSM/co-located khi mạng chặn UDP; ReuseDeployedRelease chỉ khi manifest trùng; CapacityAfter không dùng cho bài bảo mật FAIL. Chuẩn bị build/test/client trước Start và xác nhận Stopped cuối buổi.
+
+Hướng dẫn mới: [mục 15 Phase 1](../../Phase1_First4Tasks.vi.md#15-nghiệm-thu-phase-1-local-và-pc--ec2). Gói chuyển PC thứ hai: `Backend/out/phase1-20261016/client-win.zip` (không chứa room code, cần .NET 8 Runtime).
+
+### Bổ sung UDP/WSS ngày 16/10/2026
+
+| Lượt | Start request UTC+7 | Stop request UTC+7 | Stopped xác nhận |
+| --- | --- | --- | --- |
+| WSS 1 | 14:44:46 | 14:46:02 | True |
+| WSS 2 | 14:47:05 | 14:53:24 | True |
+| WSS 3 | 15:01:14 | 15:11:13 | False |
+| WSS 4 | 16:04:05 | 16:06:42 | True |
+| WSS 5 | 16:10:39 | 16:20:35 | True |
+
+Các lượt đầu dùng watchdog/timer 30 phút; lượt cuối giảm còn 20 phút cứng, 18 phút mềm. Mục tiêu hoàn tất toàn đợt trong một cửa sổ 20 phút đã không đạt vì upload chậm, gián đoạn PC/mạng và UAC. Không gộp nhiều lần Start thành một lượt 20 phút. Start request → Stop request không phải hóa đơn chính xác; riêng lượt mất đường quản trị, Stop request không chứng minh máy đã dừng, phải xem xác nhận phục hồi/timer. EBS còn usage sau Stop. Không resize, không T3 Unlimited, không tạo LB/EC2 mới, không chạy lại 50–100 phiên.
+
+Gói client mới nhất: `Backend/out/wss-20261016/NetSmokeClient-latest-win-x64.zip`, Windows x64 cần .NET 8 Runtime, có profile Auto; không chứa code phòng/credentials. Release/checksum giữ tại `Backend/out/wss-20261016/release/` cho triển khai/rollback. Hướng dẫn chuẩn mới ở mục 16 Phase1_First4Tasks.vi.md và Network Architecture.
+
+Archive bằng chứng giữ các file cũ, thêm raw Local/WSS/AWS/lượt lỗi, timeline bỏ account ID, source và checks. Không kèm images.tar.gz/.env/PEM/password/JWT. Manifest/checksum/CRC được kiểm lại. Cleanup nhóm file tạm cũ hiện BLOCKED: giữ nguyên 814,27MiB, nhóm này xóa 0B. Đã xóa riêng bản images.tar.gz dựng lại trùng của đợt mới: 99.965.719 byte (~95,33MiB), sau khi kiểm đường dẫn tuyệt đối, giữ gói release gốc. Docker prune cũ hơn bảy ngày thu hồi 0B, dev/DB/rollback được giữ.

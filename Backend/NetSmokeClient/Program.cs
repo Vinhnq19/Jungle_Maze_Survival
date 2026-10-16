@@ -9,6 +9,7 @@ if (args.Contains("--help"))
 {
     Console.WriteLine("NetSmokeClient --config <JSON> [--name <displayName>] [--clients 1..256] [--duration 0..3600] [--warmup 0..300] [--ping-rate 1..60] [--quiet] [--report <JSON>] [--room-label <non-secret ID>] [--room-plan <private JSON>]");
     Console.WriteLine("duration tính bằng giây; 0 = đến Ctrl+C. Nhập mã phòng; Jwt cần login hoặc NET_ACCESS_TOKEN trong môi trường process.");
+    Console.WriteLine("Endpoint: NET_MODE / NET_GAME_SERVER_HOST / NET_GAME_SERVER_PORT / NET_API_BASE_URL / NET_TRANSPORT / NET_WS_URL override JSON. NET_WS_CONNECT_IP chỉ pin TCP, giữ TLS hostname. Auto: UDP -> WSS trước khi join.");
     return 0;
 }
 var sessions = new List<SmokeSession>();
@@ -50,7 +51,7 @@ try
             throw new ArgumentException("--room-plan requires RoomCode mode and supplies its own client counts; omit --clients.");
         clients = roomPlan.Sum(r => r.Clients);
     }
-    Console.WriteLine($"[config] file={Path.GetFullPath(configPath)} mode={options.Mode} udp={options.GameServerHost}:{options.GameServerPort} protocol={options.ProtocolVersion} clients={clients}");
+    Console.WriteLine($"[config] file={Path.GetFullPath(configPath)} mode={options.Mode} udp={options.GameServerHost}:{options.GameServerPort} transport={options.Transport} protocol={options.ProtocolVersion} clients={clients}");
     using var shutdown = new CancellationTokenSource();
     Console.CancelKeyPress += (_, eventArgs) => { eventArgs.Cancel = true; shutdown.Cancel(); };
     if (displayName is null)
@@ -123,7 +124,10 @@ try
     Console.WriteLine($"[summary] requested={clients} connected={connected} joined={joined} failed={failures} pongs={sessions.Sum(session => session.Pongs)}");
     if (reportPath is not null)
     {
-        var report = new { room = roomLabel, requested = clients, connected, joined, failed = failures,
+        var report = new { room = roomLabel, mode = options.Mode, endpoint = new { host = options.GameServerHost, port = options.GameServerPort },
+            webSocketUrl = options.WebSocketUrl, webSocketConnectIp = options.WebSocketConnectIp, requestedTransport = options.Transport,
+            authMode = options.AuthMode, protocolVersion = options.ProtocolVersion, generatorHost = Environment.MachineName,
+            requested = clients, connected, joined, failed = failures,
             pingRate, warmupSeconds, measuredSeconds, measurementUtc, measurementEndUtc = measurementUtc?.AddSeconds(measuredSeconds),
             generatorCpuOneCorePercent = measuredSeconds > 0 ? cpuMs / (measuredSeconds * 10) : 0,
             rejected = sessions.Count(s => s.Failed && !s.Joined), disconnected = sessions.Count(s => s.Failed && s.Joined),

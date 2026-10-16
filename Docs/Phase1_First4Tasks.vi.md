@@ -1,12 +1,12 @@
 # Hướng dẫn setup, phát triển và kiểm thử Jungle Maze
 
-Cập nhật **14/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md). Tạo nhiều phòng và đo sức chứa: xem mục 14. Bản mở rộng này chưa deploy hoặc chạy tải AWS.
+Cập nhật **16/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md). Tạo nhiều phòng và đo sức chứa: xem mục 14. Quy trình đo backend cũ qua SSM nằm ở mục 14.7; kết nối UDP/WSS thực từ PC và vận hành theo lịch ở mục 16; test PC→EC2 trực tiếp/VPN và rà soát Phase 1 ở mục 15; kết quả thực đo nằm trong báo cáo chung.
 
 Hướng dẫn thao tác nhanh trên server đã triển khai: [Đăng nhập EC2, test Swagger và xem MongoDB bằng Compass](AWS_SSH_Swagger_Compass.vi.md).
 
 ## 1. Phạm vi hiện tại và cách chọn môi trường
 
-Dự án phục vụ bài học: **tối đa 10 phiên/phòng, 5 phòng gồm mặc định và tổng 50 phiên active/pending**. Phòng tạo qua API có mã 6 ký tự chữ hoa/số; mỗi user tối đa 2 phòng tạo thêm. Đây là giới hạn cấu hình backend, chưa là bằng chứng sức chứa gameplay. Dev phát triển/debug trên máy mình; AWS là server chung, chỉ bật cho buổi test online đã hẹn. Source/Compose đã cập nhật 5/50; EC2 chưa được deploy bản này.
+Dự án phục vụ bài học: **tối đa 10 phiên/phòng, 5 phòng gồm mặc định và tổng 50 phiên active/pending**. Phòng tạo qua API có mã 6 ký tự chữ hoa/số; mỗi user tối đa 2 phòng tạo thêm. Đây là giới hạn cấu hình backend, chưa là bằng chứng sức chứa gameplay. Dev phát triển/debug trên máy mình; AWS là server chung, chỉ bật cho buổi test online đã hẹn. Source/Compose và EC2 đã cập nhật 5/50; đây là hạn mức vận hành, chưa là cam kết sức chứa gameplay.
 
 **Đã có:** API đăng ký/đăng nhập/JWT, MongoDB users, Swagger, LiteNetLib 2.1.4, handshake, giới hạn phòng, ping/pong, khung tick 30Hz, Docker local và triển khai AWS qua HTTPS.
 
@@ -418,7 +418,7 @@ dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeCl
 dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local.json --name ExtraPlayer --duration 10
 ```
 
-Kỳ vọng terminal B: `disconnectedOrRejected reason=RoomFull`, summary `joined=0 failed=1`. Trong Docker Desktop, Logs của game-server có `[rejected] reason=RoomFull` và `serverSlots=10/30` theo mặc định. Có thể chạy B lại khi A còn chạy: vẫn phải RoomFull. Sau Ctrl+C ở A, chạy B lại phải join/Pong thành công. Đảm bảo hai terminal dùng cùng config/endpoint và mã phòng.
+Kỳ vọng terminal B: `disconnectedOrRejected reason=RoomFull`, summary `joined=0 failed=1`. Trong Docker Desktop, Logs của game-server có `[rejected] reason=RoomFull` và `serverSlots=10/50` theo mặc định. Có thể chạy B lại khi A còn chạy: vẫn phải RoomFull. Sau Ctrl+C ở A, chạy B lại phải join/Pong thành công. Đảm bảo hai terminal dùng cùng config/endpoint và mã phòng.
 
 Có thể thử burst 11 với `--clients 11 --duration 15`: phòng trống thì joined=10/failed=1. Các console đang mở đều chiếm slot; một tool 10 phiên không phải 10 người chơi thật. Sau smoke test mới tổ chức 10 máy thực, mỗi máy tên riêng, ghi OS/build/mạng và endpoint.
 
@@ -428,7 +428,7 @@ Có thể thử burst 11 với `--clients 11 --duration 15`: phòng trống thì
 | --- | --- |
 | joined/failed, sent/pongs/timedOut/outstanding | Kết quả client; outstanding cuối lượt chưa tự coi là mất |
 | rttMs / rttP95Ms | Mạng + scheduling hai đầu; không phải FPS |
-| active/pending/peers | Tổng slot active+pending mọi phòng, tối đa 30; xem roomSlots cho từng phòng |
+| active/pending/peers | Tổng slot active+pending mọi phòng, tối đa 50; xem roomSlots cho từng phòng |
 | ticksPerSecond | Gần 30 theo cửa sổ; tick server không phải render FPS |
 | tickP95Ms/p99, loopP95Ms/p99 | Tick và poll+tick work; so budget 33.33ms |
 | cpuOneCorePercent | CPU process chuẩn một core; 100% = một core bận, có thể>100% |
@@ -730,6 +730,8 @@ Admin báo đã triển khai bản MongoDB 7 lên EC2; **HTTPS /health đã đư
 | SRV-01 | LiteNetLib/30Hz/metrics/10 slot/ping-pong | Idle / 10 client / 5 phút, RTT/CPU/RAM/p95/p99/drop |
 | SRV-02 | Version/room/mode/identity/auth deadline/duplicate/cleanup | Reject, mất mạng, trả slot, protocol client-server khớp |
 
+Cập nhật 16/10: Local 132 network +50 account checks và 10 phiên/300s PASS; API AWS 8/8 PASS; đường UDP PC→EC2 và prerequisites VPN BLOCKED. Các mục hai PC, đồng thời Local/AWS và rejoin sau Stop–Start chưa nghiệm thu; xem mục 15 và báo cáo chung.
+
 Mỗi lượt ghi ngày/giờ, OS/CPU/RAM, source/release ID, endpoint/authmode, số client, đường mạng, logs đã che secrets và kết quả. Giữ đúng bốn ID này; không đánh Done phần gameplay chỉ vì smoke test qua. Mốc tiếp theo là nối Unity và đồng bộ hai nhân vật như mục 10.
 
 ## 14. Tạo nhiều phòng và đo sức chứa backend
@@ -826,7 +828,7 @@ Harness hiện kiểm API/quota/quyền sở hữu, mã 6 ký tự, ngưỡng 10
 
 Kết quả tại `Backend/out/room-bench/<run>/report.md`, kèm `report.json`, `report.csv`, log và JSON từng client. Có thông tin môi trường, commit, fingerprint source, image ID/giới hạn container, tiêu chí đạt/trượt. Harness đóng client, xóa phòng do nó tạo và `down --volumes` **đúng stack riêng**, kể cả khi lỗi/Ctrl+C. Tắt cưỡng bức process/PC có thể ngăn cleanup: tìm project có đúng tên run rồi dọn bằng Compose của run, không chạy lệnh xóa mọi container/volume.
 
-`--functional-only` chạy kiểm thử phòng, ngưỡng 10/11 và 3 × 10 phiên ngắn; chưa là xác nhận hiệu năng nhiều phòng. `--levels` chỉ nhận mức tăng dần 1–10; `--seconds`, `--warmup`, `--confirm-seconds` dành cho bài tự chọn, báo cáo phải ghi đúng tham số. Tick hiện chưa có gameplay; phải đo lại khi thêm movement/combat/snapshot và khi xác nhận nhiều phòng trên môi trường đích.
+`--functional-only` chạy kiểm thử phòng, ngưỡng 10/11 và 5 × 10 phiên ngắn; chưa là xác nhận hiệu năng nhiều phòng. `--levels` chỉ nhận mức tăng dần 1–10; `--seconds`, `--warmup`, `--confirm-seconds` dành cho bài tự chọn, báo cáo phải ghi đúng tham số. Tick hiện chưa có gameplay; phải đo lại khi thêm movement/combat/snapshot và khi xác nhận nhiều phòng trên môi trường đích.
 
 ### 14.5. Thử vượt chính sách trên bản GameServer local riêng
 
@@ -857,7 +859,7 @@ dotnet run --project Tests/NetworkChecks/NetworkChecks.csproj
 
 NetSmokeClient có thêm `--room-plan <private.json>` cho công cụ này: mảng `{roomId, roomCode, clients}`, tổng 1–256 client, tối đa 32 phòng khác ID. Không dùng kèm `--clients` hoặc Jwt. Không commit/chia sẻ file chứa mã; report chỉ giữ ID phòng. Với dev test bình thường, tiếp tục dùng cách nhập mã ở mục 14.2.
 
-Báo cáo mới nhất: [Local capacity retest 14/10/2026](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md): sáu phòng × 10 đạt 180s; bảy phòng × 10 trượt RTT của một phòng. Phương án **năm phòng/tổng 50 đã áp dụng** vào source/config/local; chưa deploy EC2. 16 kiểm tra input room-plan đã nằm trong NetworkChecks. Kết quả ping/pong local không xác nhận sức chứa gameplay hoặc EC2; không tự áp dụng cấu hình cao hơn sau bài đo.
+Báo cáo mới nhất: [Local 14/10 và AWS 16/10/2026](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md). AWS đã xác nhận 5 phòng ×10 phiên trong 180s với generator cùng EC2 qua SSM, không loss/drop; UDP từ PC chưa thông. Local cũ dùng source snapshot riêng, không thay thế phép đo AWS. Phương án 10 người/phòng, 5 phòng/tổng 50, 2 phòng bổ sung/user đã áp dụng local và EC2. Kết quả không xác nhận sức chứa gameplay; không tự tăng giới hạn sau bài đo.
 
 ### 14.6. Chuẩn bị AWS, chỉ thực hiện sau khi chốt lượt xác nhận
 
@@ -877,3 +879,243 @@ python -X utf8 Tools/room_benchmark.py --remote --docker-context junglemaze-admi
 `junglemaze-admin` là tên context cần admin tự cấu hình trước, không được tạo tự động bởi harness. Nhánh remote tạo/xóa **phòng của lượt đo**, đọc cgroup/log qua Docker context; không build/up/down/restart remote. Nó cần quyền admin Docker để đọc telemetry, không dành cho tester thông thường. Harness vẫn áp dụng RTT 50ms và các ngưỡng chuẩn để so sánh; báo cáo remote có thể trượt RTT do đường truyền, không suy ra lỗi xử lý server. Không chạy lệnh ví dụ trước khi chốt tải, chi phí và cách truy cập quản trị.
 
 Kết thúc: kiểm tra client đã đóng, phòng benchmark được xóa; admin **Stop instance** trong Console nếu hết buổi test. Đóng Swagger/SSH/client hoặc dừng container không dừng EC2, EBS vẫn có chi phí khi instance Stopped. Không nâng instance hoặc đổi gói AWS tự động để làm bài đo đạt.
+
+### 14.7. Buổi test phòng AWS có tự dừng (16/10/2026)
+
+Đây là công cụ dành cho admin; yêu cầu phiên CLI junglemaze-admin còn hạn và alias SSH junglemaze đã dùng SSM. Chỉ chạy khi máy dành riêng cho bài đo và đang Stopped. Script từ chối chạy trên instance đang phục vụ buổi khác. Không đổi instance hoặc bật T3 Unlimited; shutdown của EC2 phải là Stop. Đọc kết quả mới nhất ở [báo cáo chung](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md).
+
+1. Trên PC, bật Docker Desktop, build solution và chạy Tests/run_all.cmd từ Backend. Test JWT hết hạn thật có thể chạy thêm bằng Python: Tests/auth_smoke.py --short-lifetime; đợi khoảng 95 giây để vượt expiry và clock skew.
+2. Tạo gói cài đặt nhẹ bằng PowerShell tại thư mục gốc repo:
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Deploy/build-aws-release.ps1 -AppsOnly -OutputDirectory Backend/out/aws-room-test
+
+   Gói này chỉ có image API/GameServer. Mongo 7 và Caddy phải tồn tại trên EC2; giữ volume và các secret cũ. Migration chỉ thêm control secret nếu thiếu và đặt giới hạn phòng 10/50/5/2. Không thay dữ liệu Mongo.
+3. Chạy kiểm tra cấu hình trước, thêm -PreflightOnly vào lệnh sau. Khi đạt, chạy lại bỏ cờ đó để bắt đầu buổi đo:
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File Backend/Deploy/test-aws-rooms.ps1 -Python python -Release D:/Unity/Jungle_Maze_Survival/Backend/out/aws-room-test/release.tar.gz -OutputDirectory D:/Unity/Jungle_Maze_Survival/Backend/out/aws-room-test/session-NEW
+
+   Thay đường dẫn repo/Python nếu máy khác; mỗi lượt dùng output mới. Thông tin đăng nhập ba fixture account được lưu riêng tại LocalAppData/JungleMaze/aws-room-fixtures.json với ACL chỉ user hiện tại. Không gửi file này, token hoặc mã phòng lên Git/báo cáo.
+4. Script kiểm tra Stopped, shutdown=stop, CPU Standard và quyền Start/Stop; bật máy, đợi SSM tối đa 3 phút, đặt timer tắt EC2 độc lập rồi upload qua SSH/SSM. Kết nối HTTPS dùng IP hiện tại nhưng vẫn kiểm chứng hostname/certificate, không sửa hosts hoặc bỏ TLS.
+5. Kiểm tra tạo phòng bắt buộc JWT: thiếu/sai/sửa chữ ký/hết hạn phải 401; chủ lấy từ sub, quyền xóa, quota, giới hạn 5 phòng, rate limit. API tạm cấp token 1 phút, khôi phục 60 phút ngay sau login; GameServer giữ nguyên RoomCode. Override nằm trong /run và có timer khôi phục riêng. Không gửi JWT qua UDP public.
+6. Đo baseline 1 client (Internet nếu generator trên PC; loopback EC2 nếu -GeneratorOnServer) (warm-up 5 giây, đo 30), rồi 10/30/50 client (warm-up 10, đo 45/45/60 giây), xác nhận mức đạt cao nhất 180 giây. Mỗi phòng tối đa 10; phòng mặc định vẫn tồn tại. Lượt cố ý join client thứ 11 được ghi riêng. Trượt thì dừng tăng tải.
+
+Ngưỡng: p95 **từng phòng** ≤ baseline + 50ms; tick 29–31Hz; không dropped tick/OOM/restart/disconnect; timeout <1%; CPU ≤85% một core; RAM cgroup ≤80% của 256MiB. Mỗi client phải phát ≥28.5Hz; dưới ngưỡng là generator không hợp lệ. RTT Internet không dùng ngưỡng tuyệt đối 50ms của local.
+
+Không bắt đầu lượt không thể xong trước phút 28. Cuối buổi hoặc lỗi: đóng client, xóa phòng của bài đo, khôi phục JWT, rồi StopInstances và xác nhận Stopped. Có watchdog PC và timer EC2 mốc 30 phút; nếu công cụ báo STOP NOT CONFIRMED phải kiểm tra Console ngay. Đóng terminal không phải cách dừng EC2.
+
+Ngân sách là thời gian Running, không phải cam kết 0đ: compute và public IPv4 trong lúc bật, EBS vẫn giữ phí khi tắt. Không tạo thêm EC2/load balancer/CloudWatch agent. Thống kê JSON/CSV, RTT và telemetry được giữ trong output; báo cáo không chứa credentials. Kết quả ping/pong không chứng minh sức chứa movement/combat hay 50 máy vật lý.
+
+**Khi mạng PC chặn UDP:** thêm -GeneratorOnServer vào script PowerShell. Trước khi bật EC2, chạy tại thư mục gốc:
+
+    dotnet publish Backend/NetSmokeClient/NetSmokeClient.csproj -c Release -r linux-x64 --self-contained false -o Backend/out/aws-room-test/smoke-client
+    tar -czf Backend/out/aws-room-test/smoke-client.tar.gz -C Backend/out/aws-room-test/smoke-client .
+
+Chế độ này mở tunnel SSH/SSM TCP từ loopback PC tới Caddy 443 để gọi API, vẫn xác minh certificate junglemaze.duckdns.org. Client chạy container tạm ngay trên EC2, UDP qua loopback EC2, RAM 256MiB và CPU tối đa 0.75 core; không mở thêm port hoặc dịch vụ cloud. Plan chứa mã phòng đi qua SSH stdin, nằm trong thư mục /run riêng rồi được xóa. API vẫn bắt JWT như bình thường.
+
+Kết quả chỉ đánh giá backend trên EC2 với generator dùng chung máy; CPU/credit của generator có ảnh hưởng. **Không dùng số RTT này để kết luận Internet từ lớp đã thông hoặc game chơi từ PC được.** SSH/Session Manager không chuyển tiếp UDP game; cần mạng cho phép UDP hoặc giải pháp mạng riêng nếu muốn client Unity từ xa.
+
+Nếu đúng gói release đã cài, thêm -ReuseDeployedRelease để bỏ upload/deploy lại. Script đối chiếu SHA-256 manifest trên EC2 trước khi cho chạy; không dùng cờ này để bỏ qua phiên bản khác. Upload bình thường dùng SFTP tiếp tục file có tên theo SHA-256, giới hạn 8 phút; nội dung được kiểm hash trước giải nén. Nếu lỗi, Stop vẫn được thực hiện.
+
+Nếu một lượt đã đạt toàn bộ kiểm tra JWT/chức năng và tải 10 nhưng công cụ bị gián đoạn sau đó, có thể dùng -CapacityAfter kèm đường dẫn report.json của lượt ấy, cùng -GeneratorOnServer. Script kiểm chứng các kiểm tra bảo mật bắt buộc, PASS 10 phiên và image GameServer trùng khớp; ghi hash bằng chứng cũ. Nó đăng nhập/tạo phòng lại bằng JWT hợp lệ, đo baseline mới rồi chạy 30/50 và lượt xác nhận. Đây là hai lượt riêng, phải giữ cả dữ liệu cũ; cờ này không bỏ cơ chế JWT của API hoặc thay thế một bài bảo mật bị FAIL.
+
+## 15. Nghiệm thu Phase 1: Local và PC → EC2
+
+Mục này giữ quy trình chẩn đoán UDP/LAN/VPN. Luồng triển khai hiện tại và nghiệm thu UDP/WSS Auto ở **mục 16**; tester không bắt buộc cài VPN. Trạng thái các lượt cũ trong mục này không thay kết quả WSS mới ở báo cáo chung.
+
+### 15.1. Bốn task và cách hiểu thống nhất
+
+| Task | Phạm vi cần thực hiện và kiểm tra |
+| --- | --- |
+| INF-01 — Dev Local & Docker | GameServer/API/Mongo dùng Compose riêng Local/AWS. Container bind 0.0.0.0, host publish theo môi trường. Test boot, restart, DB còn dữ liệu và hai máy LAN/VPN; nhóm 10 máy thật thuộc INF-02. |
+| NET-01 — REST API & JWT | Account API ASP.NET Core 8 cấp JWT ký với account ID ở sub. Tạo/list/xóa phòng cần JWT. Local dùng loopback; remote qua HTTPS hoặc VPN mã hóa đã xác minh. |
+| SRV-01 — GameServer & tick | LiteNetLib UDP 7777, fixed tick 30Hz/PollEvents, không chờ API/DB đồng bộ trong tick. Giới hạn 10/phòng, tổng 50/5 phòng; kiểm 10 phiên/300s và metrics. |
+| SRV-02 — Handshake | Luồng chính Local/Online/VPN dùng RoomCode, server cấp PlayerId phiên; kiểm version/payload/capacity, timeout và trả slot. JWT UDP là nhánh tùy chọn Local/VPN, không tự bật khi NET-01 có API account. |
+
+Account ID trong JWT **khác** PlayerId ngẫu nhiên của phiên RoomCode. Có login để tạo phòng không có nghĩa mọi người join phòng phải login. Không đưa JWT vào UDP public; giữ guard PUBLIC_HOSTING và wire protocol v1.
+
+### 15.2. Chọn endpoint bằng biến môi trường
+
+NetSmokeClient lấy `NET_MODE`, `NET_GAME_SERVER_HOST`, `NET_GAME_SERVER_PORT`, `NET_API_BASE_URL` **ưu tiên hơn JSON** rồi validate. Giá trị sai bị từ chối; không tự fallback sang môi trường khác. Biến trong `.env` của Compose không tự truyền sang terminal client.
+
+**PC / PowerShell tại Backend**, ví dụ chọn VPN sau khi đã có IP EC2 thật:
+
+```powershell
+$env:NET_GAME_SERVER_HOST = Read-Host 'IPv4 Tailscale cua EC2'
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.aws-vpn.json --name Tester01 --duration 30
+Remove-Item Env:NET_GAME_SERVER_HOST
+```
+
+`client.aws-vpn.json` chứa **IP mẫu**, phải override. Local dùng `client.local.json`; LAN dùng `client.lan.json`; AWS trực tiếp dùng `client.aws.json`. Có thể dùng Public IPv4 hiện tại thay hostname để tách lỗi DNS, nhưng API vẫn phải xác minh HTTPS hostname/certificate. Báo cáo client ghi endpoint thực, host phát tải, PlayerId, cổng socket, số transport packet gửi/nhận và RTT p50/p95/p99; không ghi mã phòng/JWT.
+
+Muốn đổi môi trường, xóa override cũ trước:
+
+```powershell
+Remove-Item Env:NET_MODE,Env:NET_GAME_SERVER_HOST,Env:NET_GAME_SERVER_PORT,Env:NET_API_BASE_URL -ErrorAction SilentlyContinue
+```
+
+### 15.3. Kiểm Local trước, không tiêu credits EC2
+
+Đứng tại **Backend**, Docker Desktop đang chạy, có Python 3 và .NET SDK 8:
+
+```powershell
+.\Tests\run_all.cmd
+python -X utf8 Tools/room_benchmark.py --phase1-local --levels 10 --output out/phase1-local-MOI
+```
+
+Thay `MOI` bằng nhãn lượt mới; công cụ không ghi đè thư mục đã tồn tại. `--phase1-local` dùng stack/DB/secret/cổng ngẫu nhiên riêng; tạo account, down/up **giữ volume**, kiểm login còn hoạt động, chạy các kiểm tra phòng và một lượt 10 phiên/300s/30Hz. Cuối bài chỉ xóa stack/volume test do công cụ tạo, không dọn DB dev. Khi Docker tạo lại container, công cụ lấy lại ID mới trước khi đọc metrics.
+
+### 15.4. Dùng hai PC thật qua LAN/VPN
+
+Hiện chưa có PC thứ hai để nghiệm thu. Khi có, trên **PC host** đặt `GAME_PUBLISH_HOST` bằng IPv4 LAN/VPN của host trong `.env`; giữ `API_PUBLISH_HOST=127.0.0.1` và `GAME_BIND_ADDRESS=0.0.0.0`. Tạo lại game-server bằng `docker compose up -d --build game-server`. `PUBLISH_HOST` vẫn được hỗ trợ làm fallback cho cấu hình cũ.
+
+Chỉ cho firewall nhận UDP đúng cổng và đúng máy/subnet thử nghiệm. Trên **PC thứ hai**, lấy NetSmokeClient và cấu hình LAN/VPN, đặt host IP, nhập RoomCode rồi chạy 30s. Không cần cấp AWS account/key SSH hoặc mật khẩu DB cho tester. Đổi IP/port qua config/env, không sửa code. API loopback không truy cập được từ PC kia là đúng; muốn account remote phải có HTTPS/VPN và cấu hình publish API có chủ đích.
+
+Ghi tên hai máy, địa chỉ mạng, tuyến LAN/VPN, joined/pong, disconnect/rejoin. Hai process trên một PC không thay thế bước này; bài 10 session không thay cho 10 người/máy.
+
+### 15.5. Test PC → EC2 có giới hạn thời gian
+
+Admin chuẩn bị CLI còn đăng nhập, alias `ssh junglemaze` qua SSM hoạt động và Release NetSmokeClient đã build. Với EC2 **Stopped**, chạy tại Backend:
+
+```powershell
+dotnet build JungleBackend.sln -c Release
+.\Deploy\test-aws-rooms.ps1 -Phase1Connectivity -PreflightOnly -OutputDirectory out/phase1-preflight-MOI
+.\Deploy\test-aws-rooms.ps1 -Phase1Connectivity -OutputDirectory out/phase1-aws-MOI
+```
+
+Truyền `-Python 'duong-dan-python.exe'` nếu Python không nằm trong PATH. Chế độ này **không deploy, không phát UDP trong EC2 và không đo 50–100 phiên**. HTTPS quản trị đi qua tunnel SSM, vẫn kiểm certificate gốc. Công cụ kiểm JWT API, tạo phòng test, chạy client thật trên PC và quan sát **header** UDP tại EC2 trong cùng cửa sổ; không lưu payload/mã phòng.
+
+Nếu EC2 đang Running, mặc định từ chối. Chỉ sau khi người vận hành xác nhận không ai dùng và cho phép Stop cuối buổi, thêm `-UseRunningInstance`. Báo cáo tách lượt tiếp quản máy Running khỏi lượt tự Start; thời gian Running trước đó vẫn có chi phí.
+
+Khi thông đường: kiểm phòng mặc định 10/11, phòng tạo thêm, mã sai, trả slot; đo 10 phiên/300s/30Hz. Muốn đồng thời Local và AWS, thêm `-LocalConfig NetSmokeClient/client.local.json` và đặt `PHASE1_LOCAL_ROOM_CODE` trong process bằng mã Local riêng, không đưa lên argv/report. Nếu thiếu, mục đồng thời để NOT_TESTED.
+
+Sau PASS, công cụ Stop–Start cùng EC2, lấy IP mới và kiểm join lại; timer được đặt lại sau reboot. Có mục tiêu 20 phút và watchdog tuyệt đối 30 phút. Nếu kết nối BLOCKED, bỏ bài tải và Stop–Start để tiết kiệm; không coi đây là PASS. Cuối mọi lượt luôn dọn client/phòng test, Stop EC2 và xác nhận Stopped. Đọc `lifecycle.json`, `test/report.json`, logs/header; lỗi hoặc mục chưa chạy được giữ nguyên.
+
+### 15.6. VPN Tailscale dự phòng
+
+Chuẩn bị trên PC trong lúc EC2 tắt:
+
+```powershell
+.\Deploy\setup-phase1-vpn.ps1 -Target PC
+```
+
+Người dùng tự xác nhận UAC và đăng nhập trình duyệt; dùng cùng tailnet cá nhân của mình. Khi PC đã đăng nhập, bật EC2 cho lượt setup có lịch, rồi trong terminal PC thứ hai chạy:
+
+```powershell
+.\Deploy\setup-phase1-vpn.ps1 -Target EC2
+```
+
+Script dùng SSH/SSM cài host Tailscale từ nguồn chính thức, không Start/resize EC2, không bật exit node/subnet route, không nhận auth key trên argv. Mở URL đăng nhập EC2 bằng cùng tài khoản/tailnet, chạy lại để lấy IPv4. Tự Stop EC2 nếu chỉ setup thủ công; script setup không sở hữu vòng đời server. Không chạy setup song song với bài đo khi chưa hoàn tất đăng nhập.
+
+Trong Tailscale admin → Access controls, cấp đúng PC tới EC2, ví dụ dưới là các **IP mẫu** phải thay:
+
+```json
+{"grants":[{"src":["100.80.1.10"],"dst":["100.80.1.20"],"ip":["udp:7777","tcp:443"]}]}
+```
+
+Giữ các rule quản trị cần thiết; rule allow-all hiện hữu vẫn cấp quyền rộng và phải được thu hẹp có chủ đích để đạt giới hạn trên. Kiểm tra policy cả allow UDP 7777/HTTPS 443 và deny Mongo 27017/control 7780. Không ghi đè policy tailnet đang có bằng nguyên ví dụ. [Cú pháp grants](https://tailscale.com/docs/reference/syntax/grants).
+
+Sau enrollment, thêm `-VpnIp 'IPv4-EC2-Tailscale'` cho `-Phase1Connectivity`. Công cụ vẫn thử Public IPv4 trước; chỉ thử VPN nếu PC Running và IP thuộc peer đang Online. Ghi `tailscale ping` để phân biệt direct/relay và đo lại RTT; kết nối overlay thành công chưa chứng minh đường UDP public đã thông. [Relay/firewall](https://tailscale.com/docs/reference/faq/firewall-ports).
+
+Ngày 16/10 mạng hiện tại trả `94.140.14.33` cho cả pkgs/dl/login/controlplane.tailscale.com và HTTPS handshake thất bại; winget/Python tải đều không được. Người dùng chưa thể chuyển hotspot. Vì vậy không cài/enroll EC2 vô ích; VPN hiện **BLOCKED**, không hứa relay vượt mọi mạng. Dùng mạng được phép hoặc nhờ quản trị cho phép các endpoint chính thức, không tắt kiểm tra TLS hay sửa DNS để vượt chính sách.
+
+### 15.7. Cách ghi kết quả
+
+PASS/FAIL cho tiêu chí đã chạy; BLOCKED cho đường mạng không tới được; NOT_TESTED cho hai PC, kiểm thử đồng thời hoặc Stop–Start chưa thực hiện. Đủ join, không disconnect ngoài dự kiến, timeout <1%, từng client phát ≥28.5Hz, tick trung bình 29–31Hz, không dropped tick; ghi thêm CPU/RAM/RTT. Không áp RTT Local ≤50ms cho Sydney/VPN; không kết luận Unity mượt từ ping/pong. Kết quả mới nhất bổ sung vào [báo cáo chung](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md), không sửa nhãn bài co-located cũ thành PC→EC2.
+
+## 16. Kết nối UDP/WSS và mở server cho buổi chơi
+
+### 16.1. Phạm vi hiện tại
+
+Backend + NetSmokeClient hỗ trợ UDP chính và WSS dự phòng, dùng chung room/slot. Unity JSurviv chưa chuyển sang backend này, vì vậy hoàn thành bài này chưa phải có trận multiplayer. Giữ 10 người/phòng, 5 phòng gồm mặc định, 50 phiên tổng, 2 phòng thêm/user. Đăng nhập/JWT hợp lệ mới tạo/list/xóa phòng; join dùng RoomCode.
+
+### 16.2. Chạy Local
+
+Tại **Backend**, tạo .env theo mục 3 rồi bật Docker Desktop:
+
+```powershell
+docker compose --profile account up -d --build
+```
+
+Giữ WS_ENABLED=true, WS_PUBLISH_HOST=127.0.0.1, WS_PORT=7781. Client:
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local-auto.json --name Dev01 --duration 30
+```
+
+Mặc định Auto chọn UDP nếu vào được. Ép kiểm WebSocket trong đúng terminal:
+
+```powershell
+$env:NET_TRANSPORT='Wss'
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.local-auto.json --name Dev01 --duration 30
+Remove-Item Env:NET_TRANSPORT
+```
+
+NET_WS_URL có thể override endpoint. NET_WS_CONNECT_IP là tùy chọn pin IPv4 TCP cho đúng lượt test, vẫn dùng hostname/certificate của WebSocketUrl; không tự đổi tuyến, không bỏ TLS và không sửa DNS máy. Chỉ ws loopback hoặc wss remote có certificate đúng; ws pin cũng chỉ được trỏ loopback. Profile LAN v2 vẫn UDP. Config UDP cũ v1 tiếp tục chạy; không chỉ đặt NET_TRANSPORT=Auto lên config v1 vì phải đổi sang profile v2.
+
+`client.lan-auto.json` là mẫu cho PC thứ hai: thay IP 192.168.1.10 và hostname `junglemaze-lan.example.com` bằng địa chỉ của **cùng một server LAN**. Hostname ví dụ chưa có DNS/certificate thực. Cần reverse proxy TLS tin cậy trên LAN chuyển `/game` tới 7781 trước khi dùng Auto; không trỏ WSS dự phòng sang AWS khi UDP đang thử Local. Nếu chưa thiết lập TLS LAN, dùng client.lan-v2.json/Udp; bài hai PC vẫn NOT_TESTED.
+
+### 16.3. Test tự động trước AWS
+
+```powershell
+.\Tests\run_all.cmd
+python -X utf8 Tools/room_benchmark.py --dual-local --levels 10 --output out/dual-local-MOI
+```
+
+Dùng tên output chưa tồn tại. Bài đầu kiểm API/JWT/room/quota và UDP v1/v2/WebSocket/fallback. Bài thứ hai dùng stack/DB/cổng/secret riêng, kiểm down/up giữ account và đo riêng UDP v2 rồi WebSocket, mỗi lượt 10 phiên/300s/30Hz trong 256MiB. Dọn đúng stack test khi xong; không xóa DB dev.
+
+### 16.4. Deploy và nghiệm thu AWS có tự dừng
+
+Chuẩn bị khi EC2 đang Stopped:
+
+```powershell
+dotnet build JungleBackend.sln -c Release
+.\Deploy\build-aws-release.ps1 -AppsOnly -ReleaseId aws-dual-MOI -OutputDirectory out/aws-dual-MOI
+python -X utf8 Tests/verify_aws_release.py out/aws-dual-MOI/release.tar.gz --apps-only
+.\Deploy\test-aws-rooms.ps1 -DualTransport -Release out/aws-dual-MOI/release.tar.gz -OutputDirectory out/aws-dual-session-MOI
+```
+
+Thay MOI bằng nhãn hợp lệ chữ thường/số/gạch ngang mới; thêm -Python 'duong-dan-python.exe' nếu cần. CLI junglemaze-admin phải còn đăng nhập, alias ssh junglemaze dùng SSM. Script kiểm stopped/exclusive, CPU Standard, shutdown=stop, arm watchdog PC/EC2 30 phút và mục tiêu test 20 phút. HTTPS public từ PC được thử trước upload. Có lỗi thì Stop và xác nhận Stopped.
+
+Bài AWS tự động hiện **không yêu cầu UAC hoặc sửa hosts**: API và client WSS được pin tới Public IPv4 hiện tại, giữ URI/SNI/chứng chỉ đúng `junglemaze.duckdns.org`. Report ghi webSocketConnectIp để tách kết quả transport khỏi kiểm thử DNS hệ thống. WSS đi PC→EC2 public 443, không đi trong SSM. Người chơi có DNS bình thường dùng profile hostname mặc định, không cần pin. Nếu mạng chặn cả HTTPS/WSS tới IP thì vẫn BLOCKED.
+
+Nếu trình duyệt Swagger trên PC bị dòng hosts ghim IP cũ, việc sửa riêng dòng này vẫn cần quyền Windows: `update-pc-hosts.ps1` kiểm TLS/health, backup tại LocalAppData/JungleMaze rồi cập nhật hostname. Công cụ test không tự yêu cầu quyền này nữa. Pin trong NetSmokeClient không sửa trình duyệt hoặc resolver toàn máy; báo trạng thái DNS riêng và xử lý qua quản trị mạng khi cần.
+
+Deploy apps-only giữ image/volume Mongo/Caddy, tạo lại Caddy để mount config release mới có /game; không đổi secret/JWT/default room. Sau deploy: login/JWT security → phòng riêng → ép WSS → Auto → default 10/11 → đo WSS 10 phiên/300s, đồng thời một Local Docker riêng → Stop–Start và join WSS lại nếu còn ngân sách. Không đo lại 50–100 phiên hoặc phát client trong EC2 để thay kết quả WAN.
+
+**SSM upload chậm:** chuẩn bị delta khi EC2 còn tắt, dùng hai base image có cùng ID đã xác minh trên cả Local và EC2 (có thể là bộ base gốc giữ lại, không nhất thiết release đang chạy):
+
+```powershell
+python Tools/aws_image_delta.py build --release out/aws-dual-MOI/release.tar.gz --base junglemaze-api:RELEASE-CU junglemaze-game:RELEASE-CU --output out/aws-dual-MOI/delta.tar.gz
+python Tools/aws_image_delta.py verify --release out/aws-dual-MOI/release.tar.gz --archive out/aws-dual-MOI/delta.tar.gz
+.\Deploy\test-aws-rooms.ps1 -DualTransport -Release out/aws-dual-MOI/release.tar.gz -DeltaRelease out/aws-dual-MOI/delta.tar.gz -OutputDirectory out/aws-dual-session-MOI
+```
+
+RELEASE-CU là tag base thật đã triển khai và còn cùng ID trên hai máy, không dùng nguyên placeholder. Bộ đã dùng trong lần này là aws-rooms-20261016; giữ các image base đó nếu muốn tái sử dụng delta. Sau đóng gói legacy, ID Local/EC2 có thể khác nhau dù layer/config giống; khi đó dùng bộ base gốc cùng ID hoặc gói đầy đủ, không bỏ kiểm tra pin. Delta ghim base image ID và SHA layer, không tải runtime lại; thiếu base thì fail và Stop. Việc đóng gói lại có thể đổi manifest/image ID dù filesystem/runtime config giống nhau; provenance ghi cả hai. Khi chạy lại đúng release đã cài bằng delta, thêm `-ReuseDeployedRelease -DeltaRelease ...`: công cụ kiểm provenance của bundle đầy đủ và image ID thực trên EC2 trước khi bỏ qua upload/deploy. Giữ gói đầy đủ và release trước để rollback.
+
+`-BudgetMinutes` là ngân sách mềm 8–20 phút; `-HardStopMinutes` là watchdog/timer cứng 10–30 phút và phải lớn hơn ngân sách mềm. Ví dụ lượt không cần upload: `-BudgetMinutes 18 -HardStopMinutes 20`. Không giảm thời gian đo 300s để báo đạt. Script giữ PC khỏi tự idle Sleep và trả lại khi kết thúc; vẫn phải tránh Sleep thủ công, đóng máy hoặc đổi Wi-Fi trong lúc test. Nếu mất mạng khiến CLI Stop không tới AWS, timer EC2 độc lập vẫn tắt máy theo giờ cứng; xác nhận Stopped lại sau khi đường quản trị phục hồi.
+
+Chỉ cần kiểm tra lại sau một Stop đã xác nhận mà không đo tải/deploy: dùng `test-aws-rooms.ps1 -DualTransport -WssReconnectOnly -OutputDirectory out/wss-rejoin-MOI`. Nhánh này Start có timer, xác nhận fixture account cũ còn trong Mongo, login/JWT/tạo phòng và một WSS client thật rồi finally Stop. Không thay thế bài đo 10 phiên/300s.
+
+### 16.5. Bật theo lịch khi team muốn test/chơi
+
+Admin, tại Backend:
+
+```powershell
+.\Deploy\open-aws-session.ps1 -Minutes 60
+```
+
+Thời lượng bắt buộc, 5–240 phút, tính từ lúc chuẩn bị Start nên bao gồm boot; không bật khi server đang có buổi khác. Công cụ đặt timer Stop trên EC2 và watchdog PC, cập nhật DuckDNS; thông báo giờ kết thúc UTC+7. Kiểm /health, DNS và một client Auto trước khi mời team. Nếu PC admin ghim hosts cũ, chạy helper update-pc-hosts bằng quyền Administrator với Public IPv4 vừa hiện. Tester không cần AWS account/SSH/VPN.
+
+Người tạo phòng mở HTTPS Swagger, register/login → Authorize bằng accessToken → POST /api/rooms → chia sẻ RoomCode riêng. Tester dùng client.aws-auto.json:
+
+```powershell
+dotnet run --project NetSmokeClient/NetSmokeClient.csproj -- --config NetSmokeClient/client.aws-auto.json --name Tester01 --duration 30
+```
+
+Đã join thì giữ transport đã chọn. Bị ngắt giữa phiên thì chạy lại để tạo lượt kết nối mới; chưa có khôi phục nhân vật/trận. Hết buổi có thể Stop sớm trong Console; đợi Stopped. Đóng app/SSH không Stop EC2. EBS vẫn có usage lưu trữ, không hứa 0đ. Stop–Start giữ account nhưng mất phòng thêm/session trong RAM.
+
+### 16.6. Đọc kết quả và giới hạn
+
+Report client ghi transport, fallbackReason, endpoint, playerId, RTT/loss/rate; không ghi mã phòng, JWT hoặc attempt nonce. Có joined/Pong thật mới tính vào kết quả. Mã sai/phòng đầy không thử đường khác. UDP public BLOCKED nhưng Auto/WSS PASS là hai trạng thái khác nhau, phải ghi cả hai. Hai process không thay thế hai PC vật lý; bài ping/pong không chứng minh FPS/movement/combat.
+
+Tài liệu này và Network Architecture là hướng dẫn chuẩn; số liệu thực, timeline Start/Stop, cleanup bị chặn và archive checksum nằm trong một báo cáo chung hiện có.
