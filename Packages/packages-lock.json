@@ -26,6 +26,12 @@
       },
       "hash": "c9e06b15391449ad42fd9b0f39fea48054751bcd"
     },
+    "com.junglemaze.protocol": {
+      "version": "file:../Backend/Shared/Protocol",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "13.0.4",
       "depth": 0,

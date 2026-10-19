@@ -125,7 +125,7 @@ Backend/
     Configuration/ServerOptions.cs, JwtSettings.cs
     Networking/NetworkHost.cs, SessionHub.cs, IGamePeer.cs, WebSocketHost.cs, HandshakeValidator.cs
     Simulation/FixedTickLoop.cs, Diagnostics/ServerMetrics.cs
-  Shared/NetworkProtocol.cs
+  Shared/Protocol/  (package com.junglemaze.protocol: NetworkProtocol.cs, asmdef, package.json)
   NetSmokeClient/
     Program.cs
     client.local.json, client.lan.json, client.online.json, client.aws.json
@@ -157,7 +157,7 @@ Backend/
 | API RoomsController/RoomControlClient | JWT sub → owner; chuyển CRUD phòng qua HTTP private, 5 create/phút/user |
 | FixedTickLoop | Accumulator, fixed delta 1/30, giới hạn catch-up |
 | ServerMetrics | CPU/tick/loop/slot/reject/invalid/drop theo cửa sổ |
-| Shared/NetworkProtocol | Hợp đồng byte; Compile Link vào server/client, không phải service |
+| Shared/Protocol | Hợp đồng byte; Compile Link vào server/client và là Unity local package (`file:../Backend/Shared/Protocol`), giữ cú pháp C# 9 |
 | ClientOptions/CredentialInput/AccountLogin | Endpoint JSON, nhập secret, HTTP login tùy mode |
 | SmokeSession / WebSocketClientTransport | Một lượt kết nối Udp/Wss/Auto; fallback trước join, ping/RTT, hàng đợi socket có giới hạn; không tự reconnect sau join |
 

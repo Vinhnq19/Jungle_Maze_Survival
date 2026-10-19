@@ -1,0 +1,7 @@
+{
+  "name": "com.junglemaze.protocol",
+  "version": "0.1.0",
+  "displayName": "Jungle Maze Protocol",
+  "description": "Wire protocol và packet dùng chung giữa GameServer (.NET 8) và Unity client.",
+  "unity": "6000.3"
+}
