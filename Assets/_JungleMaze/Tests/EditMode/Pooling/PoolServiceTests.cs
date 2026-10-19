@@ -2,6 +2,7 @@ using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
 using JungleMaze.Core.Events;
 using JungleMaze.Core.Pooling;
+using JungleMaze.App.Pooling;
 using JungleMaze.Infrastructure.Pooling;
 using JungleMaze.Infrastructure.Ticking;
 using NUnit.Framework;

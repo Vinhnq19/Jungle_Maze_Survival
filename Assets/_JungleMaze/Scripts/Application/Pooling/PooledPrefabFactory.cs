@@ -3,7 +3,7 @@ using JungleMaze.App.Ports;
 using JungleMaze.Core.Factory;
 using UnityEngine;
 
-namespace JungleMaze.Infrastructure.Pooling
+namespace JungleMaze.App.Pooling
 {
     /// <summary>
     /// Factory dùng chung: lấy instance từ pool (đã inject). Factory theo tính năng (ProjectileFactory...)

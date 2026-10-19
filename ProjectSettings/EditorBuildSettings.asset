@@ -6,6 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_JungleMaze/Scenes/Boot.unity
+    guid: 034fcb2a2fd05f14b9acf7f3b1cfad4e
+  - enabled: 1
+    path: Assets/_JungleMaze/Scenes/Game.unity
+    guid: 5aed1d940c41a9e4381bc13f876c0261
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
