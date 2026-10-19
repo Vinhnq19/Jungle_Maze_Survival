@@ -109,6 +109,30 @@ namespace JungleMaze.Tests.Protocol
         }
 
         [Test]
+        public void Frame_HasMarker_AndReadsSeveralPackets()
+        {
+            var input = new PlayerInputPacket { Tick = 1 };
+            var evt = new EventPacket { Tick = 2, EventType = GameEventType.MatchEnded };
+            _registry.WriteFrame(_writer, ref input);
+            _registry.Write(_writer, ref evt);
+            Assert.AreEqual(GameplayProtocol.FrameMarker, _writer.Data[0]);
+            _reader.SetSource(_writer.Data, 0, _writer.Length);
+            Assert.IsTrue(PacketRegistry.IsFrame(_reader));
+            Assert.IsTrue(_registry.TryReadFrame(_reader));
+            Assert.AreEqual(2, _received);
+        }
+
+        [Test]
+        public void ControlMessage_IsNotFrame()
+        {
+            // Ping v1: type 1 + sequence; không được nhầm là frame gameplay.
+            JungleBackend.Protocol.NetworkProtocol.Write(_writer, JungleBackend.Protocol.NetworkProtocol.Ping, 5);
+            _reader.SetSource(_writer.Data, 0, _writer.Length);
+            Assert.IsFalse(PacketRegistry.IsFrame(_reader));
+            Assert.IsFalse(_registry.TryReadFrame(_reader));
+        }
+
+        [Test]
         public void TruncatedPacket_IsRejected()
         {
             var packet = new PlayerStatePacket { Tick = 5 };

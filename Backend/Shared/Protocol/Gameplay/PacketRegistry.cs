@@ -13,11 +13,38 @@ namespace JungleBackend.Protocol.Gameplay
     {
         private readonly NetPacketProcessor _processor = new NetPacketProcessor();
 
-        /// <summary>Ghi header hash 8 byte + payload. Writer không bị Reset để có thể gộp nhiều packet.</summary>
+        /// <summary>Reset writer và mở frame gameplay; sau đó gọi Write cho từng packet trong cùng datagram.</summary>
+        public static void BeginFrame(NetDataWriter writer)
+        {
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+            writer.Reset();
+            writer.Put(GameplayProtocol.FrameMarker);
+        }
+
+        /// <summary>Frame một packet: marker + hash + payload.</summary>
+        public void WriteFrame<T>(NetDataWriter writer, ref T packet) where T : struct, INetSerializable
+        {
+            BeginFrame(writer);
+            _processor.WriteNetSerializable(writer, ref packet);
+        }
+
+        /// <summary>Ghi header hash 8 byte + payload, nối tiếp vào writer (không thêm marker).</summary>
         public void Write<T>(NetDataWriter writer, ref T packet) where T : struct, INetSerializable
         {
             if (writer == null) throw new ArgumentNullException(nameof(writer));
             _processor.WriteNetSerializable(writer, ref packet);
+        }
+
+        /// <summary>Byte đầu là FrameMarker: datagram này là gameplay, không phải message handshake.</summary>
+        public static bool IsFrame(NetDataReader reader) =>
+            reader != null && reader.AvailableBytes > 0 && reader.PeekByte() == GameplayProtocol.FrameMarker;
+
+        /// <summary>Bỏ marker rồi đọc mọi packet trong frame; thiếu marker hoặc packet hỏng trả false.</summary>
+        public bool TryReadFrame(NetDataReader reader, object? userData = null)
+        {
+            if (!IsFrame(reader)) return false;
+            reader.SkipBytes(1);
+            return reader.AvailableBytes > 0 && TryReadAll(reader, userData);
         }
 
         public void Subscribe<T>(Action<T> handler) where T : struct, INetSerializable
