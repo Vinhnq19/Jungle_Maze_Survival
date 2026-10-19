@@ -5,7 +5,10 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "JungleMaze.Core",
-        "JungleMaze.Protocol"
+        "JungleMaze.Protocol",
+        "JungleMaze.Domain",
+        "JungleMaze.Application",
+        "JungleMaze.Infrastructure"
     ],
     "includePlatforms": [
         "Editor"

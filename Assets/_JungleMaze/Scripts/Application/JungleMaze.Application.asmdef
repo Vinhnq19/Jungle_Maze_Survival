@@ -1,0 +1,20 @@
+{
+    "name": "JungleMaze.Application",
+    "rootNamespace": "JungleMaze.App",
+    "references": [
+        "JungleMaze.Core",
+        "JungleMaze.Domain",
+        "JungleMaze.Protocol"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "LiteNetLib.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

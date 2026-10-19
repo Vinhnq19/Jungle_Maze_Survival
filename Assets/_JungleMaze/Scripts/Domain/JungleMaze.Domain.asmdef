@@ -1,0 +1,16 @@
+{
+    "name": "JungleMaze.Domain",
+    "rootNamespace": "JungleMaze.Domain",
+    "references": [
+        "JungleMaze.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": true
+}
