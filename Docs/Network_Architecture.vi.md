@@ -12,7 +12,7 @@ Mục tiêu: dự án lớp học, **tối đa 10 phiên/phòng**, 5 phòng gồ
 | GameServer | UDP LiteNetLib + binary WebSocket, SessionHub/handshake, PlayerId, RoomManager, cleanup, fixed tick 30Hz, metrics | Entity/world simulation, spawn/movement/combat/snapshot |
 | NetSmokeClient | JSON/env, Udp/Wss/Auto, room/account, join/ping/pong/RTT/capacity | Render hoặc chơi game |
 | AWS vận hành | Bốn services, HTTPS Caddy, DuckDNS, systemd, release/backup/guard, control phòng private, đo ping/pong 5×10 ngay trong EC2 | Nghiệm thu đường UDP PC→EC2, autoscale, mã hóa UDP public, matchmaking |
-| Unity | Unity 6000.3.15f1/URP, JSurviv imported để tái sử dụng | Unity client LiteNetLib và multiplayer gameplay với backend này |
+| Unity | Unity 6000.3.15f1/URP, JSurviv imported để tái sử dụng; client base (CLI-01/02/03): UDP LiteNetLib v1/v2, RoomCode/Jwt, config ngoài build, serializer packet gameplay 0 GC, xem [Client_Developer_Guide](Client_Developer_Guide.vi.md) | WSS/Auto trong Unity, server xử lý packet gameplay, multiplayer gameplay |
 
 Hiện server quyết định quyền vào phòng, PlayerId và sức chứa. `Tick` chưa có gameplay nên authoritative movement/combat chưa hoạt động. JSurviv `NetworkManager` vẫn dùng Socket.IO cũ, `AutoConnectLegacy=false`; không giao tiếp được với wire protocol LiteNetLib hiện tại.
 
@@ -32,7 +32,7 @@ Hiện server quyết định quyền vào phòng, PlayerId và sức chứa. `T
 ```mermaid
 flowchart LR
     C["NetSmokeClient trên Windows"]
-    U["Unity tham khảo; chưa có LiteNetLib client"]
+    U["Unity client UDP LiteNetLib (CLI-01)"]
     subgraph D["Docker Desktop / Linux containers"]
         G["GameServer UDP 7777 / RoomCode hoặc Jwt"]
         A["API TCP 5000 / account profile"]
@@ -125,7 +125,7 @@ Backend/
     Configuration/ServerOptions.cs, JwtSettings.cs
     Networking/NetworkHost.cs, SessionHub.cs, IGamePeer.cs, WebSocketHost.cs, HandshakeValidator.cs
     Simulation/FixedTickLoop.cs, Diagnostics/ServerMetrics.cs
-  Shared/NetworkProtocol.cs
+  Shared/Protocol/  (package com.junglemaze.protocol: NetworkProtocol.cs, asmdef, package.json)
   NetSmokeClient/
     Program.cs
     client.local.json, client.lan.json, client.online.json, client.aws.json
@@ -157,7 +157,7 @@ Backend/
 | API RoomsController/RoomControlClient | JWT sub → owner; chuyển CRUD phòng qua HTTP private, 5 create/phút/user |
 | FixedTickLoop | Accumulator, fixed delta 1/30, giới hạn catch-up |
 | ServerMetrics | CPU/tick/loop/slot/reject/invalid/drop theo cửa sổ |
-| Shared/NetworkProtocol | Hợp đồng byte; Compile Link vào server/client, không phải service |
+| Shared/Protocol | Hợp đồng byte; Compile Link vào server/client và là Unity local package (`file:../Backend/Shared/Protocol`), giữ cú pháp C# 9 |
 | ClientOptions/CredentialInput/AccountLogin | Endpoint JSON, nhập secret, HTTP login tùy mode |
 | SmokeSession / WebSocketClientTransport | Một lượt kết nối Udp/Wss/Auto; fallback trước join, ping/RTT, hàng đợi socket có giới hạn; không tự reconnect sau join |
 

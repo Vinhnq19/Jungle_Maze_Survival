@@ -1,0 +1,22 @@
+{
+    "name": "JungleMaze.Infrastructure",
+    "rootNamespace": "JungleMaze.Infrastructure",
+    "references": [
+        "JungleMaze.Core",
+        "JungleMaze.Domain",
+        "JungleMaze.Application",
+        "JungleMaze.Protocol"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "LiteNetLib.dll",
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

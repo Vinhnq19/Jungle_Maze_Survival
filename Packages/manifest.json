@@ -55,6 +55,7 @@
     "com.unity.modules.xr": "1.0.0",
     "com.unity.cinemachine": "3.1.3",
     "com.itisnajim.socketiounity": "https://github.com/itisnajim/SocketIOUnity.git#c9e06b15391449ad42fd9b0f39fea48054751bcd",
-    "com.unity.nuget.newtonsoft-json": "3.2.2"
+    "com.unity.nuget.newtonsoft-json": "3.2.2",
+    "com.junglemaze.protocol": "file:../Backend/Shared/Protocol"
   }
 }

@@ -1,0 +1,19 @@
+{
+    "name": "JungleMaze.Presentation",
+    "rootNamespace": "JungleMaze.Presentation",
+    "references": [
+        "JungleMaze.Core",
+        "JungleMaze.Domain",
+        "JungleMaze.Application",
+        "JungleMaze.Protocol"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
