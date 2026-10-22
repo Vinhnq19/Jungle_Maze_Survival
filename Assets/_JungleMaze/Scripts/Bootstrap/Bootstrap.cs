@@ -71,7 +71,9 @@ namespace JungleMaze.Composition
             var tickRunner = gameObject.AddComponent<TickRunner>();
             tickRunner.SetLog(_log);
             var pool = new PoolService(_injector, _log, transform);
+            var balance = new BalanceConfigProvider(Application.streamingAssetsPath, _log);
             _registry.Register<IConfigProvider>(config);
+            _registry.Register<IBalanceConfigProvider>(balance);
             _registry.Register(packets);
             _registry.Register(network);
             _registry.Register<INetworkClient>(network);
