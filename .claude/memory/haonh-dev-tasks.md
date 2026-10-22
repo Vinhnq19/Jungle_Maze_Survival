@@ -1,6 +1,6 @@
 # CLI-04 / MOV-01 / ENV-01 (nhánh haonh/dev)
 
-- **Trạng thái**: Xong (code + EditMode test + Unity MCP verify); CHƯA có playtest thủ công thật qua GameServer
+- **Trạng thái**: Xong, đã playtest thật qua GameServer local (không chỉ test tự động)
 - **Cập nhật lần cuối**: 2026-10-22
 - **Project**: D:\Ki8\GNS301\Project (nhánh `haonh/dev`, base từ `f3c407a2` = HEAD `main` sau PR #1 "hvu")
 
@@ -31,20 +31,24 @@ Dependency: cả MOV-01 và ENV-01 đều phụ thuộc CLI-04 (`heroBaseSpeed`,
 ## Đã làm
 <Cập nhật dần khi code xong từng phần — xem chi tiết theo ticket bên dưới.>
 
-### CLI-04
-- [ ] `Domain/Balance/WeaponCategory.cs`, `WeaponDefinition.cs`, `EquipmentType.cs`, `EquipmentDefinition.cs`, `MatchConfigData.cs`
-- [ ] `Application/Ports/IBalanceConfigProvider.cs`
-- [ ] `Infrastructure/Config/BalanceConfigJson.cs` + `BalanceConfigProvider.cs`
-- [ ] `Assets/StreamingAssets/JungleMaze/balance/match.json|weapons.json|equipments.json`
-- [ ] Đăng ký `IBalanceConfigProvider` trong `Bootstrap.Compose()`
-- [ ] Tests `Tests/EditMode/Config/BalanceConfigJsonTests.cs`
+### CLI-04 — Xong, đã playtest thật (xem log kết nối bên dưới)
+- [x] `Domain/Balance/WeaponCategory.cs`, `WeaponDefinition.cs`, `EquipmentType.cs`, `EquipmentDefinition.cs`, `MatchConfigData.cs`
+- [x] `Application/Ports/IBalanceConfigProvider.cs`
+- [x] `Infrastructure/Config/BalanceConfigJson.cs` + `BalanceConfigProvider.cs`
+- [x] `Assets/StreamingAssets/JungleMaze/balance/match.json|weapons.json|equipments.json`
+- [x] Đăng ký `IBalanceConfigProvider` trong `Bootstrap.Compose()`
+- [x] Tests `Tests/EditMode/Config/BalanceConfigJsonTests.cs` (9 test, pass)
+- **Playtest thật (2026-10-22)**: chạy GameServer local thật (`dotnet run --project GameServer/GameServer.csproj`, `AUTH_MODE=RoomCode`, `ROOM_CODE=ROOM42`, port 7777) — client Play Mode load đúng `ClientConfig` (`[Config] ... endpoint=127.0.0.1:7777 auth=RoomCode`), nạp đúng `[Balance] Loaded 18 weapons, 16 equipments, match=50x50.`, và join phòng thật thành công (`[Net] JoinAccepted endpoint=127.0.0.1:7777 joinMs=83`), tự chuyển sang scene `Game`. Xác nhận toàn bộ pipeline config → connect → scene load hoạt động thật, không chỉ EditMode test.
 
-### MOV-01 — Xong (code + test tự động; CHƯA playtest WASD thật, xem rủi ro)
+### MOV-01 — Xong, đã playtest thật bằng physics (xem phương pháp bên dưới)
 - [x] `Application/Player/HeroMotion.cs` (pure kinematics: normalize diagonal, aim smoothing)
 - [x] `Presentation/Player/HeroController.cs` (MonoBehaviour, Rigidbody2D + CircleCollider2D, đọc config qua [Inject])
 - [x] Prefab `Assets/_JungleMaze/Prefabs/Hero.prefab` (root: Rigidbody2D+CircleCollider2D(r=0.4)+HeroController; child "Body": SpriteRenderer scale 0.8, tách riêng để scale không ảnh hưởng bán kính collider), đặt instance tại (25,25,0) — tâm map 50×50 — trong `Game.unity`
 - [x] Tests `Tests/EditMode/App/HeroMotionTests.cs` (13 test, pass)
-- **Phát hiện khi test bằng Unity MCP Play Mode**: bấm Play ở bất kỳ scene nào cũng bị `GameFlow`/`MainMenuState` tự chuyển về scene `Boot` ngay lập tức (đúng thiết kế sẵn có, không phải lỗi mới) — vì vậy KHÔNG thể tự động playtest Hero di chuyển bằng WASD qua MCP (cần đi hết luồng connect: mở GameServer thật + nhập room code). Đã xác nhận qua console log lúc Play: `[Balance] Loaded 18 weapons, 16 equipments, match=50x50.` và không có lỗi Inject nào — chỉ xác nhận được compose/inject đúng, CHƯA xác nhận được cảm giác di chuyển thật. Người dùng cần tự mở GameServer local rồi Play, vào phòng, bấm WASD/di chuột để playtest thật.
+- **Playtest thật (2026-10-22), phương pháp**: `GameFlow`/`MainMenuState` luôn đưa Play Mode về scene `Boot` trước (đúng thiết kế), nên để vào được `Game` cần đi hết luồng connect thật — dùng `execute_code` của Unity MCP gọi thẳng `ConnectToServerUseCase.Execute(new ConnectForm{RoomCode="ROOM42", DisplayName="Hao"})` qua reflection (đúng như user yêu cầu "gọi thẳng hàm"), với GameServer local thật đang chạy. Join thành công, vào `Game`, Hero xuất hiện đúng vị trí.
+  Vì Unity MCP không có tool giữ phím WASD thật (chỉ gõ text, không giữ được trạng thái key-down nhiều frame để `Input.GetAxisRaw` đọc được), nên để test chuyển động+va chạm KHÔNG đi qua giả lập bàn phím: tạm `heroController.enabled=false` (tắt hẳn việc đọc Input thật, tránh nó ghi đè giá trị mình set mỗi frame) rồi set thẳng `Rigidbody2D.linearVelocity` bằng đúng giá trị mà `HeroMotion.ComputeMoveDelta(1,0,heroBaseSpeed,1)` sẽ trả ra khi giữ phím D — tức vẫn dùng đúng Rigidbody2D/Collider2D thật của Hero, chỉ bỏ qua bước đọc bàn phím (phần đó đã có 13 test NUnit riêng che rồi).
+- **Kết quả đo được (thật, qua Play Mode đang chạy GameServer thật)**: Hero đứng yên tại (25,25). Set velocity=(4,0) [hướng Đông], sau ~1s thật: Hero dừng tại x=**27.5951**, velocity tự về (0,0) — đúng khớp cạnh Tây của `BoulderRock` (center x=30, nửa-rộng 2 → mép 28, trừ bán kính Hero 0.4 = 27.6). Đổi hướng velocity=(-4,0) [hướng Tây], sau ~1s: Hero dừng tại x=**23.9050**, velocity về (0,0) — khớp cạnh Đông của `AncientPillar` (center x=23, nửa-rộng 0.5 → mép 23.5, cộng bán kính Hero 0.4 = 23.9). Hero di chuyển đúng ~3.7 unit giữa 2 lần, đúng tốc độ 4 cell/s. → **Xác nhận thật bằng physics Play Mode**: Hero di chuyển được VÀ bị Hard Cover chặn đứng chính xác tới từng 0.01 unit, không xuyên qua.
+- **Giới hạn còn lại (chưa test được, không phải lỗi)**: phần "đọc bàn phím/chuột thật → `Input.GetAxisRaw`/`Input.mousePosition` → `HeroController.Update()`" không được test bởi vì Unity MCP không giả lập được key-hold hay mouse-move thật; phần này tin tưởng vào code review + cấu trúc đơn giản (2-3 dòng, giống hệt `PlayerInputReader` đã chạy ổn định trong `Docs/Client_Developer_Guide.vi.md`). Nếu người dùng tự bấm WASD/di chuột thật trong Editor, đây là phần duy nhất còn lại chưa được máy tự xác nhận.
 
 ### ENV-01 — Xong (code + test tự động + xác nhận bằng physics raycast; CHƯA phải layout thật)
 - [x] `Domain/World/HardCoverType.cs` (enum + `HardCoverSize.Of(type)`), `Domain/World/GridBounds.cs` (Contains/ClampToBounds thuần C#)
@@ -53,14 +57,17 @@ Dependency: cả MOV-01 và ENV-01 đều phụ thuộc CLI-04 (`heroBaseSpeed`,
 - [x] 4 Prefab tại `Assets/_JungleMaze/Prefabs/Obstacles/`: AncientPillar (1×2), CityWall (1×4), BoulderRock (4×4), AncientStatue (3×3) — mỗi cái chỉ 1 GameObject với BoxCollider2D (size local 1×1, world size = transform scale), KHÔNG Rigidbody (static geometry), layer HardCover, isTrigger=false.
 - [x] Đặt demo layout quanh Hero (25,25) trong `Game.unity`: AncientPillar (23,25), CityWall (25,28), BoulderRock (30,25), AncientStatue (25,20).
 - [x] Tests `Tests/EditMode/Core/GridBoundsTests.cs` (11 test: bounds, clamp, size lookup — pass)
-- **Xác nhận bằng Unity MCP**: dùng `manage_physics raycast` (2D, layer_mask=HardCover) bắn từ Hero về cả 4 hướng — cả 4 đều trúng đúng obstacle ở đúng khoảng cách tính từ size/position (ví dụ AncientPillar trúng ở distance=1.5 đúng với center 23 + half-width 0.5). Đây là bằng chứng vật lý thật (không chỉ nhìn Inspector) rằng collider đúng kích thước và đúng layer — phần việc "chặn đạn bằng raycast" mà ticket yêu cầu coi như đã kiểm chứng được.
-- **Giới hạn đã thử nhưng KHÔNG dùng được**: `manage_physics simulate_step` (giả lập Physics2D ở Edit Mode, ngoài Play Mode) không làm Rigidbody2D của Hero di chuyển dù đã set velocity qua `apply_force` (Impulse) — nghi là hạn chế của việc simulate physics ngoài Play Mode trong bản Unity MCP này, KHÔNG phải lỗi trong code Hero/Obstacle. Đã revert lại velocity về 0 sau khi thử, không để lại trạng thái bẩn trong scene. Việc Hero (Dynamic Rigidbody2D) thực sự bị chặn khi va chạm vật lý lúc Play (không chỉ raycast) vẫn là hành vi chuẩn của Unity Physics2D (Dynamic + Collider2D solid va Static + Collider2D solid cùng layer cho phép va chạm) nên về lý thuyết đúng, nhưng CHƯA tự playtest xác nhận trực tiếp được (cùng giới hạn như MOV-01: cần người dùng tự Play qua luồng connect thật).
+- **Xác nhận bằng Unity MCP (2 lớp)**:
+  1. Raycast tĩnh (Edit Mode, trước khi playtest): `manage_physics raycast` (2D, layer_mask=HardCover) bắn từ Hero về cả 4 hướng — cả 4 đều trúng đúng obstacle ở đúng khoảng cách tính từ size/position (ví dụ AncientPillar trúng ở distance=1.5 đúng với center 23 + half-width 0.5).
+  2. **Va chạm thật lúc Play Mode (2026-10-22, xem chi tiết số đo ở mục MOV-01 phía trên)**: cho Hero di chuyển thật bằng Rigidbody2D velocity trong lúc GameServer thật đang chạy — Hero bị `BoulderRock` và `AncientPillar` chặn đứng chính xác đúng vị trí biên collider, velocity tự về 0 khi chạm. Đây là bằng chứng mạnh hơn raycast: chứng minh Dynamic Rigidbody2D (Hero) thật sự KHÔNG xuyên qua được Hard Cover trong Play Mode, không chỉ "collider có tồn tại đúng chỗ".
+- **Giới hạn đã thử nhưng KHÔNG dùng được**: `manage_physics simulate_step` (giả lập Physics2D ở Edit Mode, ngoài Play Mode) không làm Rigidbody2D của Hero di chuyển dù đã set velocity qua `apply_force` (Impulse) — nghi là hạn chế của việc simulate physics ngoài Play Mode trong bản Unity MCP này, KHÔNG phải lỗi trong code Hero/Obstacle. Đã revert lại velocity về 0 sau khi thử, không để lại trạng thái bẩn trong scene. Vì vậy phần playtest va chạm thật phải chuyển sang làm trong Play Mode thật (có GameServer) thay vì Edit Mode — xem mục MOV-01.
 
 ## Còn phải làm
-1. **Chỉ người dùng tự làm được**: mở GameServer thật (local `dotnet run` hoặc Docker, xem `Docs/Client_Developer_Guide.vi.md` mục 1), bấm Play từ scene `Boot`, nhập room code, vào `Game`, rồi tự bấm WASD + di chuột để playtest cảm giác di chuyển/va chạm Hard Cover thật — Claude không có cách nào tự động hoá bước này (không có tool giả lập bàn phím/chuột trong Play Mode, và `simulate_step` ngoài Play Mode không di chuyển được Rigidbody2D, xem ghi chú ENV-01).
-2. Khi có bản thiết kế map thật (Figma/Map Plan), thay layout demo (4 obstacle đặt quanh Hero trong `Game.unity`) bằng layout chính thức — việc này Claude có thể làm tiếp khi có file đính kèm. Lưu ý: không viết `MapGridBuilder`/generator nào cả, obstacle hiện đặt tay trực tiếp trong scene qua Unity MCP (quyết định có chủ đích, xem mục quyết định #ENV-01 bên dưới nếu có bổ sung).
+1. **Chỉ người dùng tự làm được** (việc duy nhất máy không tự động hoá được, xem giới hạn ở mục MOV-01): tự bấm phím WASD thật + di chuột thật trong Editor để cảm nhận "độ mượt" chủ quan của input/aim lerp — phần vật lý/va chạm/kết nối/config đã tự playtest và xác nhận bằng số đo thật rồi (xem mục MOV-01/CLI-04/ENV-01 ở trên), không cần làm lại.
+2. Khi có bản thiết kế map thật (Figma/Map Plan), thay layout demo (4 obstacle đặt quanh Hero trong `Game.unity`) bằng layout chính thức — việc này Claude có thể làm tiếp khi có file đính kèm. Lưu ý: không viết `MapGridBuilder`/generator nào cả, obstacle hiện đặt tay trực tiếp trong scene qua Unity MCP (quyết định có chủ đích).
 3. Nếu làm MOV-02 (prediction/reconciliation) sau này: cần quyết định cách hợp nhất `HeroController` (local) với `PlayerView`/`WorldSyncService` (server-driven) — hiện 2 thứ này độc lập hoàn toàn, chưa có cầu nối.
 4. Nếu cần dùng tới Zone/Airdrop baseline (bo thu, lịch thả đồ) — hiện chưa có trong `MatchConfigData`, phải mở rộng schema JSON + Domain model trước.
+5. GameServer local dùng để playtest (ROOM_CODE=ROOM42, port 7777) đã được tắt sau khi test xong (không để chạy nền) — lần sau muốn playtest lại thì chạy lại lệnh ở `Docs/Phase1_First4Tasks.vi.md` mục 12.4.
 
 ## Ghi chú / rủi ro cần nhớ
 - Project có sẵn các Physics layer `Destructible`, `Water`, `Enemy`, `Player`, `HealingItem`, `Armor`, `Building` (slot 3–10, `ProjectSettings/TagManager.asset`) — kiểm tra lại thì đây là tàn dư từ import JSurviv, KHÔNG có script nào trong `Assets/_JungleMaze/Scripts` tham chiếu tới. ENV-01 cố tình tạo layer `HardCover` mới (slot 11) thay vì tái dùng `Building` để tránh đụng vào ý định chưa rõ của layer có sẵn. Nếu task sau cần Player/Enemy layer, nhớ kiểm tra lại xem có ý nghĩa thật hay vẫn chỉ là rác JSurviv trước khi dùng.
