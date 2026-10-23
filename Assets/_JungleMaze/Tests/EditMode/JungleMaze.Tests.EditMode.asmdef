@@ -8,7 +8,8 @@
         "JungleMaze.Protocol",
         "JungleMaze.Domain",
         "JungleMaze.Application",
-        "JungleMaze.Infrastructure"
+        "JungleMaze.Infrastructure",
+        "JungleMaze.Presentation"
     ],
     "includePlatforms": [
         "Editor"

@@ -194,6 +194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648f0f260db361d4896d230e16ce59bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.Controls.PlayerInputReader
+  aimOrigin: {fileID: 8074166082198812597}
 --- !u!4 &995588400
 Transform:
   m_ObjectHideFlags: 0
@@ -338,6 +339,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1970937882}
   - component: {fileID: 1970937881}
+  - component: {fileID: 1970937883}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -406,6 +408,111 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 25, y: 25, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1970937883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970937880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96574d79128c6fa4f89bf6a467a2390e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.Player.HeroCameraFollow
+  target: {fileID: 8074166082198812597}
+--- !u!1 &2072242978
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2072242980}
+  - component: {fileID: 2072242979}
+  m_Layer: 0
+  m_Name: MapGrid
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2072242979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2072242978}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6366bc83003255540a59eab2446b644e, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.World.MapGridView
+--- !u!4 &2072242980
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2072242978}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2131640634
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2131640636}
+  - component: {fileID: 2131640635}
+  m_Layer: 0
+  m_Name: Local weapon validation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2131640635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131640634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88ece3061e1d43844bf9b1fae6366389, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.World.LocalWeaponProbe
+  hero: {fileID: 8074166082198812597}
+  projectilePrefab: {fileID: 8077357926233679854, guid: 250fa663b8091af488a9de14e1cc6179, type: 3}
+  impactPrefab: {fileID: 6131735357101893323, guid: 8b9bb105af9fd104b8b9cac3875477b4, type: 3}
+  weaponId: RUBBER_GUN
+--- !u!4 &2131640636
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2131640634}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -716,6 +823,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0b771002d50144440a26f486efa51d25, type: 3}
+--- !u!4 &8074166082198812597 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6622091488143811520, guid: 0b771002d50144440a26f486efa51d25, type: 3}
+  m_PrefabInstance: {fileID: 8074166082198812596}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -726,3 +838,5 @@ SceneRoots:
   - {fileID: 995588400}
   - {fileID: 8074166082198812596}
   - {fileID: 1764306046}
+  - {fileID: 2072242980}
+  - {fileID: 2131640636}

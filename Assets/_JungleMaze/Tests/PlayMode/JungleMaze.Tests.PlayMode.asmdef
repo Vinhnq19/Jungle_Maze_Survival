@@ -1,0 +1,8 @@
+{
+    "name": "JungleMaze.Tests.PlayMode",
+    "references": ["UnityEngine.TestRunner", "UnityEditor.TestRunner", "JungleMaze.Core", "JungleMaze.Domain", "JungleMaze.Application", "JungleMaze.Infrastructure", "JungleMaze.Presentation"],
+    "overrideReferences": true,
+    "precompiledReferences": ["nunit.framework.dll"],
+    "autoReferenced": false,
+    "defineConstraints": ["UNITY_INCLUDE_TESTS"]
+}

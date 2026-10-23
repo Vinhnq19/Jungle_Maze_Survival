@@ -4,6 +4,8 @@ Cập nhật **20/10/2026**. Đối chiếu với [Network_Architecture.vi.md](N
 
 ## Trạng thái triển khai (20/10/2026)
 
+Bổ sung nghiệm thu **23/10/2026**: CLI-02/CLI-03 có test chạy lại; CLI-04 đã nối config vào công cụ bắn thử; MOV-01 sửa aim và thời điểm áp dụng collider config; ENV-01 có grid, bốn biên và bốn loại Hard Cover chặn Hero/đạn. Chi tiết và giới hạn trong [Unity_Foundation_Acceptance.vi.md](Unity_Foundation_Acceptance.vi.md). Các số 86 test/RTT dưới đây là kết quả lịch sử 20/10, không phải kết quả lượt 23/10.
+
 Bước 1–9 ở mục 7 đã được code, mỗi feature một commit. Có 86 EditMode test xanh. Đã chạy Play Mode với GameServer thật: Joined → InRoom → load scene Game, RTT p95 khoảng 40ms trên loopback; sai mã phòng báo `InvalidRoomCode`. **Chưa** kiểm chứng LAN/VPN thật, 10 máy hay gameplay, vì server chưa xử lý packet gameplay.
 
 Những điểm khác so với bản kế hoạch bên dưới:

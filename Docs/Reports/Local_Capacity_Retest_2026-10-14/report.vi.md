@@ -287,3 +287,11 @@ Các lượt đầu dùng watchdog/timer 30 phút; lượt cuối giảm còn 20
 Gói client mới nhất: `Backend/out/wss-20261016/NetSmokeClient-latest-win-x64.zip`, Windows x64 cần .NET 8 Runtime, có profile Auto; không chứa code phòng/credentials. Release/checksum giữ tại `Backend/out/wss-20261016/release/` cho triển khai/rollback. Hướng dẫn chuẩn mới ở mục 16 Phase1_First4Tasks.vi.md và Network Architecture.
 
 Archive bằng chứng giữ các file cũ, thêm raw Local/WSS/AWS/lượt lỗi, timeline bỏ account ID, source và checks. Không kèm images.tar.gz/.env/PEM/password/JWT. Manifest/checksum/CRC được kiểm lại. Cleanup nhóm file tạm cũ hiện BLOCKED: giữ nguyên 814,27MiB, nhóm này xóa 0B. Đã xóa riêng bản images.tar.gz dựng lại trùng của đợt mới: 99.965.719 byte (~95,33MiB), sau khi kiểm đường dẫn tuyệt đối, giữ gói release gốc. Docker prune cũ hơn bảy ngày thu hồi 0B, dev/DB/rollback được giữ.
+
+### Bổ sung nghiệm thu nền tảng Unity — 23/10/2026
+
+Hoàn thiện CLI-02/CLI-03/CLI-04/MOV-01/ENV-01 trong phạm vi serializer, base pattern, config, movement local và map/collision. Unity 6000.3.15f1: **125/125 EditMode + 5/5 PlayMode PASS**, gồm serializer 0 GC sau warm-up, thay JSON ảnh hưởng đạn thử, collider config sau Awake, Hero đi chéo 4 cell/s, aim khi lệch tâm camera, map 50×50/48 PPU, bốn biên và cả bốn Hard Cover chặn Hero/đạn quét nhanh. Có kiểm camera đứng yên/clamp và tái sử dụng projectile trong pool.
+
+Đã join GameServer thật trên loopback bằng endpoint tạm trong RAM, quan sát Game View và bắn trúng cover; không phát sinh lỗi Console. Không dùng kết quả này thay phép đo AWS/WSS/capacity ở trên; không bật/deploy/chạy tải EC2. Server local thử đã dừng. Trải nghiệm giữ WASD kéo dài bằng thao tác tay chưa xác nhận riêng do công cụ chỉ gửi lần nhấn ngắn; chuyển động được đo bằng Unity Physics2D qua cùng kinematics của controller.
+
+Chi tiết, cách chạy lại và ranh giới MOV-02/combat/FOW: [Unity Foundation Acceptance](../../Unity_Foundation_Acceptance.vi.md). Dữ liệu mới: [unity-foundation-tests.json](unity-foundation-tests.json), nằm **ngoài** archive bằng chứng backend cũ; không đổi checksum hay nhãn các kết quả cũ. Map hiện là layout nghiệm thu bốn loại cover, chưa phải mê cung hoàn chỉnh/art cuối. Đạn/VFX thử chạy local, không gây damage hoặc đồng bộ nhiều người.

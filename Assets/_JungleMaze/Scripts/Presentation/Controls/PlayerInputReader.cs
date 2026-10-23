@@ -1,6 +1,7 @@
 using JungleMaze.App.Player;
 using JungleMaze.Core.DI;
 using JungleMaze.Domain.Player;
+using JungleMaze.Presentation.Player;
 using UnityEngine;
 
 namespace JungleMaze.Presentation.Controls
@@ -12,6 +13,9 @@ namespace JungleMaze.Presentation.Controls
     public sealed class PlayerInputReader : MonoBehaviour
     {
         private PlayerInputService _input;
+        [SerializeField] private Transform aimOrigin;
+        private Camera _camera;
+        private float _aimDegrees;
 
         [Inject]
         public void Construct(PlayerInputService input) => _input = input;
@@ -21,12 +25,14 @@ namespace JungleMaze.Presentation.Controls
             if (_input == null || !_input.Enabled) return;
             var move = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
             if (move.sqrMagnitude > 1f) move.Normalize();
-            var aim = (Vector2)Input.mousePosition - new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
+            if (_camera == null) _camera = Camera.main;
+            if (aimOrigin != null && HeroAim.TryGetTargetDegrees(_camera, aimOrigin.position, Input.mousePosition, out var degrees))
+                _aimDegrees = degrees;
             _input.SetIntent(new PlayerIntent
             {
                 MoveX = move.x,
                 MoveY = move.y,
-                AimDegrees = Mathf.Atan2(aim.y, aim.x) * Mathf.Rad2Deg,
+                AimDegrees = _aimDegrees,
                 Attack = Input.GetMouseButton(0),
                 Interact = Input.GetKey(KeyCode.E),
                 Reload = Input.GetKey(KeyCode.R),
