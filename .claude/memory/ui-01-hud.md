@@ -1,6 +1,6 @@
 # UI-01 — HUD & Feedback FX (phần lõi)
 
-- **Trạng thái**: Done phần lõi, G3 ngày 2026-10-24. AC16 phần Release build và AC21 (cảm nhận) được người dùng chấp nhận kiểm sau.
+- **Trạng thái**: Done phần lõi, G3 ngày 2026-10-24. AC21 chấp nhận trên art tạm, kiểm lại khi có art AI; phần Release build của AC16 kiểm ở BLD-01.
 - **Ticket**: `Docs/Tickets/UI-01.md` (spec, kế hoạch, nhật ký build, review, QA, nghiệm thu). Bằng chứng QA: `Docs/Reports/UI-01_2026-10-24/`.
 - **Phần 2** (phản hồi: tiến trình dùng đồ, buff/debuff, thông báo nhặt, sát thương, bom/bẫy, hướng nguy hiểm): `Docs/Tickets/UI-01-P2.md`, làm riêng.
 
@@ -21,5 +21,5 @@
 ## Giới hạn còn lại
 
 - `PlayerStatePacket.Hp` là `byte` và `JoinAccepted` chưa có NetId local: WPN-02 phải xử lý trước khi gọi `SetHp`.
-- Chạy PlayMode qua Unity MCP làm Unity tự đổi `ProjectSettings/EditorSettings.asset` `m_EnterPlayModeOptions` 0→1. Chưa commit, chờ người quyết.
+- Chạy PlayMode qua Unity MCP làm Unity tự đổi `ProjectSettings/EditorSettings.asset` `m_EnterPlayModeOptions` 0→1. Người dùng chọn giữ 0: không commit thay đổi này, sau mỗi lần chạy PlayMode qua MCP phải `git checkout -- ProjectSettings/EditorSettings.asset`.
 - Lỗi có sẵn ngoài UI-01: thoát Play lúc đang kết nối ở scene Game thì báo `[Scene] Không load được Boot`.

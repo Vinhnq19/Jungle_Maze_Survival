@@ -25,14 +25,14 @@ Nhánh `huycv`, HEAD sau merge main: EditMode 193/193, PlayMode 20/20, console s
 
 Dọn nhỏ (một commit `docs`/`chore`):
 
-1. `Docs/Tickets/UI-01.md` mục 8 và `.claude/memory/ui-01-hud.md` "Giới hạn còn lại": đổi câu `EditorSettings.asset … chờ người quyết` thành "đã revert về 0 theo người dùng; chạy PlayMode qua MCP sẽ đổi lại, cần revert sau mỗi lần".
+1. ~~Ghi quyết định EditorSettings vào mục 8 + memory~~ — đã làm.
 2. `Docs/Client_Developer_Guide.vi.md` mục 5: số test sau merge main là **EditMode 193/193**, PlayMode 20/20 (đang ghi 181). Cập nhật lại khi phần 2 thêm test.
 3. `Assets/_JungleMaze/Scenes/Game.unity`: bỏ khoảng trắng cuối Unity thêm ở 3 dòng `m_Name` (kiểm `git diff c37a8673 -- Assets/_JungleMaze/Scenes/Game.unity`). Chỉ 3 dòng đó.
 
-Người dùng tự kiểm (đã chấp nhận kiểm sau):
+Đã chốt khi nghiệm thu ("Nghiệm thu (Khuyên dùng)"), không phải việc của UI-01 nữa:
 
-4. **AC21**: `Scenes/Dev/HudPreview.unity` → Play → F4 → "HP 100→0 /10", "Heal 0→100 /10".
-5. **AC16 phần Release**: build Release, xác nhận không có panel F4/mock (`#if UNITY_EDITOR || DEVELOPMENT_BUILD`).
+4. **AC21**: chấp nhận trên art tạm; kiểm lại khi có art AI (`Scenes/Dev/HudPreview.unity` → Play → F4 → "HP 100→0 /10", "Heal 0→100 /10").
+5. **AC16 phần Release**: kiểm ở ticket **BLD-01**.
 
 ## B. Phần 2 — build tới G3
 
