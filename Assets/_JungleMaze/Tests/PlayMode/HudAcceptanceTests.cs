@@ -13,7 +13,9 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Constraints;
 using UnityEngine.UI;
+using Is = UnityEngine.TestTools.Constraints.Is;
 using Object = UnityEngine.Object;
 
 namespace JungleMaze.Tests.PlayMode
@@ -287,6 +289,12 @@ namespace JungleMaze.Tests.PlayMode
             Assert.AreEqual("01:24", Parsed(_root.MatchStatus.ZoneValue));
             Assert.AreEqual("7/10", Parsed(_root.MatchStatus.AliveValue));
             Assert.AreEqual("5s", Parsed(_root.Vitals.AdrenalineRow.Value));
+            _inventory.SetActiveSlot(3);
+            var emptySelected = _root.Quickbar.GetSlotView(3);
+            Assert.AreEqual(SlotVisual.Selected, emptySelected.Visual, "an empty selected slot keeps the amber frame");
+            Assert.IsFalse(emptySelected.HasItem);
+            Assert.IsFalse(emptySelected.NameLabel.enabled, "no item name in an empty selected slot");
+            Assert.That(emptySelected.transform.Find("Icon").GetComponent<Image>().color.a, Is.LessThan(0.5f), "placeholder icon dimmed");
         }
 
         [UnityTest]
@@ -356,6 +364,24 @@ namespace JungleMaze.Tests.PlayMode
             Time.captureDeltaTime = _captureDeltaTime;
             LogAssert.NoUnexpectedReceived();
             Assert.IsTrue(_root.enabled);
+        }
+
+        [UnityTest]
+        public IEnumerator Hud_TickWithoutChanges_NoGcAlloc_OnRealViews()
+        {
+            yield return SpawnHud();
+            Assert.IsNotNull(_root.Vitals.GetComponent<Canvas>(), "Vitals has its own canvas (bar tweens rebatch only Vitals)");
+            Assert.IsNotNull(_root.Minimap.GetComponent<Canvas>(), "Minimap has its own canvas");
+            Scenarios().MockupV2();
+            _effects.Remove(EffectKind.Adrenaline);
+            _hud.SetPose(12.5f, 30.5f, 45f);
+            _root.Presenter.Tick(1f); // settle every tween and the damage trail
+            yield return null;
+            for (var i = 0; i < 10; i++) _root.Presenter.Tick(1f / 60); // warm up
+            Assert.That(() =>
+            {
+                for (var i = 0; i < 120; i++) _root.Presenter.Tick(1f / 60);
+            }, Is.Not.AllocatingGCMemory());
         }
 
         // ---------- Style and fonts (AC24, AC26) ----------
