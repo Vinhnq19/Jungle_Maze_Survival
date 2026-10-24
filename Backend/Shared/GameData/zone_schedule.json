@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "initialCenter": { "x": 25.0, "y": 25.0 },
+  "initialRadius": 25.0,
+  "warningDurationSeconds": 10.0,
+  "shrinkSpeedCellsPerSecond": 1.0,
+  "damagePerSecond": 5,
+  "intervals": [
+    {
+      "index": 1,
+      "startSecond": 90.0,
+      "endSecond": 97.0,
+      "startRadius": 25.0,
+      "endRadius": 18.0
+    },
+    {
+      "index": 2,
+      "startSecond": 182.0,
+      "endSecond": 188.0,
+      "startRadius": 18.0,
+      "endRadius": 12.0
+    },
+    {
+      "index": 3,
+      "startSecond": 268.0,
+      "endSecond": 273.0,
+      "startRadius": 12.0,
+      "endRadius": 7.0
+    },
+    {
+      "index": 4,
+      "startSecond": 343.0,
+      "endSecond": 347.0,
+      "startRadius": 7.0,
+      "endRadius": 3.0
+    },
+    {
+      "index": 5,
+      "startSecond": 387.0,
+      "endSecond": 390.0,
+      "startRadius": 3.0,
+      "endRadius": 0.0
+    }
+  ]
+}

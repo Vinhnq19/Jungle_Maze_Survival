@@ -1,0 +1,67 @@
+{
+  "version": "1.0.0",
+  "mapBounds": {
+    "minX": 0.0,
+    "minY": 0.0,
+    "maxX": 50.0,
+    "maxY": 50.0
+  },
+  "obstacles": [
+    {
+      "name": "AncientPillar",
+      "centerX": 23.0,
+      "centerY": 25.0,
+      "sizeX": 1.0,
+      "sizeY": 2.0,
+      "minX": 22.5,
+      "maxX": 23.5,
+      "minY": 24.0,
+      "maxY": 26.0
+    },
+    {
+      "name": "AncientStatue",
+      "centerX": 25.0,
+      "centerY": 20.0,
+      "sizeX": 3.0,
+      "sizeY": 3.0,
+      "minX": 23.5,
+      "maxX": 26.5,
+      "minY": 18.5,
+      "maxY": 21.5
+    },
+    {
+      "name": "BoulderRock",
+      "centerX": 30.0,
+      "centerY": 25.0,
+      "sizeX": 4.0,
+      "sizeY": 4.0,
+      "minX": 28.0,
+      "maxX": 32.0,
+      "minY": 23.0,
+      "maxY": 27.0
+    },
+    {
+      "name": "CityWall",
+      "centerX": 25.0,
+      "centerY": 28.0,
+      "sizeX": 1.0,
+      "sizeY": 4.0,
+      "minX": 24.5,
+      "maxX": 25.5,
+      "minY": 26.0,
+      "maxY": 30.0
+    }
+  ],
+  "spawnPoints": [
+    { "x": 43.0, "y": 25.0 },
+    { "x": 39.562, "y": 35.580 },
+    { "x": 30.562, "y": 42.116 },
+    { "x": 19.438, "y": 42.116 },
+    { "x": 10.438, "y": 35.580 },
+    { "x": 7.0, "y": 25.0 },
+    { "x": 10.438, "y": 14.420 },
+    { "x": 19.438, "y": 7.884 },
+    { "x": 30.562, "y": 7.884 },
+    { "x": 39.562, "y": 14.420 }
+  ]
+}

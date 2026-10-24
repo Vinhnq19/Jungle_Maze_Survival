@@ -28,9 +28,14 @@ try
     await using var webSocket = await WebSocketHost.StartFromEnvironment(network.Hub, (options.Rooms ?? new()).MaxTotalPlayers);
     var roomControl = RoomControlHost.Start(options.Rooms ?? new(), network.Commands);
     var loop = new FixedTickLoop(options.TickRate, metrics);
-    try { loop.Run(() => { webSocket?.PollEvents(); network.PollEvents(); }, Tick,
-        () => metrics.ReportIfDue(network.ReservedPeers, options.MetricsIntervalSeconds,
-            network.ActivePeers, network.PendingPeers, network.Rooms.Count, network.Rooms.Occupancy()), shutdown.Token); }
+    try {
+        loop.Run(
+            () => { webSocket?.PollEvents(); network.PollEvents(); },
+            deltaSeconds => network.Hub.Tick(deltaSeconds),
+            () => metrics.ReportIfDue(network.ReservedPeers, options.MetricsIntervalSeconds,
+                network.ActivePeers, network.PendingPeers, network.Rooms.Count, network.Rooms.Occupancy()),
+            shutdown.Token);
+    }
     finally { if (roomControl is not null) { await roomControl.StopAsync(); await roomControl.DisposeAsync(); } }
     return 0;
 }
@@ -39,10 +44,4 @@ catch (Exception error) when (error is ArgumentException or InvalidOperationExce
 {
     Console.Error.WriteLine($"[startup-error] {error.Message}");
     return 1;
-}
-
-static void Tick(double fixedDeltaSeconds)
-{
-    // Chưa có gameplay: điểm gắn hàng đợi input/mô phỏng authoritative sau này.
-    // Không gọi HTTP/MongoDB hoặc await trong Tick: tác vụ chậm phá ngân sách 33,3ms.
 }
