@@ -18,7 +18,8 @@ async function main() {
   const world = fs.readFileSync(path.join(root, 'Docs/Art/directions/H_world.svg'), 'utf8');
   const hero = world.match(/<g transform="translate\(640 360\)">([\s\S]*?)<\/g>/)[1];
   await sharp(Buffer.from(svg(96, `<g transform="translate(39 43) scale(1.25)">${hero}</g>`))).png().toFile(path.join(foundation, 'Hero48.png'));
-  await sharp(Buffer.from(svg(96, '<rect width="96" height="96" fill="#5B6D4B"/>'))).png().toFile(path.join(foundation, 'Cell48.png'));
-  console.log('Created 6 approved H P0 sprites.');
+  await sharp(Buffer.from(svg(96, '<rect width="96" height="96" fill="white"/>'))).png().toFile(path.join(foundation, 'Cell48.png'));
+  await sharp(Buffer.from(svg(96, '<rect width="96" height="96" fill="#5B6D4B"/>'))).png().toFile(path.join(foundation, 'Ground96.png'));
+  console.log('Created H P0 sprites; shared Cell48 stays a white tint mask.');
 }
 main().catch(e => { console.error(e); process.exitCode = 1; });
