@@ -455,6 +455,15 @@ namespace JungleMaze.Tests.Hud
         }
 
         [Test]
+        public void AdrenalineRow_NeverShowsZeroWhileActive()
+        {
+            _effects.Apply(EffectKind.Adrenaline, 8f, 0.00005f);
+            Assert.AreEqual("1s", _vitals.Values[Row(VitalsRow.Adrenaline)], "G-13: 0 only when the effect is over");
+            Frame();
+            Assert.IsNull(_vitals.Values[Row(VitalsRow.Adrenaline)], "expired: number hidden");
+        }
+
+        [Test]
         public void TickWithoutChanges_NoGcAlloc()
         {
             _hud.SetHp(60);

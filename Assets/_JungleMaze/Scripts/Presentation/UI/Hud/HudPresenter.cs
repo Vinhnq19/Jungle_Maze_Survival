@@ -204,11 +204,13 @@ namespace JungleMaze.Presentation.UI.Hud
                 _vitals.SetRowLabel(VitalsRow.Adrenaline, AdrenalineLabel, active ? TextTone.Highlight : TextTone.Faint);
             if (timed)
             {
-                var seconds = HudFormat.CeilToInt(effect.RemainingSeconds);
+                // G-13: "0s" only when the effect is over; a sliver of time left still reads "1s".
+                var shownSeconds = effect.RemainingSeconds > 1f ? effect.RemainingSeconds : 1f;
+                var seconds = HudFormat.CeilToInt(shownSeconds);
                 if (force || !_adrenalineShownTimed || seconds != _adrenalineShownSeconds)
                 {
                     _vitals.SetRowValue(VitalsRow.Adrenaline, _rowText,
-                        HudFormat.Seconds(_rowText, effect.RemainingSeconds), TextTone.Highlight);
+                        HudFormat.Seconds(_rowText, shownSeconds), TextTone.Highlight);
                     _adrenalineShownSeconds = seconds;
                 }
             }
