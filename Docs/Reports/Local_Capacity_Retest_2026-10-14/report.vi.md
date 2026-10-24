@@ -1,10 +1,21 @@
-# Báo cáo UDP/WSS, Local Docker và AWS — 16/10/2026
+> Cập nhật mới nhất: **Phase2 Local —24/10/2026**. Phần bổ sung ở đầu từng mục; giữ dữ liệu các lượt AWS/capacity cũ để đối chiếu.
 
-**Kết quả mới nhất UDP/WSS: PASS; Local UDP/WebSocket 10 phiên/300s PASS. PC → EC2 WSS (IP pin, TLS đúng), Auto và Stop–Start đã qua; EC2 đã Stopped. DNS/hosts riêng trên PC vẫn BLOCKED.**
+# Báo cáo Phase 2 Local và lịch sử kiểm thử mạng
 
-Một báo cáo chung; giữ thư mục cũ để các link đang có hoạt động. Bảng vận hành dùng UTC+7, dữ liệu thô dùng UTC. Đã xác nhận EC2 **Stopped** sau tất cả các lượt có bật máy.
+**Phase 2 Local: PASS cho SRV-03, NET-02, ZON-01 và demo Unity UDP. Hai Windows player trên cùng PC hoàn tất trận → kết quả → lịch sử Guest → chơi lại. AWS Phase 2, hai PC vật lý và tải 50 phiên gameplay: NOT_TESTED.**
+
+Kết quả mạng ngày 16/10 là lịch sử: UDP/WSS và Local 10 phiên/300s đã PASS; PC → EC2 WSS dùng IP pin/TLS đúng, Auto và Stop–Start đã qua. DNS/hosts riêng trên PC còn BLOCKED ở lượt đó.
+
+Một báo cáo chung; giữ thư mục cũ để các link đang có hoạt động. Bảng vận hành dùng UTC+7, dữ liệu thô dùng UTC. Lượt Phase 2 không truy cập hoặc bật AWS; trạng thái Stopped bên dưới là bằng chứng tại các lượt kiểm thử trước.
 
 ## 1. Mục đích và phạm vi
+
+### Bổ sung Phase2 — 24/10/2026
+
+Lượt này triển khai SRV-03, NET-02, ZON-01 và demo Unity UDP trên **Local**. Hai Windows player thực trên cùng PC hoàn thành trận, thấy nhau di chuyển/HP/bo, xem kết quả, chơi lại và đọc lịch sử Guest. Các phần AWS/co-located phía dưới thuộc những lượt cũ, không được diễn giải thành nghiệm thu Phase2 online.
+
+
+### Lịch sử Phase 1 — 14–16/10/2026
 
 Kiểm tra tạo phòng bắt buộc login/JWT, giữ phòng mặc định và hạn mức 10 phiên/phòng, 5 phòng gồm mặc định, tổng 50 active/pending, 2 phòng bổ sung/user. Đo LiteNetLib ping/pong 30Hz và tick backend; chưa mô phỏng gameplay.
 
@@ -16,6 +27,24 @@ Theo yêu cầu xử lý mạng chặn, dùng lại **SSH qua Session Manager**:
 
 
 ## 2. Những việc thực hiện trước khi kết luận
+
+### Công việc Phase2 thực hiện trước khi kết luận
+
+1. Tạo nhánh `phase2/match-results-zone`; Antigravity Flash High/effort high triển khai hai gói bằng worktree riêng. Codex review, sửa và kiểm thử trước khi tích hợp; mỗi gói có một vòng giao sửa. Không merge main, push hoặc deploy AWS.
+2. Công bố runtime/clock/entity/health và contract kết quả. Runtime độc lập theo phòng, lifecycle đầy đủ, roster/loading, input có MatchId/sequence/tick, timeout input, normalization, sweep/slide cover và bounds. Ping-only không đủ điều kiện bắt đầu.
+3. Giữ protocol1/2, thêm v3 cho resume. Sửa slot rỗng bị ghi đè, đăng ký broadcast lặp, grace giữ đúng slot, xoay proof, callback cũ, loading timeout trả slot và bỏ packet trận cũ. UDP/WebSocket dùng cùng runtime.
+4. Đưa map/match/bo có version vào Shared/GameData. Thêm sync/verify trước build, manifest từng file và aggregate hash chuẩn hóa BOM/xuống dòng Windows/Linux. Kiểm geometry scene trước LoadingAck; có10 spawn an toàn, cách nhau tối thiểu6 cell.
+5. Áp dụng đúng5 đợt bo, cảnh báo, tâm seeded/nested/walkable,5HP/s qua HealthService và r0 toàn map. Tính đồng hạng sau toàn bộ damage tick; không ép kết thúc420s; giữ replay buffer riêng6s.
+6. Thêm Guest256-bit, DB chỉ hash; ticket dùng một lần, ràng buộc attempt/phòng; JWT vẫn bắt buộc quản lý phòng. Sửa việc đăng ký ticket tự gắn danh tính: nay chỉ gắn khi phiên chứng minh sở hữu ticket. Sửa default RoomCode phân biệt hoa/thường và giữ identity qua vòng sau.
+7. Lưu kết quả nguyên tử theo MatchId trong Mongo standalone, canonical hash không nhập nhằng và giữ đủ độ chính xác; idempotent/conflict, lịch sử theo hồ sơ và public leaderboard đã bỏ thông tin riêng. Sửa biểu diễn Guid BSON và Swagger security OR cho JWT/Guest.
+8. Làm outbox ngoài tick: hàng đợi bounded, ghi nguyên tử trên volume, retry độc lập2→30s, quota gồm quarantine, không xóa trước ACK, flush có deadline và metric historyUnavailable riêng. Kiểm API lỗi/DB restart/replay file cũ.
+9. Tích hợp MatchSession, input thật, camera overview, nhãn/HP/bo/kết quả/replay/history và resume trong Unity. Tắt controller/weapon probe local khi chơi mạng, giữ view theo server. DPAPI tách origin; first-writer-wins khi hai process khởi động cùng lúc.
+10. Lượt Unity đầu chơi được nhưng **FAIL history** vì Hello sớm hơn ticket khi lobby test chỉ0,5s. Đổi thứ tự AttachIdentity → Hello trên cùng channel reliable; chuẩn bị có timeout6s, lỗi API vẫn chơi ẩn danh. Lượt cuối hai client đều xác nhận identitySent/historyLoaded và vào vòng2.
+11. Build/test Local, HTTP với Mongo thật, Docker game/API và TLS Caddy. Chuẩn bị compose, secret kết quả riêng, outbox volume và script AWS bổ sung secret mà không ghi đè khóa cũ. Không chạy các script đó trên AWS.
+12. Khôi phục side effect URP/ProjectSettings/Editor do Unity build/test, giữ scene Game không dirty. Gói bằng chứng chỉ lấy whitelist; không đưa file.env, JWT, Guest credential, token/SSH/AWS credential vào archive.
+
+
+### Công việc các lượt Phase 1 trước đây
 
 1. Đọc source/cấu hình và công cụ quản trị. Bật Docker Desktop; AWS CLI hết hạn được đăng nhập lại bằng xác nhận trực tiếp của người dùng. Phát hiện EC2 đã Running trước buổi, đã Stop trong lúc chuẩn bị local.
 2. Build solution không lỗi; chạy 225 checks hiện có: 124 network, 50 account, 9 migration secret, 42 API/phòng/Docker. Bổ sung test JWT thật một phút: **55/55 account checks**, gồm năm kiểm tra lifetime/khôi phục, dùng backend và Mongo local riêng.
@@ -59,6 +88,16 @@ Các lượt bị dừng và thời gian của chúng được giữ trong mục
 
 ## 3. Môi trường và cách tính
 
+### Môi trường Phase2
+
+- Source được nghiệm thu: `6a854d2e58a24c4b6536a3cb69dbef17de557c60`, nhánh feature; target .NET8, SDK local `10.0.401`, Unity6000.3.15f1/URP, `Microsoft Windows 11 Home Single Language`.
+- CPU: AMD Ryzen 7 4800H with Radeon Graphics         . Local Docker riêng: game256MiB, API384MiB, Mongo fixture có volume riêng. Cổng host14777/14781/14500; production local mặc định vẫn7777/7781/5000. Control chỉ trong network.
+- Profile main: min6/max10, lobby15s/loading30s/grace15s/ending10s. Profile test: min2, timer/bo tăng tốc; các kết quả demo không chứng minh thời lượng main theo thời gian thực.
+- Docker smoke10 phiên đo input/snapshot trong5s rồi đợi kết quả; không phải bài tìm sức chứa cuối hoặc benchmark combat.
+
+
+### Môi trường AWS tại lượt cũ
+
 | Thành phần | Cấu hình thực tế |
 | --- | --- |
 | EC2 | t3.small, ap-southeast-2, 2 vCPU, CPU credits Standard |
@@ -86,6 +125,28 @@ Local: Windows/Docker Desktop, GameServer 256MiB, .NET 8/LiteNetLib 2.1.4. AWS g
 
 
 ## 4. Các lượt đo và kết quả
+
+### Kết quả Phase2 mới nhất
+
+| Hạng mục | Trạng thái | Bằng chứng |
+| --- | --- | --- |
+| Runtime/movement/zone | PASS84 | backend-integration.log |
+| Outbox/ticket unit | PASS52 | backend-integration.log |
+| Hồi quy UDP/JWT/phòng | PASS132 | backend-integration.log |
+| Dual transport/Auto/TLS rejection | PASS44 | merged-dual.log |
+| Socket gameplay UDP, WebSocket, mixed | PASS8 mỗi lượt | merged-gameplay-*.json |
+| HTTP/Mongo thật: JWT thiếu/sai/hết hạn, owner/quota/rate, Guest/account ticket/history, idempotence/conflict | PASS33 | api-integration.json |
+| Docker10 phiên gameplay, chặn phiên11, input≥28,5Hz/client và snapshot coherent | PASS5 | docker-gameplay-Mixed.json |
+| Docker HTTP/restart | PASS8 +3 | docker-http.json, docker-restart.json |
+| DB outage/recovery | PASS:503 rồi200, dữ liệu còn | db-restart.json |
+| HTTPS Caddy: health, internal block, Swagger auth, exact game route | PASS6 | caddy-checks.json |
+| Unity EditMode/PlayMode | PASS 137/5 | unity-editmode.json, unity-playmode.json |
+| Windows build | PASS, 0 error/0 warning | unity-build.json |
+| Hai Unity player: view/move/bo/HP/result/replay/Guest/history | PASS cả hai;900 snapshot/client; vòng2 | accepted-A/B.json và ảnh |
+| Hai PC vật lý / AWS Phase2 /50 phiên gameplay | NOT_TESTED | Không có lượt tương ứng |
+
+Lượt history FAIL trước sửa được giữ trong final-A/B.json; kết luận dùng accepted-A/B.json sau sửa. Không đổi một lượt lỗi thành PASS.
+
 
 ### Chức năng/JWT AWS
 
@@ -199,6 +260,13 @@ Lỗi harness được giữ: This command cannot be run due to the error: The o
 
 ## 5. Diễn giải và giới hạn
 
+### Giới hạn Phase2
+
+Đây là gameplay tối thiểu có movement/collision và bo, chưa có combat vũ khí/inventory/hazard/FOW đầy đủ; kills bằng0. Unity chỉ nghiệm thu UDP; WSS/Auto/prediction/reconciliation/interpolation đầy đủ còn thuộc MOV-02/03. Chưa có killcam UI-03 hoặc toàn bộ UI-02. Hai process cùng Windows có thể dùng chung Guest DPAPI; kiểm hai Guest cùng tên nhưng credential khác dùng bài HTTP riêng. Chưa kết luận sức chứa gameplay50 người, độ mượt WAN hoặc độ trễ Sydney từ lượt Local này.
+
+
+### Giới hạn của bài ping/pong cũ
+
 Đã xác nhận **ít nhất 50 phiên mạng, chia 5 phòng**, trên t3.small trong bài ping/pong 30Hz co-located. Không thử cao hơn, không tìm giới hạn cuối và không diễn giải thành 50 người chơi Unity mượt.
 
 Đường quản trị SSM/HTTPS API hoạt động; UDP public từ PC chưa thông. Chạy generator trong EC2 kiểm được backend khi mạng chặn, không sửa kết nối game từ lớp. Cần mạng cho UDP hoặc thiết kế transport/overlay riêng để nghiệm thu chơi online từ PC.
@@ -214,6 +282,15 @@ WSS là đường TCP/TLS có thứ tự; mất gói có thể gây chờ các m
 
 ## 6. Phương án chọn và lý do
 
+### Kết luận phương án Phase2
+
+**Chọn giữ10 người/phòng,5 phòng/tổng50 slot; đưa SRV-03, NET-02, ZON-01 sang tích hợp Local với demo UDP.** Lý do: đúng phạm vi lớp học, backend và Unity đã hoàn tất vòng trận với Guest/history, có test slot/transport/persistence, giữ các contract để dev combat/UI tiếp tục. Đây là hạn mức vận hành, không phải công bố benchmark tối đa mới.
+
+Đợt này hoàn thành trên Local; không tự nâng cấu hình hoặc deploy AWS. Trước nghiệm thu chơi online cần release riêng và hai PC thật; sau khi có combat/snapshot phức tạp phải đo lại hiệu năng.
+
+
+### Quyết định trước Phase 2
+
 Giữ **10 người/phòng, 5 phòng gồm mặc định, tổng 50 active/pending; mỗi user tối đa 2 phòng thêm**, mã tạo thêm 6 ký tự. Chưa thay đổi chính sách sau bài kết nối mới; việc còn thiếu là đường mạng PC→EC2 và nghiệm thu hai PC thật. Tạo/list/xóa cần login và JWT hợp lệ; join UDP public vẫn RoomCode.
 
 Phù hợp lớp khoảng 10 người và cho các nhóm/dev test song song; local và phép đo backend EC2 đã có bằng chứng 5×10. Không tăng lên 6 phòng/60 từ source snapshot local vì chưa đo AWS tương ứng và gameplay sẽ phát sinh tải mới. 50 là hạn mức backend chọn hiện tại, không phải lời hứa sức chứa gameplay.
@@ -226,6 +303,16 @@ Chọn **10 người/phòng, 5 phòng gồm mặc định, tổng 50 active/pend
 
 
 ## 7. Bằng chứng, chi phí và chạy lại
+
+### Bằng chứng Phase2 và bàn giao
+
+- [Archive](phase2-evidence.zip), [SHA256](phase2-evidence.zip.sha256), [CSV kiểm tra](phase2-checks.csv); metadata cũng nằm trong report.json → phase2. Archive đã kiểm CRC; SHA256 `8c6a937defa0453a17cfd867b63ccee385340687a92f889c1f9aa277e5ac11ad`.
+- [Hướng dẫn chung mục17](../../Phase1_First4Tasks.vi.md#17-phase-2-chạy-trận-guest-safe-zone-và-lịch-sử), [Network Architecture](../../Network_Architecture.vi.md), [Client guide](../../Client_Developer_Guide.vi.md).
+- Giữ một Windows build mới nhất tại `.utmp/phase2/build/Lastaway.exe`. Khi chạy thủ công chọn profile phase2-local và RoomCode của môi trường; không bật cờ phase2Smoke khi chơi bình thường.
+- Không gọi AWS/Start EC2/deploy trong lượt này. EBS của môi trường AWS vẫn có thể phát sinh chi phí riêng. Tài nguyên Docker fixture được đóng sau khi thu bằng chứng; không xóa volume/dev container có sẵn.
+- Bộ kiểm tra/code đã commit trên feature; không push hoặc merge main. Archive lịch sử cũ giữ nguyên.
+- Dọn hai worktree đã tích hợp bằng công cụ orchestrator, thu hồi **1.136.711.793 byte (~1,06 GiB)**. Giữ bản Windows mới nhất và các volume. Lệnh dọn thêm staging/file fixture trong `.utmp/phase2` bị automatic approval review từ chối với “blocked by policy”; nhóm này được giữ nguyên, không dùng cách xóa khác. Xem cleanup-final.json trong archive.
+
 
 ### Toàn bộ các lần bật có kiểm soát
 

@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading.Channels;
 using JungleBackend.Protocol;
+using JungleBackend.Protocol.Gameplay;
 using LiteNetLib.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,31 +16,82 @@ public sealed class WebSocketHost : IAsyncDisposable
 {
     private sealed class Peer(WebSocket socket) : IGamePeer
     {
-        private readonly Channel<byte[]> _send = Channel.CreateBounded<byte[]>(64);
+        private readonly Channel<byte[]> _controlSend = Channel.CreateBounded<byte[]>(64);
+        private byte[]? _pendingSnapshot;
+        private readonly SemaphoreSlim _signal = new(0, int.MaxValue);
         private volatile bool _open = true;
         public readonly CancellationTokenSource Stop = new();
         public string Transport => "Wss";
         public bool IsOpen => _open;
-        public bool TrySend(byte[] packet, bool reliable) => _open && _send.Writer.TryWrite(packet);
+
+        public bool TrySend(byte[] packet, bool reliable) => TrySend(packet, reliable, 0);
+
+        public bool TrySend(byte[] packet, bool reliable, byte channel)
+        {
+            if (!_open) return false;
+            if (reliable || channel == 0)
+            {
+                var written = _controlSend.Writer.TryWrite(packet);
+                if (written) _signal.Release();
+                return written;
+            }
+            else
+            {
+                // Droppable state (30Hz snapshot, channel 1 Unreliable):
+                // Replace pending stale snapshot atomically rather than accumulating in queue.
+                Interlocked.Exchange(ref _pendingSnapshot, packet);
+                _signal.Release();
+                return true;
+            }
+        }
+
         public void Close(string reason)
         {
             if (!_open) return;
-            _send.Writer.TryWrite(NetworkProtocol.StringMessage(NetworkProtocol.JoinRejected, reason).CopyData());
-            _open = false; _send.Writer.TryComplete();
+            _controlSend.Writer.TryWrite(NetworkProtocol.StringMessage(NetworkProtocol.JoinRejected, reason).CopyData());
+            _signal.Release();
+            _open = false;
+            _controlSend.Writer.TryComplete();
         }
-        public void Abort() { _open = false; Stop.Cancel(); _send.Writer.TryComplete(); socket.Abort(); }
+
+        public void Abort()
+        {
+            _open = false;
+            Stop.Cancel();
+            _controlSend.Writer.TryComplete();
+            _signal.Release();
+            socket.Abort();
+        }
+
         public async Task SendLoop()
         {
             try
             {
-                await foreach (var data in _send.Reader.ReadAllAsync(Stop.Token))
+                while (!Stop.Token.IsCancellationRequested && _open)
                 {
-                    using var timeout = CancellationTokenSource.CreateLinkedTokenSource(Stop.Token);
-                    timeout.CancelAfter(TimeSpan.FromSeconds(2));
-                    await socket.SendAsync(data.AsMemory(), WebSocketMessageType.Binary, true, timeout.Token);
+                    await _signal.WaitAsync(Stop.Token);
+
+                    // Drain all reliable control first so control messages are never starved
+                    while (_controlSend.Reader.TryRead(out var controlPacket))
+                    {
+                        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(Stop.Token);
+                        timeout.CancelAfter(TimeSpan.FromSeconds(2));
+                        await socket.SendAsync(controlPacket.AsMemory(), WebSocketMessageType.Binary, true, timeout.Token);
+                    }
+
+                    // Send latest snapshot (if any), skipping older overwritten snapshots
+                    var snapshot = Interlocked.Exchange(ref _pendingSnapshot, null);
+                    if (snapshot is not null)
+                    {
+                        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(Stop.Token);
+                        timeout.CancelAfter(TimeSpan.FromSeconds(2));
+                        await socket.SendAsync(snapshot.AsMemory(), WebSocketMessageType.Binary, true, timeout.Token);
+                    }
                 }
+
                 using var closing = new CancellationTokenSource(TimeSpan.FromSeconds(2));
-                if (socket.State == WebSocketState.Open) await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed", closing.Token);
+                if (socket.State == WebSocketState.Open)
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closed", closing.Token);
             }
             catch (Exception error) when (error is OperationCanceledException or WebSocketException or IOException) { }
             finally { Abort(); }
@@ -123,7 +175,7 @@ public sealed class WebSocketHost : IAsyncDisposable
                         else if (_hub.Join(request!, peer)) _hub.Connected(peer);
                     })) return;
                 }
-                else if (!Post(peer, () => _hub.Receive(peer, packet, true))) return;
+                else if (!Post(peer, () => _hub.Receive(peer, packet, true, true))) return;
             }
         }
         catch (Exception error) when (error is OperationCanceledException or WebSocketException or IOException) { peer.Close("ConnectionTimeout"); }

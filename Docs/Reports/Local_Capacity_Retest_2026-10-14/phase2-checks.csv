@@ -1,0 +1,22 @@
+﻿name,status,count,evidence
+Gameplay UDP,PASS,8,merged-gameplay-Udp.json
+Gameplay WebSocket,PASS,8,merged-gameplay-Wss.json
+Gameplay hỗn hợp,PASS,8,merged-gameplay-Mixed.json
+Runtime / movement / zone,PASS,84,backend-integration.log
+Outbox / ticket unit,PASS,52,backend-integration.log
+Hồi quy UDP/JWT/phòng,PASS,132,backend-integration.log
+Dual transport,PASS,44,merged-dual.log
+Unity EditMode,PASS,137,unity-editmode.json
+Unity PlayMode,PASS,5,unity-playmode.json
+Windows build,PASS,1,unity-build.json
+HTTP + Mongo thực,PASS,33,api-integration.json
+Docker HTTP,PASS,8,docker-http.json
+Caddy HTTPS/TLS,PASS,6,caddy-checks.json
+DB mất kết nối / phục hồi,PASS,3,db-restart.json
+Docker restart giữ account,PASS,3,docker-restart.json
+Unity client A: Guest → trận → history → replay,PASS,1,accepted-A.json
+Unity client B: Guest → trận → history → replay,PASS,1,accepted-B.json
+Docker:10 phiên gameplay / chặn phiên11,PASS,5,docker-gameplay-Mixed.json
+Hai PC vật lý,NOT_TESTED,0,Ngoài lượt nghiệm thu Local này
+Phase2 trên AWS / WSS public,NOT_TESTED,0,Ngoài lượt nghiệm thu Local này
+50 phiên gameplay đồng thời,NOT_TESTED,0,Ngoài lượt nghiệm thu Local này

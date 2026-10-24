@@ -32,6 +32,8 @@ if (publicHosting) builder.WebHost.ConfigureKestrel(options => options.Limits.Ma
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("guest-create", _ => RateLimitPartition.GetFixedWindowLimiter("guests", _ => new FixedWindowRateLimiterOptions { PermitLimit=30, Window=TimeSpan.FromMinutes(1), QueueLimit=0, AutoReplenishment=true }));
+    options.AddPolicy("game-ticket", context => RateLimitPartition.GetFixedWindowLimiter(context.User.FindFirst("sub")?.Value ?? context.Connection.RemoteIpAddress?.ToString() ?? "unknown", _ => new FixedWindowRateLimiterOptions { PermitLimit=120, Window=TimeSpan.FromMinutes(1), QueueLimit=0, AutoReplenishment=true }));
     options.AddPolicy("room-create", context => RateLimitPartition.GetFixedWindowLimiter(
         context.User.FindFirst("sub")?.Value ?? "anonymous", _ => new FixedWindowRateLimiterOptions
         { PermitLimit = 5, Window = TimeSpan.FromMinutes(1), QueueLimit = 0, AutoReplenishment = true }));
@@ -52,10 +54,14 @@ jwt.Validate(); // Dừng sớm khi thiếu secret; không chạy API với key 
 builder.Services.AddSingleton<IMongoClient>(new MongoClient(connection));
 builder.Services.AddSingleton<MongoDbContext>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IGuestRepository, GuestRepository>();
+builder.Services.AddSingleton<IMatchRepository, MatchRepository>();
 builder.Services.AddSingleton<IOptions<JwtOptions>>(Options.Create(jwt));
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<GuestService>();
+builder.Services.AddScoped<IdentityResolver>();
 builder.Services.AddHttpClient<RoomControlClient>(client => client.Timeout = TimeSpan.FromSeconds(5));
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
@@ -64,9 +70,9 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Jungle Maze Account & Rooms API",
+        Title = "Jungle Maze Account, Guests & Rooms API",
         Version = "v1",
-        Description = "Test: register → login → Authorize → POST /api/rooms → join UDP bằng roomCode 6 ký tự. Tối đa 10 người/phòng, 5 phòng gồm mặc định, tổng 50 phiên. Mỗi user tối đa 2 phòng bổ sung."
+        Description = "Test: register → login → Authorize → POST /api/rooms → join UDP bằng roomCode 6 ký tự. Hỗ trợ guest profile qua POST /api/guests, game tickets qua POST /api/game-tickets, và xem lịch sử trận đấu qua GET /api/me/matches."
     });
     options.IncludeXmlComments(typeof(AuthService).Assembly);
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -75,6 +81,13 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer",
         BearerFormat = "JWT",
         Description = "Dán accessToken từ login, không thêm tiền tố Bearer. Swagger tự gửi header Authorization."
+    });
+    options.AddSecurityDefinition("GuestProof", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.ApiKey,
+        In = ParameterLocation.Header,
+        Name = "X-Guest-Credential",
+        Description = "Opaque 256-bit credential từ POST /api/guests. Dùng làm proof cho /api/game-tickets và /api/me/matches."
     });
     options.OperationFilter<BearerSecurityOperationFilter>();
 });
@@ -104,9 +117,17 @@ var app = builder.Build();
 // Tạo unique index trước khi nhận request. Nếu dữ liệu cũ trùng tên, startup báo lỗi,
 // không tự xóa dữ liệu hoặc nhận đăng ký khi chưa bảo đảm tính duy nhất.
 await app.Services.GetRequiredService<IUserRepository>().EnsureIndexesAsync();
+await app.Services.GetRequiredService<IGuestRepository>().EnsureIndexesAsync();
+await app.Services.GetRequiredService<IMatchRepository>().EnsureIndexesAsync();
 
 // Trả lỗi chung thay vì lộ stack trace/connection string cho client.
 app.UseExceptionHandler();
+app.Use(async (context, next) =>
+{
+    try { await next(context); }
+    catch (Exception e) when ((e is MongoException or TimeoutException) && !context.Response.HasStarted)
+    { context.Response.StatusCode=503; await context.Response.WriteAsJsonAsync(new { error="DatabaseUnavailable" }); }
+});
 if (publicHosting)
 {
     // Content-Length cho phép trả 413 sớm, trước JSON formatter hoặc password hashing.

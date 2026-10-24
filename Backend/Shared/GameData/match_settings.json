@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "tickRate": 30,
+  "playerSpeed": 4.0,
+  "playerHp": 100,
+  "playerRadius": 0.4,
+  "inputStaleMs": 250,
+  "mapBounds": {
+    "minX": 0.0,
+    "minY": 0.0,
+    "maxX": 50.0,
+    "maxY": 50.0
+  },
+  "targetMatchDurationSeconds": 420.0,
+  "profiles": {
+    "main": {
+      "minPlayers": 6,
+      "maxPlayers": 10,
+      "lobbyDurationSeconds": 15,
+      "loadingTimeoutSeconds": 30,
+      "disconnectGraceSeconds": 15,
+      "endingDurationSeconds": 10,
+      "zoneTimeScale": 1
+    },
+    "test": {
+      "minPlayers": 2,
+      "maxPlayers": 10,
+      "lobbyDurationSeconds": 0.5,
+      "loadingTimeoutSeconds": 1,
+      "disconnectGraceSeconds": 1,
+      "endingDurationSeconds": 0.5,
+      "zoneTimeScale": 0.04
+    }
+  }
+}

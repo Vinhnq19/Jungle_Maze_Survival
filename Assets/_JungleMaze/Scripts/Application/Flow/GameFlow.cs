@@ -22,6 +22,7 @@ namespace JungleMaze.App.Flow
         private readonly StateMachine _machine = new StateMachine();
         private readonly Action<NetworkStateChanged> _onNetwork;
         private readonly Action<EventPacket> _onGameEvent;
+        public bool ServerDriven { get; private set; }
 
         public GameFlow(IEventBus bus, INetworkClient network, IPacketReceiver packets, ISceneLoader scenes,
             PlayerInputService input, GameFlowSettings settings = null)
@@ -41,6 +42,7 @@ namespace JungleMaze.App.Flow
 
             _onNetwork = e => (_machine.Current as GameState)?.OnNetworkStateChanged(e);
             _onGameEvent = e => (_machine.Current as GameState)?.OnGameEvent(e);
+
         }
 
         public GameFlowSettings Settings { get; }
@@ -54,6 +56,15 @@ namespace JungleMaze.App.Flow
         internal InRoomState InRoom { get; }
         internal InMatchState InMatch { get; }
         internal ResultsState Results { get; }
+
+        /// <summary>Called only after MatchSession rejects stale match packets.</summary>
+        public void ApplyAuthoritativePhase(MatchPhasePacket p)
+        {
+            ServerDriven = true;
+            if (p.Phase == MatchPhase.InGame && _machine.Current != InMatch) Go(InMatch);
+            else if (p.Phase == MatchPhase.Ending && _machine.Current != Results) Go(Results);
+            else if ((p.Phase == MatchPhase.Waiting || p.Phase == MatchPhase.Lobby || p.Phase == MatchPhase.Loading) && _machine.Current != InRoom) Go(InRoom);
+        }
 
         public void Initialize()
         {

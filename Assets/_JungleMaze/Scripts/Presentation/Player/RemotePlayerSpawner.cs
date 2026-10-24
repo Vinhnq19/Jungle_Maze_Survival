@@ -35,6 +35,8 @@ namespace JungleMaze.Presentation.Player
             if (isActiveAndEnabled) Subscribe(); // inject xảy ra sau OnEnable khi scene load
         }
 
+        public PlayerView GetView(byte id) => _views[id];
+
         private void OnEnable() => Subscribe();
 
         private void OnDisable()

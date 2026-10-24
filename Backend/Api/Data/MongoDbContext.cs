@@ -7,6 +7,8 @@ public sealed class MongoDbContext
 {
     public IMongoDatabase Database { get; }
     public IMongoCollection<User> Users { get; }
+    public IMongoCollection<GuestProfile> Guests { get; }
+    public IMongoCollection<MatchRecord> Matches { get; }
 
     public MongoDbContext(IMongoClient client, IConfiguration configuration)
     {
@@ -17,5 +19,7 @@ public sealed class MongoDbContext
         // Tái sử dụng MongoClient singleton và connection pool; không tạo client cho mỗi request.
         Database = client.GetDatabase(databaseName);
         Users = Database.GetCollection<User>("users");
+        Guests = Database.GetCollection<GuestProfile>("guests");
+        Matches = Database.GetCollection<MatchRecord>("matches");
     }
 }

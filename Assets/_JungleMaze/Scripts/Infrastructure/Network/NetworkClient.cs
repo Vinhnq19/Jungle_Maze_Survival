@@ -22,7 +22,7 @@ namespace JungleMaze.Infrastructure.Network
     /// Toàn bộ callback chạy trong Tick() (PollEvents ở main thread, UnsyncedEvents = false).
     /// Không tự reconnect: lỗi mạng/capacity hiện rõ bằng state Failed + DisconnectReason.
     /// </summary>
-    public sealed class NetworkClient : INetworkClient, IPacketSender, IPacketReceiver, ITickable, IDisposable
+    public sealed class NetworkClient : INetworkClient, IPacketSender, IPacketReceiver, IMatchConnection, ITickable, IDisposable
     {
         private const int PingIntervalMs = 1000;
         private const int DisconnectTimeoutMs = 5000;
@@ -64,6 +64,21 @@ namespace JungleMaze.Infrastructure.Network
         public string PlayerId { get; private set; }
         public string Endpoint { get; private set; } = "";
         public int LocalPort => _manager?.LocalPort ?? 0;
+
+        public Guid AttemptId { get; private set; }
+        public ConnectRequest LastRequest => _request;
+        private Guid _resumeForNextConnect;
+
+        public void Resume(Guid proof)
+        {
+            if (proof == Guid.Empty || (State != NetworkState.Failed && State != NetworkState.Disconnected)) return;
+            var old = _request;
+            var c = old.Config;
+            if (c == null) return;
+            _resumeForNextConnect = proof;
+            var upgraded = new JungleMaze.App.Config.ClientConfig(c.Mode, c.ApiBaseUrl, c.GameServerHost, c.GameServerPort, c.AuthMode, NetworkProtocol.Version3, c.ConnectTimeoutMs, c.Transport, c.Source);
+            Connect(new ConnectRequest(upgraded, old.RoomCode, old.DisplayName, old.AccessToken));
+        }
 
         public NetworkStats Stats
         {
@@ -119,9 +134,10 @@ namespace JungleMaze.Infrastructure.Network
             NetDataWriter connectData;
             try
             {
-                var attemptId = config.ProtocolVersion == NetworkProtocol.LatestVersion ? Guid.NewGuid() : Guid.Empty;
+                AttemptId = config.ProtocolVersion >= NetworkProtocol.LatestVersion ? Guid.NewGuid() : Guid.Empty;
                 connectData = NetworkProtocol.WriteConnect(config.AuthMode, request.RoomCode, name,
-                    config.ProtocolVersion, attemptId);
+                    config.ProtocolVersion, AttemptId, _resumeForNextConnect);
+                _resumeForNextConnect = Guid.Empty;
             }
             catch (ArgumentException e) { FailBeforeStart(DisconnectReason.InvalidConfig, e.Message); return; }
 
@@ -156,7 +172,7 @@ namespace JungleMaze.Infrastructure.Network
         public void Disconnect()
         {
             if (_manager == null) { if (State == NetworkState.Failed) SetState(NetworkState.Disconnected, LastReason); return; }
-            StopTransport();
+            StopTransport(true);
             SetState(NetworkState.Disconnected, DisconnectReason.UserRequested);
         }
 
@@ -208,7 +224,7 @@ namespace JungleMaze.Infrastructure.Network
             _disposed = true;
             if (_manager != null)
             {
-                StopTransport();
+                StopTransport(true);
                 SetState(NetworkState.Disconnected, DisconnectReason.UserRequested);
             }
         }
@@ -267,7 +283,7 @@ namespace JungleMaze.Infrastructure.Network
             // Unreliable luôn tới channel 0 nên nhận dạng frame gameplay bằng marker, ở mọi channel.
             if (PacketRegistry.IsFrame(reader))
             {
-                if (State != NetworkState.Joined || !_registry.TryReadFrame(reader)) _invalidPackets++;
+                if (reader.AvailableBytes > 4096 || (method == DeliveryMethod.ReliableOrdered && channel != GameplayProtocol.GameplayChannel) || State != NetworkState.Joined || !_registry.TryReadFrame(reader)) _invalidPackets++;
                 return;
             }
             if (channel != GameplayProtocol.ControlChannel) { _invalidPackets++; return; }
@@ -348,11 +364,11 @@ namespace JungleMaze.Infrastructure.Network
             _bus.Publish(new NetworkStateChanged(previous, next, reason));
         }
 
-        private void StopTransport()
+        private void StopTransport(bool explicitQuit = false)
         {
             if (_manager == null) return;
             _closing = true;
-            try { _manager.Stop(); } // Stop gửi disconnect cho server để trả slot ngay.
+            try { if (explicitQuit && _peer != null) _peer.Disconnect(new byte[] { NetworkProtocol.ExplicitQuit }); _manager.Stop(); } // Stop gửi disconnect cho server để trả slot ngay.
             finally
             {
                 _closing = false;
