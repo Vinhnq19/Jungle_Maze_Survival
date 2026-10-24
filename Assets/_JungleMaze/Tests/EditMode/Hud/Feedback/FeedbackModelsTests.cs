@@ -76,6 +76,12 @@ namespace JungleMaze.Tests.Hud.Feedback
             var output=new DangerBannerOutput{Warning=new DangerWarning(1,DangerKind.FusedBomb,1.5f,1.5f,true,7,7),HasDirection=true,Compass=5,Distance=4};
             Assert.AreEqual("! Bom nổ sau 2s · hướng Tây Nam, 4 ô",new string(b,0,HudFeedbackFormat.Banner(b,output)));
         }
+        [Test] public void Danger_NewActiveWarningEvictsOldGhostWhenSnapshotCapacityIsFull()
+        {
+            var m=new DangerFeedback(T);for(var wave=0;wave<2;wave++)for(var i=0;i<16;i++){var id=wave*16+i;m.Upsert(new DangerWarning(id,DangerKind.FusedBomb,1,1,false,0,0));m.Remove(id,true);}
+            m.Upsert(new DangerWarning(99,DangerKind.FusedBomb,.1f,.1f,false,0,0));m.Tick(0,false,default,null);
+            m.Tick(.5f,false,default,null);Assert.True(m.Banner.Visible);Assert.AreEqual(99,m.Banner.Warning.Id);
+        }
         [Test] public void Models_TickDoesNotAllocate()
         {
             var h=new HitMarkerFeedback(T);h.Add(HitTargetKind.Hero);h.Tick(.01f);var p=new PickupFeed(T);p.Add(new ItemPickup("A","A",1));p.Tick(.01f);var a=new DamageArcFeedback(T);a.Add(new DamageTaken(true,0));a.Tick(.01f);

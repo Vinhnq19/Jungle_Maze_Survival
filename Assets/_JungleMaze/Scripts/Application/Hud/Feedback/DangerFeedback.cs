@@ -20,7 +20,9 @@ namespace JungleMaze.App.Hud.Feedback
         public DangerFeedback(HudFeedbackTuning tuning){_t=tuning;}
         public void Upsert(in DangerWarning warning)
         {
-            var index=IndexOf(warning.Id);if(index<0){if(_count==_items.Length)return;index=_count++;_items[index]=new Entry{Order=_sequence++};}
+            var index=IndexOf(warning.Id);if(index<0){
+                if(_count==_items.Length){var ghost=-1;for(var i=0;i<_count;i++)if(_items[i].Ghost&&(ghost<0||_items[i].Order<_items[ghost].Order))ghost=i;if(ghost<0)return;RemoveAt(ghost);}
+                index=_count++;_items[index]=new Entry{Order=_sequence++};}
             var e=_items[index];e.Warning=warning;e.Age=0;e.Ghost=false;_items[index]=e;
         }
         public void SyncSnapshot(in DangerWarning warning){var i=IndexOf(warning.Id);if(i>=0){var e=_items[i];e.Warning=warning;_items[i]=e;}}
