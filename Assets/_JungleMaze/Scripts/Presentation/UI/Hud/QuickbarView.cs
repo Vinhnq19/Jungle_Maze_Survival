@@ -87,7 +87,7 @@ namespace JungleMaze.Presentation.UI.Hud
             var view = GetSlotView(index);
             if (view == null) return;
             var sprite = _icons != null && itemId != null ? _icons.GetIcon(itemId) : null;
-            view.Show(label, count, countLength, visual, sprite);
+            view.Show(label, count, countLength, visual, sprite, itemId != null);
         }
 
         private void MarkStripDirty()

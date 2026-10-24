@@ -25,8 +25,11 @@ namespace JungleMaze.Presentation.UI.Hud
         private HudPalette _palette = HudPalette.Default;
         private Sprite _placeholderIcon;
         private bool _hasPlaceholder;
+        private bool _hasItem;
 
         public SlotVisual Visual { get; private set; } = SlotVisual.Empty;
+        /// <summary>False when the slot holds nothing (an empty slot can still be Selected).</summary>
+        public bool HasItem => _hasItem;
         public Image Background => background;
         public Image Border => border;
         public TMP_Text KeyLabel => keyLabel;
@@ -47,13 +50,17 @@ namespace JungleMaze.Presentation.UI.Hud
             if (keyLabel != null) keyLabel.text = key;
         }
 
-        /// <summary>Shows an item. <paramref name="iconSprite"/> null keeps the placeholder square.</summary>
-        public void Show(string label, char[] count, int countLength, SlotVisual visual, Sprite iconSprite)
+        /// <summary>
+        /// Shows a slot. <paramref name="hasItem"/> false means the slot holds nothing (it may still be Selected);
+        /// <paramref name="iconSprite"/> null keeps the placeholder square.
+        /// </summary>
+        public void Show(string label, char[] count, int countLength, SlotVisual visual, Sprite iconSprite, bool hasItem)
         {
+            _hasItem = hasItem;
             if (nameLabel != null && !string.Equals(nameLabel.text, label)) nameLabel.text = label;
             if (countLabel != null)
             {
-                var showCount = countLength > 0 && visual != SlotVisual.Empty;
+                var showCount = countLength > 0 && hasItem && visual != SlotVisual.Empty;
                 if (countLabel.enabled != showCount) countLabel.enabled = showCount;
                 if (showCount) countLabel.SetCharArray(count, 0, countLength);
             }
@@ -69,6 +76,8 @@ namespace JungleMaze.Presentation.UI.Hud
         {
             Visual = visual;
             var empty = visual == SlotVisual.Empty;
+            // A selected slot with nothing in it keeps the amber frame but shows no item: dim icon, no name.
+            var noItem = empty || !_hasItem;
             if (background != null)
             {
                 background.enabled = !empty;
@@ -84,15 +93,15 @@ namespace JungleMaze.Presentation.UI.Hud
                 CapturePlaceholder();
                 var placeholder = icon.sprite == _placeholderIcon;
                 var color = placeholder ? _palette.IconPlaceholder : Color.white;
-                if (empty) color.a *= 0.35f;
+                if (noItem) color.a *= 0.35f;
                 icon.color = color;
             }
             if (nameLabel != null)
             {
-                nameLabel.enabled = !empty;
+                nameLabel.enabled = !noItem;
                 nameLabel.color = _palette.Text;
             }
-            if (countLabel != null && empty) countLabel.enabled = false;
+            if (countLabel != null && noItem) countLabel.enabled = false;
         }
 
         /// <summary>The sprite set on the prefab is the placeholder square; remember it before any icon replaces it.</summary>
