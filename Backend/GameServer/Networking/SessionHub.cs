@@ -2,7 +2,9 @@ using System.Diagnostics;
 using GameServer.Configuration;
 using GameServer.Diagnostics;
 using GameServer.Rooms;
+using GameServer.Simulation;
 using JungleBackend.Protocol;
+using JungleBackend.Protocol.Gameplay;
 using LiteNetLib.Utils;
 
 namespace GameServer.Networking;
@@ -36,43 +38,273 @@ public sealed class SessionHub
     private readonly Dictionary<IGamePeer, Session> _sessions = new();
     private readonly Dictionary<string, Session> _users = new(StringComparer.Ordinal);
     private readonly Dictionary<Guid, Attempt> _attempts = new();
+    private readonly Dictionary<string, Session> _heldSessions = new(StringComparer.Ordinal);
+    private readonly HashSet<RoomManager.Room> _hookedRooms = new();
+    private readonly PacketRegistry _gameplayRegistry = new();
+    private readonly PacketRegistry _frameValidator = new();
     private int _nextId;
+
     public RoomManager Rooms { get; }
     public RoomCommands Commands { get; } = new();
-    public int ReservedPeers => _sessions.Count;
+    public int ReservedPeers => _sessions.Count + _heldSessions.Count;
     public int ActivePeers => _sessions.Values.Count(s => s.PlayerId is not null);
     public int PendingPeers => ReservedPeers - ActivePeers;
+
     public SessionHub(ServerOptions options, ServerMetrics metrics)
     {
         _options = options; _metrics = metrics;
         _handshake = new(options); Rooms = new(options);
+        // First parse with inert handlers: malformed trailing bytes cannot partially mutate a match.
+        _frameValidator.Subscribe<ClientHelloPacket>(_ => { });
+        _frameValidator.Subscribe<LoadAckPacket>(_ => { });
+        _frameValidator.Subscribe<MatchInputPacket>(_ => { });
+        _frameValidator.Subscribe<PlayerLeavePacket>(_ => { });
+        _frameValidator.Subscribe<ReplayAckPacket>(_ => { });
+        _frameValidator.Subscribe<SnapshotAckPacket>(_ => { });
+        _frameValidator.Subscribe<AttachIdentityPacket>(_ => { });
+        SetupGameplaySubscriptions();
+        Rooms.RoomCreated += HookRoom;
+        HookRoomMatches();
     }
+
+    private void HookRoomMatches()
+    {
+        foreach (var room in Rooms.AllRooms)
+        {
+            HookRoom(room);
+        }
+    }
+
+    private void HookRoom(RoomManager.Room room)
+    {
+        if (!_hookedRooms.Add(room)) return;
+
+        room.Match.SnapshotGenerated += bytes =>
+        {
+            List<IGamePeer>? slowPeers = null;
+            foreach (var session in _sessions.Values)
+            {
+                if (session.Room == room && session.PlayerId is not null)
+                {
+                    if (!session.Peer.TrySend(bytes, false, GameplayProtocol.GameplayChannel))
+                    {
+                        slowPeers ??= new List<IGamePeer>();
+                        slowPeers.Add(session.Peer);
+                    }
+                }
+            }
+
+            if (slowPeers != null)
+            {
+                foreach (var peer in slowPeers)
+                {
+                    peer.Close("SlowConsumer");
+                    Disconnect(peer);
+                }
+            }
+        };
+
+        room.Match.ReliableBroadcast += bytes =>
+        {
+            List<IGamePeer>? slowPeers = null;
+            foreach (var session in _sessions.Values)
+            {
+                if (session.Room == room && session.PlayerId is not null)
+                {
+                    if (!session.Peer.TrySend(bytes, true, GameplayProtocol.GameplayChannel))
+                    {
+                        slowPeers ??= new List<IGamePeer>();
+                        slowPeers.Add(session.Peer);
+                    }
+                }
+            }
+
+            if (slowPeers != null)
+            {
+                foreach (var peer in slowPeers)
+                {
+                    peer.Close("SlowConsumer");
+                    Disconnect(peer);
+                }
+            }
+        };
+
+        room.Match.PlayerDropped += playerId =>
+        {
+            foreach (var session in _sessions.Values.ToArray())
+            {
+                if (session.PlayerId == playerId)
+                {
+                    session.Peer.Close("LoadingTimeout");
+                    Disconnect(session.Peer);
+                }
+            }
+            ReleaseHeldSession(playerId);
+        };
+
+        room.Match.GraceExpired += playerId =>
+        {
+            ReleaseHeldSession(playerId);
+        };
+
+        room.Match.ResumeTokenRotated += (sessionId, netId, newToken) =>
+        {
+            foreach (var session in _sessions.Values)
+            {
+                if (session.Room == room && session.PlayerId == sessionId)
+                {
+                    var resumePacket = new ResumeTokenPacket
+                    {
+                        MatchId = room.Match.MatchId,
+                        NetId = netId,
+                        ResumeToken = newToken
+                    };
+                    var writer = new NetDataWriter();
+                    PacketRegistry.BeginFrame(writer);
+                    _gameplayRegistry.Write(writer, ref resumePacket);
+                    session.Peer.TrySend(writer.CopyData(), true, GameplayProtocol.GameplayChannel);
+                }
+            }
+        };
+    }
+
+    private void SetupGameplaySubscriptions()
+    {
+        _gameplayRegistry.Subscribe<ClientHelloPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            if (packet.ProtocolVersion != MatchProtocol.Version || !packet.Ready) return;
+
+            // Register entity ONLY on valid ClientHello(ProtocolVersion=MatchProtocol.Version,Ready=true)
+            if (!session.Room.Match.TryRegisterPlayer(session.PlayerId, session.Request.DisplayName, out _))
+            {
+                return;
+            }
+
+            session.Room.Match.SetPlayerReady(session.PlayerId);
+
+            // Send initial phase, roster, and resume proof
+            SendInitialState(session);
+        });
+
+        _gameplayRegistry.Subscribe<LoadAckPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            session.Room.Match.SetPlayerLoaded(session.PlayerId, packet.MatchId);
+        });
+
+        // Process ONLY match-scoped input; do not trust unscoped PlayerInput
+        _gameplayRegistry.Subscribe<MatchInputPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            session.Room.Match.ProcessInput(session.PlayerId, packet);
+        });
+
+        _gameplayRegistry.Subscribe<PlayerLeavePacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            session.Room.Match.ProcessLeave(session.PlayerId, packet.MatchId);
+            ReleaseHeldSession(session.PlayerId);
+        });
+
+        _gameplayRegistry.Subscribe<ReplayAckPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            session.Room.Match.ProcessReplayAck(session.PlayerId, packet.MatchId);
+        });
+
+        _gameplayRegistry.Subscribe<SnapshotAckPacket, Session>((_, _) => { });
+    }
+
+    private void SendInitialState(Session session)
+    {
+        var match = session.Room.Match;
+        var phase = match.GetPhasePacket();
+        var roster = match.GetRosterPacket();
+
+        var writer = new NetDataWriter();
+        PacketRegistry.BeginFrame(writer);
+        _gameplayRegistry.Write(writer, ref phase);
+        _gameplayRegistry.Write(writer, ref roster);
+
+        if (match.Entities.TryGetBySession(session.PlayerId!, out var entity) && entity != null)
+        {
+            var resume = new ResumeTokenPacket
+            {
+                MatchId = match.MatchId,
+                NetId = entity.NetId,
+                ResumeToken = entity.ResumeToken
+            };
+            _gameplayRegistry.Write(writer, ref resume);
+        }
+
+        session.Peer.TrySend(writer.CopyData(), true, GameplayProtocol.GameplayChannel);
+    }
+
     public string? Validate(JoinRequest request, string transport)
     {
         var invalid = _handshake.ValidateRequest(request);
         if (invalid is not null) return invalid;
-        if (request.Version == NetworkProtocol.LatestVersion && request.AttemptId == Guid.Empty) return "MalformedRequest";
-        if (transport == "Wss" && request.Version != NetworkProtocol.LatestVersion) return "UnsupportedVersion";
+        if (request.Version is (NetworkProtocol.LatestVersion or NetworkProtocol.Version3) && request.AttemptId == Guid.Empty) return "MalformedRequest";
+        if (transport == "Wss" && request.Version is not (NetworkProtocol.LatestVersion or NetworkProtocol.Version3)) return "UnsupportedVersion";
         var room = Rooms.Find(request.RoomCode);
         if (room is null) return "InvalidRoomCode";
+
+        // Resume handling: validate alive/unexpired token BEFORE capacity
+        if (request.ResumeToken != Guid.Empty)
+        {
+            if (room.Match.Phase != MatchPhase.InGame)
+                return "InvalidResumeToken";
+
+            if (!room.Match.IsValidResumeToken(request.ResumeToken, out _))
+                return "InvalidResumeToken";
+
+            // Valid resume: slot already reserved/held, bypass capacity check
+            return null;
+        }
+
+        // Freeze roster Loading; late joins Loading/InGame/Ending denied
+        if (room.Match.Phase is MatchPhase.Loading or MatchPhase.InGame or MatchPhase.Ending or MatchPhase.Cleanup)
+        {
+            return "MatchInProgress";
+        }
+
         if (request.AttemptId != Guid.Empty && _attempts.TryGetValue(request.AttemptId, out var previous))
         {
-            // Unpredictable nonce binds ONLY one initial connection attempt, not account ownership.
-            // A retired UDP attempt can finish via WSS; an active application cannot be taken over.
             if (previous.Request.RoomCode != request.RoomCode || previous.Request.DisplayName != request.DisplayName
                 || previous.Request.Mode != request.Mode || previous.Committed || previous.WssChosen || transport != "Wss")
                 return "AttemptUsed";
-            if (previous.Current is not null) return null; // Transfer the same slot, even if room is full.
+            if (previous.Current is not null) return null; // Transfer same slot
         }
         if (request.AttemptId != Guid.Empty && !_attempts.ContainsKey(request.AttemptId) && _attempts.Count >= 4096)
             return "ServerBusy";
         return Rooms.CapacityError(room);
     }
+
     public bool Join(JoinRequest request, IGamePeer peer)
     {
         var invalid = Validate(request, peer.Transport);
         if (invalid is not null) { Reject(peer, invalid); return false; }
         var room = Rooms.Find(request.RoomCode)!;
+
+        // Check if resuming an existing held session
+        if (request.ResumeToken != Guid.Empty && room.Match.IsValidResumeToken(request.ResumeToken, out var resumeEntity) && resumeEntity != null)
+        {
+            if (!_heldSessions.Remove(resumeEntity.PlayerSessionId, out var heldSession))
+            { Reject(peer, "InvalidResumeToken"); return false; }
+            if (!room.Match.TryResume(heldSession.PlayerId!, request.ResumeToken, out _, out _))
+            { _heldSessions[heldSession.PlayerId!] = heldSession; Reject(peer, "InvalidResumeToken"); return false; }
+            if (heldSession.Request.AttemptId != Guid.Empty && _attempts.TryGetValue(heldSession.Request.AttemptId, out var oldAttempt))
+            { oldAttempt.Current = null; oldAttempt.RetiredAt = Stopwatch.GetTimestamp(); }
+            heldSession.Peer = peer;
+            heldSession.Request = request;
+            heldSession.LastMessage = Stopwatch.GetTimestamp();
+            _sessions.Add(peer, heldSession);
+            _users[heldSession.PlayerId!] = heldSession;
+            _attempts[request.AttemptId] = new(request) { Current = heldSession, PlayerId = heldSession.PlayerId, Committed = true };
+            return true;
+        }
+
         Attempt? attempt = null;
         if (request.AttemptId != Guid.Empty)
         {
@@ -82,7 +314,6 @@ public sealed class SessionHub
         }
         if (attempt?.Current is { } old)
         {
-            // Detach the old route FIRST. Its delayed disconnect/packets cannot release the new route.
             _sessions.Remove(old.Peer);
             var previousPeer = old.Peer;
             old.Peer = peer;
@@ -99,16 +330,26 @@ public sealed class SessionHub
         if (playerId is not null && _options.Mode == JoinAuthMode.Jwt) _users[playerId] = session;
         return true;
     }
+
     public void Connected(IGamePeer peer)
     {
         if (!_sessions.TryGetValue(peer, out var session)) return;
-        if (session.PlayerId is not null) Accept(session);
+        if (session.PlayerId is not null)
+        {
+            Accept(session);
+
+            if (session.Request.ResumeToken != Guid.Empty)
+                SendInitialState(session);
+            // Do NOT register entity here: entity registration occurs ONLY upon ClientHelloPacket
+        }
         else Send(session, new[] { NetworkProtocol.AuthRequired }, true);
     }
+
     public void Receive(IGamePeer peer, byte[] packet, bool reliable, bool validChannel = true)
     {
         if (!_sessions.TryGetValue(peer, out var session)) return;
         var reader = new NetDataReader(packet);
+
         if (session.PlayerId is null)
         {
             if (Stopwatch.GetElapsedTime(session.LastMessage).TotalMilliseconds >= _options.AuthTimeoutMs) { Reject(peer, "AuthTimeout"); return; }
@@ -120,43 +361,92 @@ public sealed class SessionHub
             if (_users.ContainsKey(playerId)) { Reject(peer, "DuplicateSession"); return; }
             _users.Add(playerId, session); session.PlayerId = playerId;
             if (session.Request.AttemptId != Guid.Empty) _attempts[session.Request.AttemptId].PlayerId = playerId;
-            Rooms.Activate(session.Room, session.Id); Accept(session); return;
+            Rooms.Activate(session.Room, session.Id);
+            Accept(session); return;
         }
-        if (!validChannel || peer.Transport == "Udp" && reliable || !NetworkProtocol.TryRead(reader, NetworkProtocol.Ping, out var sequence))
+
+        // Gameplay frame check: begins with FrameMarker (0x80)
+        if (PacketRegistry.IsFrame(reader))
+        {
+            if (!validChannel || packet.Length > 4096 || !_frameValidator.TryReadFrame(new NetDataReader(packet)))
+            { _metrics.RecordInvalidPacket(); return; }
+            session.LastMessage = Stopwatch.GetTimestamp();
+            session.ApplicationSeen = true;
+            if (session.Request.AttemptId != Guid.Empty) _attempts[session.Request.AttemptId].Committed = true;
+            _gameplayRegistry.TryReadFrame(reader, session);
+            return;
+        }
+
+        if (!validChannel || (peer.Transport == "Udp" && reliable) || !NetworkProtocol.TryRead(reader, NetworkProtocol.Ping, out var sequence))
         { _metrics.RecordInvalidPacket(); return; }
+
         session.LastMessage = Stopwatch.GetTimestamp(); session.ApplicationSeen = true;
         if (session.Request.AttemptId != Guid.Empty) _attempts[session.Request.AttemptId].Committed = true;
         var pong = new NetDataWriter(); NetworkProtocol.Write(pong, NetworkProtocol.Pong, sequence);
         Send(session, pong.CopyData(), false); _metrics.RecordPing();
     }
+
     private void Accept(Session session)
     {
         Send(session, NetworkProtocol.StringMessage(NetworkProtocol.JoinAccepted, session.PlayerId!).CopyData(), true);
         Console.WriteLine($"[joined] playerId={session.PlayerId} roomId={session.Room.Id} transport={session.Peer.Transport} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
     }
-    private void Send(Session session, byte[] packet, bool reliable)
+
+    private void Send(Session session, byte[] packet, bool reliable, byte channel = 0)
     {
-        if (!session.Peer.TrySend(packet, reliable)) { session.Peer.Close("SlowConsumer"); Disconnect(session.Peer); }
+        if (!session.Peer.TrySend(packet, reliable, channel)) { session.Peer.Close("SlowConsumer"); Disconnect(session.Peer); }
     }
+
     public void Reject(IGamePeer peer, string reason)
     {
         peer.Close(reason); Disconnect(peer); RecordReject(reason);
     }
+
     public void RecordReject(string reason)
     {
         _metrics.RecordRejection(); Console.WriteLine($"[rejected] reason={reason} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
     }
+
+    public void Quit(IGamePeer peer)
+    {
+        if (_sessions.TryGetValue(peer, out var session) && session.PlayerId is not null)
+            session.Room.Match.ProcessLeave(session.PlayerId, session.Room.Match.MatchId);
+        Disconnect(peer);
+    }
+
     public void Disconnect(IGamePeer peer)
     {
         if (!_sessions.Remove(peer, out var session)) return;
-        Rooms.Release(session.Room, session.Id);
+
+        if (session.PlayerId is not null && session.Room.Match.Phase == MatchPhase.InGame &&
+            session.Room.Match.Entities.TryGetBySession(session.PlayerId, out var entity) && entity is { IsAlive: true })
+        {
+            // Disconnect in game preserves character + slot for 15s grace
+            session.Room.Match.MarkDisconnected(session.PlayerId);
+            _heldSessions[session.PlayerId] = session;
+            if (_users.GetValueOrDefault(session.PlayerId) == session) _users.Remove(session.PlayerId);
+            return;
+        }
+
+        Rooms.Release(session.Room, session.Id, session.PlayerId);
         if (session.PlayerId is not null && _users.GetValueOrDefault(session.PlayerId) == session) _users.Remove(session.PlayerId);
         if (session.Request.AttemptId != Guid.Empty)
         {
-            var attempt = _attempts[session.Request.AttemptId];
+            if (!_attempts.TryGetValue(session.Request.AttemptId, out var attempt)) return;
             attempt.Current = null; attempt.RetiredAt = Stopwatch.GetTimestamp();
         }
     }
+
+    private void ReleaseHeldSession(string playerId)
+    {
+        if (_heldSessions.Remove(playerId, out var held))
+        {
+            held.Room.Peers.Remove(held.Id);
+            if (_users.GetValueOrDefault(playerId) == held) _users.Remove(playerId);
+            if (held.Room.Peers.Count == 0) held.Room.EmptySince = DateTimeOffset.UtcNow;
+        }
+    }
+
     public void Poll()
     {
         Commands.Drain(Rooms); Rooms.ExpireEmpty();
@@ -171,10 +461,26 @@ public sealed class SessionHub
         }
         foreach (var id in _attempts.Where(a => a.Value.Current is null && Stopwatch.GetElapsedTime(a.Value.RetiredAt, now).TotalSeconds >= 30).Select(a => a.Key).ToArray())
             _attempts.Remove(id);
+
+        // Expire dead / finished held sessions
+        foreach (var (pid, held) in _heldSessions.ToArray())
+        {
+            if (!held.Room.Match.Entities.TryGetBySession(pid, out var e) || e is null || !e.IsAlive || held.Room.Match.Phase != MatchPhase.InGame)
+            {
+                ReleaseHeldSession(pid);
+            }
+        }
     }
+
+    public void Tick(double dt)
+    {
+        Rooms.Tick(dt);
+    }
+
     public void CloseAll()
     {
         foreach (var peer in _sessions.Keys.ToArray()) { peer.Close("ServerStopping"); Disconnect(peer); }
+        _heldSessions.Clear();
         _attempts.Clear();
     }
 }
