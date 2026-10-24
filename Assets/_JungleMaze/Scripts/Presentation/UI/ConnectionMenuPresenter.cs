@@ -16,6 +16,7 @@ namespace JungleMaze.Presentation.UI
     /// </summary>
     public sealed class ConnectionMenuPresenter : IInitializable, IDisposable
     {
+        private readonly Action _beforeDisconnect;
         private readonly IConfigProvider _config;
         private readonly ConnectToServerUseCase _connect;
         private readonly INetworkClient _network;
@@ -25,8 +26,9 @@ namespace JungleMaze.Presentation.UI
         private readonly Action<ConnectionError> _onError;
 
         public ConnectionMenuPresenter(IConfigProvider config, ConnectToServerUseCase connect, INetworkClient network,
-            GameFlow flow, IEventBus bus)
+            GameFlow flow, IEventBus bus, Action beforeDisconnect = null)
         {
+            _beforeDisconnect = beforeDisconnect;
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _connect = connect ?? throw new ArgumentNullException(nameof(connect));
             _network = network ?? throw new ArgumentNullException(nameof(network));
@@ -108,7 +110,7 @@ namespace JungleMaze.Presentation.UI
             if (result == null && RequiresLogin) Status = "Đang đăng nhập...";
         }
 
-        public void Disconnect() => _network.Disconnect();
+        public void Disconnect() { _beforeDisconnect?.Invoke(); _network.Disconnect(); }
 
         private void LoadFromConfig()
         {

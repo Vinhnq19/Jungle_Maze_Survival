@@ -59,7 +59,7 @@ namespace JungleMaze.App.Config
                 return "gameServerHost phải là IP/hostname, không có http:// hoặc port.";
             if (GameServerPort < 1 || GameServerPort > 65535)
                 return "gameServerPort phải nằm trong [1, 65535].";
-            if (ProtocolVersion != NetworkProtocol.Version && ProtocolVersion != NetworkProtocol.LatestVersion)
+            if (ProtocolVersion != NetworkProtocol.Version && ProtocolVersion != NetworkProtocol.LatestVersion && ProtocolVersion != NetworkProtocol.Version3)
                 return $"protocolVersion chỉ hỗ trợ {NetworkProtocol.Version} hoặc {NetworkProtocol.LatestVersion}.";
             if (Transport != "Udp")
                 return "Unity client hiện chỉ hỗ trợ transport=Udp (Wss/Auto chưa triển khai).";

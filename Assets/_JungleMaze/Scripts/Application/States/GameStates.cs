@@ -136,6 +136,7 @@ namespace JungleMaze.App.States
 
         public override void Tick(float deltaTime)
         {
+            if (Flow.ServerDriven) return; // Ending/replay duration belongs to the authoritative server.
             _remaining -= deltaTime;
             if (_remaining <= 0f) Flow.Go(Flow.InRoom);
         }

@@ -34,6 +34,7 @@ key="$(openssl rand -base64 48 | tr -d '\n')"
   printf "SWAGGER_USER='%s'\nSWAGGER_HASH='%s'\nJWT_SIGNING_KEY='%s'\n" "$admin" "$hash" "$key"
   printf "AUTH_MODE='RoomCode'\nROOM_CODE='%s'\n" "$room"
   printf "ROOM_CONTROL_TOKEN='%s'\n" "$(openssl rand -hex 32)"
+  printf "MATCH_RESULT_TOKEN='%s'\n" "$(openssl rand -hex 32)"
 } > "$CONFIG_FILE"
 chmod 600 "$CONFIG_FILE"
 python3 - "$ROOT/client.aws.json" "$domain" <<'PY'

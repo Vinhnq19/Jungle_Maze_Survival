@@ -44,7 +44,8 @@ namespace JungleMaze.Tests.Config
         {
             Assert.IsNotNull(Config(port: 0).Validate());
             Assert.IsNotNull(Config(port: 70000).Validate());
-            Assert.IsNotNull(Config(version: 3).Validate());
+            Assert.IsNull(Config(version: 3).Validate());
+            Assert.IsNotNull(Config(version: 4).Validate());
             Assert.IsNotNull(Config(timeout: 100).Validate());
             StringAssert.Contains("Udp", Config(transport: "Wss").Validate());
         }

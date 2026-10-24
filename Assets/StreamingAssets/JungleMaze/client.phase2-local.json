@@ -1,0 +1,9 @@
+{
+  "mode": "Local",
+  "apiBaseUrl": "http://127.0.0.1:5000",
+  "gameServerHost": "127.0.0.1",
+  "gameServerPort": 7777,
+  "authMode": "RoomCode",
+  "protocolVersion": 3,
+  "connectTimeoutMs": 5000
+}

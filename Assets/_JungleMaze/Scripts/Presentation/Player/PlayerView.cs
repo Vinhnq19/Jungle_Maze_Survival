@@ -22,7 +22,16 @@ namespace JungleMaze.Presentation.Player
         {
             _model = model;
             _snapNext = true;
-            if (body != null) body.color = Color.HSVToRGB(model.NetId * 0.1f % 1f, 0.6f, 1f);
+            if (body != null)
+            {
+                body.color = Color.HSVToRGB(model.NetId * 0.1f % 1f, 0.6f, 1f);
+                // Built-in UI sprites have a very small native size. Match the server's 0.8-cell diameter.
+                if (body.sprite != null)
+                {
+                    var size = body.sprite.bounds.size;
+                    if (size.x > 0 && size.y > 0) body.transform.localScale = new Vector3(.8f / size.x, .8f / size.y, 1);
+                }
+            }
             Refresh();
         }
 

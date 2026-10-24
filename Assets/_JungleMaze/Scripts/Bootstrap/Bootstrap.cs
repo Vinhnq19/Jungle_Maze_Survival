@@ -1,6 +1,7 @@
 using System;
 using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.Flow;
+using JungleMaze.App.Match;
 using JungleMaze.App.Network;
 using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
@@ -77,6 +78,10 @@ namespace JungleMaze.Composition
             _registry.Register(packets);
             _registry.Register(network);
             _registry.Register<INetworkClient>(network);
+            _registry.Register<IMatchConnection>(network);
+            _registry.Register<IClientRuntimeData>(new ClientRuntimeData(Application.streamingAssetsPath));
+            var history = new GuestHistoryClient(new GuestCredentialStore(Application.persistentDataPath));
+            _registry.Register<IPlayerHistory>(history);
             _registry.Register<IPacketSender>(network);
             _registry.Register<IPacketReceiver>(network);
             _registry.Register<IAuthApi>(new AuthApiClient(_log));
@@ -94,13 +99,17 @@ namespace JungleMaze.Composition
             _registry.Register(input);
             _registry.Register(new WorldSyncService(network, bus, players));
             _registry.Register(connect);
+            var match = new MatchSession(network, network, network, bus, players);
+            match.PhaseUpdated += flow.ApplyAuthoritativePhase;
+            _registry.Register(match);
+            _registry.Register(new GuestHistoryCoordinator(config, network, history, match, bus));
 
             // Presentation (presenter đăng ký trước GameFlow để nhận AppScreenChanged ngay từ Boot)
-            _registry.Register(new ConnectionMenuPresenter(config, connect, network, flow, bus));
+            _registry.Register(new ConnectionMenuPresenter(config, connect, network, flow, bus, match.Leave));
             _registry.Register(flow);
 
             tickRunner.Add(pool);
-            tickRunner.Add(input);
+            tickRunner.Add(match); // Match-scoped input replaces the local foundation sender in network demo.
             tickRunner.Add(flow);
             _registry.InitializeAll();
 
@@ -108,6 +117,8 @@ namespace JungleMaze.Composition
             Attach<NetworkManager>();
             Attach<ConnectionMenuView>();
             Attach<NetworkStatsOverlay>();
+            Attach<MatchDemoView>();
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-phase2Smoke") >= 0) Attach<Phase2DemoProbe>();
             _log.Info("[Bootstrap] Đã nối service.");
         }
 
