@@ -1,6 +1,10 @@
 using System;
 using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.Flow;
+using JungleMaze.App.Hud.State;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+using JungleMaze.App.Hud.Mocks;
+#endif
 using JungleMaze.App.Network;
 using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
@@ -17,6 +21,7 @@ using JungleMaze.Infrastructure.Pooling;
 using JungleMaze.Infrastructure.Scenes;
 using JungleMaze.Infrastructure.Ticking;
 using JungleMaze.Presentation.UI;
+using JungleMaze.Presentation.UI.Hud;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -84,6 +89,27 @@ namespace JungleMaze.Composition
             _registry.Register<ITickScheduler>(tickRunner);
             _registry.Register<IPoolService>(pool);
 
+            // HUD state (UI-01): HUD reads the three ports, data owners write through the writer ports.
+            var hudState = new HudStateStore(bus, balance, _log);
+            var inventoryState = new InventoryStateStore(bus, balance, _log);
+            var effectState = new EffectStateStore(bus);
+            _registry.Register<IHudState>(hudState);
+            _registry.Register<IHudStateWriter>(hudState);
+            _registry.Register<IInventoryState>(inventoryState);
+            _registry.Register<IInventoryStateWriter>(inventoryState);
+            _registry.Register<IEffectState>(effectState);
+            _registry.Register<IEffectStateWriter>(effectState);
+            _registry.Register<IItemIconProvider>(new NullItemIconProvider()); // ART-04 thay bằng provider thật
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            var hudMock = new MockHudState(hudState, balance);
+            var inventoryMock = new MockInventoryState(inventoryState, balance);
+            var effectMock = new MockEffectState(effectState);
+            _registry.Register(hudMock);
+            _registry.Register(inventoryMock);
+            _registry.Register(effectMock);
+            _registry.Register(new HudMockScenarios(hudMock, inventoryMock, effectMock));
+#endif
+
             // Domain + Application
             var players = new PlayerRegistry();
             var input = new PlayerInputService(network);
@@ -102,12 +128,16 @@ namespace JungleMaze.Composition
             tickRunner.Add(pool);
             tickRunner.Add(input);
             tickRunner.Add(flow);
+            tickRunner.Add(effectState);
             _registry.InitializeAll();
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
             Attach<NetworkManager>();
             Attach<ConnectionMenuView>();
             Attach<NetworkStatsOverlay>();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            Attach<HudDebugPanel>();
+#endif
             _log.Info("[Bootstrap] Đã nối service.");
         }
 
