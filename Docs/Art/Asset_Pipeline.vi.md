@@ -13,6 +13,11 @@ Figma page `Lastaway v3 — Art directions` (node `51:2`) có 3 hướng. Mỗi 
 | **A · Rừng Pixel** | `51:3` | [A_jungle_pixel.png](directions/A_jungle_pixel.png) | Pixel 16-bit, khung gỗ khắc có viền sáng, thanh chia khúc. Khớp "2D Pixel Art" trong GDD | Pixelify Sans | Point, không nén |
 | **B · Btooom Tác chiến** | `51:451` | [B_btooom_tactical.png](directions/B_btooom_tactical.png) | Kính tối, viền cyan mảnh, góc ngoặc, cam cho bom. Gần anime Btooom! | Rubik Bold | Bilinear |
 | **C · Đảo phiêu lưu** | `51:849` | [C_island_adventure.png](directions/C_island_adventure.png) | Hoạt hình vẽ tay, giấy da, viền nâu dày, bo tròn, bóng đổ. Vui nhộn, dễ đọc | Baloo 2 ExtraBold | Bilinear |
+| **D · Đền rừng cổ** | `56:2` | [D_jungle_temple.png](directions/D_jungle_temple.png) | Theo Core Keeper (Steam): đền cổ phủ rêu, ánh đuốc ấm, viền tối; UI đá khắc viền vàng, ngọc phát sáng, minimap tròn vòng đá | Pixelify Sans | Point (pixel) hoặc Bilinear |
+| **E · Hoạt hình sáng** | `57:2` | [E_bright_cartoon.png](directions/E_bright_cartoon.png) | Theo Super Animal Royale (Steam, battle royale 2D top-down): màu tươi, nét mực đậm, bóng cứng kiểu sticker, UI trắng bo dày | Baloo 2 ExtraBold | Bilinear |
+| **F · Mực vẽ tay** | `58:2` | [F_ink_handdrawn.png](directions/F_ink_handdrawn.png) | Theo Don't Starve Together (Steam): mực vẽ tay, sepia u tối, bụi gai, lửa trại; huy hiệu tim tròn, khe hơi nghiêng | Be Vietnam Pro ExtraBold Italic | Bilinear |
+
+D, E, F là đợt 2, chi tiết hơn: có ánh sáng, viền tối, icon vật phẩm dạng nét và minimap tròn. Đây là các hướng được đề xuất mạnh nhất.
 
 Chữ tiếng Việt ở cả ba hướng vẫn dùng **Be Vietnam Pro**, vì các font số/tiêu đề không đủ dấu tiếng Việt. Khi đã chọn hướng: cập nhật `HudPalette` (màu) và style guide `39:3`, rồi sinh asset theo mục 3.
 
