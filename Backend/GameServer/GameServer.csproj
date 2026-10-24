@@ -10,6 +10,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <Compile Include="../Shared/RoomContracts.cs" Link="Rooms/RoomContracts.cs" />
+    <Compile Include="../Shared/MatchResultContracts.cs" Link="Shared/MatchResultContracts.cs" />
     <PackageReference Include="LiteNetLib" Version="2.1.4" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.7.3" />
     <Compile Include="../Shared/Protocol/**/*.cs" LinkBase="Protocol" />

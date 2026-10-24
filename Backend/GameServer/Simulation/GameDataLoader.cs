@@ -10,7 +10,7 @@ public static class GameDataLoader
             foreach(var file in new[]{"map_demo.json","match_settings.json","zone_schedule.json"})
             {
                 hash.AppendData(System.Text.Encoding.UTF8.GetBytes(file));
-                hash.AppendData(System.Text.Encoding.UTF8.GetBytes(ReadGameDataFile(file)));
+                hash.AppendData(System.Text.Encoding.UTF8.GetBytes(ReadGameDataFile(file).Replace("\r\n", "\n")));
             }
             return Convert.ToHexString(hash.GetHashAndReset()).ToLowerInvariant();
         }

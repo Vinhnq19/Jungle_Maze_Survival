@@ -5,6 +5,8 @@ using GameServer.Rooms;
 using GameServer.Simulation;
 using JungleBackend.Protocol;
 using JungleBackend.Protocol.Gameplay;
+using JungleBackend.Rooms;
+using JungleBackend.Shared;
 using LiteNetLib.Utils;
 
 namespace GameServer.Networking;
@@ -20,6 +22,7 @@ public sealed class SessionHub
         public JoinRequest Request = request;
         public RoomManager.Room Room = room;
         public string? PlayerId = playerId;
+        public string? ProfileKey;
         public long LastMessage = Stopwatch.GetTimestamp();
         public bool ApplicationSeen;
     }
@@ -32,6 +35,15 @@ public sealed class SessionHub
         public bool Committed;
         public long RetiredAt;
     }
+
+    private sealed record RegisteredTicket(
+        string Ticket,
+        Guid AttemptId,
+        string RoomCode,
+        string ProfileKey,
+        DateTimeOffset ExpiresUtc
+    );
+
     private readonly ServerOptions _options;
     private readonly ServerMetrics _metrics;
     private readonly HandshakeValidator _handshake;
@@ -39,6 +51,7 @@ public sealed class SessionHub
     private readonly Dictionary<string, Session> _users = new(StringComparer.Ordinal);
     private readonly Dictionary<Guid, Attempt> _attempts = new();
     private readonly Dictionary<string, Session> _heldSessions = new(StringComparer.Ordinal);
+    private readonly Dictionary<string, RegisteredTicket> _tickets = new(StringComparer.Ordinal);
     private readonly HashSet<RoomManager.Room> _hookedRooms = new();
     private readonly PacketRegistry _gameplayRegistry = new();
     private readonly PacketRegistry _frameValidator = new();
@@ -48,6 +61,7 @@ public sealed class SessionHub
     public RoomCommands Commands { get; } = new();
     public int ReservedPeers => _sessions.Count + _heldSessions.Count;
     public int ActivePeers => _sessions.Values.Count(s => s.PlayerId is not null);
+    public int PendingTickets => _tickets.Count;
     public int PendingPeers => ReservedPeers - ActivePeers;
 
     public SessionHub(ServerOptions options, ServerMetrics metrics)
@@ -181,6 +195,11 @@ public sealed class SessionHub
                 return;
             }
 
+            if (session.ProfileKey != null)
+            {
+                session.Room.Match.TryAttachProfile(session.PlayerId, session.ProfileKey);
+            }
+
             session.Room.Match.SetPlayerReady(session.PlayerId);
 
             // Send initial phase, roster, and resume proof
@@ -189,7 +208,7 @@ public sealed class SessionHub
 
         _gameplayRegistry.Subscribe<LoadAckPacket, Session>((packet, session) =>
         {
-            if (session.PlayerId is null) return;
+            if (session.PlayerId is null || !packet.Ready) return;
             session.Room.Match.SetPlayerLoaded(session.PlayerId, packet.MatchId);
         });
 
@@ -214,6 +233,21 @@ public sealed class SessionHub
         });
 
         _gameplayRegistry.Subscribe<SnapshotAckPacket, Session>((_, _) => { });
+
+        // Gameplay identity attachment via single-use registered ticket
+        _gameplayRegistry.Subscribe<AttachIdentityPacket, Session>((packet, session) =>
+        {
+            if (string.IsNullOrEmpty(packet.Ticket)) return;
+            if (!_tickets.TryGetValue(packet.Ticket, out var ticket)) return;
+            if (DateTimeOffset.UtcNow >= ticket.ExpiresUtc || session.Request.AttemptId == Guid.Empty || session.Request.AttemptId != ticket.AttemptId) return;
+            if (!string.Equals(ticket.RoomCode, session.Room.Code, StringComparison.Ordinal)) return;
+            if (session.Room.Match.Phase is not (MatchPhase.Waiting or MatchPhase.Lobby)) return;
+            if (session.ProfileKey != null && !string.Equals(session.ProfileKey, ticket.ProfileKey, StringComparison.Ordinal)) return;
+            // Registration is not proof of possession; consume only after the matching gameplay request.
+            if (session.PlayerId != null && session.Room.Match.Entities.TryGetBySession(session.PlayerId, out _) && !session.Room.Match.TryAttachProfile(session.PlayerId, ticket.ProfileKey)) return;
+            _tickets.Remove(packet.Ticket);
+            session.ProfileKey = ticket.ProfileKey;
+        });
     }
 
     private void SendInitialState(Session session)
@@ -239,6 +273,38 @@ public sealed class SessionHub
         }
 
         session.Peer.TrySend(writer.CopyData(), true, GameplayProtocol.GameplayChannel);
+    }
+
+    public RoomResult RegisterTicket(RegisterGameTicketCommand command)
+    {
+        if (string.IsNullOrEmpty(command.Ticket) || command.Ticket.Length > 64)
+            return new(400, new RoomError("InvalidTicket"));
+        if (command.AttemptId == Guid.Empty)
+            return new(400, new RoomError("InvalidAttemptId"));
+        if (string.IsNullOrEmpty(command.RoomCode))
+            return new(400, new RoomError("InvalidRoomCode"));
+        if (string.IsNullOrEmpty(command.ProfileKey) || command.ProfileKey.Length > 80 || command.ProfileKey.Any(char.IsControl))
+            return new(400, new RoomError("InvalidProfileKey"));
+
+        var utc = DateTimeOffset.UtcNow;
+        if (command.ExpiresUtc <= utc || command.ExpiresUtc > utc.AddSeconds(35)) return new(400, new RoomError("InvalidTicketExpiry"));
+        if (_tickets.ContainsKey(command.Ticket)) return new(409, new RoomError("TicketAlreadyRegistered"));
+        var room = Rooms.Find(command.RoomCode);
+        if (room is null)
+            return new(404, new RoomError("RoomNotFound"));
+
+        if (_tickets.Count >= 4096)
+        {
+            var nowUtc = DateTimeOffset.UtcNow;
+            foreach (var key in _tickets.Where(t => t.Value.ExpiresUtc <= nowUtc).Select(t => t.Key).ToArray())
+                _tickets.Remove(key);
+            if (_tickets.Count >= 4096)
+                return new(503, new RoomError("ServerBusy"));
+        }
+
+        _tickets[command.Ticket] = new(command.Ticket, command.AttemptId, command.RoomCode, command.ProfileKey, command.ExpiresUtc);
+
+        return new(200, new { status = "registered" });
     }
 
     public string? Validate(JoinRequest request, string transport)
@@ -442,6 +508,8 @@ public sealed class SessionHub
         if (_heldSessions.Remove(playerId, out var held))
         {
             held.Room.Peers.Remove(held.Id);
+            if (held.Request.AttemptId != Guid.Empty && _attempts.TryGetValue(held.Request.AttemptId, out var retired))
+            { retired.Current=null; retired.RetiredAt=Stopwatch.GetTimestamp(); }
             if (_users.GetValueOrDefault(playerId) == held) _users.Remove(playerId);
             if (held.Room.Peers.Count == 0) held.Room.EmptySince = DateTimeOffset.UtcNow;
         }
@@ -450,6 +518,7 @@ public sealed class SessionHub
     public void Poll()
     {
         Commands.Drain(Rooms); Rooms.ExpireEmpty();
+        _hookedRooms.RemoveWhere(room => Rooms.Find(room.Code) != room);
         var now = Stopwatch.GetTimestamp();
         foreach (var session in _sessions.Values.ToArray())
         {
@@ -470,6 +539,13 @@ public sealed class SessionHub
                 ReleaseHeldSession(pid);
             }
         }
+
+        // Clean expired tickets
+        var utcNow = DateTimeOffset.UtcNow;
+        foreach (var (tKey, tVal) in _tickets.ToArray())
+        {
+            if (utcNow > tVal.ExpiresUtc) _tickets.Remove(tKey);
+        }
     }
 
     public void Tick(double dt)
@@ -482,5 +558,6 @@ public sealed class SessionHub
         foreach (var peer in _sessions.Keys.ToArray()) { peer.Close("ServerStopping"); Disconnect(peer); }
         _heldSessions.Clear();
         _attempts.Clear();
+        _tickets.Clear();
     }
 }
