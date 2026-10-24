@@ -1,4 +1,4 @@
-Proposed only; not applied. Requires approval because MapGridView belongs to the map module.
+Approved by the user on 24/10/2026: "Cho phép nối ground H tối thiểu". Implementation and QA pending.
 
 --- a/Assets/_JungleMaze/Scripts/Presentation/World/MapGridView.cs
 +++ b/Assets/_JungleMaze/Scripts/Presentation/World/MapGridView.cs

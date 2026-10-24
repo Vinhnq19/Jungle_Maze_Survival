@@ -28,14 +28,12 @@ UI dùng bố cục và nội dung Figma, giữ màu ngữ nghĩa, khung mỏng 
 - Không chạy test Unity vì chỉ tạo file demo trong Docs/Art và Tools/Art. Không coi ảnh concept là bằng chứng QA/ảnh Game view.
 - Không đánh dấu dòng manifest nào done và không chọn H vào Asset_Pipeline.vi.md khi chưa có quyết định của người dùng.
 
-## Việc tiếp theo
-
 ## Tiến độ triển khai P0
 
 - `911ddcbd`: thay sprite P0; EditMode 193/193, PlayMode 19/20 rồi sửa assertion border 10→24 theo manifest và test lỗi chạy lại 1/1. Job thật lưu tại `Docs/Reports/Art-H_2026-10-24/P0_test_jobs.json`.
 - Review phát hiện bàn giao gọi `Cell48.png` là ground nhưng `MapGridView` tự sinh nền; Cell48 thực tế là mask dùng chung của obstacle/probe. Màu xanh trên mask gây nhân tint ngoài dự kiến.
 - `d860ceee`: phục hồi Cell48 trắng; tách `Ground96.png` và đổi manifest `world_ground` sang asset mới, trạng thái **review**. Năm asset HUD/Hero còn lại đã thay; ground chưa được renderer map dùng, không coi hoàn tất.
-- Đã trình người dùng móc nối tối thiểu ở [H_Ground_Integration.patch](H_Ground_Integration.patch), đang chờ cho phép chạm vùng map của Hào. Chưa áp patch hay sửa scene.
+- Người dùng đã duyệt trực tiếp [H_Ground_Integration.patch](H_Ground_Integration.patch): "Cho phép nối ground H tối thiểu" (24/10/2026). Dev được thêm field Sprite tuỳ chọn chỉ cho floor, gán Game/HudPreview, giữ walls/collider/balance và ownership của tài nguyên procedural. Chờ commit triển khai và QA trước khi coi ground hoàn tất.
 
 ## Tiếp tục UI-01
 
