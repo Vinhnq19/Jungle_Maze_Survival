@@ -13,6 +13,7 @@ namespace JungleMaze.Presentation.UI.Hud
     {
         [SerializeField] private Image background;
         [SerializeField] private Image border;
+        [SerializeField] private Image inUseFrame;
         [SerializeField] private Image icon;
         [SerializeField] private TMP_Text keyLabel;
         [SerializeField] private TMP_Text countLabel;
@@ -35,10 +36,13 @@ namespace JungleMaze.Presentation.UI.Hud
         public TMP_Text KeyLabel => keyLabel;
         public TMP_Text CountLabel => countLabel;
         public TMP_Text NameLabel => nameLabel;
+        public Image InUseFrame=>inUseFrame;
+        public void SetInUse(bool inUse){if(inUseFrame!=null)inUseFrame.enabled=inUse;}
 
         public void ApplyPalette(HudPalette palette)
         {
             _palette = palette;
+            if(inUseFrame!=null)inUseFrame.color=palette.Amber;
             if (keyLabel != null) keyLabel.color = palette.Faint;
             if (countLabel != null) countLabel.color = palette.Text;
             SetVisual(Visual);

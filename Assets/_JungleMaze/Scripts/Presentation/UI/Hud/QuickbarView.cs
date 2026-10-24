@@ -9,11 +9,12 @@ namespace JungleMaze.Presentation.UI.Hud
     /// Quick bar (Figma 41:115): held-weapon strip (name, ammo, "R Nạp" hint; auto-sized and centred by its layout
     /// group) and the 4 + 4 slots.
     /// </summary>
-    public sealed class QuickbarView : MonoBehaviour, IQuickbarView
+    public sealed class QuickbarView : MonoBehaviour, IQuickbarView, IQuickbarFeedbackHooks
     {
         private static readonly string[] KeyNames = { "1", "2", "3", "4", "5", "6", "7", "8" };
 
         [SerializeField] private RectTransform weaponStrip;
+        [SerializeField] private CanvasGroup weaponStripGroup;
         [SerializeField] private Graphic weaponStripBackground;
         [SerializeField] private TMP_Text weaponName;
         [SerializeField] private GameObject ammo;
@@ -33,6 +34,8 @@ namespace JungleMaze.Presentation.UI.Hud
         public GameObject ReloadHint => reloadHint;
         public QuickbarSlotView GetSlotView(int index) => slots != null && index >= 0 && index < slots.Length ? slots[index] : null;
         public int SlotViewCount => slots != null ? slots.Length : 0;
+        public void SetWeaponStripVisible(bool visible){if(weaponStripGroup!=null)weaponStripGroup.alpha=visible?1:0;}
+        public void SetSlotInUse(int index,bool inUse){var slot=GetSlotView(index);if(slot!=null)slot.SetInUse(inUse);}
 
         private void Awake()
         {

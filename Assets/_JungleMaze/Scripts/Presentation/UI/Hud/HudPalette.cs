@@ -34,6 +34,9 @@ namespace JungleMaze.Presentation.UI.Hud
         public Color Grid;
         /// <summary>Icon placeholder square until ART-04 provides sprites.</summary>
         public Color IconPlaceholder;
+        public Color Green;
+        public Color HitMarker;
+        public Color DangerFill;
 
         /// <summary>Style guide v2 hex values plus the T5 proposals.</summary>
         public static HudPalette Default => new HudPalette
@@ -53,7 +56,10 @@ namespace JungleMaze.Presentation.UI.Hud
             Trail = Hex(0xE5, 0x48, 0x4D, 0.35f),
             SelectedFill = Hex(0xF2, 0xA3, 0x3A, 0.25f),
             Grid = Hex(0x34, 0x50, 0x3F, 0.60f),
-            IconPlaceholder = Hex(0x6E, 0x80, 0x70)
+            IconPlaceholder = Hex(0x6E, 0x80, 0x70),
+            Green = Hex(0x5D, 0xD3, 0x9E),
+            HitMarker = Color.white,
+            DangerFill = Hex(0xE5, 0x48, 0x4D, 0.15f)
         };
 
         private static Color Hex(byte r, byte g, byte b, float alpha = 1f) => new Color(r / 255f, g / 255f, b / 255f, alpha);
