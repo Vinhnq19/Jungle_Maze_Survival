@@ -7,6 +7,8 @@ namespace JungleMaze.App.Hud.State
     public interface IInventoryState
     {
         event Action<InventoryChange> Changed;
+        event Action<ItemUseStatus> UseChanged;
+        ItemUseStatus Use { get; }
         int WeaponSlotCount { get; }
         int ConsumableSlotCount { get; }
         /// <summary>0..3 weapon slots, 4..7 consumable slots.</summary>
@@ -18,6 +20,9 @@ namespace JungleMaze.App.Hud.State
     public interface IInventoryStateWriter
     {
         void SetWeaponSlot(int index, string weaponId);
+        void BeginUse(int slotIndex, string itemId, float totalSeconds, float remainingSeconds, bool cancellable);
+        void CancelUse(string itemId);
+        void CompleteUse(string itemId);
         /// <summary>count &lt;= 0 empties the slot.</summary>
         void SetConsumableSlot(int index, string equipmentId, int count);
         void SetActiveSlot(int index);

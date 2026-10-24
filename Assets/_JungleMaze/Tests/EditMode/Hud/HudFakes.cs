@@ -84,6 +84,17 @@ namespace JungleMaze.Tests.Hud
     /// <summary>Hand-driven IHudState: tests set fields then call Raise; no store, bus or config involved.</summary>
     public sealed class FakeHudState : IHudState
     {
+        public event Action<ItemPickup> ItemPicked;
+        public event Action<HitDealt> HitDealt;
+        public event Action<DamageTaken> DamageTaken;
+        public event Action<DangerChange> DangerChanged;
+        public readonly DangerList Dangers = new DangerList();
+        public int DangerCount => Dangers.Count;
+        public DangerWarning GetDangerAt(int index) => Dangers.GetAt(index);
+        public void RaisePickup(ItemPickup item) => ItemPicked?.Invoke(item);
+        public void RaiseHit(HitDealt hit) => HitDealt?.Invoke(hit);
+        public void RaiseDamage(DamageTaken damage) => DamageTaken?.Invoke(damage);
+        public void RaiseDanger(DangerChange change) => DangerChanged?.Invoke(change);
         public event Action<HudStateChange> Changed;
         public int Hp { get; set; } = 100;
         public int MaxHp { get; set; } = 100;
@@ -101,6 +112,9 @@ namespace JungleMaze.Tests.Hud
 
     public sealed class FakeInventoryState : IInventoryState
     {
+        public event Action<ItemUseStatus> UseChanged;
+        public ItemUseStatus Use { get; set; }
+        public void RaiseUse(ItemUseStatus use) { Use = use; UseChanged?.Invoke(use); }
         public event Action<InventoryChange> Changed;
         public readonly InventorySlot[] Slots = new InventorySlot[8];
         public int WeaponSlotCount => 4;

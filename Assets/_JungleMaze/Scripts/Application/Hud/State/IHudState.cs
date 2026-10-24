@@ -10,6 +10,12 @@ namespace JungleMaze.App.Hud.State
     public interface IHudState
     {
         event Action<HudStateChange> Changed;
+        event Action<ItemPickup> ItemPicked;
+        event Action<HitDealt> HitDealt;
+        event Action<DamageTaken> DamageTaken;
+        event Action<DangerChange> DangerChanged;
+        int DangerCount { get; }
+        DangerWarning GetDangerAt(int index);
         int Hp { get; }
         int MaxHp { get; }
         GearStatus Armor { get; }
@@ -30,6 +36,11 @@ namespace JungleMaze.App.Hud.State
     public interface IHudStateWriter
     {
         void SetHp(int hp);
+        void NotifyPickup(string itemId, int count);
+        void NotifyHitDealt(HitTargetKind target);
+        void NotifyDamageTaken(bool hasDirection, float directionDegrees);
+        void SetDanger(int id, DangerKind kind, float remainingSeconds, bool hasSource, float sourceX, float sourceY);
+        void ClearDanger(int id);
         /// <summary>Null/empty id = nothing worn.</summary>
         void SetArmor(string equipmentId, float durability);
         /// <summary>Null/empty id = nothing worn.</summary>
