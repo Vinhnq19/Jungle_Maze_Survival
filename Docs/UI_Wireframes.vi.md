@@ -91,4 +91,18 @@ Page `Lastaway v2 — Redesign` (node `39:2`). Nội dung đã viết lại theo
 | Quick bar (vũ khí đang cầm + 8 khe) | 358, 566 | 564 × 130 |
 | Vùng giữa sạch | 320, 180 | 640 × 360 |
 
+### 5.1. HUD phản hồi (UI-01 phần 2, chờ G1)
+
+Frame riêng, không sửa HUD lõi `41:2` đã duyệt: `48:239` ([ảnh](Wireframes/v2/48-239_hud_feedback.png)), bản chú thích `48:461` ([ảnh](Wireframes/v2/48-461_hud_feedback_annotated.png)). Component mới: `EffectChip` (`48:233`, Debuff/Buff) và `PickupToast` (`48:234`).
+
+| Khối | Vị trí trên 1280×720 | Hành vi |
+| --- | --- | --- |
+| Tiến trình dùng đồ | Thay dải vũ khí trong Quick bar: 411,572 · 458×32 | "Đang dùng Lá thần", thanh cam, giây còn lại, "Di chuyển để hủy"; khe đang dùng viền cam |
+| Hiệu ứng đang chịu | 24,466 · 144×58 (ngay trên Vitals) | Ô 40×40, đỏ = bất lợi, xanh lá = có lợi, thanh và giây đếm ngược, tối đa 6 |
+| Nhặt đồ | Góc phải dưới: 1115,564 · 141×132 | Mới nhất ở dưới, tối đa 3 dòng mờ dần, phần dư gộp "+n món khác" |
+| Cảnh báo bom/bẫy | Giữa trên: 490,24 · 301×40 | Nền đỏ nhạt, giây nổ, hướng và khoảng cách; tự ẩn |
+| Hướng nhận sát thương | Cung đỏ trên vòng biên vùng giữa sạch (rx 330, ry 190 quanh tâm) | Chỉ về phía nguồn sát thương, mờ dần |
+| Hướng bom/bẫy ngoài màn | Mũi tên đỏ viền + giây trên cùng vòng đó | Khác cung đặc của sát thương |
+| Hit marker | 4 vạch quanh tâm ngắm | Trắng khi trúng; particle, số sát thương nổi thuộc VFX-01 |
+
 Chưa vẽ trong v2: Cài đặt (UI-03), Theo dõi người chơi (UI-03), Balo (ITM-01), Bản đồ lớn. Màu đang là giá trị hex trong style guide, chưa tạo Figma variables.
