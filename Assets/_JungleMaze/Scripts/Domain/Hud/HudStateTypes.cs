@@ -115,7 +115,14 @@ namespace JungleMaze.Domain.Hud
     public enum EffectKind : byte
     {
         None = 0,
-        Adrenaline = 1
+        Adrenaline = 1,
+        Poison = 2,
+        Slow = 3,
+        Invisible = 4,
+        Stun = 5,
+        Root = 6,
+        Reverse = 7,
+        CcImmune = 8
     }
 
     /// <summary>A status effect currently on the local player.</summary>
