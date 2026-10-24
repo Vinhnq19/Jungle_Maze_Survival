@@ -1,0 +1,26 @@
+[
+  {
+    "key": "Tay không",
+    "path": "<path d=\"M8 19V11Q8 8 11 8V18V6Q11 3 14 4V17V5Q14 2 17 5V18V8Q18 5 21 8V21Q19 28 12 27L5 20Q3 17 6 16Z\" fill=\"#E7D1A3\" stroke=\"#283B2C\" stroke-width=\"1.5\"/>"
+  },
+  {
+    "key": "Nỏ",
+    "path": "<path d=\"M9 25L22 6M6 7Q20 4 26 18M6 7L26 18M15 14L20 5\" fill=\"none\" stroke=\"#E4C890\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M12 21L17 15\" stroke=\"#AE7950\" stroke-width=\"5\"/>"
+  },
+  {
+    "key": "Ná cao su",
+    "path": "<path d=\"M15 28V16L7 7M15 16L24 7\" fill=\"none\" stroke=\"#C49A65\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M7 7Q15 19 24 7\" fill=\"none\" stroke=\"#EBDBB2\" stroke-width=\"2.5\"/>"
+  },
+  {
+    "key": "Lá thần",
+    "path": "<path d=\"M6 25Q3 7 27 4Q29 25 6 25Z\" fill=\"#7BAD69\" stroke=\"#334A34\" stroke-width=\"2\"/><path d=\"M4 29L23 9M11 21V12M15 17L23 17\" fill=\"none\" stroke=\"#DBE5B4\" stroke-width=\"2\" stroke-linecap=\"round\"/>"
+  },
+  {
+    "key": "Máu kỳ lân",
+    "path": "<path d=\"M12 4H21V9L25 15V27H7V15L12 9Z\" fill=\"#D28F9E\" stroke=\"#E9DDBB\" stroke-width=\"2\"/><path d=\"M12 4H21\" stroke=\"#C6AD78\" stroke-width=\"4\"/><path d=\"M12 20H20\" stroke=\"#F6E6DA\" stroke-width=\"2\"/>"
+  },
+  {
+    "key": "Tăng lực",
+    "path": "<path d=\"M11 4H21V10L25 15V28H7V15L11 10Z\" fill=\"#E0BE69\" stroke=\"#F3E6BC\" stroke-width=\"2\"/><path d=\"M17 13L12 21H18L15 26L22 18H16Z\" fill=\"#795A30\"/>"
+  }
+]

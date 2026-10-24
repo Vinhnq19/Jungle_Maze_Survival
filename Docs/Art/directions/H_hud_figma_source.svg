@@ -1,0 +1,397 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="HUD v2 &#194;&#183; Ph&#225;&#186;&#163;n h&#225;&#187;&#147;i (UI-01 ph&#225;&#186;&#167;n 2)" clip-path="url(#clip0_48_239)">
+<rect width="1280" height="720" fill="#1B2B20"/>
+<g id="World (placeholder)" clip-path="url(#clip1_48_239)">
+<rect id="Rectangle" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_2" x="48" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_3" x="96" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_4" x="144" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_5" x="192" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_6" x="240" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_7" x="288" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_8" x="336" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_9" x="384" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_10" x="432" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_11" x="480" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_12" x="528" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_13" x="576" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_14" x="624" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_15" x="672" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_16" x="720" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_17" x="768" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_18" x="816" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_19" x="864" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_20" x="912" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_21" x="960" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_22" x="1008" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_23" x="1056" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_24" x="1104" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_25" x="1152" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_26" x="1200" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_27" x="1248" width="1" height="720" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_28" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_29" y="48" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_30" y="96" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_31" y="144" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_32" y="192" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_33" y="240" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_34" y="288" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_35" y="336" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_36" y="384" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_37" y="432" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_38" y="480" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_39" y="528" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_40" y="576" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_41" y="624" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="Rectangle_42" y="672" width="1280" height="1" fill="#F3EEDB" fill-opacity="0.045"/>
+<rect id="T&#198;&#176;&#225;&#187;&#157;ng th&#195;&#160;nh 1&#195;&#151;4" x="384.5" y="144.5" width="47" height="191" rx="5.5" fill="#2C3F31" stroke="#3E5A47"/>
+<rect id="C&#225;&#187;&#153;t &#196;&#145;&#195;&#161; 1&#195;&#151;2" x="470.5" y="420.5" width="47" height="95" rx="5.5" fill="#2C3F31" stroke="#3E5A47"/>
+<rect id="T&#225;&#186;&#163;ng &#196;&#145;&#195;&#161; 4&#195;&#151;4" x="864.5" y="384.5" width="167" height="167" rx="5.5" fill="#2C3F31" stroke="#3E5A47"/>
+<rect id="T&#198;&#176;&#225;&#187;&#163;ng c&#225;&#187;&#149; 3&#195;&#151;3" x="144.5" y="288.5" width="143" height="143" rx="5.5" fill="#2C3F31" stroke="#3E5A47"/>
+<ellipse id="B&#225;&#187;&#165;i r&#225;&#186;&#173;m" cx="745" cy="190" rx="55" ry="40" fill="#2F5A3A" fill-opacity="0.9"/>
+<ellipse id="B&#225;&#187;&#165;i r&#225;&#186;&#173;m_2" cx="241" cy="212" rx="45" ry="32" fill="#2F5A3A" fill-opacity="0.9"/>
+<circle id="Bo hi&#225;&#187;&#135;n t&#225;&#186;&#161;i (ZON-01)" cx="300" cy="380" r="778.5" stroke="#A274FF" stroke-width="3" stroke-dasharray="14 10"/>
+<g id="&#196;&#144;&#225;&#187;&#145;i th&#225;&#187;&#167;">
+<circle cx="1027" cy="317" r="17" fill="#6B4A4A"/>
+<circle cx="1027" cy="317" r="16" stroke="#E5484D" stroke-opacity="0.6" stroke-width="2"/>
+</g>
+<g id="Hero (MOV-01)">
+<path id="Vector" d="M640 360L666 351" stroke="#1A1206" stroke-width="7" stroke-linecap="round"/>
+<path id="Vector_2" d="M640 378C649.941 378 658 369.941 658 360C658 350.059 649.941 342 640 342C630.059 342 622 350.059 622 360C622 369.941 630.059 378 640 378Z" fill="#E9DFC0" stroke="#1A1206" stroke-width="3"/>
+</g>
+<rect id="Shotgun tr&#195;&#170;n &#196;&#145;&#225;&#186;&#165;t" x="682.5" y="392.5" width="25" height="13" rx="2.5" fill="#C9A15B" stroke="#1A1206"/>
+</g>
+<g id="Killfeed" clip-path="url(#clip2_48_239)">
+<g id="KillfeedRow">
+<rect x="24" y="24" width="106" height="26" rx="6" fill="#15231B" fill-opacity="0.72"/>
+<text id="Killer" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="34" y="41.7775">H&#xe0;o</tspan></text>
+<text id="Weapon" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="67" y="41.41">N&#x1ecf;</tspan></text>
+<text id="Victim" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="90" y="41.7775">Vinh</tspan></text>
+</g>
+<g id="KillfeedRow_2" opacity="0.85">
+<rect x="24" y="56" width="171" height="26" rx="6" fill="#15231B" fill-opacity="0.72"/>
+<text id="Killer_2" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="34" y="73.7775">V&#x169;</tspan></text>
+<text id="Weapon_2" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="57" y="73.41">Shotgun</tspan></text>
+<text id="Victim_2" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="113" y="73.7775">Quang Huy</tspan></text>
+</g>
+<g id="KillfeedRow_3" opacity="0.5">
+<rect x="24" y="88" width="93" height="26" rx="6" fill="#15231B" fill-opacity="0.72"/>
+<text id="Killer_3" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="34" y="105.778">Bo</tspan></text>
+<text id="Weapon_3" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="58" y="105.41">&#xb7;</tspan></text>
+<text id="Victim_3" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="68" y="105.778">V.Huy</tspan></text>
+</g>
+</g>
+<g id="Minimap">
+<g clip-path="url(#clip3_48_239)">
+<rect x="1056" y="24" width="200" height="200" rx="10" fill="#15231B" fill-opacity="0.78"/>
+<rect id="Rectangle_43" x="1096" y="24" width="1" height="200" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_44" x="1056" y="64" width="200" height="1" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_45" x="1136" y="24" width="1" height="200" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_46" x="1056" y="104" width="200" height="1" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_47" x="1176" y="24" width="1" height="200" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_48" x="1056" y="144" width="200" height="1" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_49" x="1216" y="24" width="1" height="200" fill="#F3EEDB" fill-opacity="0.06"/>
+<rect id="Rectangle_50" x="1056" y="184" width="200" height="1" fill="#F3EEDB" fill-opacity="0.06"/>
+<circle id="Bo hi&#225;&#187;&#135;n t&#225;&#186;&#161;i" cx="1150" cy="126" r="87" stroke="#A274FF" stroke-width="2" stroke-dasharray="6 4"/>
+<g id="Bo ti&#225;&#186;&#191;p theo">
+<circle cx="1194" cy="106" r="42" fill="#A274FF" fill-opacity="0.12"/>
+<circle cx="1194" cy="106" r="41.25" stroke="#F3EEDB" stroke-opacity="0.9" stroke-width="1.5"/>
+</g>
+<g id="V&#225;&#187;&#139; tr&#195;&#173; c&#225;&#187;&#167;a b&#225;&#186;&#161;n">
+<path id="Vector_3" d="M1116 155C1118.76 155 1121 152.761 1121 150C1121 147.239 1118.76 145 1116 145C1113.24 145 1111 147.239 1111 150C1111 152.761 1113.24 155 1116 155Z" fill="#F2A33A" stroke="#1A1206" stroke-width="1.5"/>
+<path id="Vector_4" d="M1119 147L1123 145L1121 149L1119 147Z" fill="#F2A33A"/>
+</g>
+</g>
+<rect x="1056.5" y="24.5" width="199" height="199" rx="9.5" stroke="#34503F"/>
+</g>
+<g id="Match status">
+<rect x="1056" y="232" width="200" height="74" rx="10" fill="#15231B" fill-opacity="0.78"/>
+<g id="Zone timer" clip-path="url(#clip4_48_239)">
+<text id="Bo thu sau" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="1068" y="258.778">Bo thu sau</tspan></text>
+<text id="01:24" fill="#A274FF" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="20" font-weight="bold" letter-spacing="0em"><tspan x="1194" y="260.4">01:24</tspan></text>
+</g>
+<g id="Alive" clip-path="url(#clip5_48_239)">
+<text id="C&#195;&#178;n s&#225;&#187;&#145;ng" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="1068" y="288.778">C&#xf2;n s&#x1ed1;ng</tspan></text>
+<text id="7/10" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="20" font-weight="bold" letter-spacing="0em"><tspan x="1200" y="290.4">7/10</tspan></text>
+</g>
+</g>
+<g id="Vitals">
+<rect x="24" y="532" width="296" height="164" rx="10" fill="#15231B" fill-opacity="0.78"/>
+<g id="HP value" clip-path="url(#clip6_48_239)">
+<text id="72" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="34" font-weight="bold" letter-spacing="0em"><tspan x="40" y="577.38">72</tspan></text>
+<text id="/100" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="85" y="576.98">/100</tspan></text>
+</g>
+<g id="HP bar">
+<rect x="40" y="595" width="264" height="12" rx="3" fill="#34503F" fill-opacity="0.7"/>
+<rect id="Fill" x="40" y="595" width="190" height="12" fill="#E5484D"/>
+<rect id="Damage trail" x="230" y="595" width="21" height="12" fill="#E5484D" fill-opacity="0.35"/>
+</g>
+<g id="Gi&#195;&#161;p gai" clip-path="url(#clip7_48_239)">
+<text id="Gi&#195;&#161;p gai_2" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="40" y="628.278">Gi&#xe1;p gai</tspan></text>
+<g id="Gi&#195;&#161;p gai bar">
+<g clip-path="url(#clip8_48_239)">
+<rect x="126" y="620.5" width="140" height="6" rx="3" fill="#34503F" fill-opacity="0.7"/>
+<rect id="Fill_2" x="126" y="620.5" width="84" height="6" fill="#5BB8E8"/>
+</g>
+</g>
+<text id="48" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="276" y="627.98">48</tspan></text>
+</g>
+<g id="M&#197;&#169; g&#225;&#187;&#151;" clip-path="url(#clip9_48_239)">
+<text id="M&#197;&#169; g&#225;&#187;&#151;_2" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="40" y="653.278">M&#x169; g&#x1ed7;</tspan></text>
+<g id="M&#197;&#169; g&#225;&#187;&#151; bar">
+<g clip-path="url(#clip10_48_239)">
+<rect x="126" y="645.5" width="140" height="6" rx="3" fill="#34503F" fill-opacity="0.7"/>
+<rect id="Fill_3" x="126" y="645.5" width="56" height="6" fill="#5BB8E8"/>
+</g>
+</g>
+<text id="12" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="276" y="652.98">12</tspan></text>
+</g>
+<g id="Adrenaline" clip-path="url(#clip11_48_239)">
+<text id="Adrenaline_2" fill="#F5C542" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="40" y="678.278">Adrenaline</tspan></text>
+<g id="Adrenaline bar">
+<g clip-path="url(#clip12_48_239)">
+<rect x="126" y="670.5" width="140" height="6" rx="3" fill="#34503F" fill-opacity="0.7"/>
+<rect id="Fill_4" x="126" y="670.5" width="88" height="6" fill="#F5C542"/>
+</g>
+</g>
+<text id="5s" fill="#F5C542" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="276" y="677.98">5s</tspan></text>
+</g>
+</g>
+<g id="Quick bar" clip-path="url(#clip13_48_239)">
+<g id="Action progress">
+<rect x="411" y="572" width="458" height="32" rx="8" fill="#15231B" fill-opacity="0.9"/>
+<rect x="411.5" y="572.5" width="457" height="31" rx="7.5" stroke="#F2A33A" stroke-opacity="0.6"/>
+<text id="&#196;&#144;ang d&#195;&#185;ng L&#195;&#161; th&#225;&#186;&#167;n" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="426" y="593.145">&#x110;ang d&#xf9;ng L&#xe1; th&#x1ea7;n</tspan></text>
+<g id="Progress">
+<rect x="568" y="585" width="140" height="6" rx="3" fill="#34503F" fill-opacity="0.8"/>
+<rect id="Rectangle_51" x="568" y="585" width="84" height="6" fill="#F2A33A"/>
+</g>
+<text id="1.2s" fill="#F2A33A" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="718" y="592.48">1.2s</tspan></text>
+<text id="Di chuy&#225;&#187;&#131;n &#196;&#145;&#225;&#187;&#131; h&#225;&#187;&#167;y" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="754" y="592.41">Di chuy&#x1ec3;n &#x111;&#x1ec3; h&#x1ee7;y</tspan></text>
+</g>
+<g id="Slots" clip-path="url(#clip14_48_239)">
+<g id="V&#197;&#169; kh&#195;&#173;" clip-path="url(#clip15_48_239)">
+<text id="V&#197;&#168; KH&#195;&#141;" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="bold" letter-spacing="0.1em"><tspan x="473" y="623.042">V&#x168; KH&#xcd;</tspan></text>
+<g id="V&#197;&#169; kh&#195;&#173; slots" clip-path="url(#clip16_48_239)">
+<g id="Slot">
+<rect x="358.5" y="632.5" width="63" height="63" rx="7.5" fill="#15231B" fill-opacity="0.85"/>
+<rect x="358.5" y="632.5" width="63" height="63" rx="7.5" stroke="#34503F"/>
+<rect id="Icon (ART-04)" opacity="0.9" x="376" y="641" width="28" height="28" rx="6" fill="#6E8070"/>
+<text id="Key" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="363" y="644.02">1</tspan></text>
+<text id="Name" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="361.893" y="687.042">Tay kh&#xf4;ng</tspan></text>
+</g>
+<g id="Slot_2">
+<rect x="429" y="633" width="62" height="62" rx="7" fill="#7A4A12" fill-opacity="0.55"/>
+<rect x="429" y="633" width="62" height="62" rx="7" stroke="#F2A33A" stroke-width="2"/>
+<rect id="Icon (ART-04)_2" opacity="0.9" x="446" y="641" width="28" height="28" rx="6" fill="#6E8070"/>
+<text id="Key_2" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="433" y="644.02">2</tspan></text>
+<text id="Name_2" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="452.325" y="687.042">N&#x1ecf;</tspan></text>
+</g>
+<g id="Slot_3">
+<rect x="498.5" y="632.5" width="63" height="63" rx="7.5" fill="#15231B" fill-opacity="0.85"/>
+<rect x="498.5" y="632.5" width="63" height="63" rx="7.5" stroke="#34503F"/>
+<rect id="Icon (ART-04)_3" opacity="0.9" x="516" y="641" width="28" height="28" rx="6" fill="#6E8070"/>
+<text id="Key_3" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="503" y="644.02">3</tspan></text>
+<text id="Name_3" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="503.064" y="687.042">N&#xe1; cao su</tspan></text>
+</g>
+<g id="Slot_4">
+<rect x="568.5" y="632.5" width="63" height="63" rx="7.5" fill="#15231B" fill-opacity="0.45"/>
+<rect x="568.5" y="632.5" width="63" height="63" rx="7.5" stroke="#34503F" stroke-dasharray="4 3"/>
+<rect id="Icon (ART-04)_4" opacity="0.4" x="586" y="641" width="28" height="28" rx="6" fill="#34503F"/>
+<text id="Key_4" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="573" y="644.02">4</tspan></text>
+</g>
+</g>
+</g>
+<g id="D&#198;&#176;&#225;&#187;&#163;c ph&#225;&#186;&#169;m" clip-path="url(#clip17_48_239)">
+<text id="D&#198;&#175;&#225;&#187;&#162;C PH&#225;&#186;&#168;M" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="bold" letter-spacing="0.1em"><tspan x="745" y="623.042">D&#x1af;&#x1ee2;C PH&#x1ea8;M</tspan></text>
+<g id="D&#198;&#176;&#225;&#187;&#163;c ph&#225;&#186;&#169;m slots" clip-path="url(#clip18_48_239)">
+<g id="Slot_5">
+<rect x="649" y="633" width="62" height="62" rx="7" fill="#15231B" fill-opacity="0.85"/>
+<rect x="649" y="633" width="62" height="62" rx="7" stroke="#F2A33A" stroke-width="2"/>
+<rect id="Icon (ART-04)_5" opacity="0.9" x="666" y="641" width="28" height="28" rx="6" fill="#6E8070"/>
+<text id="Key_5" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="653" y="644.02">5</tspan></text>
+<text id="Count" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="693.645" y="644.84">&#xd7;6</tspan></text>
+<text id="Name_4" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="659.23" y="687.042">L&#xe1; th&#x1ea7;n</tspan></text>
+</g>
+<g id="Slot_6">
+<rect x="718.5" y="632.5" width="63" height="63" rx="7.5" fill="#15231B" fill-opacity="0.85"/>
+<rect x="718.5" y="632.5" width="63" height="63" rx="7.5" stroke="#34503F"/>
+<rect id="Icon (ART-04)_6" opacity="0.9" x="736" y="641" width="28" height="28" rx="6" fill="#6E8070"/>
+<text id="Key_6" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="723" y="644.02">6</tspan></text>
+<text id="Count_2" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="765.777" y="644.84">&#xd7;1</tspan></text>
+<text id="Name_5" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="720.958" y="687.042">M&#xe1;u k&#x1ef3; l&#xe2;n</tspan></text>
+</g>
+<g id="Slot_7">
+<rect x="788.5" y="632.5" width="63" height="63" rx="7.5" fill="#15231B" fill-opacity="0.45"/>
+<rect x="788.5" y="632.5" width="63" height="63" rx="7.5" stroke="#34503F" stroke-dasharray="4 3"/>
+<rect id="Icon (ART-04)_7" opacity="0.4" x="806" y="641" width="28" height="28" rx="6" fill="#34503F"/>
+<text id="Key_7" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="793" y="644.02">7</tspan></text>
+</g>
+<g id="Slot_8">
+<rect x="858.5" y="632.5" width="63" height="63" rx="7.5" fill="#15231B" fill-opacity="0.85"/>
+<rect x="858.5" y="632.5" width="63" height="63" rx="7.5" stroke="#34503F"/>
+<rect id="Icon (ART-04)_8" opacity="0.9" x="876" y="641" width="28" height="28" rx="6" fill="#6E8070"/>
+<text id="Key_8" fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="863" y="644.02">8</tspan></text>
+<text id="Count_3" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="903.645" y="644.84">&#xd7;4</tspan></text>
+<text id="Name_6" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="600" letter-spacing="0em"><tspan x="866.754" y="687.042">T&#x103;ng l&#x1ef1;c</tspan></text>
+</g>
+</g>
+</g>
+</g>
+</g>
+<g id="Pickup prompt (t&#225;&#186;&#161;m th&#225;&#187;&#157;i)">
+<rect x="676" y="414" width="141" height="34" rx="6" fill="#15231B" fill-opacity="0.88"/>
+<g id="KeyCap">
+<rect x="686.5" y="419.5" width="23" height="23" rx="3.5" fill="#1F3327"/>
+<rect x="686.5" y="419.5" width="23" height="23" rx="3.5" stroke="#34503F"/>
+<text id="Key_9" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="694" y="435.16">F</tspan></text>
+</g>
+<text id="Nh&#225;&#186;&#183;t Shotgun" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="718" y="435.778">Nh&#x1eb7;t Shotgun</tspan></text>
+</g>
+<g id="Crosshair">
+<path id="Vector_5" d="M820 299C826.075 299 831 294.075 831 288C831 281.925 826.075 277 820 277C813.925 277 809 281.925 809 288C809 294.075 813.925 299 820 299Z" stroke="#F3EEDB" stroke-width="2"/>
+<g id="Vector_6">
+<path d="M820 271V278V271ZM820 298V305V298ZM803 288H810H803ZM830 288H837H830Z" fill="black"/>
+<path d="M820 271V278M820 298V305M803 288H810M830 288H837" stroke="#F3EEDB" stroke-width="2"/>
+</g>
+<path id="Vector_7" d="M820 290C821.105 290 822 289.105 822 288C822 286.895 821.105 286 820 286C818.895 286 818 286.895 818 288C818 289.105 818.895 290 820 290Z" fill="#F2A33A"/>
+</g>
+<g id="Effects" clip-path="url(#clip19_48_239)">
+<g id="EffectChip">
+<rect id="Icon (ART-04)_9" x="26.75" y="466.75" width="38.5" height="38.5" rx="7.25" fill="#15231B" fill-opacity="0.85" stroke="#E5484D" stroke-width="1.5"/>
+<text id="Label" fill="#E5484D" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="33.6016" y="489.91">&#x110;&#x1ed9;c</tspan></text>
+<rect id="Time track" x="28" y="500" width="36" height="3" fill="#34503F" fill-opacity="0.8"/>
+<rect id="Time fill" x="28" y="500" width="22" height="3" fill="#E5484D"/>
+<text id="Time" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="38.8398" y="518.84">3s</tspan></text>
+</g>
+<g id="EffectChip_2">
+<rect id="Icon (ART-04)_10" x="76.75" y="466.75" width="38.5" height="38.5" rx="7.25" fill="#15231B" fill-opacity="0.85" stroke="#E5484D" stroke-width="1.5"/>
+<text id="Label_2" fill="#E5484D" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="78.3281" y="489.91">Ch&#x1ead;m</tspan></text>
+<rect id="Time track_2" x="78" y="500" width="36" height="3" fill="#34503F" fill-opacity="0.8"/>
+<rect id="Time fill_2" x="78" y="500" width="22" height="3" fill="#E5484D"/>
+<text id="Time_2" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="88.8398" y="518.84">2s</tspan></text>
+</g>
+<g id="EffectChip_3">
+<rect id="Icon (ART-04)_11" x="126.75" y="466.75" width="38.5" height="38.5" rx="7.25" fill="#15231B" fill-opacity="0.85" stroke="#5DD39E" stroke-width="1.5"/>
+<text id="Label_3" fill="#5DD39E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="137.803" y="489.91">&#x1ea8;n</tspan></text>
+<rect id="Time track_3" x="128" y="500" width="36" height="3" fill="#34503F" fill-opacity="0.8"/>
+<rect id="Time fill_3" x="128" y="500" width="22" height="3" fill="#5DD39E"/>
+<text id="Time_3" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="600" letter-spacing="0em"><tspan x="138.84" y="518.84">5s</tspan></text>
+</g>
+</g>
+<g id="Pickup feed" clip-path="url(#clip20_48_239)">
+<g id="Collapsed">
+<rect x="1164" y="564" width="92" height="21" rx="10.5" fill="#34503F" fill-opacity="0.6"/>
+<text id="+2 m&#195;&#179;n kh&#195;&#161;c" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="1172" y="578.91">+2 m&#xf3;n kh&#xe1;c</tspan></text>
+</g>
+<g id="PickupToast" opacity="0.5">
+<rect x="1115" y="591" width="141" height="31" rx="6" fill="#15231B" fill-opacity="0.85"/>
+<text id="+" fill="#5DD39E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="1125" y="611.62">+</tspan></text>
+<rect id="Icon (ART-04)_12" x="1143" y="597.5" width="18" height="18" rx="4" fill="#6E8070"/>
+<text id="Item" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1169" y="611.278">Gi&#xe1;p gai</tspan></text>
+<text id="Count_4" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1232" y="610.66">&#xd7;1</tspan></text>
+</g>
+<g id="PickupToast_2" opacity="0.8">
+<rect x="1118" y="628" width="138" height="31" rx="6" fill="#15231B" fill-opacity="0.85"/>
+<text id="+_2" fill="#5DD39E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="1128" y="648.62">+</tspan></text>
+<rect id="Icon (ART-04)_13" x="1146" y="634.5" width="18" height="18" rx="4" fill="#6E8070"/>
+<text id="Item_2" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1172" y="648.278">L&#xe1; th&#x1ea7;n</tspan></text>
+<text id="Count_5" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1230" y="647.66">&#xd7;2</tspan></text>
+</g>
+<g id="PickupToast_3">
+<rect x="1116" y="665" width="140" height="31" rx="6" fill="#15231B" fill-opacity="0.85"/>
+<text id="+_3" fill="#5DD39E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="1126" y="685.62">+</tspan></text>
+<rect id="Icon (ART-04)_14" x="1144" y="671.5" width="18" height="18" rx="4" fill="#6E8070"/>
+<text id="Item_3" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1170" y="685.278">Shotgun</tspan></text>
+<text id="Count_6" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1232" y="684.66">&#xd7;1</tspan></text>
+</g>
+</g>
+<g id="Danger banner">
+<rect x="490.5" y="24.5" width="300" height="39" rx="7.5" fill="#E5484D" fill-opacity="0.16"/>
+<rect x="490.5" y="24.5" width="300" height="39" rx="7.5" stroke="#E5484D"/>
+<text id="!" fill="#E5484D" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="505" y="49.76">!</tspan></text>
+<text id="Bom n&#225;&#187;&#149; sau" fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="14" font-weight="600" letter-spacing="0em"><tspan x="520" y="49.145">Bom n&#x1ed5; sau</tspan></text>
+<text id="2s" fill="#E5484D" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="610" y="49.76">2s</tspan></text>
+<text id="&#194;&#183; h&#198;&#176;&#225;&#187;&#155;ng T&#195;&#162;y Nam, 4 &#195;&#180;" fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="642" y="48.7775">&#xb7; h&#x1b0;&#x1edb;ng T&#xe2;y Nam, 4 &#xf4;</tspan></text>
+</g>
+<g id="H&#198;&#176;&#225;&#187;&#155;ng nh&#225;&#186;&#173;n s&#195;&#161;t th&#198;&#176;&#198;&#161;ng (&#196;&#144;&#195;&#180;ng)">
+<path id="Vector_8" d="M959 302C971 320 971 338 959 356H966C978 338 978 320 966 302H959Z" fill="#E5484D" fill-opacity="0.9"/>
+</g>
+<g id="H&#198;&#176;&#225;&#187;&#155;ng bom (T&#195;&#162;y Nam)">
+<path id="Vector_9" d="M318 385L302 397L318 409" stroke="#E5484D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<text id="2s_2" fill="#E5484D" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="328" y="400.16">2s</tspan></text>
+<g id="Hit marker">
+<g id="Vector_10">
+<path d="M798 266L807 275L798 266ZM842 266L833 275L842 266ZM798 310L807 301L798 310ZM842 310L833 301L842 310Z" fill="black"/>
+<path d="M798 266L807 275M842 266L833 275M798 310L807 301M842 310L833 301" stroke="#F3EEDB" stroke-width="3" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_48_239">
+<rect width="1280" height="720" fill="white"/>
+</clipPath>
+<clipPath id="clip1_48_239">
+<rect width="1280" height="720" fill="white"/>
+</clipPath>
+<clipPath id="clip2_48_239">
+<rect width="171" height="90" fill="white" transform="translate(24 24)"/>
+</clipPath>
+<clipPath id="clip3_48_239">
+<rect x="1056" y="24" width="200" height="200" rx="10" fill="white"/>
+</clipPath>
+<clipPath id="clip4_48_239">
+<rect width="176" height="24" fill="white" transform="translate(1068 242)"/>
+</clipPath>
+<clipPath id="clip5_48_239">
+<rect width="176" height="24" fill="white" transform="translate(1068 272)"/>
+</clipPath>
+<clipPath id="clip6_48_239">
+<rect width="76" height="41" fill="white" transform="translate(40 546)"/>
+</clipPath>
+<clipPath id="clip7_48_239">
+<rect width="253" height="17" fill="white" transform="translate(40 615)"/>
+</clipPath>
+<clipPath id="clip8_48_239">
+<rect x="126" y="620.5" width="140" height="6" rx="3" fill="white"/>
+</clipPath>
+<clipPath id="clip9_48_239">
+<rect width="251" height="17" fill="white" transform="translate(40 640)"/>
+</clipPath>
+<clipPath id="clip10_48_239">
+<rect x="126" y="645.5" width="140" height="6" rx="3" fill="white"/>
+</clipPath>
+<clipPath id="clip11_48_239">
+<rect width="253" height="17" fill="white" transform="translate(40 665)"/>
+</clipPath>
+<clipPath id="clip12_48_239">
+<rect x="126" y="670.5" width="140" height="6" rx="3" fill="white"/>
+</clipPath>
+<clipPath id="clip13_48_239">
+<rect width="564" height="124" fill="white" transform="translate(358 572)"/>
+</clipPath>
+<clipPath id="clip14_48_239">
+<rect width="564" height="84" fill="white" transform="translate(358 612)"/>
+</clipPath>
+<clipPath id="clip15_48_239">
+<rect width="274" height="84" fill="white" transform="translate(358 612)"/>
+</clipPath>
+<clipPath id="clip16_48_239">
+<rect width="274" height="64" fill="white" transform="translate(358 632)"/>
+</clipPath>
+<clipPath id="clip17_48_239">
+<rect width="274" height="84" fill="white" transform="translate(648 612)"/>
+</clipPath>
+<clipPath id="clip18_48_239">
+<rect width="274" height="64" fill="white" transform="translate(648 632)"/>
+</clipPath>
+<clipPath id="clip19_48_239">
+<rect width="144" height="58" fill="white" transform="translate(24 466)"/>
+</clipPath>
+<clipPath id="clip20_48_239">
+<rect width="141" height="132" fill="white" transform="translate(1115 564)"/>
+</clipPath>
+</defs>
+</svg>
+
