@@ -59,7 +59,7 @@ namespace JungleMaze.Presentation.UI.Hud
             }
             if (icon != null)
             {
-                if (!_hasPlaceholder) { _placeholderIcon = icon.sprite; _hasPlaceholder = true; }
+                CapturePlaceholder();
                 icon.sprite = iconSprite != null ? iconSprite : _placeholderIcon;
             }
             SetVisual(visual);
@@ -81,6 +81,7 @@ namespace JungleMaze.Presentation.UI.Hud
             }
             if (icon != null)
             {
+                CapturePlaceholder();
                 var placeholder = icon.sprite == _placeholderIcon;
                 var color = placeholder ? _palette.IconPlaceholder : Color.white;
                 if (empty) color.a *= 0.35f;
@@ -92,6 +93,14 @@ namespace JungleMaze.Presentation.UI.Hud
                 nameLabel.color = _palette.Text;
             }
             if (countLabel != null && empty) countLabel.enabled = false;
+        }
+
+        /// <summary>The sprite set on the prefab is the placeholder square; remember it before any icon replaces it.</summary>
+        private void CapturePlaceholder()
+        {
+            if (_hasPlaceholder || icon == null) return;
+            _placeholderIcon = icon.sprite;
+            _hasPlaceholder = true;
         }
     }
 }
