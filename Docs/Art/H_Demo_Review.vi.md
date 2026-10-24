@@ -30,4 +30,13 @@ UI dùng bố cục và nội dung Figma, giữ màu ngữ nghĩa, khung mỏng 
 
 ## Việc tiếp theo
 
+## Tiến độ triển khai P0
+
+- `911ddcbd`: thay sprite P0; EditMode 193/193, PlayMode 19/20 rồi sửa assertion border 10→24 theo manifest và test lỗi chạy lại 1/1. Job thật lưu tại `Docs/Reports/Art-H_2026-10-24/P0_test_jobs.json`.
+- Review phát hiện bàn giao gọi `Cell48.png` là ground nhưng `MapGridView` tự sinh nền; Cell48 thực tế là mask dùng chung của obstacle/probe. Màu xanh trên mask gây nhân tint ngoài dự kiến.
+- `d860ceee`: phục hồi Cell48 trắng; tách `Ground96.png` và đổi manifest `world_ground` sang asset mới, trạng thái **review**. Năm asset HUD/Hero còn lại đã thay; ground chưa được renderer map dùng, không coi hoàn tất.
+- Đã trình người dùng móc nối tối thiểu ở [H_Ground_Integration.patch](H_Ground_Integration.patch), đang chờ cho phép chạm vùng map của Hào. Chưa áp patch hay sửa scene.
+
+## Tiếp tục UI-01
+
 Làm P0 theo Asset_Pipeline.vi.md và manifest; sau phần art, tiếp tục UI-01 phần 2 theo UI-01_HANDOFF.md mục B và UI-01-P2.md mục 4. G1 đã duyệt, G3 lõi đã đạt; không yêu cầu duyệt lại G1. Build → review → QA → dừng G3; commit theo đường dẫn, không push. Các lưu ý kỹ thuật đã chuẩn bị ở G_Demo_Review.vi.md vẫn còn hiệu lực.
