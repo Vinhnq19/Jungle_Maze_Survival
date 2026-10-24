@@ -1,8 +1,8 @@
 id,category,target_path,export_px,nine_slice_LTRB,ppu,subject,used_by,replaces_demo,priority,status
-hud_panel,HUD,Assets/_JungleMaze/Art/Hud/HudRound10.png,96x96,"24,24,24,24",100,"HUD panel background frame, empty center, uniform border","Vitals, Minimap, Match status, Killfeed rows, Weapon title",HudRound10.png,P0,todo
-hud_slot,HUD,Assets/_JungleMaze/Art/Hud/HudRound6.png,128x128,"20,20,20,20",100,"inventory slot frame, square, empty center",Quick bar slots (Default),HudRound6.png,P0,todo
-hud_slot_selected,HUD,Assets/_JungleMaze/Art/Hud/HudRound6Stroke2.png,128x128,"20,20,20,20",100,"inventory slot frame highlighted/selected state, glowing accent outline",Quick bar slot (Selected),HudRound6Stroke2.png,P0,todo
-hud_slot_empty,HUD,Assets/_JungleMaze/Art/Hud/HudRound6Dashed.png,128x128,"20,20,20,20",100,"empty inventory slot, faint dashed outline, mostly transparent",Quick bar slot (Empty),HudRound6Dashed.png,P0,todo
+hud_panel,HUD,Assets/_JungleMaze/Art/Hud/HudRound10.png,96x96,"24,24,24,24",100,"HUD panel background frame, empty center, uniform border","Vitals, Minimap, Match status, Killfeed rows, Weapon title",HudRound10.png,P0,done
+hud_slot,HUD,Assets/_JungleMaze/Art/Hud/HudRound6.png,128x128,"20,20,20,20",100,"inventory slot frame, square, empty center",Quick bar slots (Default),HudRound6.png,P0,done
+hud_slot_selected,HUD,Assets/_JungleMaze/Art/Hud/HudRound6Stroke2.png,128x128,"20,20,20,20",100,"inventory slot frame highlighted/selected state, glowing accent outline",Quick bar slot (Selected),HudRound6Stroke2.png,P0,done
+hud_slot_empty,HUD,Assets/_JungleMaze/Art/Hud/HudRound6Dashed.png,128x128,"20,20,20,20",100,"empty inventory slot, faint dashed outline, mostly transparent",Quick bar slot (Empty),HudRound6Dashed.png,P0,done
 hud_outline,HUD,Assets/_JungleMaze/Art/Hud/HudRound6Stroke1.png,96x96,"16,16,16,16",100,"thin outline frame, transparent center","KeyCap, bar outlines",HudRound6Stroke1.png,P1,todo
 hud_marker_self,HUD,Assets/_JungleMaze/Art/Hud/HudCircle16.png,64x64,,100,"player position marker for minimap, round with small direction notch",Minimap self marker,HudCircle16.png,P1,todo
 hud_bar_fill,HUD,Assets/_JungleMaze/Art/Hud/BarFill.png,64x16,"6,6,6,6",100,"horizontal gauge fill, white so it can be tinted, subtle top highlight",HP/armor/helmet/adrenaline bars (tinted by HudPalette),,P1,todo
@@ -63,8 +63,8 @@ icon_effect_stun,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/Stun.png,256x256,,
 icon_effect_root,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/Root.png,256x256,,100,status effect icon: vines binding feet,UI-01 part 2 effect chips,,P2,todo
 icon_effect_reverse,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/Reverse.png,256x256,,100,"status effect icon: swapped arrows, confusion bell",UI-01 part 2 effect chips,,P2,todo
 icon_effect_ccimmune,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/CcImmune.png,256x256,,100,status effect icon: shield against control,UI-01 part 2 effect chips,,P2,todo
-world_hero,World,Assets/_JungleMaze/Art/Foundation/Hero48.png,96x96,,96,"top-down survivor character, facing right, readable silhouette",Hero.prefab (ART-01 adds Idle/Walk/Aim/Dead frames),Hero48.png,P0,todo
-world_ground,World,Assets/_JungleMaze/Art/Foundation/Cell48.png,96x96,,96,"seamless jungle grass ground tile, top-down, tileable",Map grid ground (ART-02 tileset later),Cell48.png,P0,todo
+world_hero,World,Assets/_JungleMaze/Art/Foundation/Hero48.png,96x96,,96,"top-down survivor character, facing right, readable silhouette",Hero.prefab (ART-01 adds Idle/Walk/Aim/Dead frames),Hero48.png,P0,done
+world_ground,World,Assets/_JungleMaze/Art/Foundation/Cell48.png,96x96,,96,"seamless jungle grass ground tile, top-down, tileable",Map grid ground (ART-02 tileset later),Cell48.png,P0,done
 world_ancientpillar,World,Assets/_JungleMaze/Art/World/Obstacles/AncientPillar.png,96x192,,96,"ancient stone pillar, top-down, 1x2 cells",Prefabs/Obstacles/AncientPillar.prefab (ART-02),,P1,todo
 world_citywall,World,Assets/_JungleMaze/Art/World/Obstacles/CityWall.png,96x384,,96,"ruined city wall segment, top-down, 1x4 cells",Prefabs/Obstacles/CityWall.prefab (ART-02),,P1,todo
 world_boulderrock,World,Assets/_JungleMaze/Art/World/Obstacles/BoulderRock.png,384x384,,96,"large mossy boulder, top-down, 4x4 cells",Prefabs/Obstacles/BoulderRock.prefab (ART-02),,P1,todo

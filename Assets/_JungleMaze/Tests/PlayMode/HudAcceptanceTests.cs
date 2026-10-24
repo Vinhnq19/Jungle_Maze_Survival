@@ -445,7 +445,7 @@ namespace JungleMaze.Tests.PlayMode
             AssertColor(surface, _root.Quickbar.WeaponStrip.GetComponent<Image>().color, "weapon strip background");
             var round10 = _root.Vitals.GetComponent<Image>().sprite;
             Assert.AreEqual("HudRound10", round10.name);
-            Assert.AreEqual(new Vector4(10, 10, 10, 10), round10.border);
+            Assert.AreEqual(new Vector4(24, 24, 24, 24), round10.border);
             Assert.AreEqual(Image.Type.Sliced, _root.Vitals.GetComponent<Image>().type);
             Assert.AreEqual(1f, _root.Vitals.GetComponent<Image>().pixelsPerUnitMultiplier);
             _hud.SetHp(25);
