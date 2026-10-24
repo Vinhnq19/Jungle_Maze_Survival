@@ -33,6 +33,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         public bool Loaded { get; set; }
         public bool Ready { get; set; }
         public bool ReplayAcked { get; set; }
+        public string? ProfileKey { get; set; }
     }
 
     public sealed class ReplayFrame
@@ -171,6 +172,23 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
 
         BroadcastRoster();
         return true;
+    }
+
+    public bool TryAttachProfile(string sessionId, string profileKey)
+    {
+        if (Phase is not (MatchPhase.Waiting or MatchPhase.Lobby))
+            return false;
+
+        if (_bySession.TryGetValue(sessionId, out var entity))
+        {
+            if (entity.ProfileKey != null && !string.Equals(entity.ProfileKey, profileKey, StringComparison.Ordinal))
+                return false;
+
+            entity.ProfileKey = profileKey;
+            return true;
+        }
+
+        return false;
     }
 
     public bool SetPlayerReady(string sessionId)
@@ -453,7 +471,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             _zone.Update(_matchElapsedSeconds / _profile.ZoneTimeScale, CurrentTick);
 
             // Whole-tick damage: applied once each second (every 30 ticks)
-            if (CurrentTick % 30 == 0)
+            if (unchecked(CurrentTick - _inGameStartTick) % 30 == 0)
             {
                 foreach (var entity in _entities.Values.Where(e => e.IsAlive))
                 {
@@ -547,6 +565,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             entity.Loaded = false;
             entity.ReplayAcked = false;
             entity.ResumeToken = Guid.NewGuid();
+            // Preserve verified identity across rounds on the same connection.
         }
 
         _zone = null;
@@ -642,8 +661,8 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             e.Rank == 0 ? (reason == MatchEndReason.LastAlive && e.NetId == winnerNetId ? 1 : 2) : e.Rank,
             0, // Kills = 0 without combat
             e.SurvivalSeconds,
-            null
-        )).ToList();
+            e.ProfileKey
+        )).ToList().AsReadOnly();
 
         // RoomId not secret RoomCode in persisted result
         _finalResult = new MatchResult(

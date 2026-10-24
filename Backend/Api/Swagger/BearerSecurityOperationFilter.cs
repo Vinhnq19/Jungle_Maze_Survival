@@ -9,16 +9,18 @@ public sealed class BearerSecurityOperationFilter : IOperationFilter
     public void Apply(OpenApiOperation operation, OperationFilterContext context)
     {
         var metadata = context.ApiDescription.ActionDescriptor.EndpointMetadata;
-        // Chỉ đánh dấu endpoint thật sự cần JWT. Register/login và /health vẫn công khai.
-        if (metadata.OfType<IAllowAnonymous>().Any() || !metadata.OfType<IAuthorizeData>().Any())
-            return;
-
-        operation.Security = new List<OpenApiSecurityRequirement>
+        var path=context.ApiDescription.RelativePath?.Split('?')[0];
+        if(path is "api/game-tickets" or "api/me/matches")
         {
-            new()
-            {
-                [new OpenApiSecuritySchemeReference("Bearer", context.Document)] = new List<string>()
-            }
-        };
+            // Separate requirements mean OR. Guest authentication does not authorize RoomsController.
+            operation.Security=new List<OpenApiSecurityRequirement> {
+                new() { [new OpenApiSecuritySchemeReference("Bearer",context.Document)]=new List<string>() },
+                new() { [new OpenApiSecuritySchemeReference("GuestProof",context.Document)]=new List<string>() }
+            };
+            return;
+        }
+        if(path?.StartsWith("internal/")==true) return;
+        if(metadata.OfType<IAllowAnonymous>().Any() || !metadata.OfType<IAuthorizeData>().Any()) return;
+        operation.Security=new List<OpenApiSecurityRequirement> { new() { [new OpenApiSecuritySchemeReference("Bearer",context.Document)]=new List<string>() } };
     }
 }

@@ -62,7 +62,9 @@ public sealed class NetworkHost : IDisposable
             {
                 var raw = reader.GetRemainingBytes();
                 var isGameplay = raw.Length > 0 && raw[0] == GameplayProtocol.FrameMarker;
-                var validChannel = (isGameplay && (method == DeliveryMethod.Unreliable || (channel == GameplayProtocol.GameplayChannel && method == DeliveryMethod.ReliableOrdered))) || (channel == 0 && method is DeliveryMethod.ReliableOrdered or DeliveryMethod.Unreliable);
+                var validChannel = isGameplay
+                    ? method == DeliveryMethod.Unreliable || (channel == GameplayProtocol.GameplayChannel && method == DeliveryMethod.ReliableOrdered)
+                    : channel == GameplayProtocol.ControlChannel && method is DeliveryMethod.ReliableOrdered or DeliveryMethod.Unreliable;
                 Hub.Receive(adapter, raw, method == DeliveryMethod.ReliableOrdered, validChannel);
             }
         };

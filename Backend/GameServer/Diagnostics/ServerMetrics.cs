@@ -8,6 +8,8 @@ public sealed class ServerMetrics
     private readonly List<double> _tickMs = new();
     private readonly List<double> _loopMs = new();
     private long _totalTicks;
+    private long _historyUnavailable;
+    public void RecordHistoryUnavailable() => Interlocked.Increment(ref _historyUnavailable);
     private int _pings, _invalidPackets, _rejections, _tickOverruns, _droppedTicks;
     private double _windowStarted = Stopwatch.GetTimestamp() / (double)Stopwatch.Frequency;
     private double _cpuStartedMs = ReadCpuMs();
@@ -40,7 +42,7 @@ public sealed class ServerMetrics
         // CPU một core: 100% = một core bận toàn thời gian, có thể >100%.
         using var process = Process.GetCurrentProcess();
         Console.WriteLine(FormattableString.Invariant(
-            $"[metrics] peers={peers} active={active} pending={pending} ticks={_totalTicks} ticksPerSecond={_tickMs.Count / seconds:F2} tickP95Ms={Percentile(_tickMs, .95):F3} tickP99Ms={Percentile(_tickMs, .99):F3} loopP95Ms={Percentile(_loopMs, .95):F3} loopP99Ms={Percentile(_loopMs, .99):F3} cpuOneCorePercent={cpuPercent:F2} tickOverruns={_tickOverruns} droppedTicks={_droppedTicks} pings={_pings} invalidPackets={_invalidPackets} rejected={_rejections} rooms={rooms} workingSetMiB={process.WorkingSet64 / 1048576.0:F2} roomSlots={roomSlots} utc={DateTime.UtcNow:O}"));
+            $"[metrics] peers={peers} active={active} pending={pending} ticks={_totalTicks} ticksPerSecond={_tickMs.Count / seconds:F2} tickP95Ms={Percentile(_tickMs, .95):F3} tickP99Ms={Percentile(_tickMs, .99):F3} loopP95Ms={Percentile(_loopMs, .95):F3} loopP99Ms={Percentile(_loopMs, .99):F3} cpuOneCorePercent={cpuPercent:F2} tickOverruns={_tickOverruns} droppedTicks={_droppedTicks} pings={_pings} invalidPackets={_invalidPackets} historyUnavailable={Interlocked.Read(ref _historyUnavailable)} rejected={_rejections} rooms={rooms} workingSetMiB={process.WorkingSet64 / 1048576.0:F2} roomSlots={roomSlots} utc={DateTime.UtcNow:O}"));
         _tickMs.Clear();
         _loopMs.Clear();
         _pings = _invalidPackets = _rejections = _tickOverruns = _droppedTicks = 0;

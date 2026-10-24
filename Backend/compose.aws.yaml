@@ -35,6 +35,7 @@ services:
       Swagger__Enabled: "true"
       RoomControl__BaseUrl: http://game-server:7780
       ROOM_CONTROL_TOKEN: ${ROOM_CONTROL_TOKEN:-}
+      MATCH_RESULT_TOKEN: ${MATCH_RESULT_TOKEN:-}
     depends_on:
       mongo: { condition: service_healthy }
     healthcheck:
@@ -56,6 +57,7 @@ services:
       WS_ENABLED: "${WS_ENABLED:-true}"
       WS_BIND_ADDRESS: 0.0.0.0
       WS_PORT: "7781"
+      MATCH_PROFILE: main
       MAX_PLAYERS: "10"
       TICK_RATE: "30"
       AUTH_MODE: ${AUTH_MODE:-RoomCode}
@@ -69,6 +71,11 @@ services:
       MAX_ROOMS: "${MAX_ROOMS:-5}"
       MAX_ROOMS_PER_USER: "${MAX_ROOMS_PER_USER:-2}"
       ROOM_EMPTY_TTL_SECONDS: "${ROOM_EMPTY_TTL_SECONDS:-600}"
+      MATCH_RESULTS_API_URL: "http://api:5000/internal/match-results"
+      MATCH_RESULT_TOKEN: ${MATCH_RESULT_TOKEN:-}
+      MATCH_OUTBOX_PATH: "/app/data/match-outbox"
+    volumes:
+      - game-outbox:/app/data/match-outbox
     logging: *logging
   caddy:
     image: ${CADDY_IMAGE:?Load release images first}
@@ -91,3 +98,4 @@ volumes:
   mongo-data:
   caddy-data:
   caddy-config:
+  game-outbox:

@@ -26,7 +26,31 @@ try
     using var network = new NetworkHost(options, metrics);
     network.Start();
     await using var webSocket = await WebSocketHost.StartFromEnvironment(network.Hub, (options.Rooms ?? new()).MaxTotalPlayers);
-    var roomControl = RoomControlHost.Start(options.Rooms ?? new(), network.Commands);
+    var roomControl = RoomControlHost.Start(options.Rooms ?? new(), network.Commands, network.Hub);
+
+    // Persistence match outbox outside simulation tick
+    var outboxApiUrl = Environment.GetEnvironmentVariable("MATCH_RESULTS_API_URL") ?? "http://127.0.0.1:5000/internal/match-results";
+    var outboxToken = Environment.GetEnvironmentVariable("MATCH_RESULT_TOKEN") ?? "";
+    var outboxPath = Environment.GetEnvironmentVariable("MATCH_OUTBOX_PATH") ?? "./data/match-outbox";
+
+    using var outbox = new MatchOutbox(new MatchOutboxOptions
+    {
+        ApiUrl = outboxApiUrl,
+        Token = outboxToken,
+        OutboxPath = outboxPath
+    }, metrics);
+    outbox.Start();
+
+    void HookRoomMatch(RoomManager.Room room)
+    {
+        room.Match.MatchCompleted += result => outbox.TryEnqueue(result);
+    }
+    network.Hub.Rooms.RoomCreated += HookRoomMatch;
+    foreach (var room in network.Hub.Rooms.AllRooms)
+    {
+        HookRoomMatch(room);
+    }
+
     var loop = new FixedTickLoop(options.TickRate, metrics);
     try {
         loop.Run(
@@ -36,7 +60,11 @@ try
                 network.ActivePeers, network.PendingPeers, network.Rooms.Count, network.Rooms.Occupancy()),
             shutdown.Token);
     }
-    finally { if (roomControl is not null) { await roomControl.StopAsync(); await roomControl.DisposeAsync(); } }
+    finally {
+        if (roomControl is not null) { await roomControl.StopAsync(); await roomControl.DisposeAsync(); }
+        using var outboxDeadline = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+        await outbox.StopAsync(outboxDeadline.Token);
+    }
     return 0;
 }
 catch (Exception error) when (error is ArgumentException or InvalidOperationException

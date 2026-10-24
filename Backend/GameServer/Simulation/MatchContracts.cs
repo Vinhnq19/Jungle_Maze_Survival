@@ -82,6 +82,7 @@ public interface IMatchRuntime
     MatchProfile Profile { get; }
     void Tick(double deltaTime);
     bool TryRegisterPlayer(string sessionId, string displayName, out string reason);
+    bool TryAttachProfile(string sessionId, string profileKey);
     bool SetPlayerReady(string sessionId);
     bool SetPlayerLoaded(string sessionId, Guid matchId);
     bool ProcessInput(string sessionId, in MatchInputPacket packet);
