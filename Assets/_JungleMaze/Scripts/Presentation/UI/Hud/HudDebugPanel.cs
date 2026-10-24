@@ -107,11 +107,18 @@ namespace JungleMaze.Presentation.UI.Hud
             if (GUILayout.Button("Clear")) _effects.Clear();
             GUILayout.EndHorizontal();
 
-            var weaponId = _hud.WeaponIds.Count > 0 ? _hud.WeaponIds[_weaponIndex % _hud.WeaponIds.Count] : null;
+            var weaponCount = _hud.WeaponIds.Count;
+            var weaponId = weaponCount > 0 ? _hud.WeaponIds[_weaponIndex % weaponCount] : null;
+            var nextWeaponId = weaponCount > 0 ? _hud.WeaponIds[(_weaponIndex + 1) % weaponCount] : null;
             GUILayout.Label("Held weapon + ammo");
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button(weaponId ?? "-")) { _weaponIndex++; _hud.Hold(_hud.WeaponIds[_weaponIndex % _hud.WeaponIds.Count]); }
-            if (GUILayout.Button("Full mag") && weaponId != null) _hud.FullMagazine(weaponId);
+            // The button names the weapon it will hold; nothing happens when weapons.json is empty.
+            if (GUILayout.Button(nextWeaponId == null ? "-" : "Hold " + nextWeaponId) && nextWeaponId != null)
+            {
+                _weaponIndex = (_weaponIndex + 1) % weaponCount;
+                _hud.Hold(nextWeaponId);
+            }
+            if (GUILayout.Button("Full mag " + (weaponId ?? "-")) && weaponId != null) _hud.FullMagazine(weaponId);
             GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal();
             _magazine = GUILayout.TextField(_magazine, GUILayout.Width(50));
