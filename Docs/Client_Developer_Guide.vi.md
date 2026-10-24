@@ -133,10 +133,27 @@ Bình thường bạn không cần gửi input trực tiếp: `PlayerInputServic
 
 State cấp ứng dụng nằm trong `Application/States/GameStates.cs`. Kế thừa `GameState`, override `Enter`/`Exit`/`Tick` và hai hàm `OnNetworkStateChanged`/`OnGameEvent` nếu cần, rồi tạo state trong constructor của `GameFlow`. Load scene qua `ISceneLoader`, không gọi `SceneManager` trực tiếp. AI hoặc nhân vật dùng lại `Core.States.StateMachine`.
 
+### 4.7. Đẩy dữ liệu lên HUD (UI-01)
+
+HUD chỉ đọc ba port trong `Application/Hud/State/`, không tự tính gì. Gameplay ghi qua port ghi tương ứng (inject bằng `[Inject]` hoặc constructor):
+
+```csharp
+_hud.SetHp(72);                                // IHudStateWriter: HP, giáp/mũ, vũ khí cầm, đạn, bo, còn sống, pose
+_hud.SetAmmo(inMagazine: 4, reserve: 30);
+_hud.SetAliveCount(alive: 7, total: 8);        // total = số người lúc vào trận
+_inventory.SetConsumableSlot(0, "GOD_LEAF", 6); // IInventoryStateWriter: 4 khe vũ khí, 4 khe dược, khe đang chọn
+_effects.Apply(EffectKind.Adrenaline, 8f, 8f);  // IEffectStateWriter: store tự đếm ngược và tự xoá khi hết hạn
+```
+
+- Ghi trên main thread. Store chỉ phát `Changed` khi giá trị đổi, và tự `Reset` khi mất kết nối.
+- Ai ghi gì: WPN-02 `SetHp`, ITM-01 khe/giáp/mũ/`SetHeldWeapon`, WPN-01 `SetAmmo`, Game-10 `Apply`, ZON-01 `SetZoneCountdown` (ít nhất 1 lần/giây, HUD không tự đếm bo), SRV-03 `SetAliveCount`, ART-04 thay `NullItemIconProvider` trong Bootstrap. Hiệu ứng mới: thêm giá trị vào `EffectKind`, không đổi port.
+- Thử không cần GameServer: mở `Scenes/Dev/HudPreview.unity`, Play, bấm **F4**. Panel F4 và `Mock*State` chỉ có trong Editor/Development build.
+- Art HUD hiện là bản tạm: màu, sprite, font chỉ gán trên `Prefabs/UI/Hud.prefab` và `HudPalette`. Thay art thì sửa prefab rồi chạy context menu "Apply palette" trên `HudRoot`, không sửa code.
+
 ## 5. Kiểm thử
 
-- **Window → General → Test Runner → EditMode → Run All:** assembly `JungleMaze.Tests.EditMode`; kết quả 23/10 là **125/125 PASS**, gồm DI, EventBus, StateMachine, pool, config, serializer 0 GC và `NetworkClient` với `FakeGameServer` trên loopback.
-- **PlayMode → Run All:** assembly `JungleMaze.Tests.PlayMode`; các test nền tảng chạy Unity Physics2D, config sau Awake, aim, camera, map, projectile và pooling. Các test này không cần EC2/API/MongoDB. Kết quả chi tiết ở tài liệu nghiệm thu.
+- **Window → General → Test Runner → EditMode → Run All:** assembly `JungleMaze.Tests.EditMode`; kết quả 23/10 là **125/125 PASS**, gồm DI, EventBus, StateMachine, pool, config, serializer 0 GC và `NetworkClient` với `FakeGameServer` trên loopback. Sau UI-01 (24/10) là **181/181 PASS**, thêm 56 test HUD trong `Tests/EditMode/Hud/`.
+- **PlayMode → Run All:** assembly `JungleMaze.Tests.PlayMode`; các test nền tảng chạy Unity Physics2D, config sau Awake, aim, camera, map, projectile và pooling. Sau UI-01 là **20/20 PASS**, thêm 15 test `HudAcceptanceTests` (bố cục theo Figma v2, 0 GC, font, màu). Các test này không cần EC2/API/MongoDB. Kết quả chi tiết ở tài liệu nghiệm thu.
 - Phía server: `Backend/Tests/run_all.cmd` (cần Docker).
 - Đo RTT để nghiệm thu: bật F3, hoặc xem dòng `[client-summary]` trong log khi mất kết nối, cùng format với NetSmokeClient.
 
