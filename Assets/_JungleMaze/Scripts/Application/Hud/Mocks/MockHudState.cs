@@ -1,7 +1,9 @@
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
 using System;
+using System.Collections.Generic;
 using JungleMaze.App.Hud.State;
 using JungleMaze.App.Ports;
+using JungleMaze.Domain.Balance;
 
 namespace JungleMaze.App.Hud.Mocks
 {
@@ -14,13 +16,33 @@ namespace JungleMaze.App.Hud.Mocks
     {
         private readonly IHudStateWriter _writer;
         private readonly IBalanceConfigProvider _balance;
+        private readonly List<string> _weaponIds = new List<string>();
+        private readonly List<string> _armorIds = new List<string>();
+        private readonly List<string> _helmetIds = new List<string>();
 
         public MockHudState(IHudStateWriter writer, IBalanceConfigProvider balance)
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             _balance = balance ?? throw new ArgumentNullException(nameof(balance));
+            foreach (var weapon in balance.Weapons) _weaponIds.Add(weapon.Id);
+            foreach (var equipment in balance.Equipments)
+            {
+                if (equipment.Type == EquipmentType.Armor) _armorIds.Add(equipment.Id);
+                else if (equipment.Type == EquipmentType.Helmet) _helmetIds.Add(equipment.Id);
+            }
             Hp = MaxHp;
         }
+
+        /// <summary>Weapon ids in weapons.json order (for the F4 panel).</summary>
+        public IReadOnlyList<string> WeaponIds => _weaponIds;
+        /// <summary>Armor ids in equipments.json order.</summary>
+        public IReadOnlyList<string> ArmorIds => _armorIds;
+        /// <summary>Helmet ids in equipments.json order.</summary>
+        public IReadOnlyList<string> HelmetIds => _helmetIds;
+
+        /// <summary>durabilityPoints of a helmet/armor id, 0 when unknown (for the "full durability" button).</summary>
+        public float MaxDurability(string equipmentId) =>
+            equipmentId != null && _balance.TryGetEquipment(equipmentId, out var equipment) ? equipment.Stats.DurabilityPoints ?? 0f : 0f;
 
         public int MaxHp => _balance.Match.HeroMaxHp;
         /// <summary>Last HP this mock wrote.</summary>
