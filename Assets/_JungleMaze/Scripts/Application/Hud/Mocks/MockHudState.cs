@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JungleMaze.App.Hud.State;
 using JungleMaze.App.Ports;
 using JungleMaze.Domain.Balance;
+using JungleMaze.Domain.Hud;
 
 namespace JungleMaze.App.Hud.Mocks
 {
@@ -72,6 +73,12 @@ namespace JungleMaze.App.Hud.Mocks
         public void Zone(float secondsRemaining) => _writer.SetZoneCountdown(secondsRemaining);
         public void Alive(int alive, int total) => _writer.SetAliveCount(alive, total);
         public void Pose(float x, float y, float rotationDegrees) => _writer.SetPose(x, y, rotationDegrees);
+        public void Pickup(string id,int count) => _writer.NotifyPickup(id,count);
+        public void Hit(HitTargetKind target) => _writer.NotifyHitDealt(target);
+        public void Damage(float? degrees) => _writer.NotifyDamageTaken(degrees.HasValue,degrees??0);
+        public void Bomb(int id,float fuse,float x,float y) => _writer.SetDanger(id,DangerKind.FusedBomb,fuse,true,x,y);
+        public void Trap(int id,float x,float y) => _writer.SetDanger(id,DangerKind.Trap,0,true,x,y);
+        public void ClearDanger(int id) => _writer.ClearDanger(id);
 
         public void Reset()
         {

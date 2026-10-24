@@ -19,6 +19,8 @@ namespace JungleMaze.App.Hud.Mocks
         private const int DefaultConsumableCount = 1;
 
         private readonly IInventoryStateWriter _writer;
+        private readonly IBalanceConfigProvider _balance;
+        private string _usingId;
         private readonly List<string> _weaponIds = new List<string>();
         private readonly List<string> _consumableIds = new List<string>();
         private readonly Dictionary<string, int> _maxCarry = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -29,6 +31,7 @@ namespace JungleMaze.App.Hud.Mocks
         {
             _writer = writer ?? throw new ArgumentNullException(nameof(writer));
             if (balance == null) throw new ArgumentNullException(nameof(balance));
+            _balance = balance;
             foreach (var weapon in balance.Weapons) _weaponIds.Add(weapon.Id);
             foreach (var equipment in balance.Equipments)
             {
@@ -83,8 +86,17 @@ namespace JungleMaze.App.Hud.Mocks
             _writer.SetActiveSlot(slot);
         }
 
+        public void BeginUse(int slot,bool cancellable=true)
+        {
+            var id=GetId(slot);if(id==null||!_balance.TryGetEquipment(id,out var equipment)||equipment.Stats.UseSeconds<=0)return;
+            _usingId=id;_writer.BeginUse(slot,id,equipment.Stats.UseSeconds,equipment.Stats.UseSeconds,cancellable);
+        }
+        public void CancelUse(){if(_usingId!=null)_writer.CancelUse(_usingId);_usingId=null;}
+        public void CompleteUse(){if(_usingId!=null)_writer.CompleteUse(_usingId);_usingId=null;}
+
         public void Reset()
         {
+            _usingId=null;
             ResetLocalCopy();
             _writer.Reset();
         }
