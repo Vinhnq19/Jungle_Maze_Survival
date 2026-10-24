@@ -2,6 +2,8 @@
 
 Cập nhật **24/10/2026**. Nguồn: [Figma Codefest-2027](https://www.figma.com/design/oeZgisxdiR80hRqbikUwPb/Codefest-2027?node-id=0-1), Page 1, 15 frame kích thước 1280×720 (16:9). Ảnh chụp từng frame lưu trong [Wireframes/](Wireframes/), tên file bắt đầu bằng node ID (`3-2_…` là node `3:2`). Ảnh là bản chụp ngày trên: Figma đổi thì chụp lại và cập nhật bảng dưới.
 
+> **Art UI (quyết định 24/10/2026):** hình ảnh UI cuối cùng sẽ làm bằng AI render ở bước sau. Trước mắt mọi ticket UI build với hình **tạm**: màu phẳng theo style guide, hình giữ chỗ cho icon. Sprite, màu và font chỉ gán trên prefab/view, để sau này thay art mà không sửa code, test hay bố cục. Figma quyết định bố cục và hành vi, không quyết định art cuối.
+>
 > **Bản thiết kế lại v2 (24/10/2026, chờ duyệt):** page `Lastaway v2 — Redesign` trong cùng file Figma, xem [mục 5](#5-bản-thiết-kế-lại-v2-chờ-duyệt). Page gốc `Page 1` giữ nguyên. Khi v2 được duyệt, v2 thay bảng ở mục 2–3 cho các màn đã có.
 
 Mục này bổ sung cho sheet **WIREFRAME** trong GDD (cột "Luồng màn hình" trước đây ghi "Figma: chưa cung cấp").
