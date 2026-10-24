@@ -13,7 +13,7 @@ namespace JungleMaze.Presentation.UI.Hud.Feedback
         public void ApplyPalette(HudPalette palette){_palette=palette;if(background!=null)background.color=palette.Surface;fill.GetComponent<Image>().color=palette.Amber;seconds.color=palette.Amber;hint.color=palette.Muted;}
         public void Show(bool visible,char[] text,int length,char[] time,int timeLength,float ratio,bool showHint,bool cancelled)
         {
-            group.alpha=visible?1:0;if(!visible)return;label.SetCharArray(text,0,length);label.color=cancelled?_palette.Muted:_palette.Text;
+            group.alpha=visible?1:0;if(!visible)return;label.SetCharArray(text,0,length);label.color=cancelled?_palette.Faint:_palette.Text;
             seconds.SetCharArray(time,0,timeLength);seconds.enabled=!cancelled;hint.enabled=showHint;fill.anchorMax=new Vector2(ratio,1);
         }
     }
