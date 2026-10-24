@@ -1,0 +1,22 @@
+Proposed only; not applied. Requires approval because MapGridView belongs to the map module.
+
+--- a/Assets/_JungleMaze/Scripts/Presentation/World/MapGridView.cs
++++ b/Assets/_JungleMaze/Scripts/Presentation/World/MapGridView.cs
+@@
+     public sealed class MapGridView : MonoBehaviour
+     {
++        [SerializeField] private Sprite groundSprite;
+         private IBalanceConfigProvider _balance;
+@@
+             var renderer = floor.AddComponent<SpriteRenderer>();
+-            renderer.sprite = _sprite;
++            renderer.sprite = groundSprite != null ? groundSprite : _sprite;
+             renderer.drawMode = SpriteDrawMode.Tiled;
+
+Asset wiring (Unity MCP):
+- Keep Cell48.png white for existing obstacles and diagnostic projectile/impact references.
+- Create Ground96.png from the approved flat #5B6D4B tile, 96 PPU, preserving a 1-unit cell.
+- Assign Ground96 to groundSprite on MapGridView in Game and HudPreview scenes.
+- Existing procedural fallback and wall sprite remain unchanged; no collider/map/balance changes.
+- External ground asset is not assigned to _sprite, so OnDestroy never destroys the imported asset.
+- Verify floor uses the supplied sprite while walls/colliders and map dimensions stay unchanged.

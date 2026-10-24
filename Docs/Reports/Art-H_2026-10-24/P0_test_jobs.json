@@ -1,0 +1,110 @@
+{
+  "phase": "P0 before ground review correction",
+  "commit": "911ddcbd",
+  "jobs": [
+    {
+      "success": true,
+      "message": "Test job status retrieved.",
+      "error": null,
+      "data": {
+        "job_id": "ed58bab5b27e4be79fe3b913a36a4228",
+        "status": "succeeded",
+        "mode": "EditMode",
+        "started_unix_ms": 1792857413344,
+        "finished_unix_ms": 1792857425929,
+        "last_update_unix_ms": 1792857425929,
+        "progress": {
+          "completed": 193,
+          "total": 193,
+          "current_test_full_name": null,
+          "current_test_started_unix_ms": null,
+          "last_finished_test_full_name": "JungleMaze.Tests.Protocol.Phase2Tests.WindowsGuestProofIsEncryptedAndSeparatedByEndpoint",
+          "last_finished_unix_ms": 1792857425781,
+          "stuck_suspected": false,
+          "editor_is_focused": false,
+          "run_in_background": false,
+          "focus_nudge_attempts": null,
+          "focus_nudge_limit": null,
+          "focus_nudge_status": null,
+          "blocked_reason": null,
+          "failures_so_far": [],
+          "failures_capped": false
+        },
+        "error": null,
+        "result": null
+      },
+      "hint": null
+    },
+    {
+      "success": true,
+      "message": "Test job status retrieved.",
+      "error": null,
+      "data": {
+        "job_id": "64749c7024c94a6aa51dbd071fa21986",
+        "status": "failed",
+        "mode": "PlayMode",
+        "started_unix_ms": 1792857434595,
+        "finished_unix_ms": 1792857457916,
+        "last_update_unix_ms": 1792857457916,
+        "progress": {
+          "completed": 20,
+          "total": 20,
+          "current_test_full_name": null,
+          "current_test_started_unix_ms": null,
+          "last_finished_test_full_name": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.WeaponStrip_StaysCentered_WithAndWithoutAmmo",
+          "last_finished_unix_ms": 1792857457870,
+          "stuck_suspected": false,
+          "editor_is_focused": false,
+          "run_in_background": false,
+          "focus_nudge_attempts": null,
+          "focus_nudge_limit": null,
+          "focus_nudge_status": null,
+          "blocked_reason": null,
+          "failures_so_far": [
+            {
+              "full_name": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Palette_MatchesStyleGuide",
+              "message": "  Expected: (10.00, 10.00, 10.00, 10.00)\r\n  But was:  (24.00, 24.00, 24.00, 24.00)\r\n"
+            }
+          ],
+          "failures_capped": false
+        },
+        "error": null,
+        "result": null
+      },
+      "hint": null
+    },
+    {
+      "success": true,
+      "message": "Test job status retrieved.",
+      "error": null,
+      "data": {
+        "job_id": "98f96ea0ad7c4fd3b05fe442b5e9c26f",
+        "status": "succeeded",
+        "mode": "PlayMode",
+        "started_unix_ms": 1792857511718,
+        "finished_unix_ms": 1792857516641,
+        "last_update_unix_ms": 1792857516641,
+        "progress": {
+          "completed": 1,
+          "total": 1,
+          "current_test_full_name": null,
+          "current_test_started_unix_ms": null,
+          "last_finished_test_full_name": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Palette_MatchesStyleGuide",
+          "last_finished_unix_ms": 1792857516568,
+          "stuck_suspected": false,
+          "editor_is_focused": false,
+          "run_in_background": false,
+          "focus_nudge_attempts": null,
+          "focus_nudge_limit": null,
+          "focus_nudge_status": null,
+          "blocked_reason": null,
+          "failures_so_far": [],
+          "failures_capped": false
+        },
+        "error": null,
+        "result": null
+      },
+      "hint": null
+    }
+  ]
+}
