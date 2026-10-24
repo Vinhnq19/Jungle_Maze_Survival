@@ -4,6 +4,7 @@ using JungleMaze.App.Hud.State;
 using JungleMaze.Core.Events;
 using JungleMaze.Domain.Hud;
 using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace JungleMaze.Tests.Hud.Feedback
 {
@@ -19,9 +20,11 @@ namespace JungleMaze.Tests.Hud.Feedback
         {
             var balance=StoreTestUtil.Balance();var bus=new EventBus();var hud=new HudStateStore(bus,balance);var inv=new InventoryStateStore(bus,balance);var effects=new EffectStateStore(bus);
             var mock=new MockHudState(hud,balance);var mi=new MockInventoryState(inv,balance);var me=new MockEffectState(effects);var scenario=new HudFeedbackScenarios(mock,mi,me,inv);
-            var pickups=0;var damage=0;var hits=0;hud.ItemPicked+=_=>pickups++;hud.DamageTaken+=_=>damage++;hud.HitDealt+=_=>hits++;
+            var pickups=0;var damage=0;var hits=0;var effectCount=0;var uses=0;var pickupIds=new HashSet<string>();var effectIds=new HashSet<EffectKind>();var directions=new HashSet<float>();
+            hud.ItemPicked+=p=>{pickups++;pickupIds.Add(p.ItemId);Assert.True(balance.TryGetEquipment(p.ItemId,out _)||balance.TryGetWeapon(p.ItemId,out _));};hud.DamageTaken+=d=>{damage++;directions.Add(d.DirectionDegrees);};hud.HitDealt+=_=>hits++;effects.Changed+=c=>{effectCount++;effectIds.Add(c.Kind);};inv.UseChanged+=u=>{if(u.Phase==ItemUsePhase.Using)uses++;};
             scenario.Burst();for(var i=0;i<30;i++)scenario.Tick(1f/30);
-            Assert.AreEqual(10,pickups);Assert.AreEqual(12,damage);Assert.AreEqual(12,hits);Assert.AreEqual(3,hud.DangerCount);Assert.False(scenario.Running);
+            Assert.AreEqual(20,pickups);Assert.AreEqual(8,pickupIds.Count);Assert.AreEqual(10,effectCount);Assert.AreEqual(4,effectIds.Count);Assert.AreEqual(8,damage);Assert.AreEqual(6,directions.Count);Assert.AreEqual(15,hits);Assert.AreEqual(5,hud.DangerCount);Assert.AreEqual(2,uses);Assert.False(scenario.Running);
+            var outside=0;var traps=0;for(var j=0;j<hud.DangerCount;j++){var w=hud.GetDangerAt(j);if(System.Math.Abs(w.SourceX-10)>15)outside++;if(w.Kind==DangerKind.Trap)traps++;}Assert.AreEqual(2,outside);Assert.AreEqual(1,traps);Assert.AreEqual(100,hud.Hp);
         }
     }
 }
