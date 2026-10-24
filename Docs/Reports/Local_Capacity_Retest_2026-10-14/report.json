@@ -52994,7 +52994,7 @@
     "verifiedCrc": true,
     "verifiedEveryManifestEntry": true
   },
-  "updatedUtc": "2026-10-16T09:24:12.699122+00:00",
+  "updatedUtc": "2026-10-24T09:04:33.746826+00:00",
   "cleanupSummary": {
     "canonicalNarrativeReport": "report.vi.md",
     "legacyReportRemoved": true,
@@ -98734,5 +98734,208 @@
   "priorEvidenceArchiveBeforeDualTransport": {
     "sha256": "c6e1446931161cdd7ec2cb2b92413942238c3878ec46a0ff1bb184fa42f7c3d1",
     "verifiedCrcAndManifest": true
+  },
+  "phase2": {
+    "sourceCommit": "6a854d2e58a24c4b6536a3cb69dbef17de557c60",
+    "branch": "phase2/match-results-zone",
+    "date": "2026-10-24",
+    "unityVersion": "6000.3.15f1",
+    "editMode": {
+      "passed": 137,
+      "failed": 0
+    },
+    "playMode": {
+      "passed": 5,
+      "failed": 0
+    },
+    "build": {
+      "result": "succeeded",
+      "errors": 0,
+      "warnings": 0,
+      "job": "build-d66c27ae32"
+    },
+    "environment": {
+      "branch": "phase2/match-results-zone",
+      "cpu": "AMD Ryzen 7 4800H with Radeon Graphics         ",
+      "docker": "Docker version 29.5.3, build d1c06ef",
+      "sourceCommit": "6a854d2e58a24c4b6536a3cb69dbef17de557c60",
+      "dotnet": "10.0.401",
+      "os": "Microsoft Windows 11 Home Single Language"
+    },
+    "checks": [
+      {
+        "name": "Gameplay UDP",
+        "status": "PASS",
+        "count": 8,
+        "evidence": "merged-gameplay-Udp.json"
+      },
+      {
+        "name": "Gameplay WebSocket",
+        "status": "PASS",
+        "count": 8,
+        "evidence": "merged-gameplay-Wss.json"
+      },
+      {
+        "name": "Gameplay hỗn hợp",
+        "status": "PASS",
+        "count": 8,
+        "evidence": "merged-gameplay-Mixed.json"
+      },
+      {
+        "name": "Runtime / movement / zone",
+        "status": "PASS",
+        "count": 84,
+        "evidence": "backend-integration.log"
+      },
+      {
+        "name": "Outbox / ticket unit",
+        "status": "PASS",
+        "count": 52,
+        "evidence": "backend-integration.log"
+      },
+      {
+        "name": "Hồi quy UDP/JWT/phòng",
+        "status": "PASS",
+        "count": 132,
+        "evidence": "backend-integration.log"
+      },
+      {
+        "name": "Dual transport",
+        "status": "PASS",
+        "count": 44,
+        "evidence": "merged-dual.log"
+      },
+      {
+        "name": "Unity EditMode",
+        "status": "PASS",
+        "count": 137,
+        "evidence": "unity-editmode.json"
+      },
+      {
+        "name": "Unity PlayMode",
+        "status": "PASS",
+        "count": 5,
+        "evidence": "unity-playmode.json"
+      },
+      {
+        "name": "Windows build",
+        "status": "PASS",
+        "count": 1,
+        "evidence": "unity-build.json"
+      },
+      {
+        "name": "HTTP + Mongo thực",
+        "status": "PASS",
+        "count": 33,
+        "evidence": "api-integration.json"
+      },
+      {
+        "name": "Docker HTTP",
+        "status": "PASS",
+        "count": 8,
+        "evidence": "docker-http.json"
+      },
+      {
+        "name": "Caddy HTTPS/TLS",
+        "status": "PASS",
+        "count": 6,
+        "evidence": "caddy-checks.json"
+      },
+      {
+        "name": "DB mất kết nối / phục hồi",
+        "status": "PASS",
+        "count": 3,
+        "evidence": "db-restart.json"
+      },
+      {
+        "name": "Docker restart giữ account",
+        "status": "PASS",
+        "count": 3,
+        "evidence": "docker-restart.json"
+      },
+      {
+        "name": "Unity client A: Guest → trận → history → replay",
+        "status": "PASS",
+        "count": 1,
+        "evidence": "accepted-A.json"
+      },
+      {
+        "name": "Unity client B: Guest → trận → history → replay",
+        "status": "PASS",
+        "count": 1,
+        "evidence": "accepted-B.json"
+      },
+      {
+        "name": "Docker:10 phiên gameplay / chặn phiên11",
+        "status": "PASS",
+        "count": 5,
+        "evidence": "docker-gameplay-Mixed.json"
+      },
+      {
+        "name": "Hai PC vật lý",
+        "status": "NOT_TESTED",
+        "count": 0,
+        "evidence": "Ngoài lượt nghiệm thu Local này"
+      },
+      {
+        "name": "Phase2 trên AWS / WSS public",
+        "status": "NOT_TESTED",
+        "count": 0,
+        "evidence": "Ngoài lượt nghiệm thu Local này"
+      },
+      {
+        "name": "50 phiên gameplay đồng thời",
+        "status": "NOT_TESTED",
+        "count": 0,
+        "evidence": "Ngoài lượt nghiệm thu Local này"
+      }
+    ],
+    "awsStarted": false,
+    "awsDeployed": false,
+    "notes": [
+      "Kết quả Unity lấy từ hai Windows player thực trên cùng PC, không thay hai PC vật lý.",
+      "Test profile min2 và bo tăng tốc; main min6/15s/30s/15s/10s không đổi.",
+      "Lượt Unity đầu đã FAIL phần history; sửa thứ tự ticket trước Hello, lượt cuối cả hai PASS.",
+      "Giới hạn10/5/50 là cấu hình; chưa phải sức chứa gameplay đã benchmark."
+    ],
+    "archive": "phase2-evidence.zip",
+    "sha256": "8c6a937defa0453a17cfd867b63ccee385340687a92f889c1f9aa277e5ac11ad",
+    "cleanup": {
+      "worktrees": [
+        {
+          "path": "D:\\Unity\\Jungle_Maze_Survival-ag-ag-30642e1f7b26",
+          "bytes": 558517951,
+          "status": "REMOVED_BY_ORCHESTRATOR_CLEANUP"
+        },
+        {
+          "path": "D:\\Unity\\Jungle_Maze_Survival-ag-ag-f6d09c4f9297",
+          "bytes": 578193842,
+          "status": "REMOVED_BY_ORCHESTRATOR_CLEANUP"
+        }
+      ],
+      "reclaimedBytes": 1136711793,
+      "fixturesStopped": [
+        "jungle-phase2-game",
+        "jungle-phase2-api",
+        "jungle-phase2-caddy",
+        "jungle-phase2-mongo"
+      ],
+      "dockerVolumesRetained": true,
+      "latestWindowsBuildRetained": ".utmp/phase2/build/Lastaway.exe",
+      "additionalTempCleanup": {
+        "status": "BLOCKED",
+        "reason": "Automatic approval review rejected the recursive Remove-Item operation: blocked by policy. No alternate deletion attempted.",
+        "preserved": [
+          "probe",
+          "unity-existing",
+          "unity-src",
+          "integration-fixture.json",
+          "docker-fixture.json",
+          "api.docker.env",
+          "game.docker.env",
+          "docker-account.private.json"
+        ]
+      }
+    }
   }
 }

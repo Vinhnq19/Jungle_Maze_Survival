@@ -1,3 +1,5 @@
+> C?p nh?t Phase2 ng?y24/10/2026. C?ch ch?y tr?n/Guest/history: xem m?c17 c?a h??ng d?n chung; c?c v? d? foundation c? ch? d?ng cho ki?m th? module ri?ng.
+
 # Hướng dẫn dùng Client Base cho người làm gameplay
 
 Cập nhật **23/10/2026**. Tài liệu dành cho người mới vào làm gameplay trên Unity client. Đọc mục 1–3 trước khi viết code; mục 4 là các công thức làm việc hằng ngày. Lý do thiết kế nằm ở [Client_Base_Plan.vi.md](Client_Base_Plan.vi.md); wire protocol và server nằm ở [Network_Architecture.vi.md](Network_Architecture.vi.md).
@@ -167,16 +169,20 @@ Số đo ngày 20/10/2026 trên một PC, GameServer chạy bằng `dotnet run` 
 
 Độ trễ chủ yếu nằm ở vòng xử lý của server, không phải ở client.
 
-## 6. Giới hạn hiện tại (cần phía server)
+## 6. K?t n?i Phase 2 v? ranh gi?i ti?p theo
 
-| Việc | Trạng thái |
+Lu?ng ch?y m?i n?m ? [m?c17 h??ng d?n chung](Phase1_First4Tasks.vi.md#17-phase-2-ch?y-tr?n-guest-safe-zone-v?-l?ch-s?). D?ng profile `phase2-local` (UDP protocol v3) cho resume v? Guest ticket. Server main c?n6 ng??i, profile test ri?ng c?n2. Gi?10 ng??i/ph?ng,5 ph?ng/t?ng50 slot.
+
+| Module | Tr?ch nhi?m hi?n t?i |
 | --- | --- |
-| Server xử lý `PlayerInputPacket` và gửi `PlayerStatePacket`/`EventPacket` | Chưa có. GameServer hiện chỉ có handshake và ping, nên trạng thái InMatch chỉ xảy ra khi server gửi `MatchStarted` |
-| `NetId` (byte) trong `JoinAccepted` | Chưa có. Packet gameplay đã dành sẵn trường `NetId` |
-| Frame gameplay | Byte đầu là `0x80`, sau đó là packet `NetPacketProcessor`. LiteNetLib không gửi số channel cho packet Unreliable, nên server phải nhận dạng frame theo byte đầu. Message control phải giữ type < `0x80` |
-| `ChannelsCount = 2` ở GameServer | Cần bật khi gửi gameplay Reliable trên channel 1 |
-| WSS/Auto trong Unity | Chưa có; Unity client chỉ dùng UDP |
-| Reconnect tự động | Không có, đúng như thiết kế: mất mạng thì báo lỗi và quay về menu |
+| `MatchSession` | Hello/loading, MatchId, input30Hz, snapshot/ack, own NetId t? welcome, HP/bo/k?t qu?/replay; b? packet tr?n c? |
+| `NetworkClient` | UDP v1/v2/v3, hai channel; attempt m?i m?i connect, resume b?ng proof ri?ng. Kh?ng t? reconnect khi ?? join |
+| `MatchDemoView` | G?c nh?n to?n map, roster/timer/HP/bo/result/history; t?t local controller v? local weapon probe khi ch?i m?ng |
+| `ClientRuntimeData` | Ki?m manifest/hash v?i server v? geometry scene tr??c LoadingAck |
+| `GuestHistoryClient` | API HTTPS/loopback, DPAPI theo origin; ticket m?t l?n, kh?ng g?i credential/JWT d?i h?n qua UDP |
+| GameServer | C# authoritative movement/collision, lifecycle,5 ??t bo, HealthService v? k?t qu?; API/DB kh?ng ch?n tick |
+
+Unity WSS/Auto, prediction/reconciliation v? interpolation ??y ?? thu?c MOV-02/03. Combat, inventory, hazard, HUD ??y ?? v? killcam kh?ng ???c coi ho?n t?t b?i demo. Sprite/nh?n hi?n t?i ch? ?? ki?m m?ng. `PlayerInputService` c? kh?ng ???c tick c?ng `MatchSession`; kh?ng b?t l?i HeroController trong demo m?ng.
 
 ## 7. Sửa dữ liệu và map để kiểm thử
 

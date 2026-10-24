@@ -26,8 +26,10 @@ services:
     environment:
       Mongo__ConnectionString: mongodb://mongo:27017
       Mongo__Database: jungle_maze
+      ALLOW_LOCAL_HTTP: "true"
       Swagger__Enabled: "${SWAGGER_ENABLED:-true}"
       RoomControl__BaseUrl: http://game-server:7780
+      MATCH_RESULT_TOKEN: "${MATCH_RESULT_TOKEN:-}"
     depends_on:
       mongo:
         condition: service_healthy
@@ -47,6 +49,7 @@ services:
       WS_ENABLED: "${WS_ENABLED:-true}"
       WS_BIND_ADDRESS: 0.0.0.0
       WS_PORT: "7781"
+      MATCH_PROFILE: "${MATCH_PROFILE:-main}"
       MAX_PLAYERS: "${MAX_PLAYERS:-10}"
       TICK_RATE: "${TICK_RATE:-30}"
       AUTH_MODE: "${AUTH_MODE:-RoomCode}"
@@ -59,6 +62,12 @@ services:
       MAX_ROOMS: "${MAX_ROOMS:-5}"
       MAX_ROOMS_PER_USER: "${MAX_ROOMS_PER_USER:-2}"
       ROOM_EMPTY_TTL_SECONDS: "${ROOM_EMPTY_TTL_SECONDS:-600}"
+      MATCH_RESULTS_API_URL: "${MATCH_RESULTS_API_URL:-http://api:5000/internal/match-results}"
+      MATCH_RESULT_TOKEN: "${MATCH_RESULT_TOKEN:-}"
+      MATCH_OUTBOX_PATH: "${MATCH_OUTBOX_PATH:-/app/data/match-outbox}"
+    volumes:
+      - game-outbox:/app/data/match-outbox
 
 volumes:
   mongo-data:
+  game-outbox:

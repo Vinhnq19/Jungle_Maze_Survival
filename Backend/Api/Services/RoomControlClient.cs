@@ -1,4 +1,6 @@
+using System.Net.Http.Json;
 using System.Text;
+using JungleBackend.Shared;
 
 namespace Api.Services;
 
@@ -23,5 +25,10 @@ public sealed class RoomControlClient(HttpClient client, IConfiguration configur
         }
         catch (Exception error) when (error is HttpRequestException or TaskCanceledException)
         { return (503, "{\"error\":\"RoomServiceUnavailable\"}"); }
+    }
+
+    public async Task<(int Status, string? Json)> RegisterGameTicketAsync(RegisterGameTicketCommand command, CancellationToken ct)
+    {
+        return await Send(HttpMethod.Post, "/internal/game-tickets", command, ct);
     }
 }

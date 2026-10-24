@@ -1,7 +1,9 @@
 using System.Security.Cryptography;
 using System.Text;
 using GameServer.Configuration;
+using GameServer.Networking;
 using JungleBackend.Rooms;
+using JungleBackend.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +14,10 @@ namespace GameServer.Rooms;
 
 public static class RoomControlHost
 {
-    public static WebApplication? Start(RoomOptions options, RoomCommands commands)
+    public static WebApplication? Start(RoomOptions options, RoomCommands commands) =>
+        Start(options, commands, null);
+
+    public static WebApplication? Start(RoomOptions options, RoomCommands commands, SessionHub? hub)
     {
         if (!options.ControlEnabled) return null;
         var builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions { Args = Array.Empty<string>() });
@@ -36,6 +41,13 @@ public static class RoomControlHost
             Respond(await commands.Submit(rooms => rooms.List(ownerId), ct)));
         app.MapDelete("/internal/rooms/{id:guid}", async (Guid id, string ownerId, CancellationToken ct) =>
             Respond(await commands.Submit(rooms => rooms.Delete(id, ownerId), ct)));
+
+        if (hub is not null)
+        {
+            app.MapPost("/internal/game-tickets", async (RegisterGameTicketCommand command, CancellationToken ct) =>
+                Respond(await commands.Submit(_ => hub.RegisterTicket(command), ct)));
+        }
+
         app.StartAsync().GetAwaiter().GetResult();
         Console.WriteLine($"[room-control] enabled port={options.ControlPort}");
         return app;
