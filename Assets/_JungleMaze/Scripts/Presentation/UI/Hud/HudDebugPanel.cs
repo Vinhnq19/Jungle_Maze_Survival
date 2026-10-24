@@ -66,7 +66,10 @@ namespace JungleMaze.Presentation.UI.Hud
         private void OnGUI()
         {
             if (!_visible || _scenarios == null) return;
-            var rect = new Rect(Screen.width - 380, 320, 360, Mathf.Max(200, Screen.height - 330));
+            // Right side, under Match status and above the quick bar, so the HUD blocks stay visible while testing.
+            var scale = Screen.height / 720f;
+            var top = 320f * scale;
+            var rect = new Rect(Screen.width - 380, top, 360, Mathf.Max(200f, Screen.height - top - 180f * scale));
             GUILayout.BeginArea(rect, GUI.skin.box);
             _scroll = GUILayout.BeginScrollView(_scroll);
             GUILayout.Label("HUD mock (F4) — dev only");
