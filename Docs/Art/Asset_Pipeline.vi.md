@@ -1,5 +1,9 @@
 # Thay asset demo bằng asset thật sinh bằng Codex
 
+**Hướng đã chọn: H · Rừng gọn (24/10/2026).** Người dùng yêu cầu giảm chi tiết, kết nối Figma, rồi xác nhận tiếp tục. Demo: [H_simple_forest.png](directions/H_simple_forest.png), gameplay [1280×720](directions/H_gameplay_1280.png). Dùng art vector có sẵn của hướng H: mảng màu phẳng, bóng cứng nhẹ, giữ khung HUD mỏng và palette/font Figma v2. Nguồn SVG rừng/menu/icon ở `directions/H_*`; rasterize về PNG theo manifest, không thêm texture hay trang trí của bản G đã bị bỏ. Chi tiết nguồn và giới hạn: [H_Demo_Review.vi.md](H_Demo_Review.vi.md).
+
+Đợt triển khai hiện tại: P0 (6 asset đang dùng), sau đó UI-01 phần 2 tới G3. Icon catalog ART-04, code menu UI-02, vật cản và animation thuộc ticket tương ứng; demo không tự mở rộng phạm vi các ticket đó. File Figma đã đọc trực tiếp nhưng chỉ cho đọc; không chặn build Unity theo bản thiết kế đã có.
+
 Cập nhật **24/10/2026**. Toàn bộ art hiện tại trong `Assets/_JungleMaze/Art` là bản **demo**: sprite 9-slice tự sinh, ô vuông thay icon, Hero và ô đất 48 px vẽ tạm. Tài liệu này chuẩn bị để thay chúng bằng ảnh do **Codex sinh**, mà không phải sửa code, test hay bố cục.
 
 Đọc kèm: bố cục và component trong [UI_Wireframes.vi.md](../UI_Wireframes.vi.md) mục 5, danh sách asset máy đọc được trong [asset_manifest.csv](asset_manifest.csv) (73 dòng), quyết định "art tạm, AI render sau" trong mục đầu của UI_Wireframes.

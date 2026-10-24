@@ -1,6 +1,8 @@
 # H · Rừng gọn — demo dựa trực tiếp trên Figma
 
-Ngày: 24/10/2026. Trạng thái: **chờ chọn hướng art; chưa thay asset Unity, chưa build UI-01 phần 2**.
+Ngày: 24/10/2026. Trạng thái: **đã chọn H, đang triển khai P0 rồi UI-01 phần 2 tới G3**.
+
+Người dùng xác nhận tiếp tục: "Oke làm tiếp đi" sau khi đã xem H và kiểm tra kết nối Unity MCP. H là hướng art triển khai, giữ mức độ đơn giản của demo và palette Figma v2.
 
 ## Yêu cầu và nguồn
 
@@ -28,4 +30,4 @@ UI dùng bố cục và nội dung Figma, giữ màu ngữ nghĩa, khung mỏng 
 
 ## Việc tiếp theo
 
-Chờ người dùng chọn H hoặc chỉ định chỉnh art theo CODEX_HANDOFF.md mục 0. Sau phần art, tiếp tục UI-01 phần 2 theo UI-01_HANDOFF.md mục B và UI-01-P2.md mục 4. G1 đã duyệt, G3 lõi đã đạt; không yêu cầu duyệt lại G1. Build → review → QA → dừng G3; commit theo đường dẫn, không push. Các lưu ý kỹ thuật đã chuẩn bị ở G_Demo_Review.vi.md vẫn còn hiệu lực.
+Làm P0 theo Asset_Pipeline.vi.md và manifest; sau phần art, tiếp tục UI-01 phần 2 theo UI-01_HANDOFF.md mục B và UI-01-P2.md mục 4. G1 đã duyệt, G3 lõi đã đạt; không yêu cầu duyệt lại G1. Build → review → QA → dừng G3; commit theo đường dẫn, không push. Các lưu ý kỹ thuật đã chuẩn bị ở G_Demo_Review.vi.md vẫn còn hiệu lực.
