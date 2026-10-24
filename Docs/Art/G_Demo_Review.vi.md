@@ -1,6 +1,8 @@
 # G · Biên giới Ngọc — demo art mới
 
-Ngày: 24/10/2026. Trạng thái: **concept để người dùng chọn hướng art; chưa duyệt, chưa thay asset Unity**.
+Ngày: 24/10/2026. Trạng thái: **người dùng không chọn — quá chi tiết; chưa thay asset Unity**.
+
+Phản hồi tiếp theo của người dùng: "Nó bị quá quá chi tiết rồi. Bạn cần liên kết với figma đi". Dừng hướng G; demo kế tiếp cần đơn giản hơn và bám thiết kế Figma hiện tại. Plugin Figma đã được tìm thấy và đề xuất kết nối, chưa xác nhận đã kết nối. File thiết kế tham chiếu trong bàn giao: `oeZgisxdiR80hRqbikUwPb`, HUD v2 `41:2`, feedback `48:239`, style guide `39:3`.
 
 Người dùng không ưng các demo trước và yêu cầu demo mới, rồi sau phần art build UI-01 phần 2 theo kế hoạch đã duyệt, review → QA → dừng G3.
 
