@@ -1,6 +1,6 @@
 # H · Rừng gọn — demo dựa trực tiếp trên Figma
 
-Ngày: 24/10/2026. Trạng thái: **đã chọn H, đang triển khai P0 rồi UI-01 phần 2 tới G3**.
+Ngày bắt đầu: 24/10/2026; cập nhật 25/10/2026. Trạng thái: **H P0 đã áp; UI-01 phần 2 đã build/review/QA kỹ thuật, chờ người dùng nghiệm thu G3**.
 
 Người dùng xác nhận tiếp tục: "Oke làm tiếp đi" sau khi đã xem H và kiểm tra kết nối Unity MCP. H là hướng art triển khai, giữ mức độ đơn giản của demo và palette Figma v2.
 
@@ -34,6 +34,7 @@ UI dùng bố cục và nội dung Figma, giữ màu ngữ nghĩa, khung mỏng 
 - Review phát hiện bàn giao gọi `Cell48.png` là ground nhưng `MapGridView` tự sinh nền; Cell48 thực tế là mask dùng chung của obstacle/probe. Màu xanh trên mask gây nhân tint ngoài dự kiến.
 - `d860ceee`: phục hồi Cell48 trắng; tách `Ground96.png` và đổi manifest `world_ground` sang asset mới, trạng thái **review**. Năm asset HUD/Hero còn lại đã thay; ground chưa được renderer map dùng, không coi hoàn tất.
 - Người dùng đã duyệt trực tiếp [H_Ground_Integration.patch](H_Ground_Integration.patch): "Cho phép nối ground H tối thiểu" (24/10/2026). Dev được thêm field Sprite tuỳ chọn chỉ cho floor, gán Game/HudPreview, giữ walls/collider/balance và ownership của tài nguyên procedural. Chờ commit triển khai và QA trước khi coi ground hoàn tất.
+- **25/10: đã triển khai hook ở `79ddece2`, gán hai scene ở `81a2c735`; manifest đủ sáu P0 `done`.** Game chỉ floor dùng Ground96, HudPreview dùng SpriteRenderer art riêng vì không có MapGridView. Kiểm ground floor-only và hồi quy foundation đã qua trong build/QA PlayMode 37/37; EditMode QA 247/247. Ảnh Game view và kiểm đọc rõ được ghi trong báo cáo QA phần 2; không đồng nhất với ảnh concept H.
 
 ## Tiếp tục UI-01
 

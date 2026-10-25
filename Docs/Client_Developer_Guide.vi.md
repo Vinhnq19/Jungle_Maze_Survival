@@ -154,8 +154,8 @@ _effects.Apply(EffectKind.Adrenaline, 8f, 8f);  // IEffectStateWriter: store t�
 
 ## 5. Kiểm thử
 
-- **Window → General → Test Runner → EditMode → Run All:** assembly `JungleMaze.Tests.EditMode`; kết quả 23/10 là **125/125 PASS**, gồm DI, EventBus, StateMachine, pool, config, serializer 0 GC và `NetworkClient` với `FakeGameServer` trên loopback. Sau UI-01 (24/10) là **181/181 PASS**, thêm 56 test HUD trong `Tests/EditMode/Hud/`.
-- **PlayMode → Run All:** assembly `JungleMaze.Tests.PlayMode`; các test nền tảng chạy Unity Physics2D, config sau Awake, aim, camera, map, projectile và pooling. Sau UI-01 là **20/20 PASS**, thêm 15 test `HudAcceptanceTests` (bố cục theo Figma v2, 0 GC, font, màu). Các test này không cần EC2/API/MongoDB. Kết quả chi tiết ở tài liệu nghiệm thu.
+- **Window → General → Test Runner → EditMode → Run All:** assembly `JungleMaze.Tests.EditMode`; kết quả 23/10 là **125/125 PASS**, gồm DI, EventBus, StateMachine, pool, config, serializer 0 GC và `NetworkClient` với `FakeGameServer` trên loopback. Sau UI-01 lõi và merge main (24/10) là **193/193 PASS**. Sau build UI-01 phần 2, QA độc lập ngày 25/10 đạt **247/247 PASS**, gồm test feedback trong `Tests/EditMode/Hud/Feedback/`. Đây là kết quả test, không thay nghiệm thu G3.
+- **PlayMode → Run All:** assembly `JungleMaze.Tests.PlayMode`; các test nền tảng chạy Unity Physics2D, config sau Awake, aim, camera, map, projectile và pooling. Sau UI-01 lõi là **20/20 PASS**; QA phần 2 ngày 25/10 đạt **37/37 PASS**, thêm 17 `HudFeedbackAcceptanceTests` và giữ hồi quy lõi. Các test này không cần EC2/API/MongoDB. Bằng chứng mới ở `Docs/Reports/UI-01-P2_2026-10-25/`.
 - Phía server: `Backend/Tests/run_all.cmd` (cần Docker).
 - Đo RTT để nghiệm thu: bật F3, hoặc xem dòng `[client-summary]` trong log khi mất kết nối, cùng format với NetSmokeClient.
 

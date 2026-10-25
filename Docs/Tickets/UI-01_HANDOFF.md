@@ -7,7 +7,7 @@ UI-01 gồm hai phần:
 | Phần | File | Trạng thái |
 | --- | --- | --- |
 | Phần lõi (HUD: Vitals, Quick bar, Minimap, Match status, 3 state + mock) | `Docs/Tickets/UI-01.md` | **Done**, G3 ngày 24/10/2026. Còn 3 việc dọn nhỏ + 2 việc người dùng tự kiểm (xem A) |
-| Phần 2 (lớp phản hồi: dùng đồ, hiệu ứng, nhặt đồ, hit/nhận sát thương, cảnh báo bom/bẫy) | `Docs/Tickets/UI-01-P2.md` | **Đã duyệt G1**, điều kiện "chờ G3 phần lõi" đã thoả → **sẵn sàng build** (xem B) |
+| Phần 2 (lớp phản hồi: dùng đồ, hiệu ứng, nhặt đồ, hit/nhận sát thương, cảnh báo bom/bẫy) | `Docs/Tickets/UI-01-P2.md` | **25/10: build + review + QA kỹ thuật xong, chờ G3**; 247/247 EditMode, 37/37 PlayMode; FB50 chờ người dùng cảm nhận |
 
 Nhánh `huycv`, HEAD sau merge main: EditMode 193/193, PlayMode 20/20, console sạch. Quyết định khó suy ra từ code: `.claude/memory/ui-01-hud.md`. Cách đẩy dữ liệu lên HUD: `Docs/Client_Developer_Guide.vi.md` mục 4.7.
 
@@ -26,8 +26,8 @@ Nhánh `huycv`, HEAD sau merge main: EditMode 193/193, PlayMode 20/20, console s
 Dọn nhỏ (một commit `docs`/`chore`):
 
 1. ~~Ghi quyết định EditorSettings vào mục 8 + memory~~ — đã làm.
-2. `Docs/Client_Developer_Guide.vi.md` mục 5: số test sau merge main là **EditMode 193/193**, PlayMode 20/20 (đang ghi 181). Cập nhật lại khi phần 2 thêm test.
-3. `Assets/_JungleMaze/Scenes/Game.unity`: bỏ khoảng trắng cuối Unity thêm ở 3 dòng `m_Name` (kiểm `git diff c37a8673 -- Assets/_JungleMaze/Scenes/Game.unity`). Chỉ 3 dòng đó.
+2. ~~Cập nhật số test trong `Docs/Client_Developer_Guide.vi.md` mục 5~~ — đã ghi baseline merge main 193/193 và QA phần 2 ngày 25/10: **247/247 EditMode, 37/37 PlayMode**.
+3. ~~Bỏ khoảng trắng cuối Unity thêm ở đúng 3 dòng `m_Name` trong `Game.unity`~~ — đã làm trong `81a2c735`, cùng gán ground H được duyệt.
 
 Đã chốt khi nghiệm thu ("Nghiệm thu (Khuyên dùng)"), không phải việc của UI-01 nữa:
 

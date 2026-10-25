@@ -1,4 +1,4 @@
-Approved by the user on 24/10/2026: "Cho phép nối ground H tối thiểu". Implementation and QA pending.
+Approved by the user on 24/10/2026: "Cho phép nối ground H tối thiểu". Implemented in 79ddece2/81a2c735; Editor QA passed on 25/10/2026 (33620171). G3 acceptance pending.
 
 --- a/Assets/_JungleMaze/Scripts/Presentation/World/MapGridView.cs
 +++ b/Assets/_JungleMaze/Scripts/Presentation/World/MapGridView.cs
