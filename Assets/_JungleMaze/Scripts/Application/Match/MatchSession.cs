@@ -60,6 +60,9 @@ namespace JungleMaze.App.Match
         public Guid ResumeProof { get; private set; }
         public int Snapshots { get; private set; }
         public int IgnoredPackets { get; private set; }
+        public int InputsSent { get; private set; }
+        public double ActiveInputSeconds { get; private set; }
+        public int InputCatchupDrops { get; private set; }
         public bool DeferHello { get; set; }
         public bool IdentityTicketSent { get; private set; }
         public bool Connected => _network.State == NetworkState.Joined;
@@ -89,6 +92,7 @@ namespace JungleMaze.App.Match
             var ticks = (uint)_tickFraction;
             ServerTick += ticks; _tickFraction -= ticks;
             if (Phase != MatchPhase.InGame || OwnNetId == 255 || OwnHp == 0) { _sendElapsed = 0; return; }
+            ActiveInputSeconds += deltaTime;
             _sendElapsed += deltaTime;
             var sent = 0;
             while (_sendElapsed >= 1f / 30 && sent++ < 3)
@@ -98,9 +102,9 @@ namespace JungleMaze.App.Match
                 input.SetMove(_intent.MoveX, _intent.MoveY); input.SetAimDegrees(_intent.AimDegrees);
                 // Demo sends movement/aim only; this task does not implement combat actions.
                 var scoped = new MatchInputPacket { MatchId = MatchId, Input = input };
-                _sender.Send(ref scoped, PacketDelivery.Unreliable);
+                if (_sender.Send(ref scoped, PacketDelivery.Unreliable)) InputsSent++;
             }
-            if (_sendElapsed > .1f) _sendElapsed = 0;
+            if (_sendElapsed > .1f) { _sendElapsed = 0; InputCatchupDrops++; }
         }
         private void Hello()
         {

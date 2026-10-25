@@ -49,6 +49,7 @@ namespace JungleMaze.Presentation.UI
         public string Status { get; private set; } = "";
         public string ConfigSource => _config.Current?.Source ?? "";
         public string AuthModeText => _config.Current?.AuthMode.ToString() ?? "";
+        public string TransportText => _config.Current?.Transport ?? "";
         public bool RequiresLogin => _config.Current != null && _config.Current.AuthMode == JungleBackend.Protocol.JoinAuthMode.Jwt;
         public bool IsBusy => _connect.IsLoggingIn || _network.State == NetworkState.Connecting || _network.State == NetworkState.Authenticating;
         public string PlayerId => _network.PlayerId ?? "";

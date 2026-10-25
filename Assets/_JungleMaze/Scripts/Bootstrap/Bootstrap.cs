@@ -34,7 +34,7 @@ namespace JungleMaze.Composition
     /// </summary>
     [DefaultExecutionOrder(-10000)]
     [DisallowMultipleComponent]
-    public sealed class Bootstrap : MonoBehaviour
+    public sealed partial class Bootstrap : MonoBehaviour
     {
         [SerializeField] private string menuScene = "Boot";
         [SerializeField] private string gameScene = "Game";
@@ -156,7 +156,13 @@ namespace JungleMaze.Composition
             Attach<HudFeedbackDebugPanel>();
 #endif
             Attach<MatchDemoView>();
-            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-phase2Smoke") >= 0) Attach<Phase2DemoProbe>();
+            if (Array.IndexOf(Environment.GetCommandLineArgs(), "-onlineTest") >= 0)
+            {
+                JungleMaze.App.Testing.OnlineTestExtensions.Reset();
+                ConfigureOnlineChecks();
+                Attach<OnlineScenarioRunner>();
+            }
+            else if (Array.IndexOf(Environment.GetCommandLineArgs(), "-phase2Smoke") >= 0) Attach<Phase2DemoProbe>();
             _log.Info("[Bootstrap] Đã nối service.");
         }
 
@@ -166,6 +172,10 @@ namespace JungleMaze.Composition
             _injector.Inject(component);
             return component;
         }
+
+        // Feature tests can implement this partial hook in a separate Bootstrap.*Tests.cs file.
+        // It is called only for the opt-in runner; ordinary play does not register test drivers.
+        partial void ConfigureOnlineChecks();
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => InjectScene(scene);
 

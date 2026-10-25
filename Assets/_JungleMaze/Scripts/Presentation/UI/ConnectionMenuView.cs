@@ -64,7 +64,7 @@ namespace JungleMaze.Presentation.UI
             GUI.enabled = true;
             GUILayout.EndHorizontal();
 
-            GUILayout.Label($"Auth: {_presenter.AuthModeText} · Nguồn config: {_presenter.ConfigSource}");
+            GUILayout.Label($"Auth: {_presenter.AuthModeText} · Transport: {_presenter.TransportText} · Nguồn: {_presenter.ConfigSource}");
             if (!string.IsNullOrEmpty(_presenter.Status)) GUILayout.Label(_presenter.Status, _status);
             GUILayout.Label("F3: bật/tắt thông số mạng");
             GUILayout.EndArea();

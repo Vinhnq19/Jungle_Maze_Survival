@@ -1,0 +1,26 @@
+# Tailscale Serve terminates HTTPS externally and proxies to loopback HTTP on 8080.
+:8080 {
+    # GameServer-only internal result/control endpoints must never be reachable through proxy
+    @internal path /internal /internal/*
+    handle @internal {
+        respond 404
+    }
+
+    # Game WebSocket endpoint: exact /game path proxied to game-server:7781
+    handle /game {
+        reverse_proxy game-server:7781 {
+            header_up X-Forwarded-Proto "https"
+        }
+    }
+
+    # Swagger API documentation: protected with HTTP Basic Authentication
+    @swagger path /swagger /swagger/*
+    basic_auth @swagger {
+        {$SWAGGER_USER} {$SWAGGER_HASH}
+    }
+
+    # All API endpoints proxied to api:5000 (preserving HTTPS proto flag for ASP.NET Core)
+    reverse_proxy api:5000 {
+        header_up X-Forwarded-Proto "https"
+    }
+}

@@ -45,6 +45,7 @@ rm -f -- "$target/images.tar.gz"
 if [[ ! -f "$CONFIG_FILE" ]]; then bash "$target/scripts/configure.sh"; fi
 # Future deployment only: append the new key without overwriting existing configuration.
 bash "$target/scripts/enable-room-control.sh"
+bash "$target/scripts/enable-match-results.sh"
 bash "$target/scripts/room-test.sh" apply-policy
 previous="$(readlink -f "$ROOT/current" 2>/dev/null || true)"
 [[ -z "$previous" || "$previous" == "$target" ]] || ln -sfn "$previous" "$ROOT/previous"

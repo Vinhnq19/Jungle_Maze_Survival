@@ -34,6 +34,7 @@ public sealed class SessionHub
         public bool WssChosen;
         public bool Committed;
         public long RetiredAt;
+        public Guid ResumeMatchId;
     }
 
     private sealed record RegisteredTicket(
@@ -319,6 +320,19 @@ public sealed class SessionHub
         // Resume handling: validate alive/unexpired token BEFORE capacity
         if (request.ResumeToken != Guid.Empty)
         {
+            if (_attempts.TryGetValue(request.AttemptId, out var resumed))
+            {
+                // Allow only UDP -> WSS continuation of this exact uncommitted resume.
+                // The old proof was already consumed; matching the opaque attempt + full
+                // request authorizes transfer of its existing slot, never a fresh resume.
+                if (transport != "Wss" || resumed.WssChosen || resumed.Committed || resumed.Current is not { } current ||
+                    resumed.ResumeMatchId != room.Match.MatchId || resumed.Request != request ||
+                    current.PlayerId is null || !room.Match.Entities.TryGetBySession(current.PlayerId, out var entity) || entity is null || !entity.IsAlive ||
+                    room.Match.Phase != MatchPhase.InGame || entity.IsDisconnected && !room.Match.IsValidResumeToken(entity.ResumeToken, out _))
+                    return "AttemptUsed";
+                return null;
+            }
+            if (_attempts.Count >= 4096) return "ServerBusy";
             if (room.Match.Phase != MatchPhase.InGame)
                 return "InvalidResumeToken";
 
@@ -365,9 +379,11 @@ public sealed class SessionHub
             heldSession.Peer = peer;
             heldSession.Request = request;
             heldSession.LastMessage = Stopwatch.GetTimestamp();
+            heldSession.ApplicationSeen = false;
             _sessions.Add(peer, heldSession);
             _users[heldSession.PlayerId!] = heldSession;
-            _attempts[request.AttemptId] = new(request) { Current = heldSession, PlayerId = heldSession.PlayerId, Committed = true };
+            _attempts[request.AttemptId] = new(request) { Current = heldSession, PlayerId = heldSession.PlayerId,
+                WssChosen = peer.Transport == "Wss", ResumeMatchId = room.Match.MatchId };
             return true;
         }
 
@@ -380,6 +396,11 @@ public sealed class SessionHub
         }
         if (attempt?.Current is { } old)
         {
+            if (request.ResumeToken != Guid.Empty)
+            {
+                if (old.PlayerId is null || !room.Match.ContinueResumedTransport(old.PlayerId)) { Reject(peer, "InvalidResumeToken"); return false; }
+                _heldSessions.Remove(old.PlayerId);
+            }
             _sessions.Remove(old.Peer);
             var previousPeer = old.Peer;
             old.Peer = peer;
@@ -414,6 +435,14 @@ public sealed class SessionHub
     public void Receive(IGamePeer peer, byte[] packet, bool reliable, bool validChannel = true)
     {
         if (!_sessions.TryGetValue(peer, out var session)) return;
+        // WSS has no LiteNetLib disconnect metadata. The final explicit quit frame
+        // releases the slot immediately after the client's queued PlayerLeave.
+        if (peer.Transport == "Wss" && packet.Length == 1 && packet[0] == NetworkProtocol.ExplicitQuit)
+        {
+            Quit(peer);
+            peer.Close("UserRequested");
+            return;
+        }
         var reader = new NetDataReader(packet);
 
         if (session.PlayerId is null)

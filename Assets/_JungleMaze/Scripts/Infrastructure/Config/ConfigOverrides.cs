@@ -11,7 +11,7 @@ namespace JungleMaze.Infrastructure.Config
     /// </summary>
     public sealed class ConfigOverrides
     {
-        public string Mode, Host, Port, ApiBaseUrl;
+        public string Mode, Host, Port, ApiBaseUrl, Transport, WebSocketUrl;
         public string ConfigPath, Profile, RoomCode, DisplayName;
         public readonly List<string> Applied = new List<string>();
 
@@ -23,7 +23,10 @@ namespace JungleMaze.Infrastructure.Config
                 Mode = env?.Invoke("NET_MODE"),
                 Host = env?.Invoke("NET_GAME_SERVER_HOST"),
                 Port = env?.Invoke("NET_GAME_SERVER_PORT"),
-                ApiBaseUrl = env?.Invoke("NET_API_BASE_URL")
+                ApiBaseUrl = env?.Invoke("NET_API_BASE_URL"),
+                RoomCode = env?.Invoke("NET_ROOM_CODE"),
+                Transport = env?.Invoke("NET_TRANSPORT"),
+                WebSocketUrl = env?.Invoke("NET_WS_URL")
             };
             if (args == null) return result;
             for (var i = 0; i < args.Length - 1; i++)
@@ -39,6 +42,8 @@ namespace JungleMaze.Infrastructure.Config
                     case "-apibaseurl": result.ApiBaseUrl = value; i++; break;
                     case "-room": result.RoomCode = value; i++; break;
                     case "-name": result.DisplayName = value; i++; break;
+                    case "-transport": result.Transport = value; i++; break;
+                    case "-websocketurl": result.WebSocketUrl = value; i++; break;
                 }
             }
             return result;
@@ -63,10 +68,13 @@ namespace JungleMaze.Infrastructure.Config
                     return "Override port phải là số nguyên trong [1, 65535].";
                 Applied.Add("port");
             }
+            if (Transport != null) Applied.Add("transport");
+            if (WebSocketUrl != null) Applied.Add("webSocketUrl");
             if (Applied.Count == 0 && ApiBaseUrl == null) return null;
             var source = config.Source + " + override(" + string.Join(",", Applied) + (ApiBaseUrl != null ? ",apiBaseUrl" : "") + ")";
             result = config.WithEndpoint(host, port, mode, source);
             if (ApiBaseUrl != null) result = result.WithApiBaseUrl(ApiBaseUrl, source);
+            if (Transport != null || WebSocketUrl != null) result = result.WithTransport(Transport ?? config.Transport, WebSocketUrl ?? config.WebSocketUrl, source);
             return null;
         }
     }

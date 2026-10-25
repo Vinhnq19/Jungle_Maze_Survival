@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "connection",
+  "maxDurationSeconds": 35,
+  "minConnectedSeconds": 5,
+  "expectedPlayers": 1,
+  "requireMovement": false,
+  "requireZone": false,
+  "requireHpDamage": false,
+  "requireResult": false,
+  "requireReplay": false,
+  "requireHistory": false,
+  "minInputHz": 0,
+  "minSnapshotHz": 0,
+  "maxPongTimeoutRatio": 0.01,
+  "driver": "movement",
+  "extraAssertions": []
+}

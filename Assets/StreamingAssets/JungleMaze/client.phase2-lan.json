@@ -1,0 +1,10 @@
+{
+  "authMode": "RoomCode",
+  "protocolVersion": 3,
+  "connectTimeoutMs": 5000,
+  "mode": "LAN",
+  "apiBaseUrl": null,
+  "gameServerHost": "192.168.1.10",
+  "gameServerPort": 7777,
+  "transport": "Udp"
+}

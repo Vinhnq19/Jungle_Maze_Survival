@@ -39,6 +39,13 @@ namespace JungleMaze.Infrastructure.Config
             foreach (var key in Required)
                 if (!values.ContainsKey(key)) { error = $"{source}: thiếu key bắt buộc '{key}'."; return false; }
 
+            var connectIp = String(values, "webSocketConnectIp");
+            if (!string.IsNullOrEmpty(connectIp))
+            {
+                error = $"{source}: Unity client không hỗ trợ 'webSocketConnectIp'.";
+                return false;
+            }
+
             if (!TryMode(String(values, "mode"), out var mode)) { error = $"{source}: mode phải là Local, LAN hoặc Online."; return false; }
             if (!TryAuthMode(String(values, "authMode"), out var authMode)) { error = $"{source}: authMode phải là RoomCode hoặc Jwt."; return false; }
             if (!TryInt(values["gameServerPort"], out var port)) { error = $"{source}: gameServerPort phải là số nguyên."; return false; }
@@ -47,7 +54,7 @@ namespace JungleMaze.Infrastructure.Config
             if (!TryInt(values["connectTimeoutMs"], out var timeout)) { error = $"{source}: connectTimeoutMs phải là số nguyên."; return false; }
 
             config = new ClientConfig(mode, String(values, "apiBaseUrl"), String(values, "gameServerHost"), port,
-                authMode, (ushort)version, timeout, String(values, "transport") ?? "Udp", source);
+                authMode, (ushort)version, timeout, String(values, "transport") ?? "Udp", source, String(values, "webSocketUrl"));
             error = null;
             return true;
         }
@@ -65,6 +72,8 @@ namespace JungleMaze.Infrastructure.Config
                 ["connectTimeoutMs"] = config.ConnectTimeoutMs,
                 ["transport"] = config.Transport
             };
+            if (!string.IsNullOrEmpty(config.WebSocketUrl))
+                root["webSocketUrl"] = config.WebSocketUrl;
             return root.ToString(Formatting.Indented);
         }
 
