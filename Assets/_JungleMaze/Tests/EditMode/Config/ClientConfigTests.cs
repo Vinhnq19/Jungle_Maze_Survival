@@ -21,8 +21,8 @@ namespace JungleMaze.Tests.Config
 
         private static ClientConfig Config(string host = "127.0.0.1", int port = 7777, ushort version = 1,
             int timeout = 5000, JoinAuthMode auth = JoinAuthMode.RoomCode, string api = null,
-            ConnectionMode mode = ConnectionMode.Local, string transport = "Udp") =>
-            new ClientConfig(mode, api, host, port, auth, version, timeout, transport);
+            ConnectionMode mode = ConnectionMode.Local, string transport = "Udp", string wsUrl = null) =>
+            new ClientConfig(mode, api, host, port, auth, version, timeout, transport, "", wsUrl);
 
         [Test]
         public void Validate_AcceptsLocalLanVpnHosts()
@@ -47,7 +47,24 @@ namespace JungleMaze.Tests.Config
             Assert.IsNull(Config(version: 3).Validate());
             Assert.IsNotNull(Config(version: 4).Validate());
             Assert.IsNotNull(Config(timeout: 100).Validate());
-            StringAssert.Contains("Udp", Config(transport: "Wss").Validate());
+            StringAssert.Contains("Udp", Config(transport: "UnknownTransport").Validate());
+        }
+
+        [Test]
+        public void Validate_WssAndAuto_TransportAndUrlRules()
+        {
+            // Wss/Auto cần version 2 hoặc 3
+            Assert.IsNotNull(Config(transport: "Wss", version: 1, wsUrl: "ws://127.0.0.1:7781/game").Validate());
+            Assert.IsNull(Config(transport: "Wss", version: 2, wsUrl: "ws://127.0.0.1:7781/game").Validate());
+            Assert.IsNull(Config(transport: "Wss", version: 3, wsUrl: "ws://127.0.0.1:7781/game").Validate());
+            Assert.IsNull(Config(transport: "Auto", version: 2, wsUrl: "ws://127.0.0.1:7781/game").Validate());
+            Assert.IsNull(Config(transport: "Auto", version: 3, wsUrl: "wss://junglemaze.duckdns.org/game", mode: ConnectionMode.Online).Validate());
+
+            // Strict TLS: ws chỉ cho phép loopback ở Local mode
+            Assert.IsNotNull(Config(transport: "Wss", version: 2, wsUrl: "ws://192.168.1.50:7781/game", mode: ConnectionMode.LAN).Validate());
+            Assert.IsNotNull(Config(transport: "Wss", version: 2, wsUrl: "ws://127.0.0.1:7781/game", mode: ConnectionMode.Online).Validate());
+            Assert.IsNotNull(Config(transport: "Wss", version: 2, wsUrl: "wss://junglemaze.duckdns.org/other", mode: ConnectionMode.Online).Validate());
+            Assert.IsNotNull(Config(transport: "Wss", version: 2, wsUrl: "http://127.0.0.1:7781/game").Validate());
         }
 
         [Test]
@@ -57,7 +74,25 @@ namespace JungleMaze.Tests.Config
             Assert.IsNull(Config(auth: JoinAuthMode.Jwt, api: "http://127.0.0.1:5000").Validate());
             Assert.IsNull(Config(auth: JoinAuthMode.Jwt, api: "https://junglemaze.duckdns.org").Validate());
             Assert.IsNotNull(Config(auth: JoinAuthMode.Jwt, api: "http://192.168.1.20:5000", mode: ConnectionMode.LAN).Validate());
-            Assert.IsNull(Config(auth: JoinAuthMode.Jwt, api: "http://100.80.1.20:5000", mode: ConnectionMode.Online).Validate());
+            Assert.IsNotNull(Config(auth: JoinAuthMode.Jwt, api: "http://100.80.1.20:5000", mode: ConnectionMode.Online).Validate());
+            Assert.IsNull(Config(auth: JoinAuthMode.Jwt, api: "https://host.example.ts.net", mode: ConnectionMode.Online).Validate());
+        }
+
+        [Test] public void LocalProfileCannotFallbackToRemoteBackend()
+        { Assert.IsNotNull(Config(transport: "Auto", version: 3, wsUrl: "wss://junglemaze.duckdns.org/game").Validate()); }
+
+        [Test] public void RemoteProfileCannotUseLocalApiOrAnotherWssGateway()
+        {
+            Assert.IsNotNull(Config(host: "junglemaze.duckdns.org", mode: ConnectionMode.Online, version: 3, api: "http://127.0.0.1:5000").Validate());
+            Assert.IsNotNull(Config(host: "junglemaze.duckdns.org", mode: ConnectionMode.Online, version: 3, transport: "Wss", wsUrl: "wss://junglemaze.duckdns.org/game", api: "https://other.example.com").Validate());
+        }
+
+        [Test] public void TransportEnvironmentOverridePreservesExplicitWssEndpoint()
+        {
+            var values = new Dictionary<string, string> { ["NET_TRANSPORT"] = "Wss", ["NET_WS_URL"] = "ws://127.0.0.1:7781/game", ["NET_ROOM_CODE"] = "ROOM42" };
+            var o = ConfigOverrides.From(new string[0], key => values.TryGetValue(key, out var v) ? v : null);
+            Assert.IsNull(o.Apply(Config(version: 3), out var c));
+            Assert.AreEqual("Wss", c.Transport); Assert.AreEqual("ws://127.0.0.1:7781/game", c.WebSocketUrl); Assert.AreEqual("ROOM42", o.RoomCode); Assert.IsNull(c.Validate());
         }
 
         [Test]

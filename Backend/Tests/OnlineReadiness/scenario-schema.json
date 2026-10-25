@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "id"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "id": {
+      "type": "string"
+    },
+    "maxDurationSeconds": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 900
+    },
+    "minConnectedSeconds": {
+      "type": "integer"
+    },
+    "expectedPlayers": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10
+    },
+    "requireMovement": {
+      "type": "boolean"
+    },
+    "requireZone": {
+      "type": "boolean"
+    },
+    "requireHpDamage": {
+      "type": "boolean"
+    },
+    "requireResult": {
+      "type": "boolean"
+    },
+    "requireReplay": {
+      "type": "boolean"
+    },
+    "requireHistory": {
+      "type": "boolean"
+    },
+    "minInputHz": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 30
+    },
+    "minSnapshotHz": {
+      "type": "number"
+    },
+    "maxPongTimeoutRatio": {
+      "type": "number"
+    },
+    "driver": {
+      "type": "string"
+    },
+    "extraAssertions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "$schema": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}

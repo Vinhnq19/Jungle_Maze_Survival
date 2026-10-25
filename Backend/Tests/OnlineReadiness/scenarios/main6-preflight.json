@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "main6-preflight",
+  "maxDurationSeconds": 90,
+  "minConnectedSeconds": 30,
+  "expectedPlayers": 6,
+  "requireMovement": true,
+  "requireZone": true,
+  "requireHpDamage": false,
+  "requireResult": false,
+  "requireReplay": false,
+  "requireHistory": false,
+  "minInputHz": 28.5,
+  "minSnapshotHz": 28.5,
+  "maxPongTimeoutRatio": 0.01,
+  "driver": "movement",
+  "extraAssertions": []
+}

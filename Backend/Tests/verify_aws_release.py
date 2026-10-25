@@ -39,7 +39,7 @@ def main():
             assert PurePosixPath(filename).name not in ('.env', '.env.aws'), 'Secret config in bundle'
             assert not filename.endswith(('.pem', '.pfx', '.key', '.archive.gz')), 'Private/DB file in bundle'
             assert filename == 'images.tar.gz' or filename == 'SHA256SUMS' or filename.startswith(('docs/', 'scripts/')) \
-                or filename in ('compose.aws.yaml', 'Caddyfile', 'release.env', 'manifest.json', 'client.aws.json','client.aws-auto.json')
+                or filename in ('compose.aws.yaml', 'Caddyfile', 'release.env', 'manifest.json', 'client.aws.json','client.aws-auto.json','client.phase2-aws.json')
             if filename != 'images.tar.gz':
                 raw = bundle.extractfile(files[filename]).read()
                 assert b'\r' not in raw and not raw.startswith(b'\xef\xbb\xbf'), 'Text must use LF/UTF8 without BOM'
@@ -60,6 +60,11 @@ def main():
             assert 'handle /game' in proxy and 'reverse_proxy game-server:7781' in proxy
             compose=bundle.extractfile(files['compose.aws.yaml']).read().decode()
             assert 'WS_ENABLED:' in compose and ':7781:7781' not in compose
+        if 'client.phase2-aws.json' in files:
+            unity=json.load(bundle.extractfile(files['client.phase2-aws.json']))
+            assert unity['protocolVersion']==3 and unity['transport']=='Auto'
+            assert unity['apiBaseUrl']=='https://'+manifest['domain']
+            assert unity['webSocketUrl']=='wss://'+manifest['domain']+'/game'
         # Đọc archive docker save bên trong, không extract filesystem hoặc giữ thêm bản 500MB.
         tags = set()
         configurations = {}

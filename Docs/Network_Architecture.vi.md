@@ -1,20 +1,20 @@
 # Kiến trúc mạng Jungle Maze / Lastaway
 
-Cập nhật Phase 2 ngày **24/10/2026**. Tài liệu mô tả kiến trúc dùng để triển khai game và ranh giới giữa các module. Setup và lệnh chạy nằm trong [hướng dẫn chung](Phase1_First4Tasks.vi.md); bằng chứng nghiệm thu nằm trong [báo cáo chung](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md).
+Cập nhật Phase 2 ngày **25/10/2026**. Tài liệu mô tả kiến trúc dùng để triển khai game và ranh giới giữa các module. Setup nền nằm trong [hướng dẫn Phase 1](Phase1_First4Tasks.vi.md); chạy trận/Guest/bo theo [hướng dẫn Phase 2](Phase2_Match_Guest_Zone.vi.md). Bằng chứng nghiệm thu nằm trong [báo cáo Phase 2](Reports/Phase2_Local/report.vi.md); số liệu mạng các lượt trước ở [báo cáo Phase 1](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md).
 
 ## 1. Định hướng và trạng thái triển khai
 
 Game dùng **server authoritative**: client gửi input; GameServer quyết định vị trí, va chạm, HP, bo, vòng đời và kết quả trận. Mỗi phòng có runtime riêng. Hạn mức cấu hình: **10 người/phòng, 5 phòng gồm mặc định, tổng 50 slot active/pending/grace**, mỗi account tạo tối đa 2 phòng bổ sung. Đây là hạn mức, không phải cam kết hiệu năng gameplay cho 50 người.
 
-Phase 2 gồm SRV-03, NET-02, ZON-01 và demo Unity UDP. Backend có UDP/WebSocket; Unity WSS/Auto, prediction/reconciliation/interpolation đầy đủ thuộc MOV-02/03. Vũ khí, inventory, hazard, HUD đầy đủ và killcam thuộc task riêng. Demo chỉ dùng HP cơ bản và bo; số hạ gục bằng 0.
+Phase 2 gồm SRV-03, NET-02, ZON-01 và demo Unity UDP/WebSocket/Auto. Prediction/reconciliation/interpolation đầy đủ thuộc MOV-02/03. Vũ khí, inventory, hazard, HUD đầy đủ và killcam thuộc task riêng. Demo chỉ dùng HP cơ bản và bo; số hạ gục bằng 0.
 
-Bản Phase 2 được triển khai và nghiệm thu Local; **không tự đưa lên EC2**. Các kết quả AWS cũ trong báo cáo chỉ chứng minh phiên bản được ghi tại lượt đo đó. Hai PC vật lý phải được kiểm tra riêng.
+Bản Phase 2 Local và lần mở rộng online được ghi riêng trong báo cáo Phase 2. Chỉ triển khai EC2 trong cửa sổ kiểm thử đã được chủ máy cho phép, có watchdog và Stop ở cuối. Các kết quả AWS cũ chỉ chứng minh phiên bản ghi tại lượt đo đó. Hai PC vật lý phải được kiểm tra riêng.
 
 ## 2. Topology và đường đi dữ liệu
 
 ```mermaid
 flowchart LR
-    U[Unity UDP client] <-->|input / snapshot / phase / result| G[GameServer: SessionHub + RoomManager]
+    U[Unity UDP / WSS / Auto] <-->|input / snapshot / phase / result| G[GameServer: SessionHub + RoomManager]
     S[NetSmokeClient / gameplay checks] <-->|UDP hoặc binary WebSocket| G
     U -->|HTTPS: Guest / ticket / history| A[ASP.NET Core API]
     A -->|JWT quản lý phòng; secret nội bộ cấp ticket| G
@@ -27,7 +27,9 @@ Local: Docker publish loopback mặc định. UDP host 7777, API 5000, Mongo Com
 
 AWS: EC2 hiện có, Caddy public 80/443, UDP 7777. Caddy chuyển **đúng `/game`** tới `game-server:7781`; API tới `api:5000`. Basic auth chỉ bảo vệ Swagger. Mongo 27017, room-control 7780, listener 7781 và API 5000 không publish public. Caddy phải chặn `/internal` và `/internal/*` trước tuyến API.
 
-UDP là đường chính, WSS 443 là dự phòng của NetSmokeClient/backend. Auto chỉ đổi transport khi lỗi kết nối; RoomFull/ServerFull/mã sai trả thẳng. Sau join không tự đổi đường. WSS vẫn cần DNS và HTTPS được mạng cho phép; không vượt mọi chính sách mạng. SSM là đường quản trị, không phải đường truyền gameplay.
+UDP là đường chính, WSS443 là dự phòng của cả Unity Windows/Editor và NetSmokeClient. Auto thử UDP tối đa5s, rồi WebSocket tối đa10s mở kết nối và5s join. RoomFull/ServerFull/mã sai trả thẳng; không đổi đường để vượt kiểm tra. Sau join không tự đổi đường. Mỗi lượt kết nối có attempt riêng; chuyển trong lúc join/resume giữ một slot và proof resume chỉ xoay một lần. WSS vẫn cần DNS và HTTPS được mạng cho phép. SSM chỉ dùng quản trị.
+
+Selfhost dùng `compose.host.yaml`, DB/volume/secret riêng. VPN: Tailscale Serve HTTPS tới Caddy loopback8080; UDP qua IP VPN. Public: hostname khác AWS, Caddy80/443 và UDP7777, cần IP public/router phù hợp. Không mở Mongo, API5000, control7780 hoặc listener7781 ra ngoài. Các profile `phase2-local/lan/vpn/selfhost/aws` dùng chung schema, không bỏ kiểm tra TLS.
 
 ## 3. Project, công nghệ và trách nhiệm
 
@@ -105,4 +107,4 @@ Không suy diễn bài ping/pong cũ thành sức chứa gameplay. Khi bổ sung
 
 [Báo cáo chung](Reports/Local_Capacity_Retest_2026-10-14/report.vi.md) phân biệt kết quả backend Local, Unity thực, AWS UDP/WSS và lượt co-located cũ. Kiểm thử hai process Unity trên cùng PC không thay nghiệm thu hai máy vật lý.
 
-Các dev tích hợp gameplay qua contract runtime/health/registry; combat phát damage, không tự ghi HP từ client. MOV-02/03 cải thiện cảm giác di chuyển và Unity WSS/Auto; WPN-02 thêm combat authoritative; UI-02/03 mở rộng HUD/killcam. Các phần này chưa được coi hoàn thành bởi demo Phase 2.
+Các dev tích hợp gameplay qua contract runtime/health/registry; combat phát damage, không tự ghi HP từ client. MOV-02/03 cải thiện cảm giác di chuyển; WPN-02 thêm combat authoritative; UI-02/03 mở rộng HUD/killcam. Các phần này chưa được coi hoàn thành bởi demo Phase 2. Khung `Application/Testing`, `OnlineScenarioRunner` và launcher `test-unity-online.ps1` nhận scenario JSON và check/driver đăng ký qua Bootstrap, dùng lại cho feature mới. Test không đủ tốc độ phát phải ghi INVALID; [checklist hai PC](../Backend/Tests/OnlineReadiness/PHYSICAL_TWO_PC_CHECKLIST.md) ghi rõ LAN/VPN/public/AWS và phần cần nghiệm thu bằng thiết bị thật.

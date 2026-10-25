@@ -1,0 +1,146 @@
+# Standalone selfhost compose for JungleMaze.
+# Isolated project, data volumes, and network configuration.
+# Avoids port conflicts with local development compose (Api 5000, Mongo 27018, WS 7781 are NOT published to host).
+# Direct API, Mongo, RoomControl, and WS ports are strictly internal.
+# Only Caddy (80/443 for public, loopback 8080 for VPN) and UDP 7777 are published.
+name: junglemaze-host
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  mongo:
+    image: ${MONGO_IMAGE:-mongo:7.0.43}
+    restart: unless-stopped
+    mem_limit: 768m
+    command: ["mongod", "--wiredTigerCacheSizeGB", "0.25"]
+    volumes:
+      - mongo-host-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    logging: *logging
+
+  api:
+    build:
+      context: .
+      dockerfile: Api/Dockerfile
+    image: ${API_IMAGE:-junglemaze/api:host}
+    restart: unless-stopped
+    mem_limit: 384m
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:5000
+      ASPNETCORE_ENVIRONMENT: Production
+      PUBLIC_HOSTING: "${PUBLIC_HOSTING:-true}"
+      ALLOW_LOCAL_HTTP: "${ALLOW_LOCAL_HTTP:-false}"
+      Mongo__ConnectionString: mongodb://mongo:27017
+      Mongo__Database: ${HOST_MONGO_DATABASE:-jungle_maze_host}
+      Jwt__Issuer: ${JWT_ISSUER:-JungleMaze.Host}
+      Jwt__Audience: ${JWT_AUDIENCE:-JungleMaze.Game}
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:-}
+      Swagger__Enabled: "${SWAGGER_ENABLED:-true}"
+      RoomControl__BaseUrl: http://game-server:7780
+      ROOM_CONTROL_TOKEN: ${ROOM_CONTROL_TOKEN:-}
+      MATCH_RESULT_TOKEN: ${MATCH_RESULT_TOKEN:-}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "dotnet", "Api.dll", "--healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+    logging: *logging
+
+  game-server:
+    build:
+      context: .
+      dockerfile: GameServer/Dockerfile
+    image: ${GAME_IMAGE:-junglemaze/game-server:host}
+    restart: unless-stopped
+    mem_limit: 256m
+    ports:
+      - "${HOST_GAME_UDP_BIND:-0.0.0.0}:${HOST_GAME_UDP_PORT:-7777}:7777/udp"
+    environment:
+      PUBLIC_HOSTING: "${PUBLIC_HOSTING:-true}"
+      GAME_BIND_ADDRESS: 0.0.0.0
+      GAME_PORT: "7777"
+      WS_ENABLED: "${WS_ENABLED:-true}"
+      WS_BIND_ADDRESS: 0.0.0.0
+      WS_PORT: "7781"
+      MATCH_PROFILE: "${MATCH_PROFILE:-main}"
+      MAX_PLAYERS: "${MAX_PLAYERS:-10}"
+      TICK_RATE: "${TICK_RATE:-30}"
+      AUTH_MODE: "${AUTH_MODE:-RoomCode}"
+      ROOM_CODE: "${ROOM_CODE:-}"
+      METRICS_INTERVAL_SECONDS: "5"
+      ROOM_CONTROL_TOKEN: "${ROOM_CONTROL_TOKEN:-}"
+      ROOM_CONTROL_BIND_ADDRESS: 0.0.0.0
+      ROOM_CONTROL_PORT: "7780"
+      MAX_ROOM_PLAYERS: "${MAX_ROOM_PLAYERS:-10}"
+      MAX_TOTAL_PLAYERS: "${MAX_TOTAL_PLAYERS:-50}"
+      MAX_ROOMS: "${MAX_ROOMS:-5}"
+      MAX_ROOMS_PER_USER: "${MAX_ROOMS_PER_USER:-2}"
+      ROOM_EMPTY_TTL_SECONDS: "${ROOM_EMPTY_TTL_SECONDS:-600}"
+      MATCH_RESULTS_API_URL: "http://api:5000/internal/match-results"
+      MATCH_RESULT_TOKEN: "${MATCH_RESULT_TOKEN:-}"
+      MATCH_OUTBOX_PATH: "/app/data/match-outbox"
+    volumes:
+      - game-host-outbox:/app/data/match-outbox
+    logging: *logging
+
+  # Public mode: Caddy manages TLS (port 80/443) with Let's Encrypt / ZeroSSL
+  caddy:
+    profiles: ["public"]
+    image: ${CADDY_IMAGE:-caddy:2}
+    restart: unless-stopped
+    mem_limit: 128m
+    ports:
+      - "${HOST_HTTP_BIND:-0.0.0.0}:${HOST_HTTP_PORT:-80}:80/tcp"
+      - "${HOST_HTTPS_BIND:-0.0.0.0}:${HOST_HTTPS_PORT:-443}:443/tcp"
+    environment:
+      HOST_DOMAIN: ${HOST_DOMAIN:-}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+      SWAGGER_USER: ${SWAGGER_USER:-admin}
+      SWAGGER_HASH: ${SWAGGER_HASH:-}
+    volumes:
+      - ./Deploy/Host/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-host-data:/data
+      - caddy-host-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *logging
+
+  # VPN / Private mode: Caddy listens on HTTP 127.0.0.1:8080 behind Tailscale Serve HTTPS
+  caddy-vpn:
+    profiles: ["vpn"]
+    image: ${CADDY_IMAGE:-caddy:2}
+    restart: unless-stopped
+    mem_limit: 128m
+    ports:
+      - "127.0.0.1:${HOST_VPN_PORT:-8080}:8080/tcp"
+    environment:
+      SWAGGER_USER: ${SWAGGER_USER:-admin}
+      SWAGGER_HASH: ${SWAGGER_HASH:-}
+    volumes:
+      - ./Deploy/Host/Caddyfile.vpn:/etc/caddy/Caddyfile:ro
+      - caddy-host-data:/data
+      - caddy-host-config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *logging
+
+volumes:
+  mongo-host-data:
+  caddy-host-data:
+  caddy-host-config:
+  game-host-outbox:

@@ -15,5 +15,9 @@ namespace JungleMaze.Domain.Network
         public long BytesSent;
         public long BytesReceived;
         public int InvalidPackets;
+        public string Transport;
+        public string FallbackReason;
+        public double P50RttMs;
+        public double P99RttMs;
     }
 }

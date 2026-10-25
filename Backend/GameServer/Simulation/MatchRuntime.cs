@@ -353,6 +353,16 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         return true;
     }
 
+    // A transport transfer is part of the SAME already-authorized resume attempt.
+    // Keep its rotated proof; do not consume/rotate another credential internally.
+    internal bool ContinueResumedTransport(string sessionId)
+    {
+        if (Phase != MatchPhase.InGame || !_bySession.TryGetValue(sessionId, out var e) || !e.IsAlive) return false;
+        if (e.IsDisconnected && !IsValidResumeToken(e.ResumeToken, out _)) return false;
+        e.IsDisconnected = false; e.DisconnectedAtTick = null; e.DisconnectedAtSecond = null;
+        return true;
+    }
+
     public void Tick(double deltaTime)
     {
         DeltaTime = deltaTime;

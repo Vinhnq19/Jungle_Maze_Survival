@@ -1,4 +1,4 @@
-> C?p nh?t Phase2 ng?y24/10/2026. C?ch ch?y tr?n/Guest/history: xem m?c17 c?a h??ng d?n chung; c?c v? d? foundation c? ch? d?ng cho ki?m th? module ri?ng.
+> Cập nhật Phase 2 ngày 24/10/2026. Chạy trận/Guest/history theo [hướng dẫn Phase 2](Phase2_Match_Guest_Zone.vi.md); các ví dụ foundation cũ chỉ dùng để kiểm thử module riêng.
 
 # Hướng dẫn dùng Client Base cho người làm gameplay
 
@@ -34,7 +34,7 @@ Client đọc JSON cùng schema với `Backend/NetSmokeClient/client.*.json`. Th
 | Biến môi trường `NET_MODE`, `NET_GAME_SERVER_HOST`, `NET_GAME_SERVER_PORT`, `NET_API_BASE_URL` | Cùng tên với NetSmokeClient |
 | Dòng lệnh `-clientConfig <path>`, `-profile lan`, `-mode LAN`, `-host 192.168.1.20`, `-port 7777`, `-room ROOM42`, `-name P2` | Mở nhiều client trên một máy để test |
 
-Key lạ, thiếu key bắt buộc, host có `http://`, hay `transport` khác `Udp` đều bị từ chối và báo lỗi rõ trên menu. Unity client hiện chỉ hỗ trợ UDP; WSS/Auto mới có ở NetSmokeClient.
+Key lạ, thiếu key bắt buộc, host có `http://`, hay `transport` ngoài `Udp|Wss|Auto` đều bị từ chối. Unity Windows/Editor có WebSocket và Auto; `webSocketUrl` dùng WSS từ xa, WS chỉ loopback Local. Env thêm `NET_TRANSPORT`, `NET_WS_URL`, `NET_ROOM_CODE`; CLI thêm `-transport`, `-webSocketUrl`. Auto chỉ fallback khi lỗi kết nối trước join, không đổi khi phòng đầy/mã sai. Dùng các profile `phase2-*` và [hướng dẫn Phase 2](Phase2_Match_Guest_Zone.vi.md#6-chọn-môi-trường-online) cho gameplay authoritative; ví dụ foundation ở trên chỉ dành cho module cũ.
 
 ## 3. Kiến trúc: code của bạn đặt ở đâu
 
@@ -152,20 +152,20 @@ Số đo ngày 20/10/2026 trên một PC, GameServer chạy bằng `dotnet run` 
 
 Độ trễ chủ yếu nằm ở vòng xử lý của server, không phải ở client.
 
-## 6. K?t n?i Phase 2 v? ranh gi?i ti?p theo
+## 6. Kết nối Phase 2 và ranh giới tiếp theo
 
-Lu?ng ch?y m?i n?m ? [m?c17 h??ng d?n chung](Phase1_First4Tasks.vi.md#17-phase-2-ch?y-tr?n-guest-safe-zone-v?-l?ch-s?). D?ng profile `phase2-local` (UDP protocol v3) cho resume v? Guest ticket. Server main c?n6 ng??i, profile test ri?ng c?n2. Gi?10 ng??i/ph?ng,5 ph?ng/t?ng50 slot.
+Luồng chạy trận nằm trong [hướng dẫn Phase 2](Phase2_Match_Guest_Zone.vi.md). Dùng profile `phase2-local` (UDP protocol v3) cho resume và Guest ticket. Server main cần 6 người, profile test riêng cần 2. Giữ 10 người/phòng, 5 phòng/tổng 50 slot.
 
-| Module | Tr?ch nhi?m hi?n t?i |
+| Module | Trách nhiệm hiện tại |
 | --- | --- |
-| `MatchSession` | Hello/loading, MatchId, input30Hz, snapshot/ack, own NetId t? welcome, HP/bo/k?t qu?/replay; b? packet tr?n c? |
-| `NetworkClient` | UDP v1/v2/v3, hai channel; attempt m?i m?i connect, resume b?ng proof ri?ng. Kh?ng t? reconnect khi ?? join |
-| `MatchDemoView` | G?c nh?n to?n map, roster/timer/HP/bo/result/history; t?t local controller v? local weapon probe khi ch?i m?ng |
-| `ClientRuntimeData` | Ki?m manifest/hash v?i server v? geometry scene tr??c LoadingAck |
-| `GuestHistoryClient` | API HTTPS/loopback, DPAPI theo origin; ticket m?t l?n, kh?ng g?i credential/JWT d?i h?n qua UDP |
-| GameServer | C# authoritative movement/collision, lifecycle,5 ??t bo, HealthService v? k?t qu?; API/DB kh?ng ch?n tick |
+| `MatchSession` | Hello/loading, MatchId, input 30Hz, snapshot/ack, own NetId từ welcome, HP/bo/kết quả/replay; bỏ packet trận cũ |
+| `NetworkClient` | UDP v1/v2/v3, hai channel; attempt mới mỗi connect, resume bằng proof riêng. Không tự reconnect khi đã join |
+| `MatchDemoView` | Góc nhìn toàn map, roster/timer/HP/bo/result/history; tắt local controller và local weapon probe khi chơi mạng |
+| `ClientRuntimeData` | Kiểm manifest/hash với server và geometry scene trước LoadingAck |
+| `GuestHistoryClient` | API HTTPS/loopback, DPAPI theo origin; ticket một lần, không gửi credential/JWT dài hạn qua UDP |
+| GameServer | C# authoritative movement/collision, lifecycle, 5 đợt bo, HealthService và kết quả; API/DB không chặn tick |
 
-Unity WSS/Auto, prediction/reconciliation v? interpolation ??y ?? thu?c MOV-02/03. Combat, inventory, hazard, HUD ??y ?? v? killcam kh?ng ???c coi ho?n t?t b?i demo. Sprite/nh?n hi?n t?i ch? ?? ki?m m?ng. `PlayerInputService` c? kh?ng ???c tick c?ng `MatchSession`; kh?ng b?t l?i HeroController trong demo m?ng.
+Unity Windows/Editor đã có WSS/Auto. Prediction/reconciliation và interpolation đầy đủ còn thuộc MOV-02/03. Combat, inventory, hazard, HUD đầy đủ và killcam không được coi hoàn tất bởi demo. Sprite/nhãn hiện tại dùng để kiểm mạng. `PlayerInputService` cũ không được tick cùng `MatchSession`; không bật lại HeroController trong demo mạng. Dùng khung scenario/assertion/driver ở mục8 của hướng dẫn Phase2 để kiểm feature mới, không sửa state server từ client để tạo kết quả PASS.
 
 ## 7. Sửa dữ liệu và map để kiểm thử
 

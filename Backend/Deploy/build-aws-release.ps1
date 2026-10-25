@@ -54,13 +54,15 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Aws/scripts') -Destination $taskStage -Recurse
     New-Item -ItemType Directory -Path (Join-Path $taskStage 'docs') | Out-Null
     # Kèm tài liệu assets vì hai hướng dẫn chính có liên kết tới bản đồ module JSurviv.
-    foreach ($taskDocName in @('Phase1_First4Tasks.vi.md', 'Network_Architecture.vi.md', 'AWS_SSH_Swagger_Compass.vi.md', 'JSurviv_Integration.vi.md', 'JSurviv_Verification.vi.md')) {
+    foreach ($taskDocName in @('Phase1_First4Tasks.vi.md', 'Phase2_Match_Guest_Zone.vi.md', 'Network_Architecture.vi.md', 'AWS_SSH_Swagger_Compass.vi.md', 'JSurviv_Integration.vi.md', 'JSurviv_Verification.vi.md')) {
         Copy-Item -LiteralPath (Join-Path $taskBackend "../Docs/$taskDocName") -Destination (Join-Path $taskStage 'docs')
     }
     $taskClient = [ordered]@{ mode='Online'; apiBaseUrl="https://$Domain"; gameServerHost=$Domain; gameServerPort=7777; authMode='RoomCode'; protocolVersion=1; connectTimeoutMs=5000 }
     $taskClient | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskStage 'client.aws.json') -Encoding utf8
     $taskAutoClient = [ordered]@{ mode='Online'; apiBaseUrl="https://$Domain"; gameServerHost=$Domain; gameServerPort=7777; authMode='RoomCode'; protocolVersion=2; connectTimeoutMs=5000; transport='Auto'; webSocketUrl="wss://$Domain/game" }
     $taskAutoClient | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskStage 'client.aws-auto.json') -Encoding utf8
+    $taskUnityClient = [ordered]@{ mode='Online'; apiBaseUrl="https://$Domain"; gameServerHost=$Domain; gameServerPort=7777; authMode='RoomCode'; protocolVersion=3; connectTimeoutMs=5000; transport='Auto'; webSocketUrl="wss://$Domain/game" }
+    $taskUnityClient | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $taskStage 'client.phase2-aws.json') -Encoding utf8
     $taskReleaseEnv = @("RELEASE_ID=$ReleaseId", "DEFAULT_DOMAIN=$Domain", "API_IMAGE=$taskApiImage", "GAME_IMAGE=$taskGameImage")
     if ($AppsOnly) { $taskReleaseEnv += 'APPS_ONLY=1' }
     else { $taskReleaseEnv += @("MONGO_IMAGE=$taskMongoImage", 'MONGO_MAJOR=7', "CADDY_IMAGE=$taskCaddyImage") }

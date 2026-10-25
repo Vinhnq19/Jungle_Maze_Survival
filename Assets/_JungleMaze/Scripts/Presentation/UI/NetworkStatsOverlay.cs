@@ -35,13 +35,16 @@ namespace JungleMaze.Presentation.UI
                 _network.State, _network.LastReason, _network.Endpoint, s.LastRttMs, s.AverageRttMs, s.P95RttMs, s.PeerRttMs,
                 s.PingsSent, s.PongsReceived, s.PongsLost, s.PacketsSent, s.PacketsReceived, s.BytesSent, s.BytesReceived,
                 s.InvalidPackets, _fps);
+            _text += string.Format(CultureInfo.InvariantCulture,
+                "\nTransport: {0} · fallback: {1} · p50 {2:F1}/p99 {3:F1}ms",
+                s.Transport, s.FallbackReason, s.P50RttMs, s.P99RttMs);
         }
 
         private void OnGUI()
         {
             if (!_visible) return;
-            GUI.Box(new Rect(Screen.width - 430, 10, 420, 130), GUIContent.none);
-            GUI.Label(new Rect(Screen.width - 420, 15, 400, 120), _text);
+            GUI.Box(new Rect(Screen.width - 490, 10, 480, 155), GUIContent.none);
+            GUI.Label(new Rect(Screen.width - 480, 15, 460, 145), _text);
         }
 #endif
     }

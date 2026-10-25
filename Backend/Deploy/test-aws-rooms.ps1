@@ -19,6 +19,10 @@ param(
     [switch]$UseRunningInstance,
     [switch]$DualTransport,
     [switch]$WssReconnectOnly,
+    [switch]$UnityGameplay,
+    [string]$UnityPlayer = '',
+    [string]$UnityScenario = '',
+    [string]$UnityRehearsalReport = '',
     [ValidateRange(8,20)][int]$BudgetMinutes = 20,
     [ValidateRange(10,30)][int]$HardStopMinutes = 30
 )
@@ -29,6 +33,7 @@ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $taskLifecycle = [ordered]@{ instanceId=$InstanceId; region=$Region; startedByThisRun=$false; stoppedConfirmed=$false; events=@() }
 $taskWatchdog = $null
 $taskSleepHeld = $false
+$taskCollector = $null
 function Aws([string[]]$Arguments) {
     $raw = & $AwsCli @Arguments --profile $Profile --region $Region --output json --no-cli-pager --cli-connect-timeout 10 --cli-read-timeout 30 2>&1
     if ($LASTEXITCODE -ne 0) { throw "AWS $($Arguments[0])/$($Arguments[1]) failed: $raw" }
@@ -60,6 +65,19 @@ function Probe-PublicHttps([string]$Ip) {
     }
     if (-not $healthy) { throw 'Public TLS/health unreachable; abort before upload to save credits.' }
     Event 'Public TLS/health verified. Test client uses explicit per-process IP pin; system DNS/hosts remain unchanged.'
+    if ($UnityGameplay) {
+        # Unity uses ordinary DNS, not the diagnostic curl --resolve path above.
+        # A stale hosts override must be corrected explicitly, never masked by TLS bypass.
+        $dnsReady=$false
+        for ($dnsTry=0;$dnsTry -lt 12;$dnsTry++) {
+            $addresses=@([Net.Dns]::GetHostAddresses('junglemaze.duckdns.org') | Where-Object AddressFamily -eq InterNetwork | ForEach-Object IPAddressToString)
+            if ($addresses.Count -eq 1 -and $addresses[0] -eq $Ip) { $dnsReady=$true;break }
+            Clear-DnsClientCache
+            Start-Sleep -Seconds 5
+        }
+        if (-not $dnsReady) { throw 'Normal PC DNS does not match current EC2 IP; check stale JungleMaze hosts override/DNS before Unity test. No pin/TLS bypass used.' }
+        Event 'Normal PC DNS matches current EC2 public IP; Unity can use its real hostname.'
+    }
 }
 function Restart-Guarded {
     Aws @('ec2','stop-instances','--instance-ids',$InstanceId) | Out-Null
@@ -69,6 +87,9 @@ function Restart-Guarded {
         if ([DateTime]::UtcNow -ge $by) { throw 'Restart Stop timeout.' }
         Start-Sleep -Seconds 5
     } while ($true)
+    # A verified OS Stop also ended this transient sampler. Do not try to stop
+    # its old unit through SSH after the subsequent boot.
+    $script:taskCollector=$null
     if ([DateTime]::UtcNow.AddMinutes(4) -ge [DateTime]::Parse($env:AWS_ROOM_DEADLINE_UTC).ToUniversalTime()) { throw 'Not enough budget for rejoin.' }
     Aws @('ec2','start-instances','--instance-ids',$InstanceId) | Out-Null
     $by=[DateTime]::UtcNow.AddMinutes(3)
@@ -98,6 +119,22 @@ try {
     if ($UseRunningInstance -and -not ($Phase1Connectivity -or $DualTransport)) { throw 'UseRunningInstance is restricted to an explicitly reserved connectivity test.' }
     if ($DualTransport -and ($Phase1Connectivity -or $GeneratorOnServer -or $CapacityAfter)) { throw 'DualTransport requires real PC and its own test path.' }
     if ($WssReconnectOnly -and -not $DualTransport) { throw 'WssReconnectOnly requires DualTransport.' }
+    if ($UnityGameplay) {
+        if (-not $DualTransport -or $WssReconnectOnly -or $Phase1Connectivity -or $GeneratorOnServer -or $CapacityAfter) { throw 'UnityGameplay requires DualTransport and actual PC players, no co-located generator.' }
+        foreach ($requiredFile in @($UnityPlayer,$UnityScenario,$UnityRehearsalReport)) {
+            if (-not $requiredFile -or -not (Test-Path -LiteralPath $requiredFile -PathType Leaf)) { throw 'Provide UnityPlayer, UnityScenario and a successful six-player Local rehearsal report before AWS Start.' }
+        }
+        $rehearsal=Get-Content -LiteralPath $UnityRehearsalReport -Raw | ConvertFrom-Json
+        if ($rehearsal.status -ne 'PASS' -or @($rehearsal.clients).Count -lt 6) { throw 'Six-player Local rehearsal must PASS before spending AWS credits.' }
+        Import-Module (Join-Path $PSScriptRoot '../Tests/OnlineReadiness/OnlineReadiness.psm1') -Force
+        if ((Get-OnlineField $rehearsal playerFingerprint '') -ne (Get-OnlineBuildFingerprint $UnityPlayer)) { throw 'Unity build changed after Local rehearsal; rehearse this actual build before AWS Start.' }
+        $UnityPlayer=[IO.Path]::GetFullPath($UnityPlayer)
+        $UnityScenario=[IO.Path]::GetFullPath($UnityScenario)
+        $taskUnityScenarioData=Get-Content -LiteralPath $UnityScenario -Raw | ConvertFrom-Json
+        if (@(Test-OnlineScenario $taskUnityScenarioData).Count -gt 0) { throw 'Invalid Unity scenario before AWS Start.' }
+        $taskUnityClients=[int]$taskUnityScenarioData.expectedPlayers
+        $taskLifecycle.unityGameplay=$true
+    }
     if ($DualTransport -and $BudgetMinutes -ge $HardStopMinutes) { throw 'BudgetMinutes must leave time before HardStopMinutes.' }
     if ($instance.State.Name -ne 'stopped' -and -not ($UseRunningInstance -and $instance.State.Name -eq 'running')) { throw 'Require an exclusively reserved, Stopped instance; refusing to interrupt an existing session.' }
     if ($UseRunningInstance -and -not $PreflightOnly -and $instance.State.Name -eq 'running') {
@@ -332,6 +369,32 @@ try {
         if ($LASTEXITCODE -ne 0 -or $taskLocalImage -notmatch '^junglemaze-game:[a-z0-9-]+$') { throw 'Local GameServer image not found in release manifest.' }
         $testArguments += @('--dual-aws','--local-image',$taskLocalImage)
     }
+    if ($UnityGameplay) {
+        # Same guarded lifecycle; never run the old ping benchmark instead of the Unity gameplay scenario.
+        $taskCollector='junglemaze-unity-metrics-'+[Guid]::NewGuid().ToString('N').Substring(0,8)
+        $taskMetricsSince=[DateTime]::UtcNow.ToString('o')
+        Bounded 'ssh' ('-o BatchMode=yes -o ConnectTimeout=15 {0} "sudo systemd-run --unit={1} --collect --property=RuntimeMaxSec=720 /bin/bash /opt/junglemaze/current/scripts/sample-game-metrics.sh"' -f $SshAlias,$taskCollector) 30
+        $taskUnityFixture = & (Join-Path $PSScriptRoot 'test-unity-remote.ps1') -Player $UnityPlayer -Scenario $UnityScenario -Clients $taskUnityClients -ReturnFixture -OutputDirectory (Join-Path $OutputDirectory 'unity')
+        $taskLifecycle.unityAcceptance='PASS'
+        $serverLines=& ssh -o BatchMode=yes -o ConnectTimeout=15 $SshAlias "sudo docker logs --since $taskMetricsSince --tail 300 junglemaze-aws-game-server-1 2>&1"
+        $serverLines | Set-Content -LiteralPath (Join-Path $OutputDirectory 'game-server.log') -Encoding utf8
+        $memory=& ssh -o BatchMode=yes -o ConnectTimeout=15 $SshAlias "sudo docker stats --no-stream --format '{{.MemPerc}}' junglemaze-aws-game-server-1"
+        if ($LASTEXITCODE -ne 0 -or $memory -notmatch '([0-9.]+)%') { throw 'Could not sample GameServer cgroup RAM' }
+        $taskRamPeak=[double]::Parse($Matches[1],[Globalization.CultureInfo]::InvariantCulture)
+        $ramHistory=& ssh -o BatchMode=yes -o ConnectTimeout=15 $SshAlias "sudo journalctl -u $taskCollector --no-pager -o cat"
+        if ($LASTEXITCODE -ne 0) { throw 'Could not collect sampled RAM history' }
+        $ramHistory | Set-Content -LiteralPath (Join-Path $OutputDirectory 'game-ram-samples.log') -Encoding utf8
+        foreach ($line in $ramHistory) { if ($line -match '^\s*([0-9.]+)%\s*$') { $taskRamPeak=[Math]::Max($taskRamPeak,[double]::Parse($Matches[1],[Globalization.CultureInfo]::InvariantCulture)) } }
+        & (Join-Path $PSScriptRoot '../Tests/OnlineReadiness/Test-ServerMetrics.ps1') -LogPath (Join-Path $OutputDirectory 'game-server.log') -MemoryPercent $taskRamPeak -OutputPath (Join-Path $OutputDirectory 'server-metrics.json')
+        $runtimeState=& ssh -o BatchMode=yes -o ConnectTimeout=15 $SshAlias "sudo docker inspect --format 'OOMKilled={{.State.OOMKilled}} RestartCount={{.RestartCount}}' junglemaze-aws-game-server-1"
+        if ($LASTEXITCODE -ne 0 -or ($runtimeState -join '') -notmatch 'OOMKilled=false RestartCount=0') { throw 'GameServer OOM/restart or inspect failure' }
+        if ([DateTime]::UtcNow.AddMinutes(5) -lt [DateTime]::Parse($env:AWS_ROOM_DEADLINE_UTC).ToUniversalTime()) {
+            $taskRejoinIp=Restart-Guarded
+            Probe-PublicHttps $taskRejoinIp
+            $null = & (Join-Path $PSScriptRoot 'test-unity-remote.ps1') -Player $UnityPlayer -Scenario $UnityScenario -Clients 1 -ReconnectOnly -Fixture $taskUnityFixture -OutputDirectory (Join-Path $OutputDirectory 'unity-reconnect')
+            $taskLifecycle.stopStartRejoin='PASS'
+        } else { $taskLifecycle.stopStartRejoin='NOT_TESTED: insufficient remaining soft budget' }
+    } else {
     & $Python @testArguments
     if ($LASTEXITCODE -ne 0) { throw 'AWS test incomplete; inspect test/report.json.' }
     if ($DualTransport) {
@@ -343,12 +406,18 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'WSS rejoin after restart incomplete.' }
         $taskLifecycle.stopStartRejoin='PASS'
     }
-    Event 'Room protocol and load tests completed.'
+    }
+    if ($UnityGameplay) { Event 'Unity scenario completed; refer to scenarioId and evidence for connection/gameplay scope.' }
+    else { Event 'Room protocol and load tests completed.' }
     }
 } catch {
     $taskLifecycle.error = $_.Exception.Message
     Event ('Aborted: ' + $_.Exception.Message)
 } finally {
+    if ($taskCollector) {
+        try { & ssh -o BatchMode=yes -o ConnectTimeout=5 -o ServerAliveInterval=5 -o ServerAliveCountMax=1 $SshAlias "sudo systemctl stop $taskCollector" 2>$null | Out-Null }
+        catch { Event 'Collector cleanup not confirmed; continuing mandatory EC2 Stop.' }
+    }
     if ($taskLifecycle.startedByThisRun -or $taskLifecycle.adoptedRunningInstance) {
         # Stop remains mandatory even when deployment/JWT/room cleanup fails.
         $taskLifecycle.stopRequestedUtc = [DateTime]::UtcNow.ToString('o')
