@@ -26,6 +26,13 @@ namespace JungleMaze.Tests.Hud.Feedback
             Assert.AreEqual(20,pickups);Assert.AreEqual(8,pickupIds.Count);Assert.AreEqual(10,effectCount);Assert.AreEqual(4,effectIds.Count);Assert.AreEqual(8,damage);Assert.AreEqual(6,directions.Count);Assert.AreEqual(15,hits);Assert.AreEqual(5,hud.DangerCount);Assert.AreEqual(2,uses);Assert.False(scenario.Running);
             var outside=0;var traps=0;for(var j=0;j<hud.DangerCount;j++){var w=hud.GetDangerAt(j);if(System.Math.Abs(w.SourceX-10)>15)outside++;if(w.Kind==DangerKind.Trap)traps++;}Assert.AreEqual(2,outside);Assert.AreEqual(1,traps);Assert.AreEqual(100,hud.Hp);
         }
+        [Test] public void Skirmish_IsCompassStunSixHitsOffscreenBombAndFourPickups()
+        {
+            var balance=StoreTestUtil.Balance();var bus=new EventBus();var hud=new HudStateStore(bus,balance);var inv=new InventoryStateStore(bus,balance);var effects=new EffectStateStore(bus);
+            var scenario=new HudFeedbackScenarios(new MockHudState(hud,balance),new MockInventoryState(inv,balance),new MockEffectState(effects),inv);var pickups=0;var hits=0;hud.ItemPicked+=_=>pickups++;hud.HitDealt+=_=>hits++;
+            scenario.Skirmish();Assert.AreEqual("COMPASS",inv.Use.ItemId);Assert.AreEqual(2,inv.Use.TotalSeconds);Assert.True(effects.TryGet(EffectKind.Stun,out var stun));Assert.AreEqual(5,stun.DurationSeconds);Assert.AreEqual(4,pickups);Assert.AreEqual(1,hud.DangerCount);Assert.AreEqual(1.5f,hud.GetDangerAt(0).RemainingSeconds);Assert.AreEqual(-10,hud.GetDangerAt(0).SourceX);
+            for(var frame=0;frame<60;frame++){hud.Tick(1f/30);inv.Tick(1f/30);effects.Tick(1f/30);scenario.Tick(1f/30);}Assert.AreEqual(6,hits);Assert.AreEqual(4,pickups);Assert.AreEqual(100,hud.Hp);
+        }
     }
 }
 #endif

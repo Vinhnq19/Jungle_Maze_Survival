@@ -405,6 +405,15 @@ namespace JungleMaze.Tests.PlayMode
                 numberTexts.Add(_root.Quickbar.GetSlotView(i).KeyLabel);
                 numberTexts.Add(_root.Quickbar.GetSlotView(i).CountLabel);
             }
+            var feedback = _root.GetComponent<HudFeedbackRoot>();
+            if (feedback != null)
+            {
+                numberTexts.Add(feedback.UseAction.Seconds);
+                numberTexts.Add(feedback.DangerBanner.Timer);
+                foreach (var chip in feedback.EffectRow.Chips) numberTexts.Add(chip.Seconds);
+                foreach (var arrow in feedback.DangerArrows) numberTexts.Add(arrow.Seconds);
+                foreach (var row in feedback.PickupFeed.Rows) numberTexts.Add(row.transform.Find("Count").GetComponent<TMP_Text>());
+            }
             var all = new List<TMP_Text>(_root.GetComponentsInChildren<TMP_Text>(true));
             foreach (var path in new[] { SlotPrefabPath, KeyCapPrefabPath })
                 all.AddRange(AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponentsInChildren<TMP_Text>(true));
@@ -463,6 +472,7 @@ namespace JungleMaze.Tests.PlayMode
             var go = Track(Object.Instantiate(prefab));
             _root = go.GetComponent<HudRoot>();
             _root.Construct(_hud, _inventory, _effects, new NullItemIconProvider());
+            go.GetComponent<HudFeedbackRoot>()?.Construct(_hud, _inventory, _effects);
             yield return null; // Start creates the presenter
             Assert.IsNotNull(_root.Presenter, "HudRoot started");
         }
