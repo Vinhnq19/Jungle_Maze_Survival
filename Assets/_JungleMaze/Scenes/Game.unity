@@ -520,7 +520,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 96574d79128c6fa4f89bf6a467a2390e, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.Player.HeroCameraFollow
   target: {fileID: 8074166082198812597}
 --- !u!1 &2072242978
@@ -550,8 +550,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6366bc83003255540a59eab2446b644e, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.World.MapGridView
+  groundSprite: {fileID: 21300000, guid: 20cdb8d7b869b0d4fb5ed22da4d9ebed, type: 3}
 --- !u!4 &2072242980
 Transform:
   m_ObjectHideFlags: 0
@@ -594,7 +595,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 88ece3061e1d43844bf9b1fae6366389, type: 3}
-  m_Name: 
+  m_Name:
   m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.World.LocalWeaponProbe
   hero: {fileID: 8074166082198812597}
   projectilePrefab: {fileID: 8077357926233679854, guid: 250fa663b8091af488a9de14e1cc6179, type: 3}

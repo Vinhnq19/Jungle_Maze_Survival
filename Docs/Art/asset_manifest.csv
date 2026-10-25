@@ -64,7 +64,7 @@ icon_effect_root,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/Root.png,256x256,,
 icon_effect_reverse,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/Reverse.png,256x256,,100,"status effect icon: swapped arrows, confusion bell",UI-01 part 2 effect chips,,P2,todo
 icon_effect_ccimmune,Icon,Assets/_JungleMaze/Art/UI/Icons/Effects/CcImmune.png,256x256,,100,status effect icon: shield against control,UI-01 part 2 effect chips,,P2,todo
 world_hero,World,Assets/_JungleMaze/Art/Foundation/Hero48.png,96x96,,96,"top-down survivor character, facing right, readable silhouette",Hero.prefab (ART-01 adds Idle/Walk/Aim/Dead frames),Hero48.png,P0,done
-world_ground,World,Assets/_JungleMaze/Art/Foundation/Ground96.png,96x96,,96,"seamless jungle grass ground tile, top-down, tileable",Map grid ground (ART-02 tileset later),Cell48.png,P0,review
+world_ground,World,Assets/_JungleMaze/Art/Foundation/Ground96.png,96x96,,96,"seamless jungle grass ground tile, top-down, tileable",Map grid ground (ART-02 tileset later),Cell48.png,P0,done
 world_ancientpillar,World,Assets/_JungleMaze/Art/World/Obstacles/AncientPillar.png,96x192,,96,"ancient stone pillar, top-down, 1x2 cells",Prefabs/Obstacles/AncientPillar.prefab (ART-02),,P1,todo
 world_citywall,World,Assets/_JungleMaze/Art/World/Obstacles/CityWall.png,96x384,,96,"ruined city wall segment, top-down, 1x4 cells",Prefabs/Obstacles/CityWall.prefab (ART-02),,P1,todo
 world_boulderrock,World,Assets/_JungleMaze/Art/World/Obstacles/BoulderRock.png,384x384,,96,"large mossy boulder, top-down, 4x4 cells",Prefabs/Obstacles/BoulderRock.prefab (ART-02),,P1,todo
