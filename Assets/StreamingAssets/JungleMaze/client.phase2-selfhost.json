@@ -1,0 +1,11 @@
+{
+  "authMode": "RoomCode",
+  "protocolVersion": 3,
+  "connectTimeoutMs": 5000,
+  "mode": "Online",
+  "apiBaseUrl": "https://YOUR-SELFHOST.duckdns.org",
+  "gameServerHost": "YOUR-SELFHOST.duckdns.org",
+  "gameServerPort": 7777,
+  "transport": "Auto",
+  "webSocketUrl": "wss://YOUR-SELFHOST.duckdns.org/game"
+}

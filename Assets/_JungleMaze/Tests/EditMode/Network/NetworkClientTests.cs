@@ -39,8 +39,8 @@ namespace JungleMaze.Tests.Network
         }
 
         private ClientConfig Config(int port, ushort version = 1, int timeoutMs = 3000,
-            JoinAuthMode auth = JoinAuthMode.RoomCode, string api = null) =>
-            new ClientConfig(ConnectionMode.Local, api, "127.0.0.1", port, auth, version, timeoutMs);
+            JoinAuthMode auth = JoinAuthMode.RoomCode, string api = null, string transport = "Udp", string wsUrl = null) =>
+            new ClientConfig(ConnectionMode.Local, api, "127.0.0.1", port, auth, version, timeoutMs, transport, "", wsUrl);
 
         private bool Pump(Func<bool> until, int timeoutMs = 3000)
         {
@@ -229,6 +229,38 @@ namespace JungleMaze.Tests.Network
             }
             Assert.Greater(received, 50);
             Assert.AreEqual(0, allocated, "Send/Tick/handler packet gameplay cấp phát trên main thread");
+        }
+
+        [Test]
+        public void Auto_WhenUdpSucceeds_SelectedTransportIsUdp_NoFallbackReason()
+        {
+            var cfg = Config(_server.Port, version: 2, transport: "Auto", wsUrl: "ws://127.0.0.1:7781/game");
+            _client.Connect(new ConnectRequest(cfg, "ROOM42", "AutoTester"));
+            Assert.IsTrue(Pump(() => _client.State == NetworkState.Joined));
+            Assert.AreEqual("Udp", _client.Stats.Transport);
+            Assert.IsNull(_client.Stats.FallbackReason);
+        }
+
+        [Test]
+        public void Auto_WhenBusinessRejection_DoesNotFallback()
+        {
+            var cfg = Config(_server.Port, version: 2, transport: "Auto", wsUrl: "ws://127.0.0.1:7781/game");
+            _client.Connect(new ConnectRequest(cfg, "WRONG_ROOM", "RejectTester"));
+            Assert.IsTrue(Pump(() => _client.State == NetworkState.Failed));
+            Assert.AreEqual(DisconnectReason.InvalidRoomCode, _client.LastReason);
+            Assert.IsNull(_client.Stats.FallbackReason);
+        }
+
+        [Test]
+        public void Stats_ExposesP50_P99_Transport_FallbackReason()
+        {
+            JoinRoom(version: 2);
+            Assert.IsTrue(Pump(() => _client.Stats.PongsReceived >= 2, 4000));
+            var stats = _client.Stats;
+            Assert.AreEqual("Udp", stats.Transport);
+            Assert.IsNull(stats.FallbackReason);
+            Assert.GreaterOrEqual(stats.P50RttMs, 0);
+            Assert.GreaterOrEqual(stats.P99RttMs, 0);
         }
     }
 }

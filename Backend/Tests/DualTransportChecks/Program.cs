@@ -8,6 +8,7 @@ using GameServer.Configuration;
 using GameServer.Diagnostics;
 using GameServer.Networking;
 using JungleBackend.Protocol;
+using JungleBackend.Protocol.Gameplay;
 using LiteNetLib.Utils;
 using ClientOptions = Smoke::NetSmokeClient.Configuration.ClientOptions;
 using SmokeSession = Smoke::NetSmokeClient.Networking.SmokeSession;
@@ -34,6 +35,45 @@ try
     hub.Receive(ws,new byte[]{1,1,0,0,0},true);
     Check(hub.Validate(join,"Wss")=="AttemptUsed","a committed application cannot be taken over");
     hub.Disconnect(ws);Check(hub.ReservedPeers==0,"disconnect releases shared slot");
+    var quitting=new FakePeer("Wss");
+    Check(hub.Join(join with {AttemptId=Guid.NewGuid()},quitting),"WSS quit probe reserves a slot");hub.Connected(quitting);
+    hub.Receive(quitting,new byte[]{NetworkProtocol.ExplicitQuit},true);
+    Check(hub.ReservedPeers==0,"explicit WSS quit releases slot without grace delay");
+    {
+        var previousProfile=Environment.GetEnvironmentVariable("MATCH_PROFILE");
+        try
+        {
+            Environment.SetEnvironmentVariable("MATCH_PROFILE","test");
+            var resHub=new SessionHub(options,new ServerMetrics());
+            var peers=new[]{new FakePeer("Udp"),new FakePeer("Udp")};var ids=new List<string>();
+            var requests=peers.Select((_,i)=>new JoinRequest(3,JoinAuthMode.RoomCode,"DUAL_TEST","Resume"+i,Guid.NewGuid())).ToArray();
+            var registry=new PacketRegistry();var writer=new NetDataWriter();
+            for(var i=0;i<2;i++)
+            {
+                resHub.Join(requests[i],peers[i]);resHub.Connected(peers[i]);
+                NetworkProtocol.TryReadStringMessage(new NetDataReader(peers[i].Messages.Last()),NetworkProtocol.JoinAccepted,256,64,out var id);ids.Add(id!);
+                var hello=new ClientHelloPacket{ProtocolVersion=MatchProtocol.Version,Ready=true};registry.WriteFrame(writer,ref hello);resHub.Receive(peers[i],writer.CopyData(),true);
+            }
+            var match=resHub.Rooms.Find("DUAL_TEST")!.Match;
+            for(var tick=0;tick<20;tick++)resHub.Tick(1d/30);
+            foreach(var id in ids)match.SetPlayerLoaded(id,match.MatchId);
+            resHub.Tick(1d/30);
+            Check(match.Phase==MatchPhase.InGame,"resume transfer probe enters real runtime");
+            match.Entities.TryGetBySession(ids[0],out var entity);var proof=entity!.ResumeToken;
+            resHub.Disconnect(peers[0]);
+            var request=requests[0] with{AttemptId=Guid.NewGuid(),ResumeToken=proof};var resumedUdp=new FakePeer("Udp");
+            Check(resHub.Join(request,resumedUdp),"resume accepted before simulated lost UDP JoinAccepted");resHub.Connected(resumedUdp);
+            var rotated=entity.ResumeToken;Check(rotated!=proof,"first resume rotates proof");
+            resHub.Disconnect(resumedUdp);
+            var resumedWs=new FakePeer("Wss");
+            Check(resHub.Join(request,resumedWs),"same unconfirmed resume can continue through WSS");resHub.Connected(resumedWs);
+            Check(resHub.ReservedPeers==2&&!entity.IsDisconnected&&entity.ResumeToken==rotated,"resume fallback keeps one slot and rotates exactly once");
+            resHub.Disconnect(resumedUdp);Check(resHub.ReservedPeers==2&&!entity.IsDisconnected,"stale resumed UDP callback cannot release WSS");
+            Check(resHub.Validate(request,"Wss")=="AttemptUsed","resume fallback cannot be taken over twice");
+            resHub.CloseAll();
+        }
+        finally{Environment.SetEnvironmentVariable("MATCH_PROFILE",previousProfile);}
+    }
     var udpExpired=new FakePeer("Udp");var expired=join with{AttemptId=Guid.NewGuid()};hub.Join(expired,udpExpired);hub.Connected(udpExpired);hub.Disconnect(udpExpired);
     Check(hub.Join(expired,new FakePeer("Wss")) && hub.ReservedPeers==1,"retired unconfirmed UDP can complete once through WSS");hub.CloseAll();
     var slow = new FakePeer("Wss"){Writable=false};hub.Join(join with{AttemptId=Guid.NewGuid()},slow);hub.Connected(slow);

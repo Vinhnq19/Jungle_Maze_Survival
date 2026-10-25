@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "scenarioId",
+    "status",
+    "physicalDeviceCount",
+    "metrics",
+    "assertions"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "scenarioId": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "INVALID"
+      ]
+    },
+    "physicalDeviceCount": {
+      "const": 1
+    },
+    "selectedTransport": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fallbackReason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "connectedSeconds": {
+          "type": "number"
+        },
+        "inputHz": {
+          "type": "number"
+        },
+        "snapshotHz": {
+          "type": "number"
+        },
+        "rttP50Ms": {
+          "type": "number"
+        },
+        "rttP95Ms": {
+          "type": "number"
+        },
+        "rttP99Ms": {
+          "type": "number"
+        },
+        "pings": {
+          "type": "number"
+        },
+        "pongs": {
+          "type": "number"
+        },
+        "pongTimeouts": {
+          "type": "number"
+        }
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "WAIT",
+              "NOT_OBSERVED"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

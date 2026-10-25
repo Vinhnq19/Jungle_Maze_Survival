@@ -117,6 +117,8 @@ InitTestScene*.unity*
 /JSurvivUnity/Builds/
 Backend/.env
 Backend/.env.aws
+Backend/Deploy/Host/.env.host.public
+Backend/Deploy/Host/.env.host.vpn
 Backend/**/bin/
 Backend/**/obj/
 Backend/**/__pycache__/

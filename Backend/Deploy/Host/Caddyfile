@@ -1,0 +1,28 @@
+{
+    email {$ACME_EMAIL}
+    servers {
+        protocols h1 h2
+    }
+}
+
+{$HOST_DOMAIN} {
+    # GameServer-only internal result/control endpoints must never be reachable through public proxy
+    @internal path /internal /internal/*
+    handle @internal {
+        respond 404
+    }
+
+    # Game WebSocket endpoint: exact /game path proxied to game-server:7781
+    handle /game {
+        reverse_proxy game-server:7781
+    }
+
+    # Swagger API documentation: protected with HTTP Basic Authentication
+    @swagger path /swagger /swagger/*
+    basic_auth @swagger {
+        {$SWAGGER_USER} {$SWAGGER_HASH}
+    }
+
+    # All API endpoints proxied to api:5000
+    reverse_proxy api:5000
+}
