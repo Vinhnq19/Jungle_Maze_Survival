@@ -1,0 +1,19 @@
+{
+  "job_id": "83656710ed6449be84c90c3907e74be4",
+  "mode": "EditMode",
+  "status": "succeeded",
+  "started_unix_ms": 1792913436319,
+  "finished_unix_ms": 1792913443893,
+  "result": {
+    "mode": "EditMode",
+    "summary": {
+      "total": 247,
+      "passed": 247,
+      "failed": 0,
+      "skipped": 0,
+      "durationSeconds": 6.5803412,
+      "resultState": "Passed"
+    },
+    "results": []
+  }
+}
