@@ -1,0 +1,2268 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "61831ed7e78f43b79c6c2c932ac258f8",
+    "status": "succeeded",
+    "mode": "EditMode",
+    "started_unix_ms": 1792914547224,
+    "finished_unix_ms": 1792914559747,
+    "last_update_unix_ms": 1792914559747,
+    "progress": {
+      "completed": 247,
+      "total": 247,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": null,
+      "last_finished_test_full_name": "JungleMaze.Tests.Protocol.Phase2Tests.WindowsGuestProofIsEncryptedAndSeparatedByEndpoint",
+      "last_finished_unix_ms": 1792914559606,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "run_in_background": false,
+      "focus_nudge_attempts": null,
+      "focus_nudge_limit": null,
+      "focus_nudge_status": null,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "EditMode",
+      "summary": {
+        "total": 247,
+        "passed": 247,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 9.450521,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "InvalidConfigOrMissingRoom_PublishesError_NoConnect",
+          "fullName": "JungleMaze.Tests.App.ConnectUseCaseTests.InvalidConfigOrMissingRoom_PublishesError_NoConnect",
+          "state": "Passed",
+          "durationSeconds": 0.005764,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Jwt_LoginFailure_PublishesError",
+          "fullName": "JungleMaze.Tests.App.ConnectUseCaseTests.Jwt_LoginFailure_PublishesError",
+          "state": "Passed",
+          "durationSeconds": 0.0040471,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Jwt_LogsInThenConnectsWithToken",
+          "fullName": "JungleMaze.Tests.App.ConnectUseCaseTests.Jwt_LogsInThenConnectsWithToken",
+          "state": "Passed",
+          "durationSeconds": 0.0013787,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RoomCode_ConnectsDirectly_TrimmedInput",
+          "fullName": "JungleMaze.Tests.App.ConnectUseCaseTests.RoomCode_ConnectsDirectly_TrimmedInput",
+          "state": "Passed",
+          "durationSeconds": 0.0003336,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Boot_GoesToMainMenu_WithoutLoadingScene",
+          "fullName": "JungleMaze.Tests.App.GameFlowTests.Boot_GoesToMainMenu_WithoutLoadingScene",
+          "state": "Passed",
+          "durationSeconds": 0.0062519,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ConnectionLost_InGame_LoadsMenuScene",
+          "fullName": "JungleMaze.Tests.App.GameFlowTests.ConnectionLost_InGame_LoadsMenuScene",
+          "state": "Passed",
+          "durationSeconds": 0.0012786,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Failure_WhileConnecting_ReturnsToMenuWithReason",
+          "fullName": "JungleMaze.Tests.App.GameFlowTests.Failure_WhileConnecting_ReturnsToMenuWithReason",
+          "state": "Passed",
+          "durationSeconds": 0.0001953,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Join_GoesToInRoom_AndLoadsGameScene",
+          "fullName": "JungleMaze.Tests.App.GameFlowTests.Join_GoesToInRoom_AndLoadsGameScene",
+          "state": "Passed",
+          "durationSeconds": 0.0003264,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MatchEvents_DriveInMatchResultsInRoom_AndToggleInput",
+          "fullName": "JungleMaze.Tests.App.GameFlowTests.MatchEvents_DriveInMatchResultsInRoom_AndToggleInput",
+          "state": "Passed",
+          "durationSeconds": 0.0023014,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "UserDisconnect_FromRoom_ReturnsToMenu",
+          "fullName": "JungleMaze.Tests.App.GameFlowTests.UserDisconnect_FromRoom_ReturnsToMenu",
+          "state": "Passed",
+          "durationSeconds": 0.0003722,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AimUsesHeroPosition_NotScreenCentre(5,0,0)",
+          "fullName": "JungleMaze.Tests.App.HeroAimTests.AimUsesHeroPosition_NotScreenCentre(5,0,0)",
+          "state": "Passed",
+          "durationSeconds": 0.0011851,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AimUsesHeroPosition_NotScreenCentre(0,5,90)",
+          "fullName": "JungleMaze.Tests.App.HeroAimTests.AimUsesHeroPosition_NotScreenCentre(0,5,90)",
+          "state": "Passed",
+          "durationSeconds": 0.0001228,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AimUsesHeroPosition_NotScreenCentre(-5,0,180)",
+          "fullName": "JungleMaze.Tests.App.HeroAimTests.AimUsesHeroPosition_NotScreenCentre(-5,0,180)",
+          "state": "Passed",
+          "durationSeconds": 0.0000886,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AimUsesHeroPosition_NotScreenCentre(0,-5,-90)",
+          "fullName": "JungleMaze.Tests.App.HeroAimTests.AimUsesHeroPosition_NotScreenCentre(0,-5,-90)",
+          "state": "Passed",
+          "durationSeconds": 0.0000859,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ComputeMoveDelta_Diagonal_IsNoFasterThanStraight",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.ComputeMoveDelta_Diagonal_IsNoFasterThanStraight",
+          "state": "Passed",
+          "durationSeconds": 0.0005357,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ComputeMoveDelta_NoInput_NoMovement",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.ComputeMoveDelta_NoInput_NoMovement",
+          "state": "Passed",
+          "durationSeconds": 0.0002342,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ComputeMoveDelta_StraightAxis_MovesAtFullSpeed",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.ComputeMoveDelta_StraightAxis_MovesAtFullSpeed",
+          "state": "Passed",
+          "durationSeconds": 0.0001459,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ComputeMoveDelta_SubUnitInput_IsNotRenormalized",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.ComputeMoveDelta_SubUnitInput_IsNotRenormalized",
+          "state": "Passed",
+          "durationSeconds": 0.000142,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NormalizeDegrees_WrapsToHalfOpenRange(0.0f,0.0f)",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.NormalizeDegrees_WrapsToHalfOpenRange(0.0f,0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0005246,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NormalizeDegrees_WrapsToHalfOpenRange(180.0f,180.0f)",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.NormalizeDegrees_WrapsToHalfOpenRange(180.0f,180.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0000703,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NormalizeDegrees_WrapsToHalfOpenRange(181.0f,-179.0f)",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.NormalizeDegrees_WrapsToHalfOpenRange(181.0f,-179.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0000439,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NormalizeDegrees_WrapsToHalfOpenRange(-180.0f,180.0f)",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.NormalizeDegrees_WrapsToHalfOpenRange(-180.0f,180.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0000688,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NormalizeDegrees_WrapsToHalfOpenRange(360.0f,0.0f)",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.NormalizeDegrees_WrapsToHalfOpenRange(360.0f,0.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.000046,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NormalizeDegrees_WrapsToHalfOpenRange(-540.0f,180.0f)",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.NormalizeDegrees_WrapsToHalfOpenRange(-540.0f,180.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0000458,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SmoothAimDegrees_ApproachesTargetOverTime",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.SmoothAimDegrees_ApproachesTargetOverTime",
+          "state": "Passed",
+          "durationSeconds": 0.000228,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SmoothAimDegrees_TurnsTheShortWayAcrossWrap",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.SmoothAimDegrees_TurnsTheShortWayAcrossWrap",
+          "state": "Passed",
+          "durationSeconds": 0.0003319,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SmoothAimDegrees_ZeroLerpTime_SnapsInstantly",
+          "fullName": "JungleMaze.Tests.App.HeroMotionTests.SmoothAimDegrees_ZeroLerpTime_SnapsInstantly",
+          "state": "Passed",
+          "durationSeconds": 0.0001176,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Input_SendsAt30Hz_OnlyWhenEnabled",
+          "fullName": "JungleMaze.Tests.App.WorldSyncAndInputTests.Input_SendsAt30Hz_OnlyWhenEnabled",
+          "state": "Passed",
+          "durationSeconds": 0.0017505,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StatePacket_UpdatesModel_IgnoresOlderTick_ClearsOnDisconnect",
+          "fullName": "JungleMaze.Tests.App.WorldSyncAndInputTests.StatePacket_UpdatesModel_IgnoresOlderTick_ClearsOnDisconnect",
+          "state": "Passed",
+          "durationSeconds": 0.006089,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EmptyPassword_IsRejected",
+          "fullName": "JungleMaze.Tests.Config.AuthApiClientTests.EmptyPassword_IsRejected",
+          "state": "Passed",
+          "durationSeconds": 0.0018233,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MissingApiUrl_IsRejected",
+          "fullName": "JungleMaze.Tests.Config.AuthApiClientTests.MissingApiUrl_IsRejected",
+          "state": "Passed",
+          "durationSeconds": 0.0001513,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RemoteHttp_IsRejectedBeforeSending",
+          "fullName": "JungleMaze.Tests.Config.AuthApiClientTests.RemoteHttp_IsRejectedBeforeSending",
+          "state": "Passed",
+          "durationSeconds": 0.0001899,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ShortUsername_IsRejected",
+          "fullName": "JungleMaze.Tests.Config.AuthApiClientTests.ShortUsername_IsRejected",
+          "state": "Passed",
+          "durationSeconds": 0.0001649,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Equipments_ParsesValidArray",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Equipments_ParsesValidArray",
+          "state": "Passed",
+          "durationSeconds": 0.0006586,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Equipments_RejectsOutOfRangeDamageReduction",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Equipments_RejectsOutOfRangeDamageReduction",
+          "state": "Passed",
+          "durationSeconds": 0.0003696,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Match_ParsesValidJson",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Match_ParsesValidJson",
+          "state": "Passed",
+          "durationSeconds": 0.0004674,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Match_RejectsMissingKey",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Match_RejectsMissingKey",
+          "state": "Passed",
+          "durationSeconds": 0.0001773,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Match_RejectsOutOfRangeValue",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Match_RejectsOutOfRangeValue",
+          "state": "Passed",
+          "durationSeconds": 0.0003273,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Match_RejectsUnknownKey",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Match_RejectsUnknownKey",
+          "state": "Passed",
+          "durationSeconds": 0.0002766,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ShippedBalanceFiles_AllParseAndValidate",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.ShippedBalanceFiles_AllParseAndValidate",
+          "state": "Passed",
+          "durationSeconds": 0.0018478,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Weapons_ParsesValidArray",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Weapons_ParsesValidArray",
+          "state": "Passed",
+          "durationSeconds": 0.0004448,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Weapons_RejectsUnknownCategory",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Weapons_RejectsUnknownCategory",
+          "state": "Passed",
+          "durationSeconds": 0.0001453,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Weapons_RejectsUnknownKey",
+          "fullName": "JungleMaze.Tests.Config.BalanceConfigJsonTests.Weapons_RejectsUnknownKey",
+          "state": "Passed",
+          "durationSeconds": 0.000124,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ChangingOnlyWeaponJson_ChangesConsumedShotValues_AfterReload",
+          "fullName": "JungleMaze.Tests.Config.BalanceConsumerTests.ChangingOnlyWeaponJson_ChangesConsumedShotValues_AfterReload",
+          "state": "Passed",
+          "durationSeconds": 0.0576941,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FileProvider_UserFileBeatsProfile_AndSaveRoundTrips",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.FileProvider_UserFileBeatsProfile_AndSaveRoundTrips",
+          "state": "Passed",
+          "durationSeconds": 0.0326733,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Json_ParsesEveryNetSmokeClientProfile",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Json_ParsesEveryNetSmokeClientProfile",
+          "state": "Passed",
+          "durationSeconds": 0.0057994,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Json_ParsesSchema",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Json_ParsesSchema",
+          "state": "Passed",
+          "durationSeconds": 0.0007846,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Json_RejectsUnknownAndMissingKeys",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Json_RejectsUnknownAndMissingKeys",
+          "state": "Passed",
+          "durationSeconds": 0.0027825,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Json_RoundTripSerialize",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Json_RoundTripSerialize",
+          "state": "Passed",
+          "durationSeconds": 0.0006683,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Overrides_BadPort_IsError",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Overrides_BadPort_IsError",
+          "state": "Passed",
+          "durationSeconds": 0.0003694,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Overrides_CommandLineBeatsEnvironment",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Overrides_CommandLineBeatsEnvironment",
+          "state": "Passed",
+          "durationSeconds": 0.0004627,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_AcceptsLocalLanVpnHosts",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_AcceptsLocalLanVpnHosts",
+          "state": "Passed",
+          "durationSeconds": 0.0001515,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_Jwt_RequiresSecureApi",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_Jwt_RequiresSecureApi",
+          "state": "Passed",
+          "durationSeconds": 0.0007332,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_RejectsBadHost(\"http://127.0.0.1\")",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_RejectsBadHost(\"http://127.0.0.1\")",
+          "state": "Passed",
+          "durationSeconds": 0.0004324,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_RejectsBadHost(\"127.0.0.1:7777\")",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_RejectsBadHost(\"127.0.0.1:7777\")",
+          "state": "Passed",
+          "durationSeconds": 0.0002397,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_RejectsBadHost(\" 127.0.0.1\")",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_RejectsBadHost(\" 127.0.0.1\")",
+          "state": "Passed",
+          "durationSeconds": 0.0001287,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_RejectsBadHost(\"\")",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_RejectsBadHost(\"\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000649,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Validate_RejectsPortVersionTimeoutTransport",
+          "fullName": "JungleMaze.Tests.Config.ClientConfigTests.Validate_RejectsPortVersionTimeoutTransport",
+          "state": "Passed",
+          "durationSeconds": 0.0003536,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HandlerException_IsLogged_OtherHandlersStillRun",
+          "fullName": "JungleMaze.Tests.Core.EventBusTests.HandlerException_IsLogged_OtherHandlersStillRun",
+          "state": "Passed",
+          "durationSeconds": 0.0057647,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Publish_DeliversToAllSubscribers",
+          "fullName": "JungleMaze.Tests.Core.EventBusTests.Publish_DeliversToAllSubscribers",
+          "state": "Passed",
+          "durationSeconds": 0.0005543,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Publish_StructEvent_DoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Core.EventBusTests.Publish_StructEvent_DoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.001181,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SubscribeTwice_InvokedOnce_UnsubscribeStops",
+          "fullName": "JungleMaze.Tests.Core.EventBusTests.SubscribeTwice_InvokedOnce_UnsubscribeStops",
+          "state": "Passed",
+          "durationSeconds": 0.0008893,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "UnsubscribeDuringPublish_IsSafe",
+          "fullName": "JungleMaze.Tests.Core.EventBusTests.UnsubscribeDuringPublish_IsSafe",
+          "state": "Passed",
+          "durationSeconds": 0.000493,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ClampToBounds_ClampsOutsidePoint",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.ClampToBounds_ClampsOutsidePoint",
+          "state": "Passed",
+          "durationSeconds": 0.0005283,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ClampToBounds_LeavesInsidePointUnchanged",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.ClampToBounds_LeavesInsidePointUnchanged",
+          "state": "Passed",
+          "durationSeconds": 0.0003688,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Contains_ChecksSquareBounds(0.0f,0.0f,True)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.Contains_ChecksSquareBounds(0.0f,0.0f,True)",
+          "state": "Passed",
+          "durationSeconds": 0.0009677,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Contains_ChecksSquareBounds(50.0f,50.0f,True)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.Contains_ChecksSquareBounds(50.0f,50.0f,True)",
+          "state": "Passed",
+          "durationSeconds": 0.0007115,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Contains_ChecksSquareBounds(25.0f,25.0f,True)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.Contains_ChecksSquareBounds(25.0f,25.0f,True)",
+          "state": "Passed",
+          "durationSeconds": 0.000069,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Contains_ChecksSquareBounds(-0.01f,10.0f,False)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.Contains_ChecksSquareBounds(-0.01f,10.0f,False)",
+          "state": "Passed",
+          "durationSeconds": 0.0005244,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Contains_ChecksSquareBounds(10.0f,50.01f,False)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.Contains_ChecksSquareBounds(10.0f,50.01f,False)",
+          "state": "Passed",
+          "durationSeconds": 0.0001824,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HardCoverSize_MatchesGddFootprint(AncientPillar,1.0f,2.0f)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.HardCoverSize_MatchesGddFootprint(AncientPillar,1.0f,2.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0008404,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HardCoverSize_MatchesGddFootprint(CityWall,1.0f,4.0f)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.HardCoverSize_MatchesGddFootprint(CityWall,1.0f,4.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0003336,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HardCoverSize_MatchesGddFootprint(BoulderRock,4.0f,4.0f)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.HardCoverSize_MatchesGddFootprint(BoulderRock,4.0f,4.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0000932,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HardCoverSize_MatchesGddFootprint(AncientStatue,3.0f,3.0f)",
+          "fullName": "JungleMaze.Tests.Core.GridBoundsTests.HardCoverSize_MatchesGddFootprint(AncientStatue,3.0f,3.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0002846,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DoubleRelease_Throws",
+          "fullName": "JungleMaze.Tests.Core.ObjectPoolTests.DoubleRelease_Throws",
+          "state": "Passed",
+          "durationSeconds": 0.0023428,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GetRelease_AfterWarmup_DoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Core.ObjectPoolTests.GetRelease_AfterWarmup_DoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.0010034,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GetRelease_ReusesInstance_AndCallsPoolable",
+          "fullName": "JungleMaze.Tests.Core.ObjectPoolTests.GetRelease_ReusesInstance_AndCallsPoolable",
+          "state": "Passed",
+          "durationSeconds": 0.0004785,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Prewarm_CreatesInactiveItems",
+          "fullName": "JungleMaze.Tests.Core.ObjectPoolTests.Prewarm_CreatesInactiveItems",
+          "state": "Passed",
+          "durationSeconds": 0.0004093,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Injector_CallsInjectMethodWithResolvedServices",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.Injector_CallsInjectMethodWithResolvedServices",
+          "state": "Passed",
+          "durationSeconds": 0.0012471,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Injector_MissingDependency_ThrowsClearMessage",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.Injector_MissingDependency_ThrowsClearMessage",
+          "state": "Passed",
+          "durationSeconds": 0.0012326,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Lifecycle_InitInOrder_DisposeReverse_OncePerInstance",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.Lifecycle_InitInOrder_DisposeReverse_OncePerInstance",
+          "state": "Passed",
+          "durationSeconds": 0.0015436,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Register_SameTypeTwice_Throws",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.Register_SameTypeTwice_Throws",
+          "state": "Passed",
+          "durationSeconds": 0.0006391,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RegisterAfterInitialize_InitializesImmediately",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.RegisterAfterInitialize_InitializesImmediately",
+          "state": "Passed",
+          "durationSeconds": 0.000215,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Resolve_Missing_ThrowsWithServiceName",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.Resolve_Missing_ThrowsWithServiceName",
+          "state": "Passed",
+          "durationSeconds": 0.0007934,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Resolve_ReturnsRegisteredInstance",
+          "fullName": "JungleMaze.Tests.Core.ServiceRegistryTests.Resolve_ReturnsRegisteredInstance",
+          "state": "Passed",
+          "durationSeconds": 0.0005708,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ChangeState_ExitsPreviousThenEntersNext",
+          "fullName": "JungleMaze.Tests.Core.StateMachineTests.ChangeState_ExitsPreviousThenEntersNext",
+          "state": "Passed",
+          "durationSeconds": 0.00076,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ChangeStateInsideEnter_IsQueued_NotNested",
+          "fullName": "JungleMaze.Tests.Core.StateMachineTests.ChangeStateInsideEnter_IsQueued_NotNested",
+          "state": "Passed",
+          "durationSeconds": 0.0003502,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StateChanged_ReportsPreviousAndNext",
+          "fullName": "JungleMaze.Tests.Core.StateMachineTests.StateChanged_ReportsPreviousAndNext",
+          "state": "Passed",
+          "durationSeconds": 0.0004514,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Stop_ExitsCurrent",
+          "fullName": "JungleMaze.Tests.Core.StateMachineTests.Stop_ExitsCurrent",
+          "state": "Passed",
+          "durationSeconds": 0.0004767,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EmptiesAfter8s_Linear",
+          "fullName": "JungleMaze.Tests.Hud.AdrenalineGaugeTests.EmptiesAfter8s_Linear",
+          "state": "Passed",
+          "durationSeconds": 0.0070064,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ReactivateRefills_AndNoEffectIsEmpty",
+          "fullName": "JungleMaze.Tests.Hud.AdrenalineGaugeTests.ReactivateRefills_AndNoEffectIsEmpty",
+          "state": "Passed",
+          "durationSeconds": 0.0006151,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Heal_HasNoTrail",
+          "fullName": "JungleMaze.Tests.Hud.DamageTrailTests.Heal_HasNoTrail",
+          "state": "Passed",
+          "durationSeconds": 0.0005173,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HitWhileHolding_KeepsHighestAndRestartsHold",
+          "fullName": "JungleMaze.Tests.Hud.DamageTrailTests.HitWhileHolding_KeepsHighestAndRestartsHold",
+          "state": "Passed",
+          "durationSeconds": 0.0004348,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HoldThenRetract_WithinOneFrame",
+          "fullName": "JungleMaze.Tests.Hud.DamageTrailTests.HoldThenRetract_WithinOneFrame",
+          "state": "Passed",
+          "durationSeconds": 0.0007537,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Adrenaline8s_LinearThenRemoved",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.Adrenaline8s_LinearThenRemoved",
+          "state": "Passed",
+          "durationSeconds": 0.0070893,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ApplyAgain_Refreshes",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.ApplyAgain_Refreshes",
+          "state": "Passed",
+          "durationSeconds": 0.0004392,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Disconnect_ResetsToDefaults",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.Disconnect_ResetsToDefaults",
+          "state": "Passed",
+          "durationSeconds": 0.0004856,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NegativeOrNaNDuration_Ignored",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.NegativeOrNaNDuration_Ignored",
+          "state": "Passed",
+          "durationSeconds": 0.0014963,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OtherKinds_CoexistInList",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.OtherKinds_CoexistInList",
+          "state": "Passed",
+          "durationSeconds": 0.0005144,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StartsEmpty",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.StartsEmpty",
+          "state": "Passed",
+          "durationSeconds": 0.0002042,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TickWithEffects_NoGcAlloc",
+          "fullName": "JungleMaze.Tests.Hud.EffectStateStoreTests.TickWithEffects_NoGcAlloc",
+          "state": "Passed",
+          "durationSeconds": 0.0044194,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DangerList_CapacityRemovalAndInvalidValues",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackDomainTests.DangerList_CapacityRemovalAndInvalidValues",
+          "state": "Passed",
+          "durationSeconds": 0.0005816,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DangerList_RefreshesInPlace_AndExpiresExactlyAtZero",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackDomainTests.DangerList_RefreshesInPlace_AndExpiresExactlyAtZero",
+          "state": "Passed",
+          "durationSeconds": 0.0006443,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EffectKinds_PreserveOldValues_AndAdrenalineHasNoChip",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackDomainTests.EffectKinds_PreserveOldValues_AndAdrenalineHasNoChip",
+          "state": "Passed",
+          "durationSeconds": 0.0003047,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ItemUse_RejectsInvalidStart",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackDomainTests.ItemUse_RejectsInvalidStart",
+          "state": "Passed",
+          "durationSeconds": 0.0003954,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ItemUse_TicksToZeroWithoutCompleting_ResyncsAndIgnoresStaleFinish",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackDomainTests.ItemUse_TicksToZeroWithoutCompleting_ResyncsAndIgnoresStaleFinish",
+          "state": "Passed",
+          "durationSeconds": 0.000543,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Arcs_MergeWrapBoundary_ReplaceOldestAndFade",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Arcs_MergeWrapBoundary_ReplaceOldestAndFade",
+          "state": "Passed",
+          "durationSeconds": 0.000916,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Danger_NewActiveWarningEvictsOldGhostWhenSnapshotCapacityIsFull",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Danger_NewActiveWarningEvictsOldGhostWhenSnapshotCapacityIsFull",
+          "state": "Passed",
+          "durationSeconds": 0.0005012,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Danger_Urgency_OffscreenLimit_ExpiryAndTrapRefresh",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Danger_Urgency_OffscreenLimit_ExpiryAndTrapRefresh",
+          "state": "Passed",
+          "durationSeconds": 0.0010058,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Effects_BlinkPeriodAndRefreshSnapshot",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Effects_BlinkPeriodAndRefreshSnapshot",
+          "state": "Passed",
+          "durationSeconds": 0.0003355,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Effects_ExpireFade_CompactAndUntimed",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Effects_ExpireFade_CompactAndUntimed",
+          "state": "Passed",
+          "durationSeconds": 0.0004505,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Effects_HarmfulFirst_OverflowAndAdrenalineExcluded",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Effects_HarmfulFirst_OverflowAndAdrenalineExcluded",
+          "state": "Passed",
+          "durationSeconds": 0.0003901,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Format_BannerCompassAndCeilingTenths",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Format_BannerCompassAndCeilingTenths",
+          "state": "Passed",
+          "durationSeconds": 0.0002499,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hit_OnlyHero_RepeatedHitsResetSingleMarker",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Hit_OnlyHero_RepeatedHitsResetSingleMarker",
+          "state": "Passed",
+          "durationSeconds": 0.0003209,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Models_TickDoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Models_TickDoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.0007028,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Pickup_MergeOverflowLifetimeAndOrdering",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Pickup_MergeOverflowLifetimeAndOrdering",
+          "state": "Passed",
+          "durationSeconds": 0.00062,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Ring_TrueAnglesOutsideCenterEvery15Degrees",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Ring_TrueAnglesOutsideCenterEvery15Degrees",
+          "state": "Passed",
+          "durationSeconds": 0.0013447,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Use_MonotonicAtSupportedFrameRates(30)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Use_MonotonicAtSupportedFrameRates(30)",
+          "state": "Passed",
+          "durationSeconds": 0.0007431,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Use_MonotonicAtSupportedFrameRates(60)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Use_MonotonicAtSupportedFrameRates(60)",
+          "state": "Passed",
+          "durationSeconds": 0.0001534,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Use_MonotonicAtSupportedFrameRates(144)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Use_MonotonicAtSupportedFrameRates(144)",
+          "state": "Passed",
+          "durationSeconds": 0.0002428,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Use_UsesSourceProgress_AndPreservesCancelAndCompleteLingers",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackModelsTests.Use_UsesSourceProgress_AndPreservesCancelAndCompleteLingers",
+          "state": "Passed",
+          "durationSeconds": 0.0003719,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ThirtyTickBurstAndExpiry_ProduceIdenticalCountsPositionsAndText",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackPortEquivalenceTests.ThirtyTickBurstAndExpiry_ProduceIdenticalCountsPositionsAndText",
+          "state": "Passed",
+          "durationSeconds": 0.0110541,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(4,0,0,\"Đông\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(4,0,0,\"Đông\")",
+          "state": "Passed",
+          "durationSeconds": 0.0008045,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(3,3,1,\"Đông Bắc\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(3,3,1,\"Đông Bắc\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000531,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(0,4,2,\"Bắc\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(0,4,2,\"Bắc\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000362,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(-3,3,3,\"Tây Bắc\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(-3,3,3,\"Tây Bắc\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000387,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(-4,0,4,\"Tây\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(-4,0,4,\"Tây\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000354,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(-3,-3,5,\"Tây Nam\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(-3,-3,5,\"Tây Nam\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000374,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(0,-4,6,\"Nam\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(0,-4,6,\"Nam\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000347,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Banner_EightDirections_ArePrintedFromSourceVectors(3,-3,7,\"Đông Nam\")",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors(3,-3,7,\"Đông Nam\")",
+          "state": "Passed",
+          "durationSeconds": 0.0000329,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PickupMerge_RestartsItsOwnThreeAndHalfSecondLifetime",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.PickupMerge_RestartsItsOwnThreeAndHalfSecondLifetime",
+          "state": "Passed",
+          "durationSeconds": 0.0002566,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PoisonRefreshEveryHalfSecond_ForFourSeconds_NeverShowsZero",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.PoisonRefreshEveryHalfSecond_ForFourSeconds_NeverShowsZero",
+          "state": "Passed",
+          "durationSeconds": 0.0008361,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(0,330,0,0)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(0,330,0,0)",
+          "state": "Passed",
+          "durationSeconds": 0.0004824,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(90,0,190,90)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(90,0,190,90)",
+          "state": "Passed",
+          "durationSeconds": 0.0000421,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(180,-330,0,0)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(180,-330,0,0)",
+          "state": "Passed",
+          "durationSeconds": 0.0000305,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(270,0,-190,90)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.Ring_CardinalPointsAndTangentsMatchApprovedCoordinates(270,0,-190,90)",
+          "state": "Passed",
+          "durationSeconds": 0.0000326,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(Poison,3.0f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(Poison,3.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0010036,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(Stun,1.0f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(Stun,1.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0001719,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(Stun,2.0f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(Stun,2.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0001052,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(Stun,5.0f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(Stun,5.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0001457,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(Root,1.5f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(Root,1.5f)",
+          "state": "Passed",
+          "durationSeconds": 0.0000685,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(Invisible,5.0f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(Invisible,5.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0001427,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TimedEffects_ReadSourceCountdown_AndCeilSeconds(CcImmune,7.0f)",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds(CcImmune,7.0f)",
+          "state": "Passed",
+          "durationSeconds": 0.0001533,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ActiveFeedback_TickDoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackPresenterTests.ActiveFeedback_TickDoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.0030841,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Idle_NoWritesAndNoGc_WithoutStateChanges",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackPresenterTests.Idle_NoWritesAndNoGc_WithoutStateChanges",
+          "state": "Passed",
+          "durationSeconds": 0.0017004,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OptionalDirectionAndHitTargetRules_AndDisposeUnsubscribes",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackPresenterTests.OptionalDirectionAndHitTargetRules_AndDisposeUnsubscribes",
+          "state": "Passed",
+          "durationSeconds": 0.0006456,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SlotHookOnAndOff_CompleteDoesNotWriteGameplayCounts",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackPresenterTests.SlotHookOnAndOff_CompleteDoesNotWriteGameplayCounts",
+          "state": "Passed",
+          "durationSeconds": 0.002228,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TwoReadPortImplementations_ProduceTheSameOutput",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackPresenterTests.TwoReadPortImplementations_ProduceTheSameOutput",
+          "state": "Passed",
+          "durationSeconds": 0.0019675,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Burst_HasSpecifiedEventCounts_AndStops",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackScenariosTests.Burst_HasSpecifiedEventCounts_AndStops",
+          "state": "Passed",
+          "durationSeconds": 0.0049185,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "EveryUsableEquipment_ReadsUseSecondsFromJson_AndCompletesAtSource",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackScenariosTests.EveryUsableEquipment_ReadsUseSecondsFromJson_AndCompletesAtSource",
+          "state": "Passed",
+          "durationSeconds": 0.0023463,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Skirmish_IsCompassStunSixHitsOffscreenBombAndFourPickups",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackScenariosTests.Skirmish_IsCompassStunSixHitsOffscreenBombAndFourPickups",
+          "state": "Passed",
+          "durationSeconds": 0.0025702,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DangerTick_ExpiredAndResetRemovedEvents_AreDistinct",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackStoresTests.DangerTick_ExpiredAndResetRemovedEvents_AreDistinct",
+          "state": "Passed",
+          "durationSeconds": 0.0021466,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Disconnect_ResetsDangersAndUse_WithoutChangingCountsOnCompletion",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackStoresTests.Disconnect_ResetsDangersAndUse_WithoutChangingCountsOnCompletion",
+          "state": "Passed",
+          "durationSeconds": 0.002313,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NotifyPickup_ResolvesName_IgnoresBadInput",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackStoresTests.NotifyPickup_ResolvesName_IgnoresBadInput",
+          "state": "Passed",
+          "durationSeconds": 0.0017441,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Tick_DoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Hud.Feedback.HudFeedbackStoresTests.Tick_DoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.0017898,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CeilInt",
+          "fullName": "JungleMaze.Tests.Hud.HudFormatTests.CeilInt",
+          "state": "Passed",
+          "durationSeconds": 0.0001778,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Formatting_DoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Hud.HudFormatTests.Formatting_DoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.0003263,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MmSs",
+          "fullName": "JungleMaze.Tests.Hud.HudFormatTests.MmSs",
+          "state": "Passed",
+          "durationSeconds": 0.0002467,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NumbersFractionsCountsSeconds",
+          "fullName": "JungleMaze.Tests.Hud.HudFormatTests.NumbersFractionsCountsSeconds",
+          "state": "Passed",
+          "durationSeconds": 0.0003762,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HealStepUp_0To100",
+          "fullName": "JungleMaze.Tests.Hud.HudMockScenariosTests.HealStepUp_0To100",
+          "state": "Passed",
+          "durationSeconds": 0.0024389,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HpStepDown_100To0_Step10",
+          "fullName": "JungleMaze.Tests.Hud.HudMockScenariosTests.HpStepDown_100To0_Step10",
+          "state": "Passed",
+          "durationSeconds": 0.0024143,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MockupV2_ProducesAc14State",
+          "fullName": "JungleMaze.Tests.Hud.HudMockScenariosTests.MockupV2_ProducesAc14State",
+          "state": "Passed",
+          "durationSeconds": 0.0024752,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "StressStep_WritesEveryKind",
+          "fullName": "JungleMaze.Tests.Hud.HudMockScenariosTests.StressStep_WritesEveryKind",
+          "state": "Passed",
+          "durationSeconds": 0.0019743,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AdrenalineRow_NeverShowsZeroWhileActive",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.AdrenalineRow_NeverShowsZeroWhileActive",
+          "state": "Passed",
+          "durationSeconds": 0.0033798,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AdrenalineRow_YellowCeilSeconds",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.AdrenalineRow_YellowCeilSeconds",
+          "state": "Passed",
+          "durationSeconds": 0.0025732,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AmmoStrip_AllFourGuns_AndMeleeHidesAmmo",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.AmmoStrip_AllFourGuns_AndMeleeHidesAmmo",
+          "state": "Passed",
+          "durationSeconds": 0.001778,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ArmorHelmet_DurabilityFromJson_CeilNumber",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.ArmorHelmet_DurabilityFromJson_CeilNumber",
+          "state": "Passed",
+          "durationSeconds": 0.0017209,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "BindsToReadPortsOnly",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.BindsToReadPortsOnly",
+          "state": "Passed",
+          "durationSeconds": 0.0026181,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DefaultState_G7",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.DefaultState_G7",
+          "state": "Passed",
+          "durationSeconds": 0.0020974,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hp30HzDecrement_FillNeverIncreases",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.Hp30HzDecrement_FillNeverIncreases",
+          "state": "Passed",
+          "durationSeconds": 0.0035266,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HpNumberUpdatesOnSameEvent_BarReachesTargetIn025s",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.HpNumberUpdatesOnSameEvent_BarReachesTargetIn025s",
+          "state": "Passed",
+          "durationSeconds": 0.0014698,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "LowHpNumberRed_At25_AndTrailOnLoss",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.LowHpNumberRed_At25_AndTrailOnLoss",
+          "state": "Passed",
+          "durationSeconds": 0.0027602,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MatchStatus_ShowsSourceValues_NoCountdown",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.MatchStatus_ShowsSourceValues_NoCountdown",
+          "state": "Passed",
+          "durationSeconds": 0.001454,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MaxHpFromConfig_150",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.MaxHpFromConfig_150",
+          "state": "Passed",
+          "durationSeconds": 0.0156878,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Minimap_FollowsPose",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.Minimap_FollowsPose",
+          "state": "Passed",
+          "durationSeconds": 0.0016727,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NoEvents600Frames_ViewsUntouched",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.NoEvents600Frames_ViewsUntouched",
+          "state": "Passed",
+          "durationSeconds": 0.0015283,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OutOfRangeValues_Clamped_NoThrow",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.OutOfRangeValues_Clamped_NoThrow",
+          "state": "Passed",
+          "durationSeconds": 0.0018287,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ReloadHint_TogglesOnSameEvent",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.ReloadHint_TogglesOnSameEvent",
+          "state": "Passed",
+          "durationSeconds": 0.0013916,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Scenario_MockupV2",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.Scenario_MockupV2",
+          "state": "Passed",
+          "durationSeconds": 0.0052975,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TickWithoutChanges_NoGcAlloc",
+          "fullName": "JungleMaze.Tests.Hud.HudPresenterTests.TickWithoutChanges_NoGcAlloc",
+          "state": "Passed",
+          "durationSeconds": 0.0025876,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ChangedWritesRaiseOnce_IdenticalWritesRaiseNothing",
+          "fullName": "JungleMaze.Tests.Hud.HudStateStoreTests.ChangedWritesRaiseOnce_IdenticalWritesRaiseNothing",
+          "state": "Passed",
+          "durationSeconds": 0.0042739,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DefaultsMatchG7",
+          "fullName": "JungleMaze.Tests.Hud.HudStateStoreTests.DefaultsMatchG7",
+          "state": "Passed",
+          "durationSeconds": 0.0054047,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Disconnect_ResetsToDefaults",
+          "fullName": "JungleMaze.Tests.Hud.HudStateStoreTests.Disconnect_ResetsToDefaults",
+          "state": "Passed",
+          "durationSeconds": 0.0042677,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NaNIgnored_NoThrow",
+          "fullName": "JungleMaze.Tests.Hud.HudStateStoreTests.NaNIgnored_NoThrow",
+          "state": "Passed",
+          "durationSeconds": 0.0122991,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ResolvesNamesAndMaximaFromJson",
+          "fullName": "JungleMaze.Tests.Hud.HudStateStoreTests.ResolvesNamesAndMaximaFromJson",
+          "state": "Passed",
+          "durationSeconds": 0.0020196,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "BadIndexIgnored_NoThrow",
+          "fullName": "JungleMaze.Tests.Hud.InventoryStateStoreTests.BadIndexIgnored_NoThrow",
+          "state": "Passed",
+          "durationSeconds": 0.0019511,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ConsumableCountZero_EmptiesSlot_AndIdenticalWritesRaiseNothing",
+          "fullName": "JungleMaze.Tests.Hud.InventoryStateStoreTests.ConsumableCountZero_EmptiesSlot_AndIdenticalWritesRaiseNothing",
+          "state": "Passed",
+          "durationSeconds": 0.0025934,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DefaultsMatchG7",
+          "fullName": "JungleMaze.Tests.Hud.InventoryStateStoreTests.DefaultsMatchG7",
+          "state": "Passed",
+          "durationSeconds": 0.0016548,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Disconnect_ResetsToDefaults",
+          "fullName": "JungleMaze.Tests.Hud.InventoryStateStoreTests.Disconnect_ResetsToDefaults",
+          "state": "Passed",
+          "durationSeconds": 0.0015456,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CellCentres_LandWithinOneCellPerAxis",
+          "fullName": "JungleMaze.Tests.Hud.MinimapProjectionTests.CellCentres_LandWithinOneCellPerAxis",
+          "state": "Passed",
+          "durationSeconds": 0.0007318,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ClampsOutsideMap_AndHeadingFollowsRotation",
+          "fullName": "JungleMaze.Tests.Hud.MinimapProjectionTests.ClampsOutsideMap_AndHeadingFollowsRotation",
+          "state": "Passed",
+          "durationSeconds": 0.0003532,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ClampsAndNaN",
+          "fullName": "JungleMaze.Tests.Hud.SmoothedBarTests.ClampsAndNaN",
+          "state": "Passed",
+          "durationSeconds": 0.0005556,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FrameRateIndependent(30)",
+          "fullName": "JungleMaze.Tests.Hud.SmoothedBarTests.FrameRateIndependent(30)",
+          "state": "Passed",
+          "durationSeconds": 0.0008352,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FrameRateIndependent(60)",
+          "fullName": "JungleMaze.Tests.Hud.SmoothedBarTests.FrameRateIndependent(60)",
+          "state": "Passed",
+          "durationSeconds": 0.0000796,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FrameRateIndependent(144)",
+          "fullName": "JungleMaze.Tests.Hud.SmoothedBarTests.FrameRateIndependent(144)",
+          "state": "Passed",
+          "durationSeconds": 0.0001296,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ReachesTargetIn025s_Monotonic",
+          "fullName": "JungleMaze.Tests.Hud.SmoothedBarTests.ReachesTargetIn025s_Monotonic",
+          "state": "Passed",
+          "durationSeconds": 0.0003598,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RetargetMidTween_ContinuesFromShown",
+          "fullName": "JungleMaze.Tests.Hud.SmoothedBarTests.RetargetMidTween_ContinuesFromShown",
+          "state": "Passed",
+          "durationSeconds": 0.0010174,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MeleeThrownSpecialAndNull_HideAmmoAndHint",
+          "fullName": "JungleMaze.Tests.Hud.WeaponStripRulesTests.MeleeThrownSpecialAndNull_HideAmmoAndHint",
+          "state": "Passed",
+          "durationSeconds": 0.0005414,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ReloadHint_OnlyWhenReloadIsPossible",
+          "fullName": "JungleMaze.Tests.Hud.WeaponStripRulesTests.ReloadHint_OnlyWhenReloadIsPossible",
+          "state": "Passed",
+          "durationSeconds": 0.0002854,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanReconnectAfterFailure",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.CanReconnectAfterFailure",
+          "state": "Passed",
+          "durationSeconds": 0.2318457,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Disconnect_IsUserRequested_AndServerFreesSlot",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.Disconnect_IsUserRequested_AndServerFreesSlot",
+          "state": "Passed",
+          "durationSeconds": 0.1084435,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "GameplayPacket_RoundTripOnChannel1_ManySubscribers",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.GameplayPacket_RoundTripOnChannel1_ManySubscribers",
+          "state": "Passed",
+          "durationSeconds": 0.1874811,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "InvalidConfig_FailsWithoutOpeningSocket",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.InvalidConfig_FailsWithoutOpeningSocket",
+          "state": "Passed",
+          "durationSeconds": 0.0628205,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "InvalidDisplayName_FailsBeforeConnect",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.InvalidDisplayName_FailsBeforeConnect",
+          "state": "Passed",
+          "durationSeconds": 0.0620768,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Joined_PingPong_RecordsRealRtt",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.Joined_PingPong_RecordsRealRtt",
+          "state": "Passed",
+          "durationSeconds": 1.197031,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Jwt_AnswersAuthRequiredWithToken",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.Jwt_AnswersAuthRequiredWithToken",
+          "state": "Passed",
+          "durationSeconds": 0.187918,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Jwt_WithoutToken_FailsAuthenticationRequired",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.Jwt_WithoutToken_FailsAuthenticationRequired",
+          "state": "Passed",
+          "durationSeconds": 0.0626314,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "NoServer_FailsWithConnectTimeout",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.NoServer_FailsWithConnectTimeout",
+          "state": "Passed",
+          "durationSeconds": 0.7494783,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ProtocolV2_SendsRandomAttemptId",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.ProtocolV2_SendsRandomAttemptId",
+          "state": "Passed",
+          "durationSeconds": 0.1243845,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RoomCode_JoinsAndPublishesStateChanges",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.RoomCode_JoinsAndPublishesStateChanges",
+          "state": "Passed",
+          "durationSeconds": 0.1242612,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "RoomFull_FailsWithRoomFull",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.RoomFull_FailsWithRoomFull",
+          "state": "Passed",
+          "durationSeconds": 0.1396468,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ServerKicks_WhileJoined_ReportsServerClosed",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.ServerKicks_WhileJoined_ReportsServerClosed",
+          "state": "Passed",
+          "durationSeconds": 0.1706039,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SteadyState_TickAndSend_DoNotAllocateOnMainThread",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.SteadyState_TickAndSend_DoNotAllocateOnMainThread",
+          "state": "Passed",
+          "durationSeconds": 2.4090078,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "WrongRoomCode_FailsWithServerReason",
+          "fullName": "JungleMaze.Tests.Network.NetworkClientTests.WrongRoomCode_FailsWithServerReason",
+          "state": "Passed",
+          "durationSeconds": 0.1403923,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DuplicateOrUnknownPong_IsIgnored",
+          "fullName": "JungleMaze.Tests.Network.RttTrackerTests.DuplicateOrUnknownPong_IsIgnored",
+          "state": "Passed",
+          "durationSeconds": 0.0003581,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ExpiredPing_CountsLost_AndLatePongIgnored",
+          "fullName": "JungleMaze.Tests.Network.RttTrackerTests.ExpiredPing_CountsLost_AndLatePongIgnored",
+          "state": "Passed",
+          "durationSeconds": 0.000134,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FullPending_OldestCountsLost",
+          "fullName": "JungleMaze.Tests.Network.RttTrackerTests.FullPending_OldestCountsLost",
+          "state": "Passed",
+          "durationSeconds": 0.0001559,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MatchedPong_RecordsRtt",
+          "fullName": "JungleMaze.Tests.Network.RttTrackerTests.MatchedPong_RecordsRtt",
+          "state": "Passed",
+          "durationSeconds": 0.0001306,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Percentile_NearestRank",
+          "fullName": "JungleMaze.Tests.Network.RttTrackerTests.Percentile_NearestRank",
+          "state": "Passed",
+          "durationSeconds": 0.0003321,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DelayedDespawn_ReturnsAfterDelay_IgnoresStaleRespawn",
+          "fullName": "JungleMaze.Tests.Pooling.PoolServiceTests.DelayedDespawn_ReturnsAfterDelay_IgnoresStaleRespawn",
+          "state": "Passed",
+          "durationSeconds": 0.0040833,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DoubleDespawn_LogsError_DoesNotDuplicate",
+          "fullName": "JungleMaze.Tests.Pooling.PoolServiceTests.DoubleDespawn_LogsError_DoesNotDuplicate",
+          "state": "Passed",
+          "durationSeconds": 0.0034959,
+          "message": null,
+          "stackTrace": null,
+          "output": "[Pool] BulletPrefab bị Despawn hai lần.\r\n"
+        },
+        {
+          "name": "Factory_SpawnsAtPose",
+          "fullName": "JungleMaze.Tests.Pooling.PoolServiceTests.Factory_SpawnsAtPose",
+          "state": "Passed",
+          "durationSeconds": 0.0009366,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Prewarm_CreatesInactiveInstances",
+          "fullName": "JungleMaze.Tests.Pooling.PoolServiceTests.Prewarm_CreatesInactiveInstances",
+          "state": "Passed",
+          "durationSeconds": 0.0005102,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Spawn_InjectsBeforeAwake_ThenReuses",
+          "fullName": "JungleMaze.Tests.Pooling.PoolServiceTests.Spawn_InjectsBeforeAwake_ThenReuses",
+          "state": "Passed",
+          "durationSeconds": 0.0008761,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TickRunner_RemoveDuringTick_AppliesNextFrame",
+          "fullName": "JungleMaze.Tests.Pooling.PoolServiceTests.TickRunner_RemoveDuringTick_AppliesNextFrame",
+          "state": "Passed",
+          "durationSeconds": 0.0016076,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "ControlMessage_IsNotFrame",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.ControlMessage_IsNotFrame",
+          "state": "Passed",
+          "durationSeconds": 0.0009977,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Event_RoundTrip",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.Event_RoundTrip",
+          "state": "Passed",
+          "durationSeconds": 0.0010603,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Frame_HasMarker_AndReadsSeveralPackets",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.Frame_HasMarker_AndReadsSeveralPackets",
+          "state": "Passed",
+          "durationSeconds": 0.0003546,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlayerInput_NaNMove_BecomesZero",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.PlayerInput_NaNMove_BecomesZero",
+          "state": "Passed",
+          "durationSeconds": 0.0001518,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlayerInput_RoundTrip_BoundaryValues",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.PlayerInput_RoundTrip_BoundaryValues",
+          "state": "Passed",
+          "durationSeconds": 0.0004291,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PlayerState_RoundTrip",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.PlayerState_RoundTrip",
+          "state": "Passed",
+          "durationSeconds": 0.0004037,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SerializeDeserialize_AllPackets_ZeroGcAlloc",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.SerializeDeserialize_AllPackets_ZeroGcAlloc",
+          "state": "Passed",
+          "durationSeconds": 0.0046567,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SeveralPacketsInOneWriter_AllDelivered",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.SeveralPacketsInOneWriter_AllDelivered",
+          "state": "Passed",
+          "durationSeconds": 0.0002295,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "TruncatedPacket_IsRejected",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.TruncatedPacket_IsRejected",
+          "state": "Passed",
+          "durationSeconds": 0.0002724,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "UnknownHash_IsRejected",
+          "fullName": "JungleMaze.Tests.Protocol.PacketRegistryTests.UnknownHash_IsRejected",
+          "state": "Passed",
+          "durationSeconds": 0.0003104,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "CanonicalHashAcceptsWindowsLineEndingsAndBom",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.CanonicalHashAcceptsWindowsLineEndingsAndBom",
+          "state": "Passed",
+          "durationSeconds": 0.0661209,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "InvalidEndpointSwitchCannotReusePreviousGuestProof",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.InvalidEndpointSwitchCannotReusePreviousGuestProof",
+          "state": "Passed",
+          "durationSeconds": 0.1217087,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OldMatchPacketsCannotOverwriteNextRound",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.OldMatchPacketsCannotOverwriteNextRound",
+          "state": "Passed",
+          "durationSeconds": 0.0108317,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "OptionalIdentityIsSentBeforeGameplayCapability",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.OptionalIdentityIsSentBeforeGameplayCapability",
+          "state": "Passed",
+          "durationSeconds": 0.0008055,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PackagedMapHashMustMatchServer",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.PackagedMapHashMustMatchServer",
+          "state": "Passed",
+          "durationSeconds": 0.0037849,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PersistentProofUsesSecureOrigin(\"https://example.com\",True)",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"https://example.com\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0006799,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PersistentProofUsesSecureOrigin(\"http://127.0.0.1:5000\",True)",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"http://127.0.0.1:5000\",True)",
+          "state": "Passed",
+          "durationSeconds": 0.0001009,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PersistentProofUsesSecureOrigin(\"http://192.168.1.10:5000\",False)",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"http://192.168.1.10:5000\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.0000663,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "PersistentProofUsesSecureOrigin(\"https://user:password@example.com\",False)",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"https://user:password@example.com\",False)",
+          "state": "Passed",
+          "durationSeconds": 0.000079,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SnapshotHotCodec_DoesNotAllocate",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.SnapshotHotCodec_DoesNotAllocate",
+          "state": "Passed",
+          "durationSeconds": 0.0023853,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SnapshotRejectsTruncationAndTooManyPlayers",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.SnapshotRejectsTruncationAndTooManyPlayers",
+          "state": "Passed",
+          "durationSeconds": 0.0007195,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "WindowsGuestProofIsEncryptedAndSeparatedByEndpoint",
+          "fullName": "JungleMaze.Tests.Protocol.Phase2Tests.WindowsGuestProofIsEncryptedAndSeparatedByEndpoint",
+          "state": "Passed",
+          "durationSeconds": 0.0164599,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}

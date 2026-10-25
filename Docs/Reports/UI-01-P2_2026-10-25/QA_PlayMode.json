@@ -1,0 +1,378 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "c23dd21b37f442e2bff84b704793ca27",
+    "status": "succeeded",
+    "mode": "PlayMode",
+    "started_unix_ms": 1792932586821,
+    "finished_unix_ms": 1792932607752,
+    "last_update_unix_ms": 1792932607752,
+    "progress": {
+      "completed": 37,
+      "total": 37,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": null,
+      "last_finished_test_full_name": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept",
+      "last_finished_unix_ms": 1792932607729,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "run_in_background": true,
+      "focus_nudge_attempts": null,
+      "focus_nudge_limit": null,
+      "focus_nudge_status": null,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": {
+      "mode": "PlayMode",
+      "summary": {
+        "total": 37,
+        "passed": 37,
+        "failed": 0,
+        "skipped": 0,
+        "durationSeconds": 15.3585233,
+        "resultState": "Passed"
+      },
+      "results": [
+        {
+          "name": "EveryCover_BlocksHero_ProjectileAndLos_AndPoolReusesProjectile",
+          "fullName": "JungleMaze.Tests.PlayMode.FoundationAcceptanceTests.EveryCover_BlocksHero_ProjectileAndLos_AndPoolReusesProjectile",
+          "state": "Passed",
+          "durationSeconds": 0.1149349,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hero_ConfigAfterAwake_DiagonalSpeed_AndAim",
+          "fullName": "JungleMaze.Tests.PlayMode.FoundationAcceptanceTests.Hero_ConfigAfterAwake_DiagonalSpeed_AndAim",
+          "state": "Passed",
+          "durationSeconds": 0.0383797,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HeroAndCamera_StayStillWithoutInput_AndCameraClampsAtMapEdge",
+          "fullName": "JungleMaze.Tests.PlayMode.FoundationAcceptanceTests.HeroAndCamera_StayStillWithoutInput_AndCameraClampsAtMapEdge",
+          "state": "Passed",
+          "durationSeconds": 0.1025611,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "MapGrid_Has50Cells_48Ppu_AndFourSolidBoundaries",
+          "fullName": "JungleMaze.Tests.PlayMode.FoundationAcceptanceTests.MapGrid_Has50Cells_48Ppu_AndFourSolidBoundaries",
+          "state": "Passed",
+          "durationSeconds": 0.0106465,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Projectile_UsesChangedJsonSpeedRange_AndExpiresBackIntoPool",
+          "fullName": "JungleMaze.Tests.PlayMode.FoundationAcceptanceTests.Projectile_UsesChangedJsonSpeedRange_AndExpiresBackIntoPool",
+          "state": "Passed",
+          "durationSeconds": 0.0293326,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HpTrail_WidthMatchesLoss",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.HpTrail_WidthMatchesLoss",
+          "state": "Passed",
+          "durationSeconds": 0.0695996,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hud_DefaultState_BeforeAnyData",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Hud_DefaultState_BeforeAnyData",
+          "state": "Passed",
+          "durationSeconds": 0.0281797,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hud_HoldsValues10sWithoutUpdates",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Hud_HoldsValues10sWithoutUpdates",
+          "state": "Passed",
+          "durationSeconds": 2.5553483,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hud_Stress30HzFor60s_NoErrors",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Hud_Stress30HzFor60s_NoErrors",
+          "state": "Passed",
+          "durationSeconds": 10.0140156,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Hud_TickWithoutChanges_NoGcAlloc_OnRealViews",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Hud_TickWithoutChanges_NoGcAlloc_OnRealViews",
+          "state": "Passed",
+          "durationSeconds": 0.0692441,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Layout_ChildElementsMatchFigmaV2",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Layout_ChildElementsMatchFigmaV2",
+          "state": "Passed",
+          "durationSeconds": 0.0598251,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Layout_FourBlocksMatchFigmaV2_At1280x720",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Layout_FourBlocksMatchFigmaV2_At1280x720",
+          "state": "Passed",
+          "durationSeconds": 0.0656483,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Layout_KeepsKillfeedAndCenterClear",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Layout_KeepsKillfeedAndCenterClear",
+          "state": "Passed",
+          "durationSeconds": 0.0458397,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Layout_NoClipping_16x10_And_21x9",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Layout_NoClipping_16x10_And_21x9",
+          "state": "Passed",
+          "durationSeconds": 0.0364977,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Layout_ScalerIsExpand1280x720_AndBlocksInsideWithMargins",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Layout_ScalerIsExpand1280x720_AndBlocksInsideWithMargins",
+          "state": "Passed",
+          "durationSeconds": 0.0432462,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Minimap_FollowsHeroPose",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Minimap_FollowsHeroPose",
+          "state": "Passed",
+          "durationSeconds": 0.0819259,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Palette_MatchesStyleGuide",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Palette_MatchesStyleGuide",
+          "state": "Passed",
+          "durationSeconds": 0.0415354,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Scenario_MockupV2_ShowsDisplayNamesAndCounts",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Scenario_MockupV2_ShowsDisplayNamesAndCounts",
+          "state": "Passed",
+          "durationSeconds": 0.0436682,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Text_MinSize13_AndVietnameseGlyphs",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.Text_MinSize13_AndVietnameseGlyphs",
+          "state": "Passed",
+          "durationSeconds": 0.1157845,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "WeaponStrip_StaysCentered_WithAndWithoutAmmo",
+          "fullName": "JungleMaze.Tests.PlayMode.HudAcceptanceTests.WeaponStrip_StaysCentered_WithAndWithoutAmmo",
+          "state": "Passed",
+          "durationSeconds": 0.0506212,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "AssignedGround_IsFloorOnly_AndWallsAndDimensionsRemainUnchanged",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.AssignedGround_IsFloorOnly_AndWallsAndDimensionsRemainUnchanged",
+          "state": "Passed",
+          "durationSeconds": 0.0220778,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Burst_EveryFrameWithinLimits_ThenClearFiveSeconds_AndCoreRectsUnchanged",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Burst_EveryFrameWithinLimits_ThenClearFiveSeconds_AndCoreRectsUnchanged",
+          "state": "Passed",
+          "durationSeconds": 0.0647441,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Burst60s_NoErrorsOrMissingReferences",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Burst60s_NoErrorsOrMissingReferences",
+          "state": "Passed",
+          "durationSeconds": 0.9460532,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DamageArc_PositionOnRing_TrueAnglesEvery15Degrees",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.DamageArc_PositionOnRing_TrueAnglesEvery15Degrees",
+          "state": "Passed",
+          "durationSeconds": 0.0688755,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Danger_SourceOptional_ZeroHoldAndNoUnreportedBanner",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Danger_SourceOptional_ZeroHoldAndNoUnreportedBanner",
+          "state": "Passed",
+          "durationSeconds": 0.0460364,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "DangerArrow_OnlyWhenOffscreen_EightDirectionsAndViewportBoundary",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.DangerArrow_OnlyWhenOffscreen_EightDirectionsAndViewportBoundary",
+          "state": "Passed",
+          "durationSeconds": 0.0285526,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Effects_PositionsColorsCountdownUntimedAndAdrenaline",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Effects_PositionsColorsCountdownUntimedAndAdrenaline",
+          "state": "Passed",
+          "durationSeconds": 0.0509345,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FeedbackHintAndLongestBanner_AreNotEllipsized",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.FeedbackHintAndLongestBanner_AreNotEllipsized",
+          "state": "Passed",
+          "durationSeconds": 0.0384684,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FeedbackLayout_BlocksMatchFigma_At1280x720",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.FeedbackLayout_BlocksMatchFigma_At1280x720",
+          "state": "Passed",
+          "durationSeconds": 0.0408562,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FeedbackLayout_NoOverlapWithCoreAndCenter",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.FeedbackLayout_NoOverlapWithCoreAndCenter",
+          "state": "Passed",
+          "durationSeconds": 0.0455982,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FeedbackLayout_ScalesAt1080And1440_WithSafeMargins",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.FeedbackLayout_ScalesAt1080And1440_WithSafeMargins",
+          "state": "Passed",
+          "durationSeconds": 0.0415562,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "FeedbackText_MinSize13_VietnameseGlyphsAndFontRoles",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.FeedbackText_MinSize13_VietnameseGlyphsAndFontRoles",
+          "state": "Passed",
+          "durationSeconds": 0.0375551,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "HitMarker_FollowsThreeAimPoints_AndOtherTargetsAreIgnored",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.HitMarker_FollowsThreeAimPoints_AndOtherTargetsAreIgnored",
+          "state": "Passed",
+          "durationSeconds": 0.0572413,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Pickup_NewestAtBottom_MergesAndDoesNotWriteInventory",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Pickup_NewestAtBottom_MergesAndDoesNotWriteInventory",
+          "state": "Passed",
+          "durationSeconds": 0.0574957,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "SwapPlaceholderSprites_LeavesGeometryAndBehaviorUnchanged",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.SwapPlaceholderSprites_LeavesGeometryAndBehaviorUnchanged",
+          "state": "Passed",
+          "durationSeconds": 0.0842856,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Use_CancelAndComplete_ReturnWeaponStripAndKeepCounts",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Use_CancelAndComplete_ReturnWeaponStripAndKeepCounts",
+          "state": "Passed",
+          "durationSeconds": 0.0408485,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        },
+        {
+          "name": "Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept",
+          "fullName": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept",
+          "state": "Passed",
+          "durationSeconds": 0.0354194,
+          "message": null,
+          "stackTrace": null,
+          "output": ""
+        }
+      ]
+    }
+  },
+  "hint": null
+}
