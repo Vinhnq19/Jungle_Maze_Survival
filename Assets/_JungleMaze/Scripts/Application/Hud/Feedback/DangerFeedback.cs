@@ -10,7 +10,7 @@ namespace JungleMaze.App.Hud.Feedback
     /// <summary>Warning urgency, stale traps and expired-bomb display snapshots.</summary>
     public sealed class DangerFeedback
     {
-        private struct Entry {public DangerWarning Warning;public float Age;public bool Ghost;public long Order;}
+        private struct Entry {public DangerWarning Warning;public float Age;public bool Ghost,FreshGhost;public long Order;}
         private readonly Entry[] _items=new Entry[32];private readonly int[] _order=new int[32];
         private readonly DangerArrowOutput[] _arrows=new DangerArrowOutput[3];private readonly HudFeedbackTuning _t;
         private int _count;private long _sequence;
@@ -23,20 +23,22 @@ namespace JungleMaze.App.Hud.Feedback
             var index=IndexOf(warning.Id);if(index<0){
                 if(_count==_items.Length){var ghost=-1;for(var i=0;i<_count;i++)if(_items[i].Ghost&&(ghost<0||_items[i].Order<_items[ghost].Order))ghost=i;if(ghost<0)return;RemoveAt(ghost);}
                 index=_count++;_items[index]=new Entry{Order=_sequence++};}
-            var e=_items[index];e.Warning=warning;e.Age=0;e.Ghost=false;_items[index]=e;
+            var e=_items[index];e.Warning=warning;e.Age=0;e.Ghost=false;e.FreshGhost=false;_items[index]=e;
         }
         public void SyncSnapshot(in DangerWarning warning){var i=IndexOf(warning.Id);if(i>=0){var e=_items[i];e.Warning=warning;_items[i]=e;}}
         public void Remove(int id,bool expired)
         {
             var i=IndexOf(id);if(i<0)return;
             if(!expired){RemoveAt(i);return;}
-            var e=_items[i];var w=e.Warning;e.Ghost=true;e.Age=0;e.Warning=new DangerWarning(w.Id,w.Kind,w.TotalSeconds,0,w.HasSource,w.SourceX,w.SourceY);_items[i]=e;
+            var e=_items[i];var w=e.Warning;e.Ghost=true;e.FreshGhost=true;e.Age=0;e.Warning=new DangerWarning(w.Id,w.Kind,w.TotalSeconds,0,w.HasSource,w.SourceX,w.SourceY);_items[i]=e;
         }
         public void Tick(float dt,bool hasPose,in HeroPose pose,IWorldViewport viewport)
         {
             dt=Math.Max(0,dt);
             for(var i=0;i<_count;i++){
-                var e=_items[i];e.Age+=dt;
+                // Expired events arrive from the store's Update tick, at this frame's boundary.
+                // Do not charge that whole delta again to the newly created zero-hold snapshot.
+                var e=_items[i];if(e.FreshGhost)e.FreshGhost=false;else e.Age+=dt;
                 if((e.Ghost&&e.Age>=_t.BombZeroHold+_t.BombFade-.00001f)||(!e.Ghost&&!e.Warning.IsTimed&&e.Age>=_t.TrapStaleSeconds-.00001f)){RemoveAt(i--);continue;}
                 _items[i]=e;
             }

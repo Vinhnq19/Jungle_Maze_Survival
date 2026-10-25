@@ -65,7 +65,7 @@ namespace JungleMaze.Tests.Hud.Feedback
             var m=new DangerFeedback(T);var viewport=new OutsideViewport();var pose=new HeroPose(10,10,0);
             for(var i=0;i<4;i++)m.Upsert(new DangerWarning(i,DangerKind.FusedBomb,2+i,2+i,true,7,7));
             m.Tick(0,true,pose,viewport);Assert.AreEqual(0,m.Banner.Warning.Id);Assert.AreEqual(3,m.Banner.OtherCount);Assert.AreEqual(3,m.ArrowCount);Assert.AreEqual(5,m.Banner.Compass);Assert.AreEqual(4,m.Banner.Distance);
-            m.Remove(0,true);m.Tick(.3f,true,pose,viewport);Assert.AreEqual(0,m.Banner.Warning.RemainingSeconds);m.Tick(.1f,true,pose,viewport);Assert.AreEqual(.5f,m.Banner.Alpha,.001);m.Tick(.1f,true,pose,viewport);Assert.AreEqual(1,m.Banner.Warning.Id);
+            m.Remove(0,true);m.Tick(0,true,pose,viewport);Assert.AreEqual(0,m.Banner.Warning.RemainingSeconds);m.Tick(.3f,true,pose,viewport);Assert.AreEqual(1,m.Banner.Alpha);m.Tick(.1f,true,pose,viewport);Assert.AreEqual(.5f,m.Banner.Alpha,.001);m.Tick(.1f,true,pose,viewport);Assert.AreEqual(1,m.Banner.Warning.Id);
             for(var i=1;i<4;i++)m.Remove(i,false);m.Upsert(new DangerWarning(5,DangerKind.Trap,0,0,false,0,0));
             m.Tick(3,true,pose,viewport);Assert.True(m.Banner.Visible);m.Upsert(new DangerWarning(5,DangerKind.Trap,0,0,false,0,0));m.Tick(3,true,pose,viewport);Assert.True(m.Banner.Visible);Assert.False(m.Banner.HasDirection);Assert.AreEqual(0,m.ArrowCount);m.Tick(1,true,pose,viewport);Assert.False(m.Banner.Visible);
         }
