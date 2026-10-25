@@ -7,7 +7,7 @@ UI-01 gồm hai phần:
 | Phần | File | Trạng thái |
 | --- | --- | --- |
 | Phần lõi (HUD: Vitals, Quick bar, Minimap, Match status, 3 state + mock) | `Docs/Tickets/UI-01.md` | **Done**, G3 ngày 24/10/2026. Còn 3 việc dọn nhỏ + 2 việc người dùng tự kiểm (xem A) |
-| Phần 2 (lớp phản hồi: dùng đồ, hiệu ứng, nhặt đồ, hit/nhận sát thương, cảnh báo bom/bẫy) | `Docs/Tickets/UI-01-P2.md` | **25/10: build + review + QA kỹ thuật xong, chờ G3**; 247/247 EditMode, 37/37 PlayMode; FB50 chờ người dùng cảm nhận |
+| Phần 2 (lớp phản hồi: dùng đồ, hiệu ứng, nhặt đồ, hit/nhận sát thương, cảnh báo bom/bẫy) | `Docs/Tickets/UI-01-P2.md` | **Done, G3 ngày 25/10/2026**, người dùng xác nhận "Oke rồi"; 247/247 EditMode, 37/37 PlayMode |
 
 Nhánh `huycv`, HEAD sau merge main: EditMode 193/193, PlayMode 20/20, console sạch. Quyết định khó suy ra từ code: `.claude/memory/ui-01-hud.md`. Cách đẩy dữ liệu lên HUD: `Docs/Client_Developer_Guide.vi.md` mục 4.7.
 

@@ -1,5 +1,7 @@
 # UI-01 P2 — QA độc lập ngày 25/10/2026
 
+**G3 đã được người dùng nghiệm thu ngày 25/10/2026 bằng "Oke rồi". UI-01 Done.** Nội dung/raw JSON dưới đây giữ nguyên phạm vi và thời điểm QA; tiêu chí FB50 được PIC chấp nhận ở G3. Việc nghiệm thu không bổ sung phép đo Release player, phím F5 thật hoặc GC toàn frame còn thiếu.
+
 Source full QA: `eaf33030`, sau formal review vòng 1 PASS; delta Hint `aa7d36b8` đã review PASS và QA kiểm lại hẹp. Chỉ QA, không sửa production/test. Chưa nghiệm thu G3 và chưa Done.
 
 ## Kết quả hiện tại

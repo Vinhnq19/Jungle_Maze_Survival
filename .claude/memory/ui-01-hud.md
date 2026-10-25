@@ -1,8 +1,19 @@
-# UI-01 — HUD & Feedback FX (phần lõi)
+# UI-01 — HUD & Feedback FX
 
-- **Trạng thái**: Done phần lõi, G3 ngày 2026-10-24. AC21 chấp nhận trên art tạm, kiểm lại khi có art AI; phần Release build của AC16 kiểm ở BLD-01.
+## Hoàn tất phần 2 — G3 ngày 25/10/2026
+
+- Người dùng nghiệm thu bằng "Oke rồi" sau báo cáo G3; UI-01 toàn ticket Done. Ticket chi tiết: `Docs/Tickets/UI-01-P2.md`; báo cáo: `Docs/Reports/UI-01-P2_2026-10-25/`. EditMode 247/247, PlayMode 37/37; review PASS và delta Hint `aa7d36b8` PASS, QA `33620171`.
+- Giữ ba port; thêm event feedback tách khỏi Changed lõi để không vẽ lại cả quickbar. Store tick thời gian; CompleteUse do nguồn quyết định. Không ghi HP/khe/số lượng từ presenter; không suy hướng đối thủ.
+- Vòng biên chữ nhật theo góc thật (T-21); chấp nhận ngoại lệ chồng khoảng 15 px ở 195°–212° đã duyệt. Adrenaline không thành chip. F5 riêng, F4 lõi giữ nguyên, mock chỉ Editor/Development.
+- H là art được chọn. Cell48 là mask dùng chung, phải trắng; Ground96 riêng, MapGridView chỉ floor dùng Sprite optional (user duyệt), giữ walls/collider/fallback. HudPreview chỉ renderer art, không thêm map gameplay.
+- Buffer danger ưu tiên active thay ghost; ghost mới không nhận ngược delta của frame expiry. Chữ banner bố trí preferredWidth; pickup hai dòng font13 trong row31; Hint112×18 vì112×16 làm Ellipsis cắt sạch dù enabled=true. Test phải kiểm parsed glyph/height, không chỉ enabled/width.
+- Người dùng yêu cầu tối đa3vòng cho mỗi lỗi, tới giới hạn thì log để sửa sau. Các issue QA không vượt3vòng; RetryLog có bằng chứng. Không chạy lặp fullsuite xanh khi delta không ảnh hưởng.
+- GC realviews đo 0B cho idle6000/active600 Tick sau warmup120; chưa gồm deferred Canvas rebuild/toàn frame. Release stripping trên player và thao tác phím F5 thật chưa kiểm chứng. G3 chấp nhận phạm vi này, không biến giới hạn thành phép đo đã qua.
+- Icon thật/catalog item thuộc ART-04, gameplay/network thật do ITM-01/Game-10/WPN/FOW ghi vào writer ports; chưa làm các ticket đó. Không push nếu chưa được yêu cầu.
+
+- **Trạng thái**: Done toàn UI-01; lõi G3 ngày 2026-10-24, phần 2 G3 ngày 2026-10-25. Các giới hạn Release và đo GC toàn frame vẫn giữ trong báo cáo.
 - **Ticket**: `Docs/Tickets/UI-01.md` (spec, kế hoạch, nhật ký build, review, QA, nghiệm thu). Bằng chứng QA: `Docs/Reports/UI-01_2026-10-24/`.
-- **Phần 2** (phản hồi: tiến trình dùng đồ, buff/debuff, thông báo nhặt, sát thương, bom/bẫy, hướng nguy hiểm): `Docs/Tickets/UI-01-P2.md`, làm riêng.
+- **Phần 2** (phản hồi: tiến trình dùng đồ, buff/debuff, thông báo nhặt, sát thương, bom/bẫy, hướng nguy hiểm): `Docs/Tickets/UI-01-P2.md`, đã nghiệm thu.
 
 ## Quyết định không suy ra được từ code
 

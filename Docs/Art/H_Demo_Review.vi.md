@@ -1,6 +1,6 @@
 # H · Rừng gọn — demo dựa trực tiếp trên Figma
 
-Ngày bắt đầu: 24/10/2026; cập nhật 25/10/2026. Trạng thái: **H P0 đã áp; UI-01 phần 2 đã build/review/QA kỹ thuật, chờ người dùng nghiệm thu G3**.
+Ngày bắt đầu: 24/10/2026; cập nhật 25/10/2026. Trạng thái: **H P0 đã áp; toàn UI-01 đã nghiệm thu G3 ngày 25/10 qua xác nhận "Oke rồi", Done**.
 
 Người dùng xác nhận tiếp tục: "Oke làm tiếp đi" sau khi đã xem H và kiểm tra kết nối Unity MCP. H là hướng art triển khai, giữ mức độ đơn giản của demo và palette Figma v2.
 
