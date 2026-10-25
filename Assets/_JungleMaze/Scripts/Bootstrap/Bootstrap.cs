@@ -113,6 +113,8 @@ namespace JungleMaze.Composition
             _registry.Register(inventoryMock);
             _registry.Register(effectMock);
             _registry.Register(new HudMockScenarios(hudMock, inventoryMock, effectMock));
+            var feedbackScenarios = new HudFeedbackScenarios(hudMock, inventoryMock, effectMock, inventoryState);
+            _registry.Register(feedbackScenarios);
 #endif
 
             // Domain + Application
@@ -137,7 +139,12 @@ namespace JungleMaze.Composition
             tickRunner.Add(pool);
             tickRunner.Add(match); // Match-scoped input replaces the local foundation sender in network demo.
             tickRunner.Add(flow);
+            tickRunner.Add(hudState);
+            tickRunner.Add(inventoryState);
             tickRunner.Add(effectState);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            tickRunner.Add(feedbackScenarios);
+#endif
             _registry.InitializeAll();
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
@@ -146,6 +153,7 @@ namespace JungleMaze.Composition
             Attach<NetworkStatsOverlay>();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Attach<HudDebugPanel>();
+            Attach<HudFeedbackDebugPanel>();
 #endif
             Attach<MatchDemoView>();
             if (Array.IndexOf(Environment.GetCommandLineArgs(), "-phase2Smoke") >= 0) Attach<Phase2DemoProbe>();
