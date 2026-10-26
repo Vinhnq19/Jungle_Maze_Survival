@@ -664,9 +664,48 @@ Review cho kết quả **Qua**, còn 4 điểm Nên sửa. CPO quyết định s
 
 ## 7. QA
 
+**QA Tester · 27/10/2026 · HEAD `50eb7e28` · Kết quả: Một phần** (mọi AC P0 đạt; còn AC-A28 cần người nghe, Release build và Profiler chưa đo). Chi tiết và số đo: [Docs/Reports/AUD-01_2026-10-27/QA_report.md](../Reports/AUD-01_2026-10-27/QA_report.md).
+
+**Chạy lại (không dựa log dev):** EditMode toàn bộ **333/333**, trong đó `JungleMaze.Tests.Audio` 59/59. PlayMode toàn bộ **59/59**, trong đó `AudioAcceptanceTests` 15/15. Console sạch (0 error, 0 warning) sau mỗi lượt. `git diff 485c10ab^..HEAD -- Assets/Imported/JSurviv` trống.
+
+**Đo trực tiếp trong Play Mode (`HudPreview`, qua Bootstrap thật):** mỗi mã trong 26 phát đúng 1 voice, đúng clip, Alert chỉ cho `ZoneBell3` và `DragonRoar`. Spam 100 → 16/16 voice, `AudioSource` 18 trước và sau. "Server event ×5" → 1 voice. Mixer: 0,5 → −6,02 dB, 1 → 0, 0 → −80, kẹp ngoài [0,1] đúng, cả bốn bus. Chuông bo: 0 / 0,802 / 1,602 s. Hạ nhạc −8,87 dB sau 0,198 s, nhả trong 0,93 s, SFX không đổi. Tắt BGM: hết nhạc sau 0,404 s. Đường router thật: Hit(Other) im, Hit(Hero) ×2 → 1 tiếng, BombFuse dừng khi nổ hoặc khi gỡ cảnh báo, rời trận dừng hết voice và hủy chuông chờ, chỉ còn `MatchEnd`.
+
 | # | Kết quả | Bằng chứng |
 | --- | --- | --- |
-| AC-A1 | ✓ / ✗ / chưa kiểm chứng | |
+| AC-A1 | ✓ | `SfxCatalogTests.Has26Ids_EachHasClipAndRuleFromTable` đạt; panel F6 phát đủ 26 mã, mỗi mã một clip (QA_report 2.1) |
+| AC-A2 | ✓ | PlayMode `PlaySfx_EachOfThe26_OneVoiceRightClipAndBus` đạt; đo lại qua panel: 26/26 đúng 1 voice, Alert chỉ cho #24, #25 |
+| AC-A3 | ✓ | PlayMode `Spam100_NeverMoreThan16_NoNewAudioSources` đạt; đo lại: 16/16 voice, `AudioSource` 18 → 18, tối đa 16 ở mọi frame |
+| AC-A4 | ✓ | EditMode `VoiceAllocatorTests` (4 test) và PlayMode `PoolFullOfLow_CriticalEvictsExactlyOne` đạt (chỉ test tự động) |
+| AC-A5 | ✓ | PlayMode `SetVolume_MixerDecibels`, EditMode `AudioVolumeTests`, `RuntimeSet_MixerHasBusesAndExposedParams` đạt; đo lại bảng v → dB cho 4 bus (QA_report 2.3). Giới hạn: chưa nghe mức thật khi kéo Master; thanh trượt IMGUI chưa bấm chuột, đo qua `SetVolume` mà thanh trượt gọi |
+| AC-A6 | ✓ | EditMode `SfxGateTests` (3 test), `CooldownAndMaxInstances_PerGroup` đạt (chỉ test tự động) |
+| AC-A7 | ✓ | EditMode `SfxDistanceTests.LinearGain_RejectBeyondRange`, `DistanceFalloff`, `NoPose_PositionalSilent_2DPlays` đạt (chỉ test tự động) |
+| AC-A8 | ✓ (review) | Panel F6 có đủ điều khiển (ảnh [f6_panel_gameview.png](../Reports/AUD-01_2026-10-27/f6_panel_gameview.png)); PlayMode `DebugPanel_PlayButtonsCallService` đạt; 26 nút phát đúng. "Không có trong Release": review `#if UNITY_EDITOR \|\| DEVELOPMENT_BUILD` ở `AudioDebugPanel.cs`, `MockAudioEventSource.cs`, `Bootstrap.Audio.cs`. **Chưa kiểm chứng trên Release build thật** |
+| AC-A9 | ✓ | EditMode `DistinguishableIdsUseDistinctClips`, `BeepsHaveDistinctFrequencies` đạt; 26 clip khác tên nhau (QA_report 2.1); diff thư mục JSurviv trống |
+| AC-A10 | ✓ | EditMode `ClipPickerTests.NoImmediateRepeat_PitchWithin5pct`, PlayMode `SwapClipInCatalogCopy_NoCodeChange` đạt. Chưa có lần thay clip thật nào trong repo để xem diff |
+| AC-A11 | ✓ | EditMode `SfxDeduperTests` (3 test), `MatchAudioEventSourceTests.PlayerDied_KeyedCue`, `KeyedCues_PlayOncePerKey` đạt |
+| AC-A12 | ✓ | EditMode `HudEventsWithinCooldown_OnePlay`, `DifferentPickupIds_BothPlay` đạt; đo lại: 2 × `HitDealt(Hero)` cùng frame → 1 voice |
+| AC-A13 | ✓ | PlayMode `RepeatServerEvent_AddsAtMostOneVoice` đạt; đo lại qua nút "Server event ×5": voice 0 → 1 |
+| AC-A14 | ✓ | EditMode `SfxRouterTests.MapsEveryAvailableEvent` đạt; đo lại qua Bootstrap thật: Hit(Other) im, Hit(Hero) → HitMarker, DamageTaken → HurtLocal, `NotifyPickup(CROSSBOW)` → PickupWeapon, SetDanger → BombFuse, hết ngòi → Explosion (BombFuse dừng), ClearDanger → không Explosion, `AppScreenChanged→Results` → MatchEnd. `WearArmor`, `ArmorAbsorb`, `UseHeal/Drink/Cancel`, `PickupItem` chỉ có test tự động |
+| AC-A15 | ✓ | EditMode `ResetAndInitialState_Silent`, `TakeOff_Silent`, `DurabilityDropWithoutDamage_Silent` đạt. "Vào scene Game rồi nhận trạng thái đầu": chưa chạy scene Game, chỉ test tự động |
+| AC-A16 | ✓ | EditMode `SecondSourceImplementation_SameOutput` đạt; review: `using` của `Application/Audio` và `Domain/Audio` chỉ gồm Core, HUD port, Flow, Match, Protocol, Balance, không có WPN/ITM/DRG/Infrastructure |
+| AC-A17 | ✓ | EditMode `MockRaisesAll12Unsourced`, `NothingWithoutCalls_600Ticks` đạt; 12 mã ✖ phát đúng clip tạm qua panel; lúc rảnh không có voice nào tự phát |
+| AC-A18 | ✓ | EditMode `MissingClip_WarnOnce_NoThrow` đạt (đúng 1 cảnh báo cho mỗi mã); Console 0 warning "Missing AudioClip" sau toàn bộ lượt chạy |
+| AC-A19 | ✓ (đo máy) | PlayMode `HitMarker_StartsSameFrame_With15Others`, EditMode `HitMarker_FiveIn60ms_OnePlay`, `HitMarkerLoud_…` đạt. Đo lại: voice HitMarker bắt đầu cùng frame với sự kiện, âm lượng catalog 1,00 so với `FootstepGrass` 0,40 (gấp 2,5). Phần "nghe rõ": **chưa kiểm chứng, cần người nghe** (A28) |
+| AC-A20 | ✓ | Đo: 3 tiếng bắt đầu ở 0,000 / 0,802 / 1,602 s (sim 0 / 0,801 / 1,600), bus Alert; EditMode `ThreeBells_08s`, `WarningRisingEdge_OncePerPhase` đạt. Đường `ZoneState` thật chỉ qua test (packet giả) |
+| AC-A21 | ✓ (đo máy) | EditMode `HitMarkerLoud_DragonRoarLongAndUnique` đạt (≥ 1,5 s, clip riêng, Alert, cooldown 5 s); panel phát `dragon_roar_70hz` trên Alert. Phần "nhận ra được": **chưa kiểm chứng, cần người nghe** (A28) |
+| AC-A22 | ✓ | PlayMode `ZoneBell_ThreeBellsOnAlert_DucksMusic_SfxUntouched` đạt; đo lại: duck −8,87 dB sau 0,198 s (tiếp tục về −9, EditMode `DuckMinus9In02_ReleaseIn1` đạt), nhả về 0 trong 0,93 s sau khi hết âm Alert, `SfxVolume` giữ 0,00 dB; SFX ≤ 16, nhạc ≤ 1 nguồn (T-4). Plateau −9 dB chưa được ghi lại trong lượt đo trực tiếp |
+| AC-A23 | ✓ | PlayMode `MusicOffByDefault_NoMusicSource`, `EnableMusic_PlaysScreenTrackWithin1s_DisableFadesOut` đạt; đo lại: mặc định 0 nguồn nhạc, bật → phát sau 0,006 s |
+| AC-A24 | ✓ | EditMode `ScreenMapping`, `Crossfade1s_AtMostTwo`, `SameTrack_NoRestart` đạt (chỉ test tự động; chưa đổi màn hình thật trong Play Mode) |
+| AC-A25 | ✓ | EditMode `DisableFadesOutIn04` đạt; đo lại: hết nhạc sau 0,404 s, 0 nguồn nhạc sau 1 s |
+| AC-A26 | ✓ | PlayMode `Burst10s_2000Requests_NoErrors_CriticalNotLost` đạt (thời gian giả lập); console sạch. Chưa chạy "Burst 10 s" thời gian thật bằng panel |
+| AC-A27 | Một phần (P2) | EditMode `PlaySfx100_NoGcAlloc`, `Dispose_UnsubscribesAll`, PlayMode `PeriodicListenerCheck_DoesNotAllocate` đạt; đo lại: rời trận dừng hết voice và hủy chuông chờ. **Profiler chưa đo** |
+| AC-A28 | chưa kiểm chứng | Cần người nghe. Hướng dẫn nghe bằng panel F6: QA_report mục 5 |
+
+**Quan sát ngoài AC (không chặn, để CPO cân nhắc):**
+1. Listener dự phòng: với listener gắn trên **camera** thì đạt (tắt sau 1,9 s, bật lại sau 1,9 s). Với `AudioListener` **không gắn camera** xuất hiện muộn thì dự phòng vẫn bật ít nhất 12 s (hai listener cùng bật) cho tới lần load scene sau. Khớp giới hạn đã ghi ở 5, nhưng câu "tối đa 2 s" ở đó chưa đúng cho trường hợp này. Hai scene hiện không có listener, camera thật của World nên giữ listener.
+2. Panel F6 ở Game view nhỏ đè lên màn Kết nối và nút "Burst 10 s", "Fake pose" bị cắt (rủi ro 8 đã biết).
+3. Lịch chuông chạy theo `Time.deltaTime`: một cú khựng khi đang chuông (đo được 1,4 s khi nén bằng `execute_code`) rút ngắn khoảng nghe thực tế. Ngưỡng 0,8 s ± 0,05 đúng ở điều kiện bình thường.
+4. `ProjectSettings/EditorSettings.asset` bị PlayMode đổi `m_EnterPlayModeOptions` 0 → 1 và **chưa được khôi phục** vì `git checkout` bị từ chối quyền; cần CPO hoặc người dùng chạy `git checkout -- ProjectSettings/EditorSettings.asset`.
 
 ## 8. Nghiệm thu
 

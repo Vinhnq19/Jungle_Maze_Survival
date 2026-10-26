@@ -1,0 +1,92 @@
+[
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.Burst10s_2000Requests_NoErrors_CriticalNotLost",
+  "state": "Passed",
+  "durationSeconds": 0.087089,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.DebugPanel_PlayButtonsCallService",
+  "state": "Passed",
+  "durationSeconds": 0.0031015,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.EnableMusic_PlaysScreenTrackWithin1s_DisableFadesOut",
+  "state": "Passed",
+  "durationSeconds": 0.5398604,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.FallbackListener_OnlyWhenSceneHasNone",
+  "state": "Passed",
+  "durationSeconds": 0.0032748,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.FallbackListener_YieldsToLateListener_AndComesBack",
+  "state": "Passed",
+  "durationSeconds": 4.0115025,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.HitMarker_StartsSameFrame_With15Others",
+  "state": "Passed",
+  "durationSeconds": 0.0022639,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.MusicOffByDefault_NoMusicSource",
+  "state": "Passed",
+  "durationSeconds": 0.1039164,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.PeriodicListenerCheck_DoesNotAllocate",
+  "state": "Passed",
+  "durationSeconds": 0.0024099,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.PlaySfx_EachOfThe26_OneVoiceRightClipAndBus",
+  "state": "Passed",
+  "durationSeconds": 0.0022361,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.PoolFullOfLow_CriticalEvictsExactlyOne",
+  "state": "Passed",
+  "durationSeconds": 0.0017913,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.RepeatServerEvent_AddsAtMostOneVoice",
+  "state": "Passed",
+  "durationSeconds": 0.0016862,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.SetVolume_MixerDecibels",
+  "state": "Passed",
+  "durationSeconds": 0.0079164,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.Spam100_NeverMoreThan16_NoNewAudioSources",
+  "state": "Passed",
+  "durationSeconds": 0.1458643,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.SwapClipInCatalogCopy_NoCodeChange",
+  "state": "Passed",
+  "durationSeconds": 0.0157414,
+  "message": null
+ },
+ {
+  "fullName": "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.ZoneBell_ThreeBellsOnAlert_DucksMusic_SfxUntouched",
+  "state": "Passed",
+  "durationSeconds": 4.521319,
+  "message": null
+ }
+]
