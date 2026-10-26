@@ -1,0 +1,271 @@
+{
+  "sourceFullQA": "eaf33030",
+  "verifiedDelta": "aa7d36b8",
+  "date": "2026-10-25",
+  "stage": "QA technical checks complete; awaiting PIC G3",
+  "technicalCriteriaPassed": 50,
+  "picPending": [
+    "AC-FB50"
+  ],
+  "limits": [
+    "FB1 Release stripping statically inspected only; no player build",
+    "FB49 synchronous managed store/presenter/view Tick only; deferred Canvas rebuild excluded"
+  ],
+  "criteria": [
+    {
+      "id": "AC-FB1",
+      "status": "✓ Editor / chưa kiểm chứng Release",
+      "evidence": "EditMode: HudFeedbackScenariosTests.Burst_HasSpecifiedEventCounts_AndStops; Skirmish_IsCompassStunSixHitsOffscreenBombAndFourPickups; HudPreview Bootstrap/F5 attach và Presenter khởi tạo ở lifecycle attempt 2. Static #if; chưa build Release player. Ảnh PostFix_F5Panel_2560x1440.png cho thấy panel thật; bật visible bằng reflection, chưa kiểm phím F5 thật."
+    },
+    {
+      "id": "AC-FB2",
+      "status": "✓",
+      "evidence": "PlayMode: FeedbackLayout_BlocksMatchFigma_At1280x720; ảnh GameView 1280×720 thật (trước sửa Hint), kích thước PNG đã kiểm."
+    },
+    {
+      "id": "AC-FB3",
+      "status": "✓",
+      "evidence": "PlayMode: FeedbackLayout_ScalesAt1080And1440_WithSafeMargins; PNG thật 1920×1080 và 2560×1440; Canvas scale 1,5/2."
+    },
+    {
+      "id": "AC-FB4",
+      "status": "✓",
+      "evidence": "PlayMode: FeedbackLayout_NoOverlapWithCoreAndCenter; sáu chip, vùng giữa và các khối lõi được đo."
+    },
+    {
+      "id": "AC-FB5",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Ring_TrueAnglesOutsideCenterEvery15Degrees; PlayMode: DamageArc_PositionOnRing_TrueAnglesEvery15Degrees; ngoại lệ 195°–212° theo G1."
+    },
+    {
+      "id": "AC-FB6",
+      "status": "✓",
+      "evidence": "PlayMode: Burst_EveryFrameWithinLimits_ThenClearFiveSeconds_AndCoreRectsUnchanged; so toàn bộ core rect/khe trước/sau."
+    },
+    {
+      "id": "AC-FB7",
+      "status": "✓",
+      "evidence": "EditMode: HudFeedbackScenariosTests.EveryUsableEquipment_ReadsUseSecondsFromJson_AndCompletesAtSource; PlayMode: Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept; snapshot total0,5/rem0,25 → 0.3s."
+    },
+    {
+      "id": "AC-FB8",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Use_MonotonicAtSupportedFrameRates(30/60/144); tăng fill tới1 không đảo chiều."
+    },
+    {
+      "id": "AC-FB9",
+      "status": "✓",
+      "evidence": "PlayMode: Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept; khe selected giữ nền, InUseFrame Amber."
+    },
+    {
+      "id": "AC-FB10",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Use_UsesSourceProgress_AndPreservesCancelAndCompleteLingers; PlayMode: Use_CancelAndComplete_ReturnWeaponStripAndKeepCounts; 0,6/0,25s, counts không đổi."
+    },
+    {
+      "id": "AC-FB11",
+      "status": "✓ — sửa và kiểm lại",
+      "evidence": "Delta `aa7d36b8`; PostFix_Hint_Measurements.json: enabled=true, parsed “Di chuyển để hủy”, height18 ≥ preferred16,45, overflow=false; ảnh PostFix 1280/1920/2560 hiện đầy đủ. Bar/timer/block không đổi; PlayMode kiểm cờ bật/tắt."
+    },
+    {
+      "id": "AC-FB12",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackDomainTests.ItemUse_TicksToZeroWithoutCompleting_ResyncsAndIgnoresStaleFinish; khác id bỏ qua cancel/complete, begin mới thay hiện tại."
+    },
+    {
+      "id": "AC-FB13",
+      "status": "✓",
+      "evidence": "PlayMode: Effects_PositionsColorsCountdownUntimedAndAdrenaline; vị trí chip, nhãn Độc/Ẩn, màu Red/Green."
+    },
+    {
+      "id": "AC-FB14",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackTimingMatrixTests.TimedEffects_ReadSourceCountdown_AndCeilSeconds; matrix Poison3,Stun1/2/5,Root1,5,Invisible5,CcImmune7."
+    },
+    {
+      "id": "AC-FB15",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Effects_ExpireFade_CompactAndUntimed; ghost fade rồi dồn, giữ chip untimed."
+    },
+    {
+      "id": "AC-FB16",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Effects_BlinkPeriodAndRefreshSnapshot; alpha0,5 tại0,13s và refresh vềfill1."
+    },
+    {
+      "id": "AC-FB17",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackTimingMatrixTests.PoisonRefreshEveryHalfSecond_ForFourSeconds_NeverShowsZero; 120tick/30Hz."
+    },
+    {
+      "id": "AC-FB18",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Effects_ExpireFade_CompactAndUntimed; PlayMode: Effects_PositionsColorsCountdownUntimedAndAdrenaline; Slow không thanh/số giây, không tự hết."
+    },
+    {
+      "id": "AC-FB19",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Effects_HarmfulFirst_OverflowAndAdrenalineExcluded; synthetic8 hiệu ứng →5chip+(+3), tối đa6."
+    },
+    {
+      "id": "AC-FB20",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackDomainTests.EffectKinds_PreserveOldValues_AndAdrenalineHasNoChip; PlayMode: Effects_PositionsColorsCountdownUntimedAndAdrenaline; giữ Adrenaline ở Vitals."
+    },
+    {
+      "id": "AC-FB21",
+      "status": "✓",
+      "evidence": "PlayMode: FeedbackText_MinSize13_VietnameseGlyphsAndFontRoles; font chứa nhãn đủ dấu, ellipsis44px."
+    },
+    {
+      "id": "AC-FB22",
+      "status": "✓",
+      "evidence": "PlayMode: FeedbackLayout_BlocksMatchFigma_At1280x720; Pickup_NewestAtBottom_MergesAndDoesNotWriteInventory; y591/628/665, phải1256; ảnh tên Rubber Slingshot hai dòng."
+    },
+    {
+      "id": "AC-FB23",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Pickup_MergeOverflowLifetimeAndOrdering; alpha0,5 tại3,25s, xoá3,5s."
+    },
+    {
+      "id": "AC-FB24",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackTimingMatrixTests.PickupMerge_RestartsItsOwnThreeAndHalfSecondLifetime; 12+12→24, còn tại3,49s, hết3,5s sau gộp."
+    },
+    {
+      "id": "AC-FB25",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Pickup_MergeOverflowLifetimeAndOrdering; 5 món →3row+2overflow; PlayMode: FeedbackLayout_BlocksMatchFigma_At1280x720 đo chip gộp."
+    },
+    {
+      "id": "AC-FB26",
+      "status": "✓",
+      "evidence": "PlayMode: Pickup_NewestAtBottom_MergesAndDoesNotWriteInventory; EditMode: HudFeedbackPresenterTests.SlotHookOnAndOff_CompleteDoesNotWriteGameplayCounts; không sửa inventory/HP."
+    },
+    {
+      "id": "AC-FB27",
+      "status": "✓",
+      "evidence": "PlayMode: HitMarker_FollowsThreeAimPoints_AndOtherTargetsAreIgnored; EditMode: FeedbackModelsTests.Hit_OnlyHero_RepeatedHitsResetSingleMarker;0,2s, ba aim point."
+    },
+    {
+      "id": "AC-FB28",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Hit_OnlyHero_RepeatedHitsResetSingleMarker;10hits chỉ reset một marker; alpha0 sau0,2s."
+    },
+    {
+      "id": "AC-FB29",
+      "status": "✓",
+      "evidence": "PlayMode: HitMarker_FollowsThreeAimPoints_AndOtherTargetsAreIgnored; Other không hiện."
+    },
+    {
+      "id": "AC-FB30",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackTimingMatrixTests.Ring_CardinalPointsAndTangentsMatchApprovedCoordinates; PlayMode: DamageArc_PositionOnRing_TrueAnglesEvery15Degrees; true angle và tangent."
+    },
+    {
+      "id": "AC-FB31",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Arcs_MergeWrapBoundary_ReplaceOldestAndFade; EditMode: HudFeedbackPresenterTests.OptionalDirectionAndHitTargetRules_AndDisposeUnsubscribes; không hướng không cung."
+    },
+    {
+      "id": "AC-FB32",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Arcs_MergeWrapBoundary_ReplaceOldestAndFade;355°/5°gộp, tối đa4, mới thay cũ, fade1s."
+    },
+    {
+      "id": "AC-FB33",
+      "status": "✓",
+      "evidence": "EditMode: HudFeedbackPresenterTests.OptionalDirectionAndHitTargetRules_AndDisposeUnsubscribes; review độc lập: read ports, không nguồn vị trí đối thủ."
+    },
+    {
+      "id": "AC-FB34",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackTimingMatrixTests.Banner_EightDirections_ArePrintedFromSourceVectors; FeedbackModelsTests.Format_BannerCompassAndCeilingTenths;22,5°→Đông Bắc; Tây Nam4ô."
+    },
+    {
+      "id": "AC-FB35",
+      "status": "✓",
+      "evidence": "PlayMode: Danger_SourceOptional_ZeroHoldAndNoUnreportedBanner; EditMode: FeedbackDomainTests.DangerList_RefreshesInPlace_AndExpiresExactlyAtZero;0s hold0,3/fade0,2."
+    },
+    {
+      "id": "AC-FB36",
+      "status": "✓",
+      "evidence": "PlayMode: Danger_SourceOptional_ZeroHoldAndNoUnreportedBanner; EditMode: FeedbackModelsTests.Danger_Urgency_OffscreenLimit_ExpiryAndTrapRefresh; thiếu nguồn không arrow, trap không giây."
+    },
+    {
+      "id": "AC-FB37",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Danger_Urgency_OffscreenLimit_ExpiryAndTrapRefresh; cảnh báo gấp nhất+OtherCount, hếtghost đổi kế tiếp."
+    },
+    {
+      "id": "AC-FB38",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Danger_Urgency_OffscreenLimit_ExpiryAndTrapRefresh; trap stale4s và refresh không ẩn."
+    },
+    {
+      "id": "AC-FB39",
+      "status": "✓",
+      "evidence": "PlayMode: DangerArrow_OnlyWhenOffscreen_EightDirectionsAndViewportBoundary; camera thật, trong/ngoàiviewport và8hướng."
+    },
+    {
+      "id": "AC-FB40",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackModelsTests.Danger_Urgency_OffscreenLimit_ExpiryAndTrapRefresh; PlayMode: SwapPlaceholderSprites_LeavesGeometryAndBehaviorUnchanged; arc/arrow prefab/sprite riêng, max3."
+    },
+    {
+      "id": "AC-FB41",
+      "status": "✓",
+      "evidence": "PlayMode: Danger_SourceOptional_ZeroHoldAndNoUnreportedBanner; review read ports, không tự tìm bom."
+    },
+    {
+      "id": "AC-FB42",
+      "status": "✓",
+      "evidence": "EditMode: HudFeedbackScenariosTests.Burst_HasSpecifiedEventCounts_AndStops; PlayMode: Burst_EveryFrameWithinLimits_ThenClearFiveSeconds_AndCoreRectsUnchanged; nguồn đúng20/10/15/8/5/2 trong30tick."
+    },
+    {
+      "id": "AC-FB43",
+      "status": "✓",
+      "evidence": "PlayMode: Burst_EveryFrameWithinLimits_ThenClearFiveSeconds_AndCoreRectsUnchanged; core/feedback rect không đổi, clear sau5s."
+    },
+    {
+      "id": "AC-FB44",
+      "status": "✓",
+      "evidence": "PlayMode: Use_CancelAndComplete_ReturnWeaponStripAndKeepCounts; Pickup_NewestAtBottom_MergesAndDoesNotWriteInventory; review không port ghi gameplay trong presenter."
+    },
+    {
+      "id": "AC-FB45",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackPortEquivalenceTests.ThirtyTickBurstAndExpiry_ProduceIdenticalCountsPositionsAndText;2adapter độc lập, trace180frame."
+    },
+    {
+      "id": "AC-FB46",
+      "status": "✓",
+      "evidence": "EditMode: FeedbackDomainTests.ItemUse_TicksToZeroWithoutCompleting_ResyncsAndIgnoresStaleFinish; DangerList_RefreshesInPlace_AndExpiresExactlyAtZero; FeedbackModelsTests.Effects_BlinkPeriodAndRefreshSnapshot; snapshot nguồn nhận ngay."
+    },
+    {
+      "id": "AC-FB47",
+      "status": "✓ — sửa và kiểm lại",
+      "evidence": "Delta `aa7d36b8`; Hint đủ dấu/font13 và hiện thật sau sửa. PostFix_Visual_Measurements.json: Be Vietnam Pro cho chữ, Pixelify Sans cho giây; PostFix PNG 3size. Fresh FeedbackText_MinSize13_VietnameseGlyphsAndFontRoles xanh."
+    },
+    {
+      "id": "AC-FB48",
+      "status": "✓",
+      "evidence": "PlayMode: Effects_PositionsColorsCountdownUntimedAndAdrenaline; Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept; FeedbackHintAndLongestBanner_AreNotEllipsized; palette theo source/review, ảnh thật dùng ngữ nghĩa màu. PostFix_Visual_Measurements.json đo actual Amber F2A33AFF/Red E5484DFF/Green5DD39EFF/HitFFFFFFFF."
+    },
+    {
+      "id": "AC-FB49",
+      "status": "✓ trong phạm vi đo",
+      "evidence": "PlayMode: Burst60s_NoErrorsOrMissingReferences; QA_Feedback_GC.json: realviews idle6000tick=0B; active600tick=0B sau120warmup. Không gồm deferredCanvas rebuild/GC toànEditor."
+    },
+    {
+      "id": "AC-FB50",
+      "status": "chưa kiểm chứng — PIC tại G3",
+      "evidence": "Kịch bản Burst/Skirmish đã có và test nguồn đúng; PIC cần cảm nhận độ rõ, chớp, hitmarker/cung/mũi tên. Không tự nghiệm thu."
+    },
+    {
+      "id": "AC-FB51",
+      "status": "✓",
+      "evidence": "PlayMode: SwapPlaceholderSprites_LeavesGeometryAndBehaviorUnchanged; thay sprite trên bản sao bộ nhớ giữ geometry/limits, prefab riêng, không sửaC# đểđổiart."
+    }
+  ]
+}

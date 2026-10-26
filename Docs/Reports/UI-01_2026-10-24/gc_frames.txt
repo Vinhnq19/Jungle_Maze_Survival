@@ -1,0 +1,3 @@
+HUD active: n=400 nonzeroFrames=400 totalBytes=8467296 max=35335 median=21073
+HUD inactive: n=400 nonzeroFrames=400 totalBytes=8486005 max=35623 median=21073
+valid=True

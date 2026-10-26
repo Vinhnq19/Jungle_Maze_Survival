@@ -1,0 +1,20 @@
+{
+  "success": true,
+  "message": "Retrieved 2 log entries.",
+  "data": [
+    {
+      "type": "Warning",
+      "message": "<b><color=#cc7a00>MCP-FOR-UNITY</color></b>: Suppressed duplicate command resent on a new connection; awaiting the in-flight result instead of running it twice.",
+      "file": "./Library/PackageCache/com.coplaydev.unity-mcp@da7b9ae4aeeb/Editor/Helpers/McpLog.cs",
+      "line": 45,
+      "stackTrace": null
+    },
+    {
+      "type": "Warning",
+      "message": "<b><color=#cc7a00>MCP-FOR-UNITY</color></b>: Suppressed duplicate command resent on a new connection; awaiting the in-flight result instead of running it twice.",
+      "file": "./Library/PackageCache/com.coplaydev.unity-mcp@da7b9ae4aeeb/Editor/Helpers/McpLog.cs",
+      "line": 45,
+      "stackTrace": null
+    }
+  ]
+}

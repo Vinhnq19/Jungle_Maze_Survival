@@ -1,0 +1,26 @@
+{
+  "success": true,
+  "message": "Code executed successfully.",
+  "data": {
+    "result": {
+      "screens": [
+        647,
+        404
+      ],
+      "timeScale": 0,
+      "label": "Đang dùng God Leaf",
+      "seconds": "0.3s",
+      "hintText": "Di chuyển để hủy",
+      "hintHeight": 18,
+      "hintPreferredHeight": 16.45,
+      "hintOverflow": false,
+      "hintEnabled": true,
+      "chips": 3,
+      "pickups": 3,
+      "banner": "! Bom nổ sau ",
+      "timer": "2s",
+      "suffix": " · hướng Tây, 20 ô"
+    },
+    "compiler": "codedom"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "success": true,
+  "message": "Code executed successfully.",
+  "data": {
+    "result": {
+      "removedQACustomSizes": 2,
+      "cleanupAttempt": 3,
+      "afterCount": 7,
+      "qaSizesRemain": false,
+      "remainingNames": [
+        "Free Aspect",
+        "16:9 Aspect",
+        "16:10 Aspect",
+        "Full HD (1920x1080)",
+        "WXGA (1366x768)",
+        "QHD (2560x1440)",
+        "4K UHD (3840x2160)"
+      ],
+      "selected": 2,
+      "isPlaying": false,
+      "timeScale": 1,
+      "captureDeltaTime": 0,
+      "runInBackground": false
+    },
+    "compiler": "codedom"
+  }
+}

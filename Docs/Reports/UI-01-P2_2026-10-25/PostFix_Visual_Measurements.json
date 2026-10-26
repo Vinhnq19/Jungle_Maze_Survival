@@ -1,0 +1,32 @@
+{
+  "success": true,
+  "message": "Code executed successfully.",
+  "data": {
+    "result": {
+      "hint": "Di chuyển để hủy",
+      "hintOverflow": false,
+      "hintHeight": 18,
+      "hintPreferred": 16.45,
+      "banner": "! Bom nổ sau 2s · hướng Đông Bắc, 12 ô +15",
+      "bannerOverflow": [
+        false,
+        false,
+        false
+      ],
+      "bannerWidths": [
+        80.48,
+        15.24,
+        172.7
+      ],
+      "f5PanelVisible": true,
+      "f5PanelSource": "actual Bootstrap-attached HudFeedbackDebugPanel; visibility set via reflection, keyboard not tested",
+      "useAmber": "F2A33AFF",
+      "harmfulRed": "E5484DFF",
+      "beneficialGreen": "5DD39EFF",
+      "hitWhite": "FFFFFFFF",
+      "fontText": "Be Vietnam Pro",
+      "fontSeconds": "Pixelify Sans"
+    },
+    "compiler": "codedom"
+  }
+}

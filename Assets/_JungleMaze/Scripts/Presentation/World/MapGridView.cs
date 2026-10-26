@@ -11,6 +11,7 @@ namespace JungleMaze.Presentation.World
     [DisallowMultipleComponent]
     public sealed class MapGridView : MonoBehaviour
     {
+        [SerializeField] private Sprite groundSprite;
         private IBalanceConfigProvider _balance;
         private Texture2D _texture;
         private Sprite _sprite;
@@ -49,7 +50,7 @@ namespace JungleMaze.Presentation.World
             floor.transform.SetParent(transform, false);
             floor.transform.localPosition = new Vector3(cells / 2f, cells / 2f, 0);
             var renderer = floor.AddComponent<SpriteRenderer>();
-            renderer.sprite = _sprite;
+            renderer.sprite = groundSprite != null ? groundSprite : _sprite;
             renderer.drawMode = SpriteDrawMode.Tiled;
             renderer.size = new Vector2(cells, cells);
             renderer.sortingOrder = -100;

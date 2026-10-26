@@ -1,0 +1,112 @@
+{
+  "hintProbe": {
+    "success": true,
+    "message": "Code executed successfully.",
+    "data": {
+      "result": {
+        "hintText": "",
+        "hintEnabled": true,
+        "hintActive": true,
+        "hintOverflow": true,
+        "hintPreferredWidth": 108.14,
+        "hintWidth": 112,
+        "hintCharacters": 0,
+        "hintVertices": 0,
+        "useModelHint": true,
+        "label": "Đang dùng God Leaf",
+        "labelOverflow": false,
+        "labelPreferredWidth": 130.38,
+        "labelWidth": 132,
+        "screens": [
+          2560,
+          1440
+        ]
+      },
+      "compiler": "codedom"
+    }
+  },
+  "hintMetrics": {
+    "success": true,
+    "message": "Code executed successfully.",
+    "data": {
+      "result": {
+        "text": "Di chuyển để hủy",
+        "parsed": "",
+        "w": 112,
+        "height": 16,
+        "preferredHeight": 16.45,
+        "fontSize": 13,
+        "font": "Be Vietnam Pro",
+        "overflow": "Ellipsis",
+        "color": "RGBA(0.655, 0.710, 0.639, 1.000)",
+        "margin": "(0.00, 0.00, 0.00, 0.00)",
+        "canvasScale": 2,
+        "rootCanvasWidth": 1280,
+        "rootCanvasHeight": 720,
+        "localScale": "(2.00, 2.00, 2.00)"
+      },
+      "compiler": "codedom"
+    }
+  },
+  "seed": {
+    "success": true,
+    "message": "Code executed successfully.",
+    "data": {
+      "result": {
+        "screens": [
+          1280,
+          720
+        ],
+        "timeScale": 0,
+        "label": "Đang dùng God Leaf",
+        "seconds": "0.3s",
+        "chips": 3,
+        "pickups": 3,
+        "banner": "! Bom nổ sau ",
+        "timer": "2s",
+        "suffix": " · hướng Tây, 20 ô"
+      },
+      "compiler": "codedom"
+    }
+  },
+  "lifecycleAttempt2": {
+    "success": true,
+    "message": "Code executed successfully.",
+    "data": {
+      "result": {
+        "isPlaying": true,
+        "isPaused": false,
+        "frame": 2,
+        "root": true,
+        "presenter": true,
+        "composed": true,
+        "timeScale": 1,
+        "screens": [
+          1280,
+          720
+        ]
+      },
+      "compiler": "codedom"
+    }
+  },
+  "backgroundWorkaround": {
+    "success": true,
+    "message": "Code executed successfully.",
+    "data": {
+      "result": {
+        "runInBackgroundBefore": false,
+        "runInBackgroundNow": true,
+        "appFocused": false,
+        "paused": false,
+        "frame": 2,
+        "selected": 7,
+        "render": "(1280.00, 720.00)",
+        "size": "UnityEditor.GameViewSize",
+        "windows": [
+          ""
+        ]
+      },
+      "compiler": "codedom"
+    }
+  }
+}

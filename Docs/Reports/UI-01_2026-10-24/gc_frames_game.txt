@@ -1,0 +1,2 @@
+Game scene, HUD active: n=400 nonzeroFrames=400 totalBytes=5257020 max=27395 median=13045 p10=13045
+Game scene, HUD inactive: n=400 nonzeroFrames=400 totalBytes=5256526 max=27307 median=13045 p10=13045
