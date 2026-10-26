@@ -330,6 +330,26 @@ Chỉ thêm test, không sửa code production, PNG hay prefab. Đã đọc `UiA
 
 **Toàn bộ suite:** EditMode 337/337. PlayMode 64/65 (chỉ đỏ AC11 ở trên). Console 0 Error/Warning. Đã `git checkout -- ProjectSettings/EditorSettings.asset`.
 
+### AC11 theo quyết định (b) của CPO · 27/10/2026 · unity-dev
+
+**Quyết định của CPO (27/10):** AC11 đo phần ảnh nhìn thấy, không dời layout UI-01.
+
+**Thay đổi test.** Test đổi tên thành `VisibleIcon_ClearOfKeyCountAndName_At1280x720And1920x1080`.
+- Lấy bbox alpha > 8 của sprite đang gắn, giải mã từ PNG như R2-a.
+- Quy bbox đó ra rect màn hình bên trong rect icon (Image Simple, preserveAspect).
+- Assert rect nội dung nằm trong rect icon và giao với số phím, `×n`, tên = 0 px².
+- Phần RectTransform lấn chỉ được ghi log `[ART-04 AC11]`, không assert.
+
+**Số đo mới** (8 icon: HAND, CROSSBOW, RUBBER_GUN, SAHUR_BAT, GOD_LEAF, UNICORN_BLOOD, SPIRIT_TEAR, ELIXIR_OF_LIFE):
+- Nội dung nhìn thấy giao số phím, `×n`, tên = **0 px²** ở cả 1280×720 và 1920×1080.
+- Khoảng trống còn lại giữa mép trên nội dung và nhãn: khoảng 0,75 px ở 720p, khoảng 1,1 px ở 1080p (đệm 4/64 của icon cao 56 px).
+- Ghi chú: R2-a đo được đệm trên nhỏ nhất của cả 34 icon là 4/64, tức khoảng 1,75 px ở ô 28. Con số này vẫn lớn hơn phần lấn 1 px, nên các icon chưa có trong lượt đo cũng không chạm nhãn.
+- Log RectTransform giữ nguyên như lần trước: số phím 2 px² (720p) và 4,5 px² (1080p); `×n` 12 px² và 27 px².
+
+**Toàn bộ suite:** PlayMode 65/65, EditMode 337/337. Console 0 Error/Warning. Đã `git checkout` `EditorSettings.asset`.
+
+**Follow-up UI-01:** rect icon lấn nhãn (số phím, `×n`) 1 px trong phần đệm trong suốt, không ảnh hưởng hình. Sửa khi đổi layout ô khe.
+
 ## 6. Review
 
 (code-reviewer điền.)
