@@ -465,7 +465,59 @@ Sau G3, CPO thêm vào `Docs/Client_Developer_Guide.vi.md` mục 4 công thức 
 
 ## 5. Nhật ký build
 
-<Dev ghi ngắn: đã làm gì, quyết định phát sinh, lệch kế hoạch và lý do.>
+### Pha 0 · 27/10/2026 · unity-dev (không dùng Unity, không C#)
+
+**Đã làm:**
+
+- `Tools/Audio/make_placeholder_sfx.py` (Python 3, chỉ thư viện chuẩn) sinh 14 WAV mono 16-bit 44,1 kHz vào `Art/Audio/Placeholder/Beeps/`. File có fade hai đầu, chuẩn hóa đỉnh 0,7 (khoảng −3 dBFS). Chạy lại cho kết quả giống từng byte (đã so md5). Tên file ghi tần số gốc để test `BeepsHaveDistinctFrequencies` đọc được. Mỗi mã có một kiểu tiếng riêng, không chỉ khác tần số.
+- `Tools/Audio/copy_jsurviv_placeholders.py` chép 12 SFX và 2 bài nhạc từ JSurviv sang `Art/Audio/Placeholder/JSurviv/`, đổi tên sang ASCII. Script chỉ chép file âm thanh, không chép `.meta`. Tham số `--check` so từng byte với bản gốc: cả 14 file khớp. `git status -- Assets/Imported/JSurviv` trống.
+- `Tools/Audio/README.md`: cách chạy và ghi chú đây là âm tạm.
+
+**Ánh xạ âm tạm (đủ 26 mã):**
+
+| SfxId | File | Ghi chú |
+| --- | --- | --- |
+| FootstepGrass | `Beeps/footstep_grass_330hz.wav` | 0,09 s, tiếng thịch nhẹ và sột soạt |
+| FootstepSwamp | `Beeps/footstep_swamp_392hz.wav` | 0,18 s, tiếng lép nhép trầm |
+| BushEnter | `Beeps/bush_enter_467hz.wav` | 0,26 s, ba đợt lá xào xạc |
+| MeleeSwing | `JSurviv/melee_slash.mp3` | `melee chém.mp3` |
+| MeleeHit | `JSurviv/hit_thud.wav` | `Đập.wav` |
+| ShootRanged | `JSurviv/gun_shot.mp3` | `súng bắn.mp3` |
+| ShootCrossbow | `Beeps/shoot_crossbow_555hz.wav` | 0,20 s, tiếng dây bật |
+| Throw | `Beeps/throw_660hz.wav` | 0,26 s, tiếng vút |
+| Reload | `Beeps/reload_785hz.wav` | 0,24 s, hai tiếng lách cách |
+| EmptyClick | `Beeps/empty_click_933hz.wav` | 0,06 s, một tiếng tách khô |
+| BombFuse | `JSurviv/bomb_fuse_countdown.mp3` | `countdown.mp3` |
+| Explosion | `JSurviv/bomb_explosion.mp3` | `bomb nổ.mp3` |
+| TrapTriggered | `Beeps/trap_triggered_1110hz.wav` | 0,22 s, tiếng sập |
+| HitMarker | `Beeps/hit_marker_2220hz.wav` | 0,06 s, tiếng tick cao, gọn và sắc |
+| HurtLocal | `JSurviv/hurt_bleed.mp3` | `bleed.mp3` |
+| ArmorAbsorb | `Beeps/armor_absorb_1320hz.wav` | 0,30 s, tiếng kim loại (partial lệch) |
+| Eliminated | `Beeps/eliminated_1570hz.wav` | 0,75 s, tiếng rơi xuống hai quãng tám |
+| PickupWeapon | `JSurviv/pickup_weapon.mp3` | `nhặt súng.mp3` |
+| PickupItem | `JSurviv/pickup_item_gun_put_on.mp3` | `Gun Put On.mp3` |
+| WearArmor | `JSurviv/wear_armor_helmet_put_on.mp3` | `Helmet Put On.mp3` |
+| UseHeal | `JSurviv/use_heal_gauze.mp3` | `gauze.mp3` |
+| UseDrink | `JSurviv/use_drink_cola.mp3` | `cola.mp3` |
+| UseCancel | `Beeps/use_cancel_1867hz.wav` | 0,18 s, hai nốt đi xuống |
+| ZoneBell3 | `Beeps/zone_bell_880hz.wav` | 0,7 s, chuông gõ (hum 440 Hz + partial 1/1,5/2/2,76/4,07). Lặp 3 lần theo catalog |
+| DragonRoar | `Beeps/dragon_roar_70hz.wav` | 2,0 s ≥ 1,5 s, tiếng gầm trầm: saw quét 70→210→91 Hz, điều biên 30 Hz, nhiễu thở |
+| MatchEnd | `JSurviv/match_end_time_over.wav` | `TimeOver.wav` |
+| Nhạc Loading, WaitingRoom | `JSurviv/Music/loading_music.mp3` | T-5: không chép `Waiting Room Music.wav` |
+| Nhạc Match | `JSurviv/Music/parking_map_music.mp3` | 4,9 MB |
+
+**Lệch kế hoạch và lý do:**
+
+1. `HitMarker` dùng tiếng tổng hợp, **không** dùng `button.mp3` như bảng 2.1. Mục 2 dành `button.mp3` cho tiếng nút UI (UI-02/UI-03), và CPO yêu cầu hitmarker "gọn sắc". Nếu dùng chung, tiếng bấm nút và hitmarker sẽ giống nhau. Vì vậy `button.mp3` không được chép.
+2. `ShootCrossbow` và `TrapTriggered` dùng tiếng tổng hợp riêng, không dùng `súng bắn.mp3`/`Đập.wav` hạ cao độ. Bảng 2.1 cho phép "hoặc bíp", và `SfxRule` không có trường cao độ gốc, chỉ có jitter.
+3. `zone_bell` dài 0,7 s thay vì 0,5 s như 4.3, để tiếng chuông ngân tắt tự nhiên. Vẫn ngắn hơn khoảng lặp 0,8 s nên ba tiếng không chồng nhau.
+4. Thêm `copy_jsurviv_placeholders.py` (không có trong 4.3) để việc chép tái lập và kiểm được. `Tools/Audio/**` nằm trong vùng AUD-01.
+
+**Phát hiện cho ART-05:** `Gun Put On.mp3` và `Helmet Put On.mp3` cùng kích thước nhưng **khác nội dung** (md5 khác nhau), không phải file trùng.
+
+**Commit:** chỉ `Tools/Audio/*` và mục này. File âm thanh trong `Art/Audio/Placeholder/**` chưa có `.meta`, nên sẽ commit ở pha 1 sau khi Unity import (commit 5 của 4.6).
+
+**Còn lại (pha 1, chờ CPO báo "Unity rảnh"):** commit 1–4 và 6–10 của mục 4.6.
 
 ## 6. Review
 
