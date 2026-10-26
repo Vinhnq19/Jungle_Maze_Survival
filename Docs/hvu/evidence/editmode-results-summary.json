@@ -1,0 +1,391 @@
+{
+ "date": "2026-10-25",
+ "unity": "6000.3.15f1",
+ "suite": "JungleMaze.Tests.EditMode",
+ "total": 200,
+ "passed": 200,
+ "failed": 0,
+ "skipped": 0,
+ "relevantCases": [
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.AckRtt_IsMeasuredFromSendToAck",
+   "result": "Passed",
+   "durationSec": 0.002
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.BufferOverflow_DropsOldestAndCounts",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.Dead_StopsPredicting_UntilServerSaysAlive",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.DuplicateAndOldSnapshots_AreIgnored",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.HugeError_SnapsInsteadOfSmoothing",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.Input_MovesHeroImmediately_BeforeServerAck",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.PushingIntoCover_WithCorrections_NeverDrawsInsideCover",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.SequenceWrap_AcksAcrossOverflow",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.ServerAgrees_NoCorrections_AckedInputsDropped",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.ServerDisagrees_CorrectionIsSmoothed_ThenConverges",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.ServerHasNotProcessedInput_KeepsAllPending",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.LocalPredictionTests.WithoutWorldOrAuthority_DoesNotPredict",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.LongSession_PendingInputsStayBounded",
+   "result": "Passed",
+   "durationSec": 0.025
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt0)",
+   "result": "Passed",
+   "durationSec": 0.007
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt50)",
+   "result": "Passed",
+   "durationSec": 0.004
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt100)",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt100-jitter20)",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt50-jitter20-loss33)",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt100-jitter20-loss33)",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(udp-rtt100-jitter10-dup20)",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementNetcodeTests.PredictionAndInterpolation_StayStable(wss-rtt100-jitter20)",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.DiagonalIntoCover_SlidesAlongFace",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.InvalidConfig_Throws",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.LargeStep_DoesNotTunnelThroughThinPillar",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.MapEdge_ClampsInsideBounds",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.Move_DoesNotAllocate",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.OpenSpace_MovesFourCellsPerSecond_DiagonalNormalized",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.PushingIntoCover_StopsAtSurface_NeverOverlaps",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.QuantizedInput_MatchesServerDequantize",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.MovementSimulationTests.StandingInsideCover_IsPushedOut",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Buffer_ExtrapolationIsLimited",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Buffer_InterpolatesPositionAndShortestRotation",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Buffer_IsBounded_DropsOldest",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Buffer_KeepsTickOrder_RejectsDuplicateAndTooOld",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Buffer_Teleport_IsNotSmearedAcrossMap",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Buffer_TrimPastNewest_KeepsTwoSamplesForExtrapolation",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Despawn_ThenRespawnFarAway_NoGhostInterpolation",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.DuplicatePackets_AreIgnored",
+   "result": "Passed",
+   "durationSec": 0.002
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.Jitter20ms_StaysSmooth_AndMeasuresJitter",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.LatencyDrop_ResyncsClockForward",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.LossOneThird_WithJitter_StaysBounded",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.MatchSession_MissingPlayerAndNewMatch_RemoveBuffers",
+   "result": "Passed",
+   "durationSec": 0.002
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.SteadyStream_RendersExactlyDelayed_NoBackwardMotion",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Movement.RemoteInterpolationTests.WssStallBurst_HoldsThenResumesAtPresent_DoesNotReplayOldState",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Auto_WhenBusinessRejection_DoesNotFallback",
+   "result": "Passed",
+   "durationSec": 0.149
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Auto_WhenRoomFull_DoesNotFallback",
+   "result": "Passed",
+   "durationSec": 0.14
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Auto_WhenUdpSucceeds_SelectedTransportIsUdp_NoFallbackReason",
+   "result": "Passed",
+   "durationSec": 0.124
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Auto_WhenUdpUnreachable_FallsBackToWss_WithSameAttemptId",
+   "result": "Passed",
+   "durationSec": 2.799
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.CanReconnectAfterFailure",
+   "result": "Passed",
+   "durationSec": 0.202
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Disconnect_IsUserRequested_AndServerFreesSlot",
+   "result": "Passed",
+   "durationSec": 0.123
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.GameplayPacket_RoundTripOnChannel1_ManySubscribers",
+   "result": "Passed",
+   "durationSec": 0.2
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.InvalidConfig_FailsWithoutOpeningSocket",
+   "result": "Passed",
+   "durationSec": 0.062
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.InvalidDisplayName_FailsBeforeConnect",
+   "result": "Passed",
+   "durationSec": 0.062
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Joined_PingPong_RecordsRealRtt",
+   "result": "Passed",
+   "durationSec": 1.196
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Jwt_AnswersAuthRequiredWithToken",
+   "result": "Passed",
+   "durationSec": 0.187
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Jwt_WithoutToken_FailsAuthenticationRequired",
+   "result": "Passed",
+   "durationSec": 0.062
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.NoServer_FailsWithConnectTimeout",
+   "result": "Passed",
+   "durationSec": 0.744
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.ProtocolV2_SendsRandomAttemptId",
+   "result": "Passed",
+   "durationSec": 0.123
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.RoomCode_JoinsAndPublishesStateChanges",
+   "result": "Passed",
+   "durationSec": 0.123
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.RoomFull_FailsWithRoomFull",
+   "result": "Passed",
+   "durationSec": 0.141
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.ServerKicks_WhileJoined_ReportsServerClosed",
+   "result": "Passed",
+   "durationSec": 0.185
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.Stats_ExposesP50_P99_Transport_FallbackReason",
+   "result": "Passed",
+   "durationSec": 1.196
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.SteadyState_TickAndSend_DoNotAllocateOnMainThread",
+   "result": "Passed",
+   "durationSec": 2.411
+  },
+  {
+   "name": "JungleMaze.Tests.Network.NetworkClientTests.WrongRoomCode_FailsWithServerReason",
+   "result": "Passed",
+   "durationSec": 0.139
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.CanonicalHashAcceptsWindowsLineEndingsAndBom",
+   "result": "Passed",
+   "durationSec": 0.045
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.InvalidEndpointSwitchCannotReusePreviousGuestProof",
+   "result": "Passed",
+   "durationSec": 0.03
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.OldMatchPacketsCannotOverwriteNextRound",
+   "result": "Passed",
+   "durationSec": 0.002
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.OptionalIdentityIsSentBeforeGameplayCapability",
+   "result": "Passed",
+   "durationSec": 0.001
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.PackagedMapHashMustMatchServer",
+   "result": "Passed",
+   "durationSec": 0.003
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"https://example.com\",True)",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"http://127.0.0.1:5000\",True)",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"http://192.168.1.10:5000\",False)",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.PersistentProofUsesSecureOrigin(\"https://user:password@example.com\",False)",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.SnapshotHotCodec_DoesNotAllocate",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.SnapshotRejectsTruncationAndTooManyPlayers",
+   "result": "Passed",
+   "durationSec": 0.0
+  },
+  {
+   "name": "JungleMaze.Tests.Protocol.Phase2Tests.WindowsGuestProofIsEncryptedAndSeparatedByEndpoint",
+   "result": "Passed",
+   "durationSec": 0.016
+  }
+ ]
+}

@@ -21,7 +21,7 @@ Cập nhật **23/10/2026**. Tài liệu dành cho người mới vào làm game
 
 Nếu Editor không được focus mà game đứng hình, bật **Project Settings → Player → Run In Background**.
 
-Chi tiết phạm vi và bằng chứng năm task nền tảng: [Unity_Foundation_Acceptance.vi.md](Unity_Foundation_Acceptance.vi.md). Việc vào phòng thành công chưa đồng nghĩa các Hero đã nhìn thấy chuyển động của nhau; phần đó thuộc MOV-02/server simulation.
+Chi tiết phạm vi và bằng chứng năm task nền tảng: [Unity_Foundation_Acceptance.vi.md](Unity_Foundation_Acceptance.vi.md). Prediction/reconciliation nhân vật của mình (MOV-02) và interpolation người chơi khác (MOV-03): xem [Docs/hvu](hvu/README.vi.md).
 
 ## 2. Đổi endpoint không cần build lại
 
@@ -165,7 +165,7 @@ Luồng chạy trận nằm trong [hướng dẫn Phase 2](Phase2_Match_Guest_Zo
 | `GuestHistoryClient` | API HTTPS/loopback, DPAPI theo origin; ticket một lần, không gửi credential/JWT dài hạn qua UDP |
 | GameServer | C# authoritative movement/collision, lifecycle, 5 đợt bo, HealthService và kết quả; API/DB không chặn tick |
 
-Unity Windows/Editor đã có WSS/Auto. Prediction/reconciliation và interpolation đầy đủ còn thuộc MOV-02/03. Combat, inventory, hazard, HUD đầy đủ và killcam không được coi hoàn tất bởi demo. Sprite/nhãn hiện tại dùng để kiểm mạng. `PlayerInputService` cũ không được tick cùng `MatchSession`; không bật lại HeroController trong demo mạng. Dùng khung scenario/assertion/driver ở mục8 của hướng dẫn Phase2 để kiểm feature mới, không sửa state server từ client để tạo kết quả PASS.
+Unity Windows/Editor đã có WSS/Auto. Prediction/reconciliation (MOV-02) và interpolation (MOV-03) đã có, xem [Docs/hvu](hvu/README.vi.md). Combat, inventory, hazard, HUD đầy đủ và killcam không được coi hoàn tất bởi demo. Sprite/nhãn hiện tại dùng để kiểm mạng. `PlayerInputService` cũ không được tick cùng `MatchSession`; không bật lại HeroController trong demo mạng. Dùng khung scenario/assertion/driver ở mục8 của hướng dẫn Phase2 để kiểm feature mới, không sửa state server từ client để tạo kết quả PASS.
 
 ## 7. Sửa dữ liệu và map để kiểm thử
 
