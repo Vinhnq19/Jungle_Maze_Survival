@@ -352,7 +352,52 @@ Chỉ thêm test, không sửa code production, PNG hay prefab. Đã đọc `UiA
 
 ## 6. Review
 
-(code-reviewer điền.)
+### Review test R2 · 27/10/2026 06:30 · Code Reviewer (phiên độc lập, chỉ đọc): **Qua**, không có lỗi Chặn
+
+Phạm vi: `e8b57415`, `8e047049`, `0a5a4e28` (test) và `6c1ea276`, `f61cf4e8` (docs). Diff `Assets` chỉ có 2 file test, 2 `.meta` và thư mục `Art04.meta` (569 dòng thêm, 0 dòng sửa). Không đụng code production, PNG, prefab, `Imported`, `Backend`, balance. 5 commit message tiếng Anh, 0 dòng attribution. Đọc kèm `UiArtCatalogTests`, `UiArtIntegrationTests`, `HudAcceptanceTests`, hai asmdef test. Không chạy Unity: số 337/337 và 65/65 là theo log dev (mục 5). Số đo thêm do reviewer tính bằng Python/Pillow trên 34 PNG và CSV hiện có.
+
+**Từng test có đo đúng AC không (xanh giả):**
+
+| Test | AC | Nhận xét |
+| --- | --- | --- |
+| `Csv_34Rows_MatchRosterOneToOne_…` | AC1, AC2 | Đo thật: đếm 34, `Roster()` từ JSON (`Add` ném lỗi khi trùng), `loai`, trạng thái, `File.Exists`. Tập hợp thiếu/thừa kiểm hai chiều. CSV hiện có 34 dòng cùng một trạng thái `Đã chuẩn hóa`. Chỉ chấp nhận 2 giá trị (trạng thái lúc G3), chặt hơn T-3 (5 giá trị) có chủ ý |
+| `Csv_TargetPath_IsTheSpriteTheCatalogServes` | AC1 | So CSV với **catalog** (không so với chính nó). Sprite thiếu cho đường dẫn rỗng nên vẫn đỏ |
+| `Png_64x64_…` | AC3, AC4 | Công thức đúng: 4 góc đọc theo `GetPixels32` (gốc dưới-trái), bbox alpha > 8, cạnh dài 44–60, lệch tâm ≤ 2, bán trong suốt = `0<a<255` trên `a>0`. Không chia cho 0 (đã `continue` khi không có pixel nhìn thấy). Giải mã bằng `LoadImage`, huỷ texture trong `finally` |
+| `HudPrefabsAndCatalog_DependOnNoImage…` | AC17 | Đúng quyết định CPO (xem dưới) |
+| `DefaultSlot1_IsHand_…` | AC8, AC10 | `AreSame` với sprite catalog (không phải placeholder), Selected, alpha 1; rồi đổi `SetActiveSlot` qua cả 8 khe, mỗi khe kiểm đúng 1 Selected, sprite không đổi, alpha 1. Có chiều âm vì `Fill` điền đủ 8 khe |
+| `Sweep_18Weapons…10Consumables…` | AC7 | 112 lần ghi (18×4 + 10×4), mỗi lần kiểm khe nhận ID, sprite = `GetIcon(id)`, khác sprite trước. Không rỗng vì có `Assert` số lượng 18 và 10 |
+| `VisibleIcon_ClearOfKeyCountAndName_…` | AC11 | Xem bên dưới |
+| `PickupToast_ShowsTheRightIconForAll34Ids` | AC13 | Lặp theo JSON; `Tick(10f)` làm hết hạn trước mỗi lần; `shown == 1` chặn vòng rỗng; màu trắng |
+| `SecondWriter_StandInForItm01_…` | AC15 | Có đối chứng `Reset` (khe 2–8 đổi sang sprite khác) trước khi ghi lần hai; so sprite, `SlotVisual` và toast. Xem Gợi ý 2 |
+| `Rotate34Ids…600Times_NoGc` | AC19 | 120 frame warm-up, xoay 34 ID qua 8 khe và 1 dòng toast; ID đổi ở mỗi lần gọi nên đi đúng nhánh đổi sprite. Xem Gợi ý 3 |
+
+**Hai quyết định của CPO được cài đúng ý:**
+- **AC17:** chỉ ảnh bị cấm (đuôi ảnh, `Texture2D`, `Sprite`); shader TMP JSurviv được loại có chú thích (`Art04IconInventoryTests.cs:111`). Log dev ghi 100 phụ thuộc, 0 ảnh. Test đo trên `GetDependencies(roots, true)` của `Hud.prefab`, `HudSlot.prefab`, `HudPickupToast.prefab`, catalog, và `Assert.NotNull` từng root nên không đo trên asset không tải được.
+- **AC11:** đo rect phần nhìn thấy (bbox alpha > 8 của sprite đang gắn, đưa vào rect icon đã tính `preserveAspect`), giao với số phím, `×n`, tên phải = 0 px², cả 1280×720 và 1920×1080; phần RectTransform lấn vẫn ghi `Debug.Log "[ART-04 AC11]"` kèm px². So với rect của nhãn TMP (không phải glyph) nên đo thận trọng. Dung sai 0,001 px chỉ để chống nhiễu float.
+
+**Trùng test:** không đáng kể. Phần giao nhau chỉ là hình dạng chung: AC19 cùng dạng `ScopedLookupAndViewWarmGC` nhưng xoay 34 ID thay vì 3; toast cùng dạng `PickupRow_…` nhưng quét 34 ID; đường dẫn catalog trong `Csv_TargetPath` đứng cạnh `ItemCatalog_Covers34…` nhưng chủ thể là CSV. Mọi assert khác nhau. Không test nào lặp `Validate`, import, 1 MB, known/unknown/known, swap art của ADHOC.
+
+**Độc lập giữa các test, dọn dẹp:** không phụ thuộc thứ tự. Mỗi test dựng store, `EventBus`, prefab mới; `TearDown` khôi phục `Time.timeScale` và `DestroyImmediate` mọi object; texture tạm huỷ trong `finally`. Không động `PlayerPrefs`, không nạp scene, không đổi asset (catalog dùng chỉ đọc). Độ phân giải mô phỏng bằng canvas world-space nên không phụ thuộc cửa sổ Game. Bộ nhớ đệm `_contentBounds` sống theo fixture, khoá bằng sprite của asset, vô hại.
+
+**asmdef, namespace:** EditMode `JungleMaze.Tests.Art04` (asmdef chỉ Editor, đúng với `JungleMaze.Tests.UiArt`); PlayMode `JungleMaze.Tests.PlayMode`, cả file nằm trong `#if UNITY_EDITOR` như các test HUD kề bên nên `AssetDatabase` không lọt vào player build. `.meta` 2 dòng giống `UiArtIntegrationTests.cs.meta`. Comment mới là XML summary tiếng Anh.
+
+#### Nên sửa
+
+1. **AC11 chỉ đo 8/34 icon, phần còn lại dựa vào một số đo mà không test nào ép.** `Art04IconSweepTests.cs:125` điền 8 ID. Log mục 5 suy ra 26 icon còn lại an toàn vì "đệm trên nhỏ nhất 4/64". Đúng với 34 file hiện nay (reviewer đo lại: đệm trên, dưới, trái, phải tối thiểu đều 4 px). Nhưng R2-a (`Art04IconInventoryTests.cs:88-91`) chỉ đòi cạnh dài ≤ 60 và lệch tâm ≤ 2, nghĩa là cho phép đệm trên bằng 0. Icon sẽ còn được vẽ lại tại chỗ (spec ADHOC). Kịch bản: art mới cao 60 px, lệch lên 2 px, đệm trên 0 ⇒ phần nhìn thấy của icon lấn 1 px canvas vào hàng nhãn (số phím, `×n`); cả hai test vẫn xanh vì AC11 không đo icon đó. Hướng sửa: thêm vào R2-a assert đệm mỗi cạnh ≥ 3 px (> 1 px canvas ÷ 0,4375 px/px nguồn ở ô 28), hoặc cho test AC11 quét cả 34 ID (vũ khí vào khe 1–4, trang bị vào khe 5–8) thay vì 8.
+2. **AC17 "0 script thiếu" không có test nào giữ.** `Art04IconInventoryTests.cs:103` chỉ quét phụ thuộc; không file nào dưới `Tests` có `GetMonoBehavioursWithMissingScriptCount`. QA ADHOC có kiểm tay 7 prefab (mục 7 ADHOC) nhưng AC17 là P0 và R2-a là chỗ ghi nhận nó. Hướng sửa: gọi `GameObjectUtility.GetMonoBehavioursWithMissingScriptCount` cho **từng GameObject con** của 3 prefab (hàm chỉ đếm trên chính object truyền vào, không đệ quy), kết quả = 0.
+
+#### Gợi ý
+
+1. **Vòng lặp có thể rỗng nếu CSV mất dòng.** `Csv_TargetPath…` và `Png_64x64…` lặp theo `ReadCsv()` mà không tự kiểm số dòng; CSV chỉ còn dòng tiêu đề thì cả hai xanh. Hiện test 1 vẫn đỏ nên bộ test không bị xanh giả, nhưng mỗi test chạy riêng thì có. Thêm `Assert.AreEqual(34, rows.Count)` hoặc lặp theo `Roster()`.
+2. **`SecondWriter…` mạnh hơn ở đối chứng `Reset` so với ở "writer thứ hai".** Cả hai writer ghi vào cùng `InventoryStateStore` qua cùng port, nên test chỉ bắt được phụ thuộc thứ tự ghi hoặc phụ thuộc `MockInventoryState`; đúng chữ AC15 (ghi qua `IInventoryStateWriter`/`IHudStateWriter`) và mô phỏng ITM-01 ở mức port, chưa nối server thật (R5). Writer 1 còn gọi `_hud.NotifyPickup` trực tiếp thay vì qua mock. Nên ghi rõ giới hạn này ở nhật ký.
+3. **AC19 không đo phần dựng lại canvas.** 600 vòng chạy trong một frame, nên TMP/`Canvas` rebuild xảy ra sau điểm đo; 120 frame warm-up có rebuild nhưng không được tính. Cùng phương pháp với UI-01 và ADHOC (đúng theo spec "cùng phương pháp đo UI-01"). Profiler trong trận thật vẫn là bằng chứng duy nhất cho phần này.
+4. **Loại trừ AC17 rộng hơn quyết định.** Code loại **mọi** phụ thuộc không phải ảnh dưới `Imported/`, không riêng shader TMP; một prefab, material hoặc font asset JSurviv (atlas là sub-asset của `.asset`, không phải `Texture2D` chính) sẽ lọt. Hiện chỉ có đúng một file shader nên chưa sai. Nếu muốn khoá: liệt kê phụ thuộc không-ảnh và assert bằng đúng đường dẫn `TMP_SDF-Mobile.shader`.
+5. **`nguon_thuc` của 21 dòng cùng trỏ vào `Tools/Art/native32_recipes.py`.** Test chỉ kiểm file đó tồn tại. Reviewer đã đối chiếu tay: cả 21 ID đều có trong file công thức. Số trong log mục 5 ("10 JSurviv, 24 công thức") lệch CSV hiện tại (**13 JSurviv, 21 công thức**, CSV không đổi sau `29cf9797`); sửa số trong log.
+6. **AC10 vế "khe không có đồ ≤ 0,35".** R2-b chỉ kiểm alpha 1 cho khe có đồ; vế khe rỗng ≤ 0,35 chưa test nào kiểm (`HudAcceptanceTests.cs:297` kiểm `< 0,5`). Ngoài phạm vi R2 đã giao, ghi lại để QA đo.
+
+**Chưa kiểm chứng:** chạy Unity (số test theo log dev); AC11 tại 2560×1440 (spec chỉ yêu cầu 720p, 1080p); AC20 (nhận diện mù) vẫn thuộc người dùng.
+
+(Phiên review ghi trực tiếp mục này theo yêu cầu của CPO ngày 27/10; không sửa file nào khác.)
 
 ## 7. QA
 
