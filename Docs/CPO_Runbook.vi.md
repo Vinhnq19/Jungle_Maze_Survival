@@ -20,7 +20,7 @@ Người dùng (HuyCV, PIC V.Huy), ngày 27/10/2026, khoảng 02:00, nguyên vă
 | A | **ADHOC-UI-ASSETS-A**: gắn bộ asset hướng A (34 icon, 7 icon hiệu ứng, khung HUD, art menu) vào HUD và màn kết nối | Subagent unity-dev trong phiên CPO | **Build xong** (`49c4943b`…`dd84914a`): EditMode 274/274, PlayMode 43/43, T-1 sửa bằng `UiArtSet` + `Resources.Load` một lần. Code Reviewer đang review | Build xong → phiên **Code Reviewer** review → phiên **QA Tester** kiểm A1–A12 (sau khi icon 32 px của luồng C xong) → CPO duyệt **G3** |
 | B | **ART-04** icon HUD/Inventory | Phần build nằm trong luồng A | Spec `24eedbf4`, đối chiếu ADHOC `f208314d`, **G1 đã duyệt** (mục 4) | Đóng cùng G3 của luồng A. AC14 (gợi ý nhặt dưới sàn) hoãn sang ITM-01. AC20 (thử nhận diện với 3 người) là việc của người dùng |
 | C | **Vẽ lại icon theo lưới 32×32** | Codex, chạy không tương tác | Hẹn chạy lúc 05:45 (script nền trong phiên CPO, thử lại mỗi 15 phút), nhiệm vụ trong `Docs/Art/CODEX_TASK_32px_Restyle.md` | Khi xong: kiểm commit, báo cáo `Restyle32_Report.vi.md`, refresh Unity, chạy lại test HUD |
-| D | **AUD-01** AudioManager | Phiên **Game Designer** → **Tech Lead** → **Unity Dev** | Spec `560346dd`, plan `de02fcff`, **G1 đã duyệt** `a5d53cde`. Unity Dev đang làm pha 0 (âm thanh tạm, không Unity) | Pha 1 khi luồng A trả Unity Editor → Unity Dev build (vùng `Audio/**`; `Bootstrap.cs` chỉ sửa sau khi luồng A đã commit file này) → review → QA → **G3** |
+| D | **AUD-01** AudioManager | Phiên **Game Designer** → **Tech Lead** → **Unity Dev** | Spec `560346dd`, plan `de02fcff`, **G1 đã duyệt** `a5d53cde`. Unity Dev đang làm pha 0 (âm thanh tạm, không Unity) | **Done (G3 03:40)**. Còn việc của người dùng: nghe bằng panel F6 (AC-A28) → (không còn bước build) (vùng `Audio/**`; `Bootstrap.cs` chỉ sửa sau khi luồng A đã commit file này) → review → QA → **G3** |
 
 Phiên vai trò (sidebar): Game Designer `local_3972f73b…`, Tech Lead `local_56f66202…`, Unity Dev `local_d782cbf2…`, Backend Dev `local_e781ffca…`, Code Reviewer `local_9ef9cabc…`, QA Tester `local_4916fe7a…`.
 
@@ -57,6 +57,8 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 
 - **27/10 03:00 · ADHOC: đã sửa xong các điểm review** (Unity Dev `054b8a76`, `a9c89458`, `cc283d4a`; EditMode 326/326, PlayMode 57/57; ảnh Boot và InRoom lưu trong `Docs/Reports/ADHOC-UI-ASSETS-A/`). Chờ icon 32 px rồi QA.
 - **27/10 03:00 · Review AUD-01: Qua.** Sửa ngay 4 điểm Nên sửa: không ghi PlayerPrefs mỗi lần kéo slider; dừng âm khi rời trận; kiểm listener dự phòng định kỳ; dừng BombFuse khi nổ. Lý do: lỗi thật, sửa nhỏ, nằm trong vùng AUD-01, nên làm trước QA để không phải QA hai lần.
+
+- **27/10 03:40 · G3 AUD-01: nghiệm thu.** QA "Một phần" nhưng mọi AC P0 đạt, QA tự chạy lại 333/333 và 59/59, review Qua. Phần chưa kiểm (nghe bằng tai, Release, Profiler, Game với server) chuyển cho người dùng, BLD-01 và QA-01; follow-up ghi ở mục 8 của AUD-01.md. `EditorSettings.asset` bị PlayMode của QA đổi về 1; CPO đã hoàn về 0 theo quyết định trước đó của người dùng ("Hoàn về 0"), vì phiên QA không có quyền chạy lệnh này.
 
 ## 5. Khởi động lại khi hết token
 
