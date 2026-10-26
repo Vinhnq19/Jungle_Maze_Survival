@@ -35,6 +35,7 @@ namespace JungleMaze.App.Audio
         private readonly IBalanceConfigProvider _balance;
         private readonly IReadOnlyList<IAudioEventSource> _sources;
         private readonly MusicPlan _music;
+        private readonly Func<AppScreen> _currentScreen;
         private readonly float _settleSeconds;
         private readonly SfxDeduper _keyed = new SfxDeduper();
         private readonly SfxDeduper _unkeyed = new SfxDeduper(UnkeyedWindowSeconds, 32);
@@ -63,7 +64,7 @@ namespace JungleMaze.App.Audio
 
         public SfxRouter(IAudioService audio, IHudState hud, IInventoryState inventory, IEventBus bus,
             IBalanceConfigProvider balance, IReadOnlyList<IAudioEventSource> sources = null, MusicPlan music = null,
-            float settleSeconds = DefaultSettleSeconds)
+            float settleSeconds = DefaultSettleSeconds, Func<AppScreen> currentScreen = null)
         {
             _audio = audio ?? throw new ArgumentNullException(nameof(audio));
             _hud = hud;
@@ -72,6 +73,7 @@ namespace JungleMaze.App.Audio
             _balance = balance;
             _sources = sources ?? Array.Empty<IAudioEventSource>();
             _music = music;
+            _currentScreen = currentScreen;
             _settleSeconds = settleSeconds;
             _onHudChanged = OnHudChanged;
             _onPickup = OnPickup;
@@ -102,6 +104,8 @@ namespace JungleMaze.App.Audio
             if (_inventory != null) _inventory.UseChanged += _onUse;
             _bus?.Subscribe(_onScreen);
             for (var i = 0; i < _sources.Count; i++) if (_sources[i] != null) _sources[i].CueRaised += _onCue;
+            // The first screen change may have been published before this subscription: start from the current one.
+            if (_currentScreen != null) _music?.SetScreen(_currentScreen());
         }
 
         public void Dispose()
