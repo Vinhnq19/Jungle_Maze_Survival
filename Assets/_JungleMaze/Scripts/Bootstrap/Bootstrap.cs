@@ -38,6 +38,8 @@ namespace JungleMaze.Composition
     {
         [SerializeField] private string menuScene = "Boot";
         [SerializeField] private string gameScene = "Game";
+        [Tooltip("UI art (item icons + menu art). Empty: loaded once from Resources/" + UiArtSet.ResourcePath + " at composition.")]
+        [SerializeField] private UiArtSet uiArt;
 
         private ServiceRegistry _registry;
         private Injector _injector;
@@ -104,7 +106,15 @@ namespace JungleMaze.Composition
             _registry.Register<IInventoryStateWriter>(inventoryState);
             _registry.Register<IEffectState>(effectState);
             _registry.Register<IEffectStateWriter>(effectState);
-            _registry.Register<IItemIconProvider>(new NullItemIconProvider()); // ART-04 thay bằng provider thật
+            // ADHOC-UI-ASSETS-A: real icon catalog. A Bootstrap auto-created in Game/HudPreview has no serialized
+            // reference, so it loads the same asset once here (never per frame).
+            if (uiArt == null) uiArt = Resources.Load<UiArtSet>(UiArtSet.ResourcePath);
+            if (uiArt != null && uiArt.ItemIcons != null) _registry.Register<IItemIconProvider>(uiArt.ItemIcons);
+            else
+            {
+                _log.Warn("[Bootstrap] UiArtSet/item icon catalog missing; HUD keeps placeholder icons.");
+                _registry.Register<IItemIconProvider>(new NullItemIconProvider());
+            }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             var hudMock = new MockHudState(hudState, balance);
             var inventoryMock = new MockInventoryState(inventoryState, balance);
@@ -157,7 +167,8 @@ namespace JungleMaze.Composition
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
             Attach<NetworkManager>();
-            Attach<ConnectionMenuView>();
+            var menuView = Attach<ConnectionMenuView>();
+            menuView.ConfigureArt(uiArt != null ? uiArt.MenuArt : null, menuScene);
             Attach<NetworkStatsOverlay>();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Attach<HudDebugPanel>();
