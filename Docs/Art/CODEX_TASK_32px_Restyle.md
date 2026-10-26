@@ -36,6 +36,11 @@ Giao ngày 27/10/2026. Bắt đầu khi Codex có lại hạn mức (khoảng 5:
 2. **7 icon hiệu ứng** `Art/UI/Icons/Effects/*.png`: đã ở lưới 32. Chỉ đối chiếu với bảng màu chung và cùng kiểu viền.
 3. **Sprite HUD** (`Art/Hud/*.png`) và **menu** (`Art/UI/Menu/*.png`): chỉ kiểm tra màu có thuộc bảng hướng A không, và đồng bộ với icon (viền, độ tương phản). Không đổi kích thước, không đổi viền 9-slice. Nếu cần sửa thì ghi vào báo cáo trước, không tự sửa hàng loạt.
 
+4. **Việc bổ sung (CPO duyệt 27/10 02:15, được sửa trực tiếp, không cần ghi báo cáo trước):**
+   - `Assets/_JungleMaze/Art/UI/Menu/KeyArt.png` không có alpha: Unity import RGB24, nên trong menu hiện thành ô vuông nền tối. Xuất lại **RGBA, nền trong suốt** quanh hòn đảo/key art, giữ nguyên kích thước 1040×1040. `Background.png` để nền đặc như cũ.
+   - `Assets/_JungleMaze/Art/Hud/EffectFrame.png`: viền dày 3 px nằm sát thanh thời gian cùng màu, nên cạnh dưới trông dày hơn. Làm viền mỏng còn 2 px (ở 88×88) và để 1 px trống giữa viền với vùng thanh thời gian. Giữ kích thước 88×88 và viền 9-slice 18 px.
+   - Các sprite đã import nhưng chưa gắn (`BarFill`, `BarTrack`, `MinimapFrame`, `Crosshair`, `HitMarker`): chỉ đồng bộ màu với bảng chung, không đổi kích thước.
+
 ## 4. Cách làm và sản phẩm
 
 - Cập nhật `Tools/Art/normalize_item_icons.py`: thêm chế độ `--native32` thực hiện đúng mục 2. Các bước gồm quantize theo `pixel_palette.json`, thêm viền, căn giữa, phóng ×2 nearest. Script phải chạy lại được.
