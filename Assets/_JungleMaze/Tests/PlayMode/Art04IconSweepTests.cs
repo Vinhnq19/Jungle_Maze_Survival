@@ -21,7 +21,7 @@ namespace JungleMaze.Tests.PlayMode
 {
     /// <summary>
     /// ART-04 R2-b: every roster ID through the real HUD prefab with the real item icon catalog. Covers what
-    /// UiArtIntegrationTests (ADHOC) leaves out: the default HAND slot, the full 28-ID slot sweep, icon/label rect overlap at
+    /// UiArtIntegrationTests (ADHOC) leaves out: the default HAND slot, the full 28-ID slot sweep, visible icon/label overlap at
     /// two resolutions, all 34 IDs through the pickup toast, a second writer, and a 34-ID rotation for GC.
     /// </summary>
     public sealed class Art04IconSweepTests
@@ -32,6 +32,7 @@ namespace JungleMaze.Tests.PlayMode
         private HudStateStore _hud; private InventoryStateStore _inventory; private EffectStateStore _effects;
         private HudRoot _core; private HudFeedbackRoot _feedback; private HudItemIconCatalog _icons;
         private MockInventoryState _mock;
+        private readonly Dictionary<Sprite, Rect> _contentBounds = new Dictionary<Sprite, Rect>();
         private float _timeScale;
 
         [SetUp]
@@ -112,12 +113,17 @@ namespace JungleMaze.Tests.PlayMode
 
         // ---------- AC11 ----------
 
+        /// <summary>
+        /// CPO decision 27/10 (AC11, option b): what must stay readable is the drawn art, so the check uses the visible content
+        /// (alpha &gt; 8 bbox of the bound sprite, mapped into the icon rect). The UI-01 RectTransform of the icon overlaps the key
+        /// cap and ×n by 1 px of transparent padding; that overlap is only logged, not asserted (follow-up for UI-01 layout).
+        /// </summary>
         [UnityTest]
-        public IEnumerator IconRect_ClearOfKeyCountAndName_At1280x720And1920x1080()
+        public IEnumerator VisibleIcon_ClearOfKeyCountAndName_At1280x720And1920x1080()
         {
             yield return Spawn();
             Fill(new[] { "HAND", "CROSSBOW", "RUBBER_GUN", "SAHUR_BAT" }, new[] { "GOD_LEAF", "UNICORN_BLOOD", "SPIRIT_TEAR", "ELIXIR_OF_LIFE" });
-            var problems = new List<string>();
+            var problems = new List<string>(); var rectOverlaps = new List<string>();
             foreach (var screen in new[] { new Vector2(1280, 720), new Vector2(1920, 1080) })
             {
                 ScreenAt(screen);
@@ -126,13 +132,57 @@ namespace JungleMaze.Tests.PlayMode
                     var slot = _core.Quickbar.GetSlotView(i);
                     Assert.True(slot.NameLabel.enabled, $"slot {i + 1} name shown");
                     if (i >= 4) Assert.True(slot.CountLabel.enabled, $"slot {i + 1} count shown");
-                    var icon = WorldRect(slot.Icon);
-                    Check(problems, screen, i, "key", icon, WorldRect(slot.KeyLabel));
-                    Check(problems, screen, i, "name", icon, WorldRect(slot.NameLabel));
-                    if (slot.CountLabel.enabled) Check(problems, screen, i, "×n", icon, WorldRect(slot.CountLabel));
+                    var visible = VisibleRect(slot.Icon);
+                    var rect = WorldRect(slot.Icon);
+                    Assert.True(visible.xMin >= rect.xMin && visible.xMax <= rect.xMax && visible.yMin >= rect.yMin && visible.yMax <= rect.yMax, $"slot {i + 1} content inside icon rect");
+                    foreach (var (what, label) in new[] { ("key", (Component)slot.KeyLabel), ("name", slot.NameLabel), ("×n", slot.CountLabel) })
+                    {
+                        if (what == "×n" && !slot.CountLabel.enabled) continue;
+                        Check(problems, screen, i, what, visible, WorldRect(label));
+                        Check(rectOverlaps, screen, i, what + " (RectTransform)", rect, WorldRect(label));
+                    }
                 }
             }
+            Debug.Log("[ART-04 AC11] icon RectTransform overlaps (logged, not asserted):\n" + (rectOverlaps.Count == 0 ? "none" : string.Join("\n", rectOverlaps)));
             Assert.IsEmpty(problems, string.Join("\n", problems));
+        }
+
+        /// <summary>World rect of the sprite's alpha &gt; 8 pixels as drawn by a Simple, preserve-aspect Image.</summary>
+        private Rect VisibleRect(Image image)
+        {
+            var sprite = image.sprite;
+            if (!_contentBounds.TryGetValue(sprite, out var bounds))
+            {
+                // Item icons are not Read/Write; decode the source PNG like R2-a does.
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                try
+                {
+                    Assert.True(texture.LoadImage(System.IO.File.ReadAllBytes(AssetDatabase.GetAssetPath(sprite))), sprite.name);
+                    var px = texture.GetPixels32(); var w = texture.width;
+                    int minX = w, minY = texture.height, maxX = -1, maxY = -1;
+                    for (var p = 0; p < px.Length; p++)
+                    {
+                        if (px[p].a <= 8) continue;
+                        int x = p % w, y = p / w;
+                        minX = Math.Min(minX, x); maxX = Math.Max(maxX, x); minY = Math.Min(minY, y); maxY = Math.Max(maxY, y);
+                    }
+                    Assert.GreaterOrEqual(maxX, 0, sprite.name + " has visible pixels");
+                    bounds = Rect.MinMaxRect((float)minX / w, (float)minY / texture.height, (maxX + 1f) / w, (maxY + 1f) / texture.height);
+                }
+                finally { Object.DestroyImmediate(texture); }
+                _contentBounds.Add(sprite, bounds);
+            }
+            Assert.AreEqual(Image.Type.Simple, image.type, sprite.name);
+            var rect = WorldRect(image);
+            var aspect = sprite.rect.width / sprite.rect.height;
+            var drawn = rect;
+            if (image.preserveAspect)
+            {
+                if (rect.width / rect.height > aspect) { drawn.width = rect.height * aspect; drawn.x = rect.center.x - drawn.width * 0.5f; }
+                else { drawn.height = rect.width / aspect; drawn.y = rect.center.y - drawn.height * 0.5f; }
+            }
+            return Rect.MinMaxRect(drawn.xMin + bounds.xMin * drawn.width, drawn.yMin + bounds.yMin * drawn.height,
+                drawn.xMin + bounds.xMax * drawn.width, drawn.yMin + bounds.yMax * drawn.height);
         }
 
         // ---------- AC13 ----------
