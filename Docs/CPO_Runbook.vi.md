@@ -62,6 +62,7 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 
 - **27/10 06:30 · G3 ADHOC-UI-ASSETS-A: nghiệm thu** (`3494d6be`, chi tiết ở mục 8 của ticket). QA "Một phần" (`7eb3f7ad`): 333/333, 59/59, A2–A9 và A11 Đạt. CPO xử lý A1 (manifest `48165122`) và A12 (ghi mục Review). A10 (scene Game cần server) chuyển QA-01. 6 follow-up giao chủ sở hữu.
 - **27/10 06:30 · ART-04 chưa đóng.** R1 xong (`29cf9797`: 34 dòng `Đã chuẩn hóa`, cột `nguon_thuc`). R2-a/R2-b (test) giao phiên Unity Dev, hạn commit 09:30. Sau đó Code Reviewer xem nhanh, QA Tester chạy lại, rồi CPO duyệt G3 trước 12:00. **Quyết AC17:** chỉ cấm ảnh/sprite dưới `Assets/Imported/`. Shader TMP JSurviv có từ UI-01, được loại trừ và ghi follow-up. Lý do: ý của AC17 là không dùng sprite JSurviv trực tiếp; dời TMP Essentials là việc dọn dẹp riêng, ngoài phạm vi icon.
+- **27/10 06:20 · ART-04 R2 build xong** (`e8b57415`, `8e047049`, `6c1ea276`): EditMode 337/337, PlayMode 64/65. **Quyết AC11: phương án (b), đo rect nội dung nhìn thấy.** RectTransform icon lấn số phím/`×n` 1 px (2–27 px²) do bố cục Figma UI-01, phần ảnh nhìn thấy không chạm (khoảng trong suốt khoảng 1,75 px). Lý do: AC11 nhằm giữ chữ đọc được; dời nhãn sẽ đổi hình học UI-01 đã nghiệm thu chỉ để sửa phần trong suốt. Unity Dev sửa test, ghi follow-up cho UI-01.
 - 06:20 · CPO hoàn `EditorSettings.asset` về 0 sau PlayMode của QA (theo quyết định "Hoàn về 0" của người dùng).
 
 ## 5. Khởi động lại khi hết token
