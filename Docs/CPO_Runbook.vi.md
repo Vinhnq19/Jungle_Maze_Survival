@@ -57,3 +57,4 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 ## 6. Ghi chú các lượt chạy
 
 - 27/10 02:05 · CPO · Tạo sổ điều phối. Luồng A đang build, C chờ 05:45, D đang lập kế hoạch.
+- 27/10 02:10 · CPO · Hẹn 4 lượt tự chạy lại (scheduled task): `cpo-resume-0550`, `cpo-resume-0730`, `cpo-resume-0930`, `cpo-resume-1115`. Lượt 11:15 viết `Docs/CPO_Handback_2026-10-27.vi.md` để trao lại quyền lúc 12:00.
