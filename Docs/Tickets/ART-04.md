@@ -7,7 +7,7 @@
 | Ưu tiên | P1 |
 | PIC | V.Huy |
 | Phụ thuộc | Chính thức: CLI-04: Done. Liên quan (không chặn, spec dùng mock): UI-01 (HUD lõi + phần 2): Done G3 25/10/2026 · ITM-01 (nguồn ID/khe/số lượng thật, PIC Quang Huy): Not Yet · WPN-01/Hào (vũ khí đang cầm): Not Yet |
-| Trạng thái | Spec (chờ G1) |
+| Trạng thái | Đã duyệt G1 (27/10, CPO thay người dùng); build nằm trong ADHOC-UI-ASSETS-A |
 | Sheet GDD tham chiếu | Ref GDD của dòng ticket ghi `Assets!6,8; Weapons; Equipments; WIREFRAME!7–8`. Spec dùng: **Weapons** (STT 1–18, cột "Tên cũ", "Code ID"), **Equipments** (STT 1–16), **ITEM LIST** (STT 1–35, đối chiếu tên cũ), **Assets** (STT 4 "Icon vũ khí / trang bị", STT 6 "HUD / Inventory"), **WIREFRAME** (STT 5 Gameplay HUD, STT 6 Inventory / Loot, STT 13 Loot/Hành động/Trạng thái), PROJECT TRACKING (UI-01, ITM-01, ART-03, UI-02). Lưu ý lệch số dòng: xem Q11 |
 | Figma node | Bố cục lấy từ HUD v2 (đã duyệt 24/10/2026): `41:2` ([ảnh](../Wireframes/v2/41-2_hud.png)), `41:180` chú thích ([ảnh](../Wireframes/v2/41-180_hud_annotated.png)), component `Slot` `39:139` (Default `39:124`, Selected `39:129`, Empty `39:134`), `KeyCap` `39:115`, gợi ý nhặt `41:172` ("[F] Nhặt Shotgun", 676,414 · 141×34), `PickupToast` `48:234` trong khối `48:431` ([ảnh](../Wireframes/v2/48-239_hud_feedback.png)). Wireframe Inventory v1 `3:3` ([ảnh](../Wireframes/3-3_inventory.png), bảng map: `Docs/UI_Wireframes.vi.md` mục 2) chỉ làm tham khảo ý tưởng "Dưới đất", các khối bị bỏ liệt kê ở mục 2 |
 | Bảng kiểm kê | [ART-04_icon_inventory.csv](ART-04_icon_inventory.csv) (34 dòng, UTF-8 có BOM để Excel mở đúng dấu) |
@@ -287,6 +287,13 @@ Ngoài phạm vi ART-04 nhưng ADHOC làm thêm: 7 icon hiệu ứng, khung HUD 
 - **Đếm AC hai lần.** G3 của ADHOC không đóng ART-04. G3 ART-04 cần thêm AC20(b) do người làm và quyết định T-4.
 - **Trùng test.** R2 phải đọc test ADHOC đã commit rồi bỏ assert trùng. Nếu ADHOC đổi tên/vị trí test thì cập nhật cột "Tương ứng ADHOC" của 4.1 ở nhật ký build.
 - **Ticket kề cận:** ITM-01 (Quang Huy) sau này ghi vào writer port và có thể ghi `IGroundItemStateWriter` nếu R3 làm. ENV-02/ART-03 có thể gọi `IItemIconProvider` cho đồ trên sàn. WPN-01 (Hào) không bị ảnh hưởng. ART-04 không sửa vùng của Hào hay ITM-01.
+
+**G1 · 27/10/2026 02:05 · CPO duyệt thay người dùng** (người dùng giao toàn quyền quyết định tới 12:00 27/10, xem `Docs/CPO_Runbook.vi.md` mục 1):
+- Duyệt mặc định của spec và các quyết định ADHOC đã chốt thay ở mục 4.3.
+- AC14 (gợi ý nhặt dưới sàn) hoãn sang ITM-01. AC20 (thử nhận diện với 3 người) do người dùng làm, không chặn G3 kỹ thuật.
+- Q11/Q12 (sửa Ref GDD, cập nhật sheet Assets STT 4/6) giao người dùng.
+- T-1 bắt buộc sửa trong ADHOC.
+- Sau G1, toàn bộ icon được vẽ lại ở lưới 32 px (`Docs/Art/CODEX_TASK_32px_Restyle.md`); không ảnh hưởng `.meta` hay liên kết.
 
 ## 5. Nhật ký build
 
