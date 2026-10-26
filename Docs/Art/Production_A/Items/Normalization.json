@@ -3,68 +3,97 @@
     64,
     64
   ],
+  "native_size": 32,
+  "scale": 2,
+  "method": "nearest",
+  "palette": "Tools/Art/pixel_palette.json",
+  "palette_sha256": "8123dd700ebb1faf69441c25570d05d4b4a1b3da01acabcbec03155c0c23e4d1",
+  "palette_color_count": 24,
   "produced": 34,
   "expected": 34,
   "missing": [],
+  "effects_produced": 7,
   "runtime_rgba_bytes_without_mips": 557056,
-  "unity_import_and_binding": "not tested by this asset-only tool",
+  "unity_import_and_binding": "Not run in this asset-only session; existing bindings retained by filename and unchanged .meta",
   "icons": [
     {
       "id": "HAND",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/HAND.png",
-      "source": "Docs\\Art\\Production_A\\Generated\\HAND_source.png",
-      "source_kind": "ImageGen",
-      "slice": "full image",
-      "source_sha256": "3b0a1c1f0acd38de557395c9905d281905d2d2cfd6b75beaa8ef4186b16e860e",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(HAND)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        167,
-        98,
-        1164,
-        1177
+        3,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        997,
-        1079
+        26,
+        26
       ],
       "resize_to": [
-        52,
-        56
+        26,
+        26
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        6,
-        4,
-        58,
-        60
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#9B6045",
+        "#D89568",
+        "#F2C394"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 108,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/HAND_32.png",
+      "output_sha256": "6462604823a03df0137f4b5a9774a76e959f4a6567fe186c15e15528cf8a0153"
     },
     {
       "id": "TREE_BRANCH",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/TREE_BRANCH.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Cành Cây\\stick.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Cành Cây/stick.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -73,54 +102,76 @@
         50
       ],
       "source_sha256": "a9c4aa18b3b1cbf6c5eb536bff2571bd280a67a225e95ad080f921d4800632cf",
+      "native_material_repair": "Native32 material planes relit for charcoal; same source alpha and silhouette",
+      "material_repair_recipe": "Tools/Art/native32_pipeline.py:repair_material",
       "source_alpha_bbox": [
         10,
         7,
         42,
         44
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         32,
         37
       ],
       "resize_to": [
-        48,
-        56
+        22,
+        26
       ],
       "resize_method": "nearest",
-      "light_outline_px": 1,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        7,
-        3,
-        57,
-        61
+      "native_bbox": [
+        4,
+        2,
+        28,
+        30
       ],
-      "content_long_edge": 58,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#8A5C38",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 116,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/TREE_BRANCH_32.png",
+      "output_sha256": "c3a5663dc88eb539fad96574b691fd68b1492c9d8afb393e30c241170647d486"
     },
     {
       "id": "KNIFE",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/KNIFE.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Dao\\knife.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Dao/knife.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -129,54 +180,78 @@
         80
       ],
       "source_sha256": "1a91e39fbbe1454ed06222765fda4d2daad7b1d4dfb2554cd2952dedcd6bb0e1",
+      "readability_adjustment": "nearest local thickness and diagonal orientation, preserving source silhouette",
       "source_alpha_bbox": [
-        9,
-        33,
-        71,
-        49
+        5,
+        2,
+        55,
+        50
       ],
-      "readability_y_scale": 1.5,
-      "rotation_degrees": 35,
       "resize_from": [
         50,
         48
       ],
       "resize_to": [
-        56,
-        54
+        26,
+        25
       ],
       "resize_method": "nearest",
-      "light_outline_px": 0,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        5,
-        60,
-        59
+      "native_bbox": [
+        2,
+        2,
+        30,
+        29
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
-        0.0
+        -0.5
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 7,
+      "colors": [
+        "#0C1417",
+        "#202A2D",
+        "#335943",
+        "#526B69",
+        "#77908A",
+        "#A6BBB7",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 112,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/KNIFE_32.png",
+      "output_sha256": "1d39f3dacf94ffa6b5c5b30a1ec215b2a0337e9765507b50f386b76971472d9f"
     },
     {
       "id": "BONE",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/BONE.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Xương\\bone.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Xương/bone.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -191,48 +266,69 @@
         133,
         130
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         106,
         100
       ],
       "resize_to": [
-        56,
-        53
+        26,
+        25
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        5,
-        60,
-        58
+      "native_bbox": [
+        2,
+        2,
+        30,
+        29
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         -0.5
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#77908A",
+        "#C6AE78",
+        "#E6CF91",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 106,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/BONE_32.png",
+      "output_sha256": "0395dfdd319f6b829ca264ecfd34bc7491d191de57a01f683b41313c83250c3a"
     },
     {
       "id": "AXE",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/AXE.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Riuf\\axe.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Riuf/axe.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -241,54 +337,77 @@
         38
       ],
       "source_sha256": "382be28bdb503f1548baf705aa3012322c06d69f540706fdf4c94628bb5d28c0",
+      "native_material_repair": "Native32 material planes relit for charcoal; same source alpha and silhouette",
+      "material_repair_recipe": "Tools/Art/native32_pipeline.py:repair_material",
       "source_alpha_bbox": [
         3,
         5,
         32,
         32
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         29,
         27
       ],
       "resize_to": [
-        56,
-        52
+        26,
+        24
       ],
       "resize_method": "nearest",
-      "light_outline_px": 0,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        6,
-        60,
-        58
+      "native_bbox": [
+        2,
+        3,
+        30,
+        29
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#77908A",
+        "#8A5C38",
+        "#A6BBB7",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 110,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/AXE_32.png",
+      "output_sha256": "6580e416b42ad8d5fe08dde5ad5f07364f5c221a3ebf20013c406d1d93aee50d"
     },
     {
       "id": "MACE",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/MACE.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Chùy gaii\\mace.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Chùy gaii/mace.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -297,54 +416,78 @@
         47
       ],
       "source_sha256": "ce8a8712b2b3cef7673ce1570ba38b24e61df854f2cf27e193b07823355049cf",
+      "native_material_repair": "Native32 material planes relit for charcoal; same source alpha and silhouette",
+      "material_repair_recipe": "Tools/Art/native32_pipeline.py:repair_material",
       "source_alpha_bbox": [
         0,
         0,
         46,
         47
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         46,
         47
       ],
       "resize_to": [
-        55,
-        56
+        25,
+        26
       ],
       "resize_method": "nearest",
-      "light_outline_px": 0,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        4,
-        59,
-        60
+      "native_bbox": [
+        2,
+        2,
+        29,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         -0.5,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#77908A",
+        "#8A5C38",
+        "#A6BBB7",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 108,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/MACE_32.png",
+      "output_sha256": "37cd6bceb4799672d95bb52b617e71e0ed0f1bbc623fc0205159a19587fab144"
     },
     {
       "id": "RUBBER_GUN",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/RUBBER_GUN.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Ná cao su\\2-NaCaoSu_normal.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Ná cao su/2-NaCaoSu_normal.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -353,166 +496,225 @@
         64
       ],
       "source_sha256": "781b3622a8339ec916849126df701fa13ec9e528bc9e215fef98a4fd02295593",
+      "native_material_repair": "Native32 material planes relit for charcoal; same source alpha and silhouette",
+      "material_repair_recipe": "Tools/Art/native32_pipeline.py:repair_material",
       "source_alpha_bbox": [
         12,
         0,
         52,
         64
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         40,
         64
       ],
       "resize_to": [
-        35,
-        56
+        16,
+        26
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        14,
-        4,
-        49,
-        60
+      "native_bbox": [
+        7,
+        2,
+        25,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        -0.5,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#8A5C38",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 120,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/RUBBER_GUN_32.png",
+      "output_sha256": "eca1c62c07b8db4cf07c141b7614ac2d27d334e10873a00f87d011107d393a87"
     },
     {
       "id": "SCEPTER",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SCEPTER.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Quyền trượng\\quyen_truong.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        18,
-        18
-      ],
-      "source_sha256": "27e31825aeba6a0f30949fa9138e1a667025acab09ff5a14f608e7a8faa27d06",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(SCEPTER)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Quyền trượng/quyen_truong.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        6,
-        1,
-        12,
-        17
+        7,
+        3,
+        25,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 30,
       "resize_from": [
-        11,
-        16
+        18,
+        26
       ],
       "resize_to": [
-        38,
-        56
+        18,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        13,
-        4,
-        51,
-        60
+      "native_bbox": [
+        6,
+        2,
+        26,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 7,
+      "colors": [
+        "#0C1417",
+        "#294D70",
+        "#543B2B",
+        "#568FBC",
+        "#A6BBB7",
+        "#BE8953",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 92,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SCEPTER_32.png",
+      "output_sha256": "1d8bb5314fa04a42b30d00ad910e14604f89f9fbbd72789c18e44c8e4073690d"
     },
     {
       "id": "CROSSBOW",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/CROSSBOW.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Nỏ\\no.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        25,
-        25
-      ],
-      "source_sha256": "a2d434f00d15891bb06417432f9b6958440497e9b42a91dd8183a5b9af342981",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(CROSSBOW)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Nỏ/no.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
         3,
         3,
-        23,
-        21
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        20,
-        18
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        50
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        7,
-        60,
-        57
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#543B2B",
+        "#8A5C38",
+        "#A6BBB7",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 152,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/CROSSBOW_32.png",
+      "output_sha256": "d2e12ea78b2cb2a90508480dbe5c5b238985c71e33154f61d25a06eae86c8ecf"
     },
     {
       "id": "SHOTGUN",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SHOTGUN.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Shotgun\\shotgun.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Shotgun/shotgun.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "shotgun 1_0",
       "slice_rect_png": [
         34,
@@ -521,54 +723,78 @@
         70
       ],
       "source_sha256": "8df51bbf783de23cf95605242b748bf4aa1b358fbc5b6e040a46ef5d0ff72d7e",
+      "readability_adjustment": "nearest local thickness and diagonal orientation, preserving source silhouette",
+      "native_material_repair": "Native32 material planes relit for charcoal; same source alpha and silhouette",
+      "material_repair_recipe": "Tools/Art/native32_pipeline.py:repair_material",
       "source_alpha_bbox": [
+        3,
         1,
-        1,
-        59,
-        11
+        55,
+        41
       ],
-      "readability_y_scale": 1.8,
-      "rotation_degrees": 25,
       "resize_from": [
         52,
         40
       ],
       "resize_to": [
-        56,
-        43
+        26,
+        20
       ],
       "resize_method": "nearest",
-      "light_outline_px": 1,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        3,
-        9,
-        61,
-        54
+      "native_bbox": [
+        2,
+        5,
+        30,
+        26
       ],
-      "content_long_edge": 58,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         -0.5
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#77908A",
+        "#8A5C38",
+        "#A6BBB7",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 94,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SHOTGUN_32.png",
+      "output_sha256": "f1d1d7c7a8d624199576796fbb17a5aec92a00e9f981bf1cae87451621188197"
     },
     {
       "id": "BANANA",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/BANANA.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Chuối\\Banana.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Chuối/Banana.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -583,48 +809,72 @@
         93,
         93
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         83,
         93
       ],
       "resize_to": [
-        50,
-        56
+        23,
+        26
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        7,
-        4,
-        57,
-        60
+      "native_bbox": [
+        3,
+        2,
+        28,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        0.0,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 8,
+      "colors": [
+        "#0C1417",
+        "#202A2D",
+        "#8A5C38",
+        "#9B6045",
+        "#BE8953",
+        "#C6AE78",
+        "#E6CF91",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 102,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/BANANA_32.png",
+      "output_sha256": "b764a86a4c944817aafad7650fec29775bcbf4d8983e0166dbe9177ea64a72ef"
     },
     {
       "id": "SMOKE",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SMOKE.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Bom khói\\smoke-grenade.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Bom khói/smoke-grenade.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -639,48 +889,72 @@
         74,
         81
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         43,
         57
       ],
       "resize_to": [
-        42,
-        56
+        20,
+        26
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        11,
-        4,
-        53,
-        60
+      "native_bbox": [
+        5,
+        2,
+        27,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 8,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#72985B",
+        "#77908A",
+        "#9572BA",
+        "#A6BBB7",
+        "#D89568",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 96,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SMOKE_32.png",
+      "output_sha256": "887ef99d74c892d03c59f6d61a5e4df16df3d7a15106b89532c198f8b6195932"
     },
     {
       "id": "METEORITE_FRAGMENT",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/METEORITE_FRAGMENT.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Mảnh thiên thạch\\meteorite_throwing-Sheet.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Mảnh thiên thạch/meteorite_throwing-Sheet.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "meteorite_throwing-Sheet_2",
       "slice_rect_png": [
         126,
@@ -695,48 +969,69 @@
         45,
         47
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         26,
         30
       ],
       "resize_to": [
-        49,
-        56
+        23,
+        26
       ],
       "resize_method": "nearest",
-      "light_outline_px": 0,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        7,
+      "native_bbox": [
         4,
-        56,
-        60
+        2,
+        28,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        -0.5,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#202A2D",
+        "#723B46",
+        "#C65A62",
+        "#F2C394"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 100,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/METEORITE_FRAGMENT_32.png",
+      "output_sha256": "72179eab09e731dc0a0b38557e2ee9a4fc1b1e1619a577539d080bbab03f372a"
     },
     {
       "id": "CRYSTAL",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/CRYSTAL.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Crystal\\crystal.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Crystal/crystal.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -751,149 +1046,216 @@
         159,
         171
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         119,
         134
       ],
       "resize_to": [
-        50,
-        56
+        23,
+        26
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        7,
-        4,
-        57,
-        60
+      "native_bbox": [
+        3,
+        2,
+        28,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        0.0,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#202A2D",
+        "#28534F",
+        "#294D70",
+        "#568FBC",
+        "#63BAA5"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 112,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/CRYSTAL_32.png",
+      "output_sha256": "879ecab348eb6e719f0693feb43ed21700dcca65c93eaf5dcde170e086774f03"
     },
     {
       "id": "SEED",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SEED.png",
-      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\SEED_32.png",
-      "source_kind": "Original pixel recipe",
-      "slice": "32x32 native",
-      "replacement_reason": "Legacy pink sprite resembles mermaid scale at 28px",
-      "source_sha256": "b8b1564ecf2eecb5115f1517b16c4d3029a8d958ad24dfa090222fd6faf2d94b",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(SEED)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Hạt/seed.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        5,
-        1,
-        27,
-        30
-      ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
-      "resize_from": [
-        22,
+        6,
+        3,
+        26,
         29
       ],
-      "resize_to": [
-        42,
-        56
+      "resize_from": [
+        20,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_to": [
+        20,
+        26
+      ],
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        11,
-        4,
-        53,
-        60
+      "native_bbox": [
+        5,
+        2,
+        27,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#72985B",
+        "#8A5C38",
+        "#BE8953",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 96,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SEED_32.png",
+      "output_sha256": "73a20701ffd69b3bf57747757d59b9089cfceeb0ab061124e776778a5a8ac163"
     },
     {
       "id": "ROPE",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/ROPE.png",
-      "source": "Docs\\Art\\Production_A\\Generated\\ROPE_source.png",
-      "source_kind": "ImageGen",
-      "slice": "full image",
-      "source_sha256": "549fd5ccc0f40faf0e1fd9de1df5e2e2658e67722ab0f99f4b1b22566c060f72",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(ROPE)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Dây thừng/day_thung-Sheet.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        151,
-        205,
-        1206,
-        1154
+        3,
+        4,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        1055,
-        949
+        26,
+        25
       ],
       "resize_to": [
-        56,
-        50
+        26,
+        25
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        7,
-        60,
-        57
+      "native_bbox": [
+        2,
+        2,
+        30,
+        29
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
-        0.0
+        -0.5
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#8A5C38",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 110,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/ROPE_32.png",
+      "output_sha256": "eb592fc5ad05d0cfd616165c5e15d0412cf879fea63efc29cb1e4189429e71d8"
     },
     {
       "id": "BELL",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/BELL.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Chuông\\bell.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Chuông/bell.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "bell_2",
       "slice_rect_png": [
         576,
@@ -908,48 +1270,72 @@
         226,
         241
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         156,
         161
       ],
       "resize_to": [
-        54,
-        56
+        25,
+        26
       ],
-      "resize_method": "Lanczos then binary alpha",
-      "light_outline_px": 0,
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        5,
-        4,
-        59,
-        60
+      "native_bbox": [
+        2,
+        2,
+        29,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        0.0,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 8,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#8A5C38",
+        "#9B6045",
+        "#BE8953",
+        "#D89568",
+        "#E6CF91",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 106,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/BELL_32.png",
+      "output_sha256": "1256d9a350ec9e7dad70271485e593edc69ab538e763c92a729daca98143b7fb"
     },
     {
       "id": "SAHUR_BAT",
       "kind": "Weapon",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SAHUR_BAT.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Gậy sahur\\sahurbat.png",
-      "source_kind": "JSurviv copy",
+      "source": "Assets/Imported/JSurviv/Sprites/WEAPONS/Gậy sahur/sahurbat.png",
+      "source_kind": "JSurviv nearest + shared palette",
       "slice": "full image",
       "slice_rect_png": [
         0,
@@ -964,922 +1350,1736 @@
         28,
         41
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         23,
         31
       ],
       "resize_to": [
-        42,
-        56
+        19,
+        26
       ],
       "resize_method": "nearest",
-      "light_outline_px": 0,
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        11,
-        4,
-        53,
-        60
+      "native_bbox": [
+        5,
+        2,
+        26,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        0.0,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#D89568",
+        "#E6CF91",
+        "#F2C394"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 94,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SAHUR_BAT_32.png",
+      "output_sha256": "4a3a3ea5451f4cb415ff5f97bc38ba9b0430fa11cf5b48f55bb6c12c69131ee5"
     },
     {
       "id": "WOODEN_HELMET",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/WOODEN_HELMET.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Mũ gỗ\\mu_go.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        25,
-        14
-      ],
-      "source_sha256": "150964b5225d2d3a1a9c5f65243319c7da3b567474c696f89fd1bb55030b597f",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(WOODEN_HELMET)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Armor/Mũ gỗ/mu_go.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        7,
-        2,
-        19,
-        12
+        3,
+        5,
+        29,
+        26
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        12,
-        10
+        26,
+        21
       ],
       "resize_to": [
-        56,
-        47
+        26,
+        21
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
+      "native_bbox": [
+        2,
         4,
-        8,
-        60,
-        55
+        30,
+        27
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         -0.5
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#8A5C38",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 108,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/WOODEN_HELMET_32.png",
+      "output_sha256": "2c1bef6e3ce8db9741736b67311f6485c4770ad9538a098bb678fc8f32a7fbff"
     },
     {
       "id": "SPIKE_HELMET",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/SPIKE_HELMET.png",
-      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\SPIKE_HELMET_32.png",
-      "source_kind": "Original pixel recipe",
-      "slice": "32x32 native",
-      "replacement_reason": "Legacy candidate is a non-spiked pith helmet",
-      "source_sha256": "3d4a3dbc1e16355e239112f006d3d3113108a2f50b91ad33279e1d3ad0bc1571",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(SPIKE_HELMET)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Armor/03. Mũ cối/MuCoi1.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        1,
-        1,
-        32,
-        29
+        3,
+        3,
+        29,
+        27
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        31,
-        28
+        26,
+        24
       ],
       "resize_to": [
-        56,
-        51
+        26,
+        24
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        6,
-        60,
-        57
+      "native_bbox": [
+        2,
+        3,
+        30,
+        29
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
-        -0.5
+        0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#77908A",
+        "#A6BBB7",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 114,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SPIKE_HELMET_32.png",
+      "output_sha256": "267a68ca70db09d4c6a69d1883058e455f9a49a0b50fbd3d8cc9eba84978739f"
     },
     {
       "id": "MAGIC_HELMET",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MAGIC_HELMET.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Mũ phù thủy\\Mũ phù thủy.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "70e5417b8d1937737431847c08084b71f9bbf84715ce49b8fd383b45047d1274",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(MAGIC_HELMET)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Armor/Mũ phù thủy/Mũ phù thủy.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        1,
-        1,
-        16,
-        15
+        3,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        15,
-        14
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        52
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        6,
-        60,
-        58
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 7,
+      "colors": [
+        "#0C1417",
+        "#28534F",
+        "#553F70",
+        "#63BAA5",
+        "#9572BA",
+        "#A6BBB7",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 116,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/MAGIC_HELMET_32.png",
+      "output_sha256": "1a3e72c5aa75f5739368de997d0cd068026791360c7426db5be22e295ea5070c"
     },
     {
       "id": "WOODEN_ARMOR",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/WOODEN_ARMOR.png",
-      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\WOODEN_ARMOR_32.png",
-      "source_kind": "Original pixel recipe",
-      "slice": "32x32 native",
-      "replacement_reason": "Legacy candidate is a green tactical vest",
-      "source_sha256": "18e985cb1109ce182964e4bccae93a90abe4a5fd0012d3be9007d8c483e96f38",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(WOODEN_ARMOR)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Armor/01. Vest/Vest.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        1,
         3,
-        31,
-        30
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        30,
-        27
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        50
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        7,
-        60,
-        57
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#8A5C38",
+        "#BE8953",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 122,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/WOODEN_ARMOR_32.png",
+      "output_sha256": "06bb98eadf92df111f2d05c1ed45a2bf761c0edb827306b0df7deb7fcf127677"
     },
     {
       "id": "ARMOR",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ARMOR.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Giáp gai\\Giap_gai.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "8667adb25d9f311617aeeeaa9bc1921e0eaa480208042f3464940496cd5a941e",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(ARMOR)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Armor/Giáp gai/Giap_gai.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        0,
         3,
-        16,
-        12
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        16,
-        9
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        32
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 1,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        3,
-        15,
-        61,
-        49
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 58,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#77908A",
+        "#A6BBB7",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 124,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/ARMOR_32.png",
+      "output_sha256": "5316f90980724d1a5769b63fd1c567ae16ea5b3645902d2f95e93a745b99ea3f"
     },
     {
       "id": "MAGIC_ARMOR",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MAGIC_ARMOR.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Giáp phù thủy\\Giáp phù thủy.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "5e5fb8daa7f453101330694a87dc4898df14c2adace8f9b85e59b8529dc4da57",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(MAGIC_ARMOR)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Armor/Giáp phù thủy/Giáp phù thủy.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        2,
-        4,
-        15,
-        12
+        3,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        13,
-        8
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        34
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 1,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        3,
-        14,
-        61,
-        50
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 58,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#553F70",
+        "#63BAA5",
+        "#9572BA",
+        "#A6BBB7",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 122,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/MAGIC_ARMOR_32.png",
+      "output_sha256": "86470fe730a6b570d4d27afcb0f0de9ea307f6f406f6005c3ad825eddb36e380"
     },
     {
       "id": "GOD_LEAF",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/GOD_LEAF.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Lá thần mộc\\la_than.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        25,
-        25
-      ],
-      "source_sha256": "a86da0cbfbb1fac9922097ad2a908737ff57dd37fa60c08f5410ce1c1f483b2a",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(GOD_LEAF)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Lá thần mộc/la_than.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
+        4,
         3,
-        3,
-        22,
-        21
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        19,
-        18
+        25,
+        26
       ],
       "resize_to": [
-        56,
-        53
+        25,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        5,
-        60,
-        58
+      "native_bbox": [
+        2,
+        2,
+        29,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        0.0,
-        -0.5
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
+        0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#335943",
+        "#72985B",
+        "#E6CF91"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 110,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/GOD_LEAF_32.png",
+      "output_sha256": "84926d7d13238f282f7e9cbedc95411226a71708f4073359b76d3d94c65b6b41"
     },
     {
       "id": "SPIRIT_TEAR",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/SPIRIT_TEAR.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Nước mắt tinh linh\\Nước mắt linh tinh.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "af26fcb0bdc13c49a108345a440658b42fa48d0d5bfb766e6cb1ab0f9a159472",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(SPIRIT_TEAR)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Nước mắt tinh linh/Nước mắt linh tinh.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
+        7,
         3,
-        1,
-        15,
-        15
+        27,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        12,
-        14
+        20,
+        26
       ],
       "resize_to": [
-        48,
-        56
+        20,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        8,
-        4,
-        56,
-        60
+      "native_bbox": [
+        5,
+        2,
+        27,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#294D70",
+        "#568FBC",
+        "#63BAA5",
+        "#A6BBB7"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 96,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/SPIRIT_TEAR_32.png",
+      "output_sha256": "32348c8e265fae19ef231da5496539cf68a5019bbe2e2d4fb6cd028165166d2d"
     },
     {
       "id": "MERMAID_TAIL",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MERMAID_TAIL.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Vảy đuôi tiên cá\\Vảy đuôi tiên cá.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "ea094fb1d8a35ff9a196a1c5d5a528abcb5aec0cd1c1fc069c24e2e507a93178",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(MERMAID_TAIL)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Vảy đuôi tiên cá/Vảy đuôi tiên cá.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        2,
-        2,
-        14,
-        14
+        3,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        12,
-        12
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        56
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        4,
-        60,
-        60
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#9B6045",
+        "#D89568",
+        "#F2C394"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 108,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/MERMAID_TAIL_32.png",
+      "output_sha256": "e2455c9ce2b2ddb6c5ad826376974d0d369ba003a113d6db8fa78505442f2cbb"
     },
     {
       "id": "PHOENIX_FEATHERS",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/PHOENIX_FEATHERS.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Lông vũ phượng hoàng lửa\\Lông vũ.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        14,
-        16
-      ],
-      "source_sha256": "9abc85fbd0cc35074dfa70d82048ba194fce12d37695b1308e5d89520c092145",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(PHOENIX_FEATHERS)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Lông vũ phượng hoàng lửa/Lông vũ.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        1,
-        1,
-        13,
-        15
+        5,
+        3,
+        27,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        12,
-        14
+        22,
+        26
       ],
       "resize_to": [
-        48,
-        56
+        22,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        8,
+      "native_bbox": [
         4,
-        56,
-        60
+        2,
+        28,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#723B46",
+        "#C65A62",
+        "#C6AE78",
+        "#E6CF91"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 100,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/PHOENIX_FEATHERS_32.png",
+      "output_sha256": "bb5b403edcaa4a161074cce8f186c4159a16b2fd25f781027414d388129209c3"
     },
     {
       "id": "UNICORN_BLOOD",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/UNICORN_BLOOD.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Máu kỳ lân\\Máu kỳ lân.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        20,
-        20
-      ],
-      "source_sha256": "46d0f7fdfd3051220042431e9d4a02989d9cd4f359788d96c464292c7140b9bd",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(UNICORN_BLOOD)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Máu kỳ lân/Máu kỳ lân.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        0,
-        2,
-        20,
-        18
+        3,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        20,
-        16
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        45
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        9,
-        60,
-        54
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
-        -0.5
+        0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 7,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#553F70",
+        "#723B46",
+        "#C65A62",
+        "#E6CF91",
+        "#F2C394"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 122,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/UNICORN_BLOOD_32.png",
+      "output_sha256": "f42f252188bcffbc68b63789d82370323fb5f120eb34ad32fdfcb3da2dd77dad"
     },
     {
       "id": "ADRENALINE",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ADRENALINE.png",
-      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\ADRENALINE_32.png",
-      "source_kind": "Original pixel recipe",
-      "slice": "32x32 native",
-      "replacement_reason": "Legacy candidate contains beverage branding",
-      "source_sha256": "04d82c1b0f7fa32d2e804f02992833ac8d17efdaa314ba338ce15fc83660a1b3",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(ADRENALINE)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/05. Nước ngọt/nuoc ngot.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
         8,
-        2,
+        3,
         24,
-        30
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
         16,
-        28
+        26
       ],
       "resize_to": [
-        32,
-        56
+        16,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        16,
-        4,
-        48,
-        60
+      "native_bbox": [
+        7,
+        2,
+        25,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#28534F",
+        "#526B69",
+        "#A6BBB7",
+        "#C6AE78",
+        "#E6CF91"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 88,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/ADRENALINE_32.png",
+      "output_sha256": "4d61c9f93331a66ee63f77d7442d0eccdddb2ef920a368647683b200d4818af6"
     },
     {
       "id": "ELIXIR",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ELIXIR.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Thần dược\\thanduoc.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "f528f209106fc54c9d1d00628b3559104b7842599b89105c32804ae41d58e374",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(ELIXIR)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Thần dược/thanduoc.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        0,
-        0,
-        15,
-        16
+        5,
+        3,
+        27,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        15,
-        16
+        22,
+        26
       ],
       "resize_to": [
-        52,
-        56
+        22,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        6,
+      "native_bbox": [
         4,
-        58,
-        60
+        2,
+        28,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#294D70",
+        "#526B69",
+        "#543B2B",
+        "#568FBC",
+        "#A6BBB7"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 104,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/ELIXIR_32.png",
+      "output_sha256": "932ac94bda6b36dcef2088cbd91f5d32f9282b1bc1019362485d819ec545c006"
     },
     {
       "id": "MAGIC",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MAGIC.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Gậy thần\\gaythan.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        15,
-        28
-      ],
-      "source_sha256": "d5835aa0f6ea9328a6d13e8b6415c23e95300ecae52d596d3fa072d6c461e4be",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(MAGIC)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Gậy thần/gaythan.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        0,
-        0,
-        14,
-        27
+        5,
+        3,
+        25,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        14,
-        27
+        20,
+        26
       ],
       "resize_to": [
-        29,
-        56
+        20,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        17,
-        4,
-        46,
-        60
+      "native_bbox": [
+        5,
+        2,
+        27,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
-        -0.5,
+      "native_long_edge": 28,
+      "native_center_offset": [
+        0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 6,
+      "colors": [
+        "#0C1417",
+        "#543B2B",
+        "#553F70",
+        "#9572BA",
+        "#A6BBB7",
+        "#BE8953"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 102,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/MAGIC_32.png",
+      "output_sha256": "0e4ff3d312547d3bd209408e3a86266ae5d681f262aad2e7385abe329a42e30a"
     },
     {
       "id": "ELIXIR_OF_LIFE",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ELIXIR_OF_LIFE.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Tiên dược sự sống\\tienduocsusong.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "ace3ddfe1cc5f17ae8e2fefb7427fc99358526bd07dcee995cb31ebb2090c100",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(ELIXIR_OF_LIFE)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/Tiên dược sự sống/tienduocsusong.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        2,
-        0,
-        15,
-        16
+        5,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        13,
-        16
+        24,
+        26
       ],
       "resize_to": [
-        46,
-        56
+        24,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        9,
-        4,
-        55,
-        60
+      "native_bbox": [
+        3,
+        2,
+        29,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 7,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#543B2B",
+        "#A6BBB7",
+        "#BE8953",
+        "#C6AE78",
+        "#E6CF91"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 134,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0,
-        0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/ELIXIR_OF_LIFE_32.png",
+      "output_sha256": "fc783ee33861d37c26bf49937ea3121f1704dc9ef8e05620c7afa6f28c0ccfcf"
     },
     {
       "id": "COMPASS",
       "kind": "Equipment",
       "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/COMPASS.png",
-      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\La bàn\\laban.png",
-      "source_kind": "JSurviv copy",
-      "slice": "full image",
-      "slice_rect_png": [
-        0,
-        0,
-        16,
-        16
-      ],
-      "source_sha256": "54b49412cd2781aa476da9e5e7bd84974e5e7429fe9f72231f506e43decaa70c",
+      "source": "Tools/Art/native32_recipes.py",
+      "source_kind": "Hand-authored native32 recipe",
+      "slice": "draw_item(COMPASS)",
+      "source_sha256": "e911f3bf85c960370cd9b4ce37ae9fd95428fe8a474188a9fe832ef28af93df6",
+      "reference_source": "Assets/Imported/JSurviv/Sprites/EQUIPMENTS/Healing items/La bàn/laban.png",
+      "replacement_reason": "Direct 32px redraw: generated/undersized/misleading legacy art; no source resampling",
       "source_alpha_bbox": [
-        0,
-        0,
-        16,
-        16
+        3,
+        3,
+        29,
+        29
       ],
-      "readability_y_scale": 1.0,
-      "rotation_degrees": 0,
       "resize_from": [
-        16,
-        16
+        26,
+        26
       ],
       "resize_to": [
-        56,
-        56
+        26,
+        26
       ],
-      "resize_method": "nearest",
-      "light_outline_px": 0,
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
       "size": [
         64,
         64
       ],
       "mode": "RGBA",
-      "bbox_alpha_gt8": [
-        4,
-        4,
-        60,
-        60
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
       ],
-      "content_long_edge": 56,
-      "center_offset": [
+      "native_long_edge": 28,
+      "native_center_offset": [
         0.0,
         0.0
       ],
-      "semi_transparent_ratio": 0.0,
-      "corner_alpha": [
+      "native_padding": 2,
+      "color_count": 7,
+      "colors": [
+        "#0C1417",
+        "#294D70",
+        "#526B69",
+        "#A6BBB7",
+        "#BE8953",
+        "#C65A62",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 108,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/COMPASS_32.png",
+      "output_sha256": "1bc54ac31760cbc849ccb57440e968c95baca56cf8fc29274d869e866bb48d26"
+    }
+  ],
+  "effects": [
+    {
+      "id": "CcImmune",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/CcImmune.png",
+      "source": "Docs/Art/Production_A/UI/CcImmune_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "5b35e6db64528d435ba70e21e2b9b81bc758e0fe26ee50ece1a004f2df8a3fbc",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        4,
+        2,
+        29,
+        32
+      ],
+      "resize_from": [
+        25,
+        30
+      ],
+      "resize_to": [
+        22,
+        26
+      ],
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        4,
+        3,
+        28,
+        29
+      ],
+      "native_long_edge": 26,
+      "native_center_offset": [
+        0.0,
+        0.0
+      ],
+      "native_padding": 3,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#77908A",
+        "#BE8953",
+        "#E6CF91"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 96,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/CcImmune_32.png",
+      "output_sha256": "aa2f7e99977fc7e678f2b39774678347573c272159df1de5cc1fb70fc029726e"
+    },
+    {
+      "id": "Invisible",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/Invisible.png",
+      "source": "Docs/Art/Production_A/UI/Invisible_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "890e0d311d3edaff541d7ec58a2efc4a24d676d06633eec3ba7227caf85c6e1a",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        3,
+        4,
+        27,
+        30
+      ],
+      "resize_from": [
+        24,
+        26
+      ],
+      "resize_to": [
+        24,
+        26
+      ],
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        3,
+        2,
+        29,
+        30
+      ],
+      "native_long_edge": 28,
+      "native_center_offset": [
+        0.0,
+        0.0
+      ],
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#77908A",
+        "#A6BBB7",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 110,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
         0,
-        0
-      ]
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/Invisible_32.png",
+      "output_sha256": "3809bf9be09d3fc29fcd648602bc2e5fdeaeebbdd2afef1dad368eeb453dcbab"
+    },
+    {
+      "id": "Poison",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/Poison.png",
+      "source": "Docs/Art/Production_A/UI/Poison_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "bbcef2c6c85405894c590043f26a12e29f45d4fb31677c9fe6768d368d946019",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        6,
+        2,
+        27,
+        28
+      ],
+      "resize_from": [
+        21,
+        26
+      ],
+      "resize_to": [
+        21,
+        26
+      ],
+      "resize_method": "none; authored pixels preserved",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        4,
+        2,
+        27,
+        30
+      ],
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
+        0.0
+      ],
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#335943",
+        "#553F70",
+        "#C6AE78",
+        "#E6CF91"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 98,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/Poison_32.png",
+      "output_sha256": "32edb45f5be194bc9b9b4fec6a1288fa795b4438e6fccd04425149871fa67777"
+    },
+    {
+      "id": "Reverse",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/Reverse.png",
+      "source": "Docs/Art/Production_A/UI/Reverse_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "626b3cbfbec014535810f961893fd6e3aff6232d2bf084f6c14d06a2ef3f7796",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        2,
+        3,
+        31,
+        32
+      ],
+      "resize_from": [
+        29,
+        29
+      ],
+      "resize_to": [
+        26,
+        26
+      ],
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        2,
+        2,
+        30,
+        30
+      ],
+      "native_long_edge": 28,
+      "native_center_offset": [
+        0.0,
+        0.0
+      ],
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#63BAA5",
+        "#9572BA",
+        "#A6BBB7",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 140,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/Reverse_32.png",
+      "output_sha256": "b2d6cbb40e7a7e5cafbef8a8387497eaacae054f682f48537cdee18972e77b5d"
+    },
+    {
+      "id": "Root",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/Root.png",
+      "source": "Docs/Art/Production_A/UI/Root_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "a8891c8da2e0f4803706ac0d028f4638ab2648a10db2bd46db2500627ec8929c",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        2,
+        3,
+        30,
+        32
+      ],
+      "resize_from": [
+        28,
+        29
+      ],
+      "resize_to": [
+        25,
+        26
+      ],
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        3,
+        2,
+        29,
+        30
+      ],
+      "native_long_edge": 28,
+      "native_center_offset": [
+        0.0,
+        0.0
+      ],
+      "native_padding": 2,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#72985B",
+        "#8A5C38",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 136,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/Root_32.png",
+      "output_sha256": "0145bfa27f668ed07f4099e2b70e3a36f1fd740cc6c72b613eca19bcb0e9d01b"
+    },
+    {
+      "id": "Slow",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/Slow.png",
+      "source": "Docs/Art/Production_A/UI/Slow_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "43bc06b772ea2ed2ddca0e89793438ebc581babea2bddfd9dd19ce626f31fa5c",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        3,
+        4,
+        29,
+        31
+      ],
+      "resize_from": [
+        26,
+        27
+      ],
+      "resize_to": [
+        25,
+        26
+      ],
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        2,
+        2,
+        29,
+        30
+      ],
+      "native_long_edge": 28,
+      "native_center_offset": [
+        -0.5,
+        0.0
+      ],
+      "native_padding": 2,
+      "color_count": 5,
+      "colors": [
+        "#0C1417",
+        "#526B69",
+        "#8A5C38",
+        "#BE8953",
+        "#C6AE78"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 106,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/Slow_32.png",
+      "output_sha256": "587459608db44888b45529d28c919c73b26e7bb48d70f71d4d9a136b256bbfb8"
+    },
+    {
+      "id": "Stun",
+      "kind": "Effect",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Effects/Stun.png",
+      "source": "Docs/Art/Production_A/UI/Stun_native32.png",
+      "source_kind": "Existing authored32 effect; palette + outline + fit",
+      "source_sha256": "5ce53946891cd38a1db4082887f7f9b6940a43899e0faab0842a737ecb9f7090",
+      "slice": "full native32 image",
+      "source_alpha_bbox": [
+        2,
+        2,
+        28,
+        30
+      ],
+      "resize_from": [
+        26,
+        28
+      ],
+      "resize_to": [
+        24,
+        26
+      ],
+      "resize_method": "nearest",
+      "native_size": 32,
+      "scale": 2,
+      "method": "nearest",
+      "outline_native_px": 1,
+      "checks": {
+        "a": true,
+        "b": true,
+        "c": true,
+        "d": true,
+        "e": true,
+        "f": true
+      },
+      "passed": true,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "native_bbox": [
+        3,
+        3,
+        29,
+        29
+      ],
+      "native_long_edge": 26,
+      "native_center_offset": [
+        0.0,
+        0.0
+      ],
+      "native_padding": 3,
+      "color_count": 4,
+      "colors": [
+        "#0C1417",
+        "#72985B",
+        "#E6CF91",
+        "#EDF2EE"
+      ],
+      "outside_palette": [],
+      "boundary_pixels": 161,
+      "incorrect_boundary_pixels": 0,
+      "alpha_values": [
+        0,
+        255
+      ],
+      "native_source": "Docs/Art/Production_A/Items/Native32Sources/Stun_32.png",
+      "output_sha256": "bcbe860d246cc3b057f90193354069440849f50df9b2fb982d61964c0b0b6f5e"
     }
   ]
 }

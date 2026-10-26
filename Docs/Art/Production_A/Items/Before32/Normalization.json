@@ -1,0 +1,1885 @@
+{
+  "canvas": [
+    64,
+    64
+  ],
+  "produced": 34,
+  "expected": 34,
+  "missing": [],
+  "runtime_rgba_bytes_without_mips": 557056,
+  "unity_import_and_binding": "not tested by this asset-only tool",
+  "icons": [
+    {
+      "id": "HAND",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/HAND.png",
+      "source": "Docs\\Art\\Production_A\\Generated\\HAND_source.png",
+      "source_kind": "ImageGen",
+      "slice": "full image",
+      "source_sha256": "3b0a1c1f0acd38de557395c9905d281905d2d2cfd6b75beaa8ef4186b16e860e",
+      "source_alpha_bbox": [
+        167,
+        98,
+        1164,
+        1177
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        997,
+        1079
+      ],
+      "resize_to": [
+        52,
+        56
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        6,
+        4,
+        58,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "TREE_BRANCH",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/TREE_BRANCH.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Cành Cây\\stick.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        50,
+        50
+      ],
+      "source_sha256": "a9c4aa18b3b1cbf6c5eb536bff2571bd280a67a225e95ad080f921d4800632cf",
+      "source_alpha_bbox": [
+        10,
+        7,
+        42,
+        44
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        32,
+        37
+      ],
+      "resize_to": [
+        48,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 1,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        7,
+        3,
+        57,
+        61
+      ],
+      "content_long_edge": 58,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "KNIFE",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/KNIFE.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Dao\\knife.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        80,
+        80
+      ],
+      "source_sha256": "1a91e39fbbe1454ed06222765fda4d2daad7b1d4dfb2554cd2952dedcd6bb0e1",
+      "source_alpha_bbox": [
+        9,
+        33,
+        71,
+        49
+      ],
+      "readability_y_scale": 1.5,
+      "rotation_degrees": 35,
+      "resize_from": [
+        50,
+        48
+      ],
+      "resize_to": [
+        56,
+        54
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        5,
+        60,
+        59
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "BONE",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/BONE.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Xương\\bone.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        160,
+        160
+      ],
+      "source_sha256": "8d9b71dd67d12735e98390e6ee71204c3c236012f60712c7fa0a37350e5f8df9",
+      "source_alpha_bbox": [
+        27,
+        30,
+        133,
+        130
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        106,
+        100
+      ],
+      "resize_to": [
+        56,
+        53
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        5,
+        60,
+        58
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        -0.5
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "AXE",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/AXE.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Riuf\\axe.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        38,
+        38
+      ],
+      "source_sha256": "382be28bdb503f1548baf705aa3012322c06d69f540706fdf4c94628bb5d28c0",
+      "source_alpha_bbox": [
+        3,
+        5,
+        32,
+        32
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        29,
+        27
+      ],
+      "resize_to": [
+        56,
+        52
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        6,
+        60,
+        58
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "MACE",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/MACE.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Chùy gaii\\mace.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        46,
+        47
+      ],
+      "source_sha256": "ce8a8712b2b3cef7673ce1570ba38b24e61df854f2cf27e193b07823355049cf",
+      "source_alpha_bbox": [
+        0,
+        0,
+        46,
+        47
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        46,
+        47
+      ],
+      "resize_to": [
+        55,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        4,
+        59,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        -0.5,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "RUBBER_GUN",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/RUBBER_GUN.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Ná cao su\\2-NaCaoSu_normal.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        64,
+        64
+      ],
+      "source_sha256": "781b3622a8339ec916849126df701fa13ec9e528bc9e215fef98a4fd02295593",
+      "source_alpha_bbox": [
+        12,
+        0,
+        52,
+        64
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        40,
+        64
+      ],
+      "resize_to": [
+        35,
+        56
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        14,
+        4,
+        49,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        -0.5,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SCEPTER",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SCEPTER.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Quyền trượng\\quyen_truong.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        18,
+        18
+      ],
+      "source_sha256": "27e31825aeba6a0f30949fa9138e1a667025acab09ff5a14f608e7a8faa27d06",
+      "source_alpha_bbox": [
+        6,
+        1,
+        12,
+        17
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 30,
+      "resize_from": [
+        11,
+        16
+      ],
+      "resize_to": [
+        38,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        13,
+        4,
+        51,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "CROSSBOW",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/CROSSBOW.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Nỏ\\no.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        25,
+        25
+      ],
+      "source_sha256": "a2d434f00d15891bb06417432f9b6958440497e9b42a91dd8183a5b9af342981",
+      "source_alpha_bbox": [
+        3,
+        3,
+        23,
+        21
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        20,
+        18
+      ],
+      "resize_to": [
+        56,
+        50
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        7,
+        60,
+        57
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SHOTGUN",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SHOTGUN.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Shotgun\\shotgun.png",
+      "source_kind": "JSurviv copy",
+      "slice": "shotgun 1_0",
+      "slice_rect_png": [
+        34,
+        58,
+        94,
+        70
+      ],
+      "source_sha256": "8df51bbf783de23cf95605242b748bf4aa1b358fbc5b6e040a46ef5d0ff72d7e",
+      "source_alpha_bbox": [
+        1,
+        1,
+        59,
+        11
+      ],
+      "readability_y_scale": 1.8,
+      "rotation_degrees": 25,
+      "resize_from": [
+        52,
+        40
+      ],
+      "resize_to": [
+        56,
+        43
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 1,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        3,
+        9,
+        61,
+        54
+      ],
+      "content_long_edge": 58,
+      "center_offset": [
+        0.0,
+        -0.5
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "BANANA",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/BANANA.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Chuối\\Banana.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "source_sha256": "109db7921911025c234deeec222c730dd10739aa76f5ad99a55a8f988aaad116",
+      "source_alpha_bbox": [
+        10,
+        0,
+        93,
+        93
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        83,
+        93
+      ],
+      "resize_to": [
+        50,
+        56
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        7,
+        4,
+        57,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SMOKE",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SMOKE.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Bom khói\\smoke-grenade.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        100,
+        100
+      ],
+      "source_sha256": "06370802e6c2c315c4ceb0e4d9c2629c8238b928995c26cbd478f84798718a34",
+      "source_alpha_bbox": [
+        31,
+        24,
+        74,
+        81
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        43,
+        57
+      ],
+      "resize_to": [
+        42,
+        56
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        11,
+        4,
+        53,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "METEORITE_FRAGMENT",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/METEORITE_FRAGMENT.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Mảnh thiên thạch\\meteorite_throwing-Sheet.png",
+      "source_kind": "JSurviv copy",
+      "slice": "meteorite_throwing-Sheet_2",
+      "slice_rect_png": [
+        126,
+        0,
+        189,
+        63
+      ],
+      "source_sha256": "c942a5a2944fa97d883910188290597550f9c7f3f57583b9e02f275745375cca",
+      "source_alpha_bbox": [
+        19,
+        17,
+        45,
+        47
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        26,
+        30
+      ],
+      "resize_to": [
+        49,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        7,
+        4,
+        56,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        -0.5,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "CRYSTAL",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/CRYSTAL.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Crystal\\crystal.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        200,
+        200
+      ],
+      "source_sha256": "ac3a2cd8556e83250bad93f8a4bdf4dc83711b43b6c03008bac0fa3e3f40a2b3",
+      "source_alpha_bbox": [
+        40,
+        37,
+        159,
+        171
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        119,
+        134
+      ],
+      "resize_to": [
+        50,
+        56
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        7,
+        4,
+        57,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SEED",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SEED.png",
+      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\SEED_32.png",
+      "source_kind": "Original pixel recipe",
+      "slice": "32x32 native",
+      "replacement_reason": "Legacy pink sprite resembles mermaid scale at 28px",
+      "source_sha256": "b8b1564ecf2eecb5115f1517b16c4d3029a8d958ad24dfa090222fd6faf2d94b",
+      "source_alpha_bbox": [
+        5,
+        1,
+        27,
+        30
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        22,
+        29
+      ],
+      "resize_to": [
+        42,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        11,
+        4,
+        53,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "ROPE",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/ROPE.png",
+      "source": "Docs\\Art\\Production_A\\Generated\\ROPE_source.png",
+      "source_kind": "ImageGen",
+      "slice": "full image",
+      "source_sha256": "549fd5ccc0f40faf0e1fd9de1df5e2e2658e67722ab0f99f4b1b22566c060f72",
+      "source_alpha_bbox": [
+        151,
+        205,
+        1206,
+        1154
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        1055,
+        949
+      ],
+      "resize_to": [
+        56,
+        50
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        7,
+        60,
+        57
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "BELL",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/BELL.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Chuông\\bell.png",
+      "source_kind": "JSurviv copy",
+      "slice": "bell_2",
+      "slice_rect_png": [
+        576,
+        0,
+        864,
+        288
+      ],
+      "source_sha256": "b9b617b399e4a3c4da4cbff7d1ea25d8f090d91bacaf5d6af3bd0b97c3763084",
+      "source_alpha_bbox": [
+        70,
+        80,
+        226,
+        241
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        156,
+        161
+      ],
+      "resize_to": [
+        54,
+        56
+      ],
+      "resize_method": "Lanczos then binary alpha",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        5,
+        4,
+        59,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SAHUR_BAT",
+      "kind": "Weapon",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Weapons/SAHUR_BAT.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\WEAPONS\\Gậy sahur\\sahurbat.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        32,
+        48
+      ],
+      "source_sha256": "710a91742f41b62b605beb4bf80ca54b9f8a4f85598211d4fb1a46999d01a405",
+      "source_alpha_bbox": [
+        5,
+        10,
+        28,
+        41
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        23,
+        31
+      ],
+      "resize_to": [
+        42,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        11,
+        4,
+        53,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "WOODEN_HELMET",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/WOODEN_HELMET.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Mũ gỗ\\mu_go.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        25,
+        14
+      ],
+      "source_sha256": "150964b5225d2d3a1a9c5f65243319c7da3b567474c696f89fd1bb55030b597f",
+      "source_alpha_bbox": [
+        7,
+        2,
+        19,
+        12
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        12,
+        10
+      ],
+      "resize_to": [
+        56,
+        47
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        8,
+        60,
+        55
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        -0.5
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SPIKE_HELMET",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/SPIKE_HELMET.png",
+      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\SPIKE_HELMET_32.png",
+      "source_kind": "Original pixel recipe",
+      "slice": "32x32 native",
+      "replacement_reason": "Legacy candidate is a non-spiked pith helmet",
+      "source_sha256": "3d4a3dbc1e16355e239112f006d3d3113108a2f50b91ad33279e1d3ad0bc1571",
+      "source_alpha_bbox": [
+        1,
+        1,
+        32,
+        29
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        31,
+        28
+      ],
+      "resize_to": [
+        56,
+        51
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        6,
+        60,
+        57
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        -0.5
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "MAGIC_HELMET",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MAGIC_HELMET.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Mũ phù thủy\\Mũ phù thủy.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "70e5417b8d1937737431847c08084b71f9bbf84715ce49b8fd383b45047d1274",
+      "source_alpha_bbox": [
+        1,
+        1,
+        16,
+        15
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        15,
+        14
+      ],
+      "resize_to": [
+        56,
+        52
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        6,
+        60,
+        58
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "WOODEN_ARMOR",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/WOODEN_ARMOR.png",
+      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\WOODEN_ARMOR_32.png",
+      "source_kind": "Original pixel recipe",
+      "slice": "32x32 native",
+      "replacement_reason": "Legacy candidate is a green tactical vest",
+      "source_sha256": "18e985cb1109ce182964e4bccae93a90abe4a5fd0012d3be9007d8c483e96f38",
+      "source_alpha_bbox": [
+        1,
+        3,
+        31,
+        30
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        30,
+        27
+      ],
+      "resize_to": [
+        56,
+        50
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        7,
+        60,
+        57
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "ARMOR",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ARMOR.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Giáp gai\\Giap_gai.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "8667adb25d9f311617aeeeaa9bc1921e0eaa480208042f3464940496cd5a941e",
+      "source_alpha_bbox": [
+        0,
+        3,
+        16,
+        12
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        16,
+        9
+      ],
+      "resize_to": [
+        56,
+        32
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 1,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        3,
+        15,
+        61,
+        49
+      ],
+      "content_long_edge": 58,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "MAGIC_ARMOR",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MAGIC_ARMOR.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Armor\\Giáp phù thủy\\Giáp phù thủy.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "5e5fb8daa7f453101330694a87dc4898df14c2adace8f9b85e59b8529dc4da57",
+      "source_alpha_bbox": [
+        2,
+        4,
+        15,
+        12
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        13,
+        8
+      ],
+      "resize_to": [
+        56,
+        34
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 1,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        3,
+        14,
+        61,
+        50
+      ],
+      "content_long_edge": 58,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "GOD_LEAF",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/GOD_LEAF.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Lá thần mộc\\la_than.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        25,
+        25
+      ],
+      "source_sha256": "a86da0cbfbb1fac9922097ad2a908737ff57dd37fa60c08f5410ce1c1f483b2a",
+      "source_alpha_bbox": [
+        3,
+        3,
+        22,
+        21
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        19,
+        18
+      ],
+      "resize_to": [
+        56,
+        53
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        5,
+        60,
+        58
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        -0.5
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "SPIRIT_TEAR",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/SPIRIT_TEAR.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Nước mắt tinh linh\\Nước mắt linh tinh.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "af26fcb0bdc13c49a108345a440658b42fa48d0d5bfb766e6cb1ab0f9a159472",
+      "source_alpha_bbox": [
+        3,
+        1,
+        15,
+        15
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        12,
+        14
+      ],
+      "resize_to": [
+        48,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        8,
+        4,
+        56,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "MERMAID_TAIL",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MERMAID_TAIL.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Vảy đuôi tiên cá\\Vảy đuôi tiên cá.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "ea094fb1d8a35ff9a196a1c5d5a528abcb5aec0cd1c1fc069c24e2e507a93178",
+      "source_alpha_bbox": [
+        2,
+        2,
+        14,
+        14
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        12,
+        12
+      ],
+      "resize_to": [
+        56,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "PHOENIX_FEATHERS",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/PHOENIX_FEATHERS.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Lông vũ phượng hoàng lửa\\Lông vũ.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        14,
+        16
+      ],
+      "source_sha256": "9abc85fbd0cc35074dfa70d82048ba194fce12d37695b1308e5d89520c092145",
+      "source_alpha_bbox": [
+        1,
+        1,
+        13,
+        15
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        12,
+        14
+      ],
+      "resize_to": [
+        48,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        8,
+        4,
+        56,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "UNICORN_BLOOD",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/UNICORN_BLOOD.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Máu kỳ lân\\Máu kỳ lân.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        20,
+        20
+      ],
+      "source_sha256": "46d0f7fdfd3051220042431e9d4a02989d9cd4f359788d96c464292c7140b9bd",
+      "source_alpha_bbox": [
+        0,
+        2,
+        20,
+        18
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        20,
+        16
+      ],
+      "resize_to": [
+        56,
+        45
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        9,
+        60,
+        54
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        -0.5
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "ADRENALINE",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ADRENALINE.png",
+      "source": "Docs\\Art\\Production_A\\Items\\OriginalPixelSources\\ADRENALINE_32.png",
+      "source_kind": "Original pixel recipe",
+      "slice": "32x32 native",
+      "replacement_reason": "Legacy candidate contains beverage branding",
+      "source_sha256": "04d82c1b0f7fa32d2e804f02992833ac8d17efdaa314ba338ce15fc83660a1b3",
+      "source_alpha_bbox": [
+        8,
+        2,
+        24,
+        30
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        16,
+        28
+      ],
+      "resize_to": [
+        32,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        16,
+        4,
+        48,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "ELIXIR",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ELIXIR.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Thần dược\\thanduoc.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "f528f209106fc54c9d1d00628b3559104b7842599b89105c32804ae41d58e374",
+      "source_alpha_bbox": [
+        0,
+        0,
+        15,
+        16
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        15,
+        16
+      ],
+      "resize_to": [
+        52,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        6,
+        4,
+        58,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "MAGIC",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/MAGIC.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Gậy thần\\gaythan.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        15,
+        28
+      ],
+      "source_sha256": "d5835aa0f6ea9328a6d13e8b6415c23e95300ecae52d596d3fa072d6c461e4be",
+      "source_alpha_bbox": [
+        0,
+        0,
+        14,
+        27
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        14,
+        27
+      ],
+      "resize_to": [
+        29,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        17,
+        4,
+        46,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        -0.5,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "ELIXIR_OF_LIFE",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/ELIXIR_OF_LIFE.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\Tiên dược sự sống\\tienduocsusong.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "ace3ddfe1cc5f17ae8e2fefb7427fc99358526bd07dcee995cb31ebb2090c100",
+      "source_alpha_bbox": [
+        2,
+        0,
+        15,
+        16
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        13,
+        16
+      ],
+      "resize_to": [
+        46,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        9,
+        4,
+        55,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "COMPASS",
+      "kind": "Equipment",
+      "target": "Assets/_JungleMaze/Art/UI/Icons/Equipments/COMPASS.png",
+      "source": "Assets\\Imported\\JSurviv\\Sprites\\EQUIPMENTS\\Healing items\\La bàn\\laban.png",
+      "source_kind": "JSurviv copy",
+      "slice": "full image",
+      "slice_rect_png": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "source_sha256": "54b49412cd2781aa476da9e5e7bd84974e5e7429fe9f72231f506e43decaa70c",
+      "source_alpha_bbox": [
+        0,
+        0,
+        16,
+        16
+      ],
+      "readability_y_scale": 1.0,
+      "rotation_degrees": 0,
+      "resize_from": [
+        16,
+        16
+      ],
+      "resize_to": [
+        56,
+        56
+      ],
+      "resize_method": "nearest",
+      "light_outline_px": 0,
+      "size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "bbox_alpha_gt8": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "content_long_edge": 56,
+      "center_offset": [
+        0.0,
+        0.0
+      ],
+      "semi_transparent_ratio": 0.0,
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}
