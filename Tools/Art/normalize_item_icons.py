@@ -1,7 +1,7 @@
 """Create 34 standalone UI icon copies without modifying Imported/JSurviv.
 
-Run with the bundled Python/Pillow runtime. HAND and ROPE take independent
-generated source files; --allow-missing is only for a partial production pass.
+Use --native32 for the current shared-palette, binary-alpha 32px pipeline.
+The legacy mode accepts independent HAND/ROPE sources for historical replay.
 This tool deliberately does not write Unity .meta files or bind prefabs.
 """
 from __future__ import annotations
@@ -201,7 +201,15 @@ def main() -> None:
     parser.add_argument("--hand")
     parser.add_argument("--rope")
     parser.add_argument("--allow-missing", action="store_true")
+    parser.add_argument("--native32", action="store_true", help="Author/normalize on a shared 32px grid and validate (a)-(f)")
+    parser.add_argument("--check-only", action="store_true", help="With --native32: validate existing PNGs without writing")
     args = parser.parse_args()
+    if args.native32:
+        from native32_pipeline import run
+        run(args)
+        return
+    if args.check_only:
+        parser.error("--check-only requires --native32")
     REPORT.mkdir(parents=True, exist_ok=True)
     NATIVE.mkdir(parents=True, exist_ok=True)
     rows = list(csv.DictReader(ROSTER.open(encoding="utf-8-sig")))

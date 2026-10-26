@@ -1,0 +1,43 @@
+{
+  "name": "Direction A shared native32",
+  "max_colors": 24,
+  "max_colors_per_icon": 8,
+  "outline": "#0C1417",
+  "colors": {
+    "ink": "#0C1417",
+    "panel": "#202A2D",
+    "metal_dark": "#526B69",
+    "metal": "#77908A",
+    "metal_light": "#A6BBB7",
+    "white": "#EDF2EE",
+    "jade": "#63BAA5",
+    "jade_dark": "#28534F",
+    "gold": "#C6AE78",
+    "wood_dark": "#543B2B",
+    "wood": "#8A5C38",
+    "wood_light": "#BE8953",
+    "skin_dark": "#9B6045",
+    "skin": "#D89568",
+    "skin_light": "#F2C394",
+    "red_dark": "#723B46",
+    "red": "#C65A62",
+    "leaf_dark": "#335943",
+    "leaf": "#72985B",
+    "blue_dark": "#294D70",
+    "blue": "#568FBC",
+    "purple_dark": "#553F70",
+    "purple": "#9572BA",
+    "gold_light": "#E6CF91"
+  },
+  "ramps_dark_base_light": {
+    "wood": ["wood_dark", "wood", "wood_light"],
+    "metal": ["metal_dark", "metal", "metal_light"],
+    "skin": ["skin_dark", "skin", "skin_light"],
+    "red": ["red_dark", "red", "skin_light"],
+    "leaf": ["leaf_dark", "leaf", "gold_light"],
+    "blue": ["blue_dark", "blue", "metal_light"],
+    "purple": ["purple_dark", "purple", "metal_light"],
+    "gold": ["wood_light", "gold", "gold_light"]
+  },
+  "note": "Ramps intentionally share highlights to fit 24 colors including all nine required direction A tones. Transparent pixels are RGBA 0,0,0,0 and do not count as a visible color."
+}
