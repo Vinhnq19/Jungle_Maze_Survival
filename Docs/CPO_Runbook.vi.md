@@ -17,8 +17,8 @@ Người dùng (HuyCV, PIC V.Huy), ngày 27/10/2026, khoảng 02:00, nguyên vă
 
 | # | Luồng | Ai làm | Trạng thái | Bước tiếp theo |
 | --- | --- | --- | --- | --- |
-| A | **ADHOC-UI-ASSETS-A**: gắn bộ asset hướng A (34 icon, 7 icon hiệu ứng, khung HUD, art menu) vào HUD và màn kết nối | Subagent unity-dev trong phiên CPO | **Build xong** (`49c4943b`…`dd84914a`): EditMode 274/274, PlayMode 43/43, T-1 sửa bằng `UiArtSet` + `Resources.Load` một lần. Code Reviewer đang review | Build xong → phiên **Code Reviewer** review → phiên **QA Tester** kiểm A1–A12 (sau khi icon 32 px của luồng C xong) → CPO duyệt **G3** |
-| B | **ART-04** icon HUD/Inventory | Phần build nằm trong luồng A | Spec `24eedbf4`, đối chiếu ADHOC `f208314d`, **G1 đã duyệt** (mục 4) | Đóng cùng G3 của luồng A. AC14 (gợi ý nhặt dưới sàn) hoãn sang ITM-01. AC20 (thử nhận diện với 3 người) là việc của người dùng |
+| A | **ADHOC-UI-ASSETS-A**: gắn bộ asset hướng A (34 icon, 7 icon hiệu ứng, khung HUD, art menu) vào HUD và màn kết nối | Subagent unity-dev trong phiên CPO | **Build xong** (`49c4943b`…`dd84914a`): EditMode 274/274, PlayMode 43/43, T-1 sửa bằng `UiArtSet` + `Resources.Load` một lần. Code Reviewer đang review | **Done (G3 06:30)**. Follow-up ghi ở mục 8 của ticket |
+| B | **ART-04** icon HUD/Inventory | Phần build nằm trong luồng A | Spec `24eedbf4`, đối chiếu ADHOC `f208314d`, **G1 đã duyệt** (mục 4) | R1 xong. **R2-a/R2-b: phiên Unity Dev đang làm** (hạn 09:30) → Code Reviewer → QA Tester → G3. AC14 hoãn sang ITM-01, AC20 là việc của người dùng |
 | C | **Vẽ lại icon theo lưới 32×32** | Codex, chạy không tương tác | Hẹn chạy lúc 05:45 (script nền trong phiên CPO, thử lại mỗi 15 phút), nhiệm vụ trong `Docs/Art/CODEX_TASK_32px_Restyle.md` | Khi xong: kiểm commit, báo cáo `Restyle32_Report.vi.md`, refresh Unity, chạy lại test HUD |
 | D | **AUD-01** AudioManager | Phiên **Game Designer** → **Tech Lead** → **Unity Dev** | Spec `560346dd`, plan `de02fcff`, **G1 đã duyệt** `a5d53cde`. Unity Dev đang làm pha 0 (âm thanh tạm, không Unity) | **Done (G3 03:40)**. Còn việc của người dùng: nghe bằng panel F6 (AC-A28) → (không còn bước build) (vùng `Audio/**`; `Bootstrap.cs` chỉ sửa sau khi luồng A đã commit file này) → review → QA → **G3** |
 
@@ -59,6 +59,10 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 - **27/10 03:00 · Review AUD-01: Qua.** Sửa ngay 4 điểm Nên sửa: không ghi PlayerPrefs mỗi lần kéo slider; dừng âm khi rời trận; kiểm listener dự phòng định kỳ; dừng BombFuse khi nổ. Lý do: lỗi thật, sửa nhỏ, nằm trong vùng AUD-01, nên làm trước QA để không phải QA hai lần.
 
 - **27/10 03:40 · G3 AUD-01: nghiệm thu.** QA "Một phần" nhưng mọi AC P0 đạt, QA tự chạy lại 333/333 và 59/59, review Qua. Phần chưa kiểm (nghe bằng tai, Release, Profiler, Game với server) chuyển cho người dùng, BLD-01 và QA-01; follow-up ghi ở mục 8 của AUD-01.md. `EditorSettings.asset` bị PlayMode của QA đổi về 1; CPO đã hoàn về 0 theo quyết định trước đó của người dùng ("Hoàn về 0"), vì phiên QA không có quyền chạy lệnh này.
+
+- **27/10 06:30 · G3 ADHOC-UI-ASSETS-A: nghiệm thu** (`3494d6be`, chi tiết ở mục 8 của ticket). QA "Một phần" (`7eb3f7ad`): 333/333, 59/59, A2–A9 và A11 Đạt. CPO xử lý A1 (manifest `48165122`) và A12 (ghi mục Review). A10 (scene Game cần server) chuyển QA-01. 6 follow-up giao chủ sở hữu.
+- **27/10 06:30 · ART-04 chưa đóng.** R1 xong (`29cf9797`: 34 dòng `Đã chuẩn hóa`, cột `nguon_thuc`). R2-a/R2-b (test) giao phiên Unity Dev, hạn commit 09:30. Sau đó Code Reviewer xem nhanh, QA Tester chạy lại, rồi CPO duyệt G3 trước 12:00. **Quyết AC17:** chỉ cấm ảnh/sprite dưới `Assets/Imported/`. Shader TMP JSurviv có từ UI-01, được loại trừ và ghi follow-up. Lý do: ý của AC17 là không dùng sprite JSurviv trực tiếp; dời TMP Essentials là việc dọn dẹp riêng, ngoài phạm vi icon.
+- 06:20 · CPO hoàn `EditorSettings.asset` về 0 sau PlayMode của QA (theo quyết định "Hoàn về 0" của người dùng).
 
 ## 5. Khởi động lại khi hết token
 
