@@ -401,9 +401,37 @@ Phạm vi: `e8b57415`, `8e047049`, `0a5a4e28` (test) và `6c1ea276`, `f61cf4e8` 
 
 ## 7. QA
 
+**Kết quả QA 27/10/2026 (HEAD `f61cf4e8`): Đạt 19 · Một phần 2 · Không kiểm 2 · Không đạt 0.** EditMode **337/337**, PlayMode **65/65** chạy mới (job `2e4d69ce…`, `49dc1a95…`), console 0 error, 0 warning. Chi tiết, số đo và ảnh: [`Docs/Reports/ART-04_2026-10-27/QA_report.md`](../Reports/ART-04_2026-10-27/QA_report.md). Từ bản ADHOC đã QA đến nay chỉ thêm test, nên ảnh HUD và `icon_audit.json` của ADHOC được dùng lại (ghi rõ từng dòng).
+
 | # | Kết quả | Bằng chứng |
 | --- | --- | --- |
-| AC1 | chưa kiểm chứng | |
+| AC1 | Đạt | `Csv_34Rows_MatchRosterOneToOne_…` và `Csv_TargetPath_IsTheSpriteTheCatalogServes` xanh; 34 dòng, 34 `nguon_thuc` tồn tại |
+| AC2 | Đạt | 34/34 `Đã chuẩn hóa`, 0 `Thiếu`, 0 `Cần cắt/chỉnh`; HAND, ROPE có icon thật (ảnh ADHOC) |
+| AC3 | Đạt | `Png_64x64_TransparentCorners_Content44To60_…` xanh; 34/34 64×64, góc alpha 0, nội dung 56 px, lệch tâm ≤ 1 px |
+| AC4 | Đạt | Bán trong suốt 0 %; icon tối đọc rõ trên Selected và Default (ảnh `dark_icons_selected_vs_default_1280_x3.png`) |
+| AC5 | Đạt (giá trị đã sửa) | Đo importer 34/34: Sprite, Single, Point, không mipmap, Uncompressed, alphaIsTransparency, không Read/Write, pivot 0,5. Point thay Bilinear (G-3), PPU 100 (T-2) |
+| AC6 | Đạt | `UiArtCatalogTests` (34 ID, đôi một khác nhau, null/unknown → null) |
+| AC7 | Đạt | `Sweep_18WeaponsThroughSlots1To4_10ConsumablesThroughSlots5To8` xanh, 112 lần ghi |
+| AC8 | Đạt | `DefaultSlot1_IsHand_Selected_FullAlpha_…` xanh; ảnh `hud_1920.png` (ADHOC) |
+| AC9 | Đạt | `RealQuickbar_KnownUnknownKnownAndEmpty` xanh; ảnh khe rỗng (ADHOC) |
+| AC10 | Đạt | Cùng test AC8: khung đi theo, sprite giữ nguyên, alpha 1 |
+| AC11 | Đạt (theo định nghĩa CPO) | `VisibleIcon_ClearOfKeyCountAndName_…` xanh: nội dung nhìn thấy giao 0 px² ở 720p, 1080p. Rect `RectTransform` lấn 1 px (2 và 4,5 px² với số phím; 12 và 27 px² với `×n`): follow-up UI-01 |
+| AC12 | Đạt | Prefab 28×28 và 18×18; đo trên màn hình 24 / 36 / 48 px (kỳ vọng 24,5 / 36,8 / 49) ở 720p / 1080p / 1440p; texture 64 ≥ 56 |
+| AC13 | Đạt | `PickupToast_ShowsTheRightIconForAll34Ids` xanh; ảnh toast 34 ID (ADHOC); dòng cao 31 giữ nguyên |
+| AC14 | Không kiểm | Hoãn sang ITM-01 (T-4) |
+| AC15 | Một phần | `SecondWriter_StandInForItm01_GivesTheSameSprites` xanh; diff không đụng Domain/Application/Infrastructure/Core ngoài Audio. GameServer thật **chưa kiểm chứng** (R5) |
+| AC16 | Đạt | 8 khe và toast đủ icon ở 1280/1920/2560 (ảnh ADHOC), icon nằm trọn trong khe và dòng cha (hình học prefab). Hint nhặt thuộc AC14 |
+| AC17 | Đạt (theo quyết định CPO) | `HudPrefabsAndCatalog_DependOnNoImageUnderImported` xanh: 0 ảnh từ `Imported`; 0 script thiếu; Console 0 error. Shader TMP JSurviv loại trừ, follow-up |
+| AC18 | Đạt | `git diff a529b10a~1..HEAD`: 0 file dưới `Imported/JSurviv`, `Backend/`, balance; không Domain/Application/Infrastructure/Core ngoài Audio |
+| AC19 | Đạt | `Rotate34IdsThrough8Slots600Times_AfterWarmup_NoGc` 0 B; `ScopedLookupAndViewWarmGC` 0 B |
+| AC20 | Không kiểm | Việc của người dùng: ký CSV, nhận diện mù 3 người, cảm nhận độ nhòe |
+| AC21 | Đạt | `SwapCatalogSprite_PreservesSlotAndToastRects` xanh |
+| AC22 | Đạt | Test ≤ 1 MB xanh; đo 603 904 B (590 KiB) |
+| AC23 | Một phần | 34/34 dòng `bound (32px native, 64x64 nearest x2)`, 64x64, không còn `todo`. Manifest không có cột nguồn; nguồn nằm ở `nguon_thuc` (CSV) và `Provenance.csv` |
+
+**Quan sát:** (1) panel kết nối IMGUI ở HudPreview che khe 1 (1280) và một phần Vitals/chip, cần ẩn khi chụp ảnh G3 hoặc làm AC20(b); (2) tên dài trong toast ngắt giữa từ; (3) `ghi_chu` trong CSV còn mô tả hiện trạng cũ, dễ gây hiểu nhầm khi PIC ký.
+
+**Chưa kiểm chứng:** AC14, AC20, R5 (GameServer thật, chờ ITM-01), Release Player.
 
 ## 8. Nghiệm thu
 
