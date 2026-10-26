@@ -340,6 +340,18 @@ namespace JungleMaze.Tests.PlayMode
         }
 
         [Test]
+        public void FallbackListener_OnlyWhenSceneHasNone()
+        {
+            Assert.IsFalse(_manager.OwnsListener, "the test scene already has a listener");
+            foreach (var l in Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None)) Object.DestroyImmediate(l);
+            var go = new GameObject("AudioFallback");
+            _objects.Add(go);
+            var manager = go.AddComponent<AudioManager>().Configure(_set);
+            Assert.IsTrue(manager.OwnsListener, "no listener in the scene: the manager provides one");
+            Assert.AreEqual(1, Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Length);
+        }
+
+        [Test]
         public void SwapClipInCatalogCopy_NoCodeChange()
         {
             var catalog = Object.Instantiate(_set.Catalog);

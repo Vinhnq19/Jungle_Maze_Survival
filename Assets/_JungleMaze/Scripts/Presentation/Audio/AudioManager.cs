@@ -1,6 +1,7 @@
 using JungleMaze.App.Audio;
 using JungleMaze.Domain.Audio;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace JungleMaze.Presentation.Audio
 {
@@ -8,6 +9,7 @@ namespace JungleMaze.Presentation.Audio
     /// Owns the runtime AudioSources: a fixed pool of SFX voices plus two music sources, all created once in
     /// <see cref="Configure"/>. Implements <see cref="IAudioOutput"/> and only executes what Application decides.
     /// Sources are 2D (spatialBlend 0): distance falloff is computed in cells by the playback service.
+    /// The project scenes have no AudioListener, so this adds a fallback one while no other listener is enabled.
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class AudioManager : MonoBehaviour, IAudioOutput
@@ -25,11 +27,13 @@ namespace JungleMaze.Presentation.Audio
         private float _duckDb;
         private MusicDirector _music;
         private Transform _root;
+        private AudioListener _listener;
 
         public bool IsConfigured => _set != null;
         public AudioRuntimeSet RuntimeSet => _set;
         public int VoiceCount => _voices.Length;
         public MusicDirector Music => _music;
+        public bool OwnsListener => _listener != null && _listener.enabled;
 
         /// <summary>Creates the voice pool once. Calling again with the same set does nothing.</summary>
         public AudioManager Configure(AudioRuntimeSet set)
@@ -47,6 +51,7 @@ namespace JungleMaze.Presentation.Audio
             var b = CreateSource("Music B", set.MusicTrackGroup, true);
             _music = new MusicDirector(a, b, set.MusicFor);
             ApplyMixer();
+            EnsureListener();
             return this;
         }
 
@@ -101,6 +106,24 @@ namespace JungleMaze.Presentation.Audio
         private void Start() => ApplyMixer();
 
         private void Update() => _music?.Apply();
+
+        private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
+        private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => EnsureListener();
+
+        /// <summary>Uses a scene's own listener when there is one; otherwise enables the fallback on the audio root.</summary>
+        private void EnsureListener()
+        {
+            if (_root == null) return;
+            foreach (var other in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+            {
+                if (other == _listener || !other.isActiveAndEnabled) continue;
+                if (_listener != null) _listener.enabled = false;
+                return;
+            }
+            if (_listener == null) _listener = _root.gameObject.AddComponent<AudioListener>();
+            _listener.enabled = true;
+        }
 
         private void OnDestroy()
         {
