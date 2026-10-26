@@ -1,3 +1,4 @@
+using JungleMaze.App.Ports;
 using JungleMaze.Core.Pooling;
 using JungleMaze.Domain.Player;
 using UnityEngine;
@@ -5,7 +6,8 @@ using UnityEngine;
 namespace JungleMaze.Presentation.Player
 {
     /// <summary>
-    /// Hiển thị một người chơi từ PlayerModel (không đọc packet). Nội suy về vị trí server để mượt giữa các tick 30Hz.
+    /// Hiển thị một người chơi (không đọc packet). Vị trí lấy từ <see cref="IPlayerPoseSource"/>: prediction cho nhân vật
+    /// của mình (MOV-02), interpolation cho người khác (MOV-03). Chưa có pose thì đặt thẳng theo snapshot mới nhất.
     /// Được lấy từ pool nên reset trạng thái trong OnSpawned/OnDespawned.
     /// </summary>
     public sealed class PlayerView : MonoBehaviour, IPoolable
@@ -14,13 +16,15 @@ namespace JungleMaze.Presentation.Player
         [SerializeField] private float followSharpness = 15f;
 
         private PlayerModel _model;
+        private IPlayerPoseSource _poses;
         private bool _snapNext;
 
         public byte NetId => _model?.NetId ?? 0;
 
-        public void Bind(PlayerModel model)
+        public void Bind(PlayerModel model, IPlayerPoseSource poses = null)
         {
             _model = model;
+            _poses = poses;
             _snapNext = true;
             if (body != null)
             {
@@ -37,13 +41,27 @@ namespace JungleMaze.Presentation.Player
 
         public void OnSpawned() => _snapNext = true;
 
-        public void OnDespawned() => _model = null;
+        public void OnDespawned()
+        {
+            _model = null;
+            _poses = null;
+        }
 
-        private void Update() => Refresh();
+        // LateUpdate: prediction/interpolation đã được tick trong Update của frame này.
+        private void LateUpdate() => Refresh();
 
         private void Refresh()
         {
-            if (_model == null || !_model.HasState) return;
+            if (_model == null) return;
+            if (_poses != null && _poses.TryGetPose(_model.NetId, out var pose))
+            {
+                // Pose đã mượt sẵn: đặt thẳng, không làm mượt thêm (sẽ cộng độ trễ).
+                transform.SetPositionAndRotation(new Vector3(pose.X, pose.Y, 0f), Quaternion.Euler(0f, 0f, pose.RotationDegrees));
+                if (body != null) body.enabled = !pose.IsDead;
+                _snapNext = false;
+                return;
+            }
+            if (!_model.HasState) return;
             var state = _model.Current;
             var target = new Vector3(state.X, state.Y, 0f);
             var t = _snapNext ? 1f : 1f - Mathf.Exp(-followSharpness * Time.deltaTime);

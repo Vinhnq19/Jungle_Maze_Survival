@@ -1,4 +1,6 @@
 using System.Globalization;
+using JungleMaze.App.Match;
+using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
 using UnityEngine;
@@ -10,13 +12,20 @@ namespace JungleMaze.Presentation.UI
     {
         private const float RefreshSeconds = 0.5f;
         private INetworkClient _network;
+        private MatchSession _match;
+        private RemotePlayerInterpolator _remote;
         private bool _visible;
         private float _nextRefresh, _fps;
         private int _frames;
         private string _text = "";
 
         [Inject]
-        public void Construct(INetworkClient network) => _network = network;
+        public void Construct(INetworkClient network, MatchSession match, RemotePlayerInterpolator remote)
+        {
+            _network = network;
+            _match = match;
+            _remote = remote;
+        }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private void Update()
@@ -38,13 +47,20 @@ namespace JungleMaze.Presentation.UI
             _text += string.Format(CultureInfo.InvariantCulture,
                 "\nTransport: {0} · fallback: {1} · p50 {2:F1}/p99 {3:F1}ms",
                 s.Transport, s.FallbackReason, s.P50RttMs, s.P99RttMs);
+            var p = _match.Prediction.Stats;
+            var r = _remote.Stats;
+            _text += string.Format(CultureInfo.InvariantCulture,
+                "\nMOV-02 ack {0:F0} ms · pending {1} · sửa {2} · snap {3} · lệch avg {4:F3}/max {5:F3}" +
+                "\nMOV-03 jitter {6:F1} ms · trễ {7:F0} ms · ngoại suy {8}/{9} · trùng {10} · cũ {11}",
+                p.AverageAckRttMs, p.Pending, p.Corrections, p.Snaps, p.AverageErrorMeters, p.MaxErrorMeters,
+                r.JitterMs, r.RenderDelayMs, r.ExtrapolatedSamples, r.Samples, r.Duplicates, r.TooOld);
         }
 
         private void OnGUI()
         {
             if (!_visible) return;
-            GUI.Box(new Rect(Screen.width - 490, 10, 480, 155), GUIContent.none);
-            GUI.Label(new Rect(Screen.width - 480, 15, 460, 145), _text);
+            GUI.Box(new Rect(Screen.width - 490, 10, 480, 190), GUIContent.none);
+            GUI.Label(new Rect(Screen.width - 480, 15, 460, 180), _text);
         }
 #endif
     }

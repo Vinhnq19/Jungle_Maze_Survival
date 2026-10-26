@@ -1,6 +1,7 @@
 using System;
 using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.Match;
+using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
 using JungleMaze.Presentation.Controls;
@@ -11,7 +12,10 @@ using UnityEngine.SceneManagement;
 
 namespace JungleMaze.Presentation.UI
 {
-    /// <summary>Small Phase-2 inspection UI and scene adapter; full HUD/prediction/FOW remain separate tasks.</summary>
+    /// <summary>
+    /// Small Phase-2 inspection UI and scene adapter. Gives MOV-02 prediction the verified map (same data the server
+    /// simulates) and aims from the predicted Hero; full HUD/FOW remain separate tasks.
+    /// </summary>
     public sealed class MatchDemoView : MonoBehaviour
     {
         /// <summary>Explicit acceptance runner only; ordinary play always reads WASD/mouse.</summary>
@@ -21,6 +25,8 @@ namespace JungleMaze.Presentation.UI
         private IMatchConnection _connection;
         private IPlayerHistory _history;
         private IClientRuntimeData _data;
+        private IPlayerPoseSource _poses;
+        private string _worldHash;
         private HeroController _hero;
         private RemotePlayerSpawner _spawner;
         private Camera _camera;
@@ -35,8 +41,8 @@ namespace JungleMaze.Presentation.UI
 
         [Inject]
         public void Construct(MatchSession session, INetworkClient network, IMatchConnection connection,
-            IPlayerHistory history, IClientRuntimeData data)
-        { _session = session; _network = network; _connection = connection; _history = history; _data = data; }
+            IPlayerHistory history, IClientRuntimeData data, IPlayerPoseSource poses)
+        { _session = session; _network = network; _connection = connection; _history = history; _data = data; _poses = poses; }
 
         private void Update()
         {
@@ -49,12 +55,21 @@ namespace JungleMaze.Presentation.UI
             {
                 _dataError = _data.Verify(_session.PhaseState.ConfigVersion, _session.PhaseState.ConfigHash);
                 if (_dataError == null) _dataError = VerifyGeometry();
-                if (_dataError == null) { _session.ConfirmLoaded(); _loadedAck = _session.MatchId; }
+                if (_dataError == null) { UsePredictionWorld(); _session.ConfirmLoaded(); _loadedAck = _session.MatchId; }
+            }
+            // Resume thẳng vào InGame (bỏ qua Loading) vẫn cần map cho prediction; chỉ kiểm, không gửi LoadAck.
+            if (_session.Phase == MatchPhase.InGame && _worldHash != _session.PhaseState.ConfigHash && _dataError == null)
+            {
+                _dataError = _data.Verify(_session.PhaseState.ConfigVersion, _session.PhaseState.ConfigHash);
+                if (_dataError == null) UsePredictionWorld();
             }
             var intent = new JungleMaze.Domain.Player.PlayerIntent();
             intent.MoveX = Input.GetAxisRaw("Horizontal"); intent.MoveY = Input.GetAxisRaw("Vertical");
             var origin = _hero != null ? _hero.transform.position : Vector3.zero;
-            if (_session.Players.TryGet(_session.OwnNetId, out var own) && own.HasState)
+            // Ngắm từ vị trí đang vẽ (đã dự đoán) để hướng chuột khớp với nhân vật người chơi nhìn thấy.
+            if (_session.OwnNetId != 255 && _poses.TryGetPose(_session.OwnNetId, out var ownPose))
+                origin = new Vector3(ownPose.X, ownPose.Y, 0);
+            else if (_session.Players.TryGet(_session.OwnNetId, out var own) && own.HasState)
                 origin = new Vector3(own.Current.X, own.Current.Y, 0);
             if (HeroAim.TryGetTargetDegrees(_camera, origin, Input.mousePosition, out var degrees)) intent.AimDegrees = degrees;
             if (!UseExternalIntent) _session.SetIntent(intent);
@@ -93,6 +108,14 @@ namespace JungleMaze.Presentation.UI
             foreach (var input in FindObjectsByType<PlayerInputReader>(FindObjectsSortMode.None)) input.enabled = false;
             foreach (var probe in FindObjectsByType<LocalWeaponProbe>(FindObjectsSortMode.None)) probe.enabled = false;
         }
+        /// <summary>Map đã khớp hash server → mô phỏng movement client giống hệt server (MOV-02).</summary>
+        private void UsePredictionWorld()
+        {
+            if (_worldHash == _session.PhaseState.ConfigHash && _session.Prediction.HasWorld) return;
+            _session.Prediction.SetWorld(new MovementSimulation(_data.Bounds, _data.Covers, _data.PlayerRadius, _data.PlayerSpeed));
+            _worldHash = _session.PhaseState.ConfigHash;
+        }
+
         private string VerifyGeometry()
         {
             var grid = FindAnyObjectByType<MapGridView>();
@@ -180,7 +203,8 @@ namespace JungleMaze.Presentation.UI
             GUILayout.Label($"HP: {_session.OwnHp} · Tick server: {_session.ServerTick} · Snapshot: {_session.Snapshots}", _label);
             if (_dataError != null) GUILayout.Label(_dataError, _label);
             if (_session.HasZone) GUILayout.Label($"Bo {_session.Zone.PhaseIndex}: r={_session.Zone.CurrentRadius:F1}" + (_session.Zone.InWarning ? " · Sắp co" : ""), _label);
-            GUILayout.Label("WASD di chuyển, chuột chọn hướng. Chưa có combat/prediction/FOW.", _label);
+            var p = _session.Prediction.Stats;
+            GUILayout.Label($"WASD di chuyển, chuột chọn hướng. Prediction: {(_session.Prediction.IsActive ? "bật" : "chờ")} · sửa {p.Corrections} · lệch max {p.MaxErrorMeters:F2}. Chưa có combat/FOW.", _label);
             if (_session.HasResult)
             {
                 GUILayout.Label(_session.Result.Reason == MatchEndReason.Tie ? "HÒA — không có người thắng" : "KẾT QUẢ TRẬN", _label);

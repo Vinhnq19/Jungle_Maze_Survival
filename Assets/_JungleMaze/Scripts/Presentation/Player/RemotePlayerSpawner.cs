@@ -11,6 +11,8 @@ namespace JungleMaze.Presentation.Player
     /// <summary>
     /// Mẫu đủ các pattern: nhận dependency qua [Inject], nghe EventBus (Observer), tạo view bằng Factory lấy từ Pool,
     /// đọc Domain model. Đặt trong scene Game, gán prefab PlayerView.
+    /// MOV-03: spawn/despawn view theo NetId server cấp (PlayerStateUpdated/PlayerRemoved); vị trí mỗi frame do
+    /// <see cref="IPlayerPoseSource"/> quyết định (interpolation cho người khác, prediction cho chính mình).
     /// </summary>
     public sealed class RemotePlayerSpawner : MonoBehaviour
     {
@@ -20,15 +22,17 @@ namespace JungleMaze.Presentation.Player
         private readonly PlayerView[] _views = new PlayerView[256];
         private IEventBus _bus;
         private PlayerRegistry _players;
+        private IPlayerPoseSource _poses;
         private PooledPrefabFactory<PlayerView> _factory;
         private Action<PlayerStateUpdated> _onUpdated;
         private Action<PlayerRemoved> _onRemoved;
 
         [Inject]
-        public void Construct(IEventBus bus, IPoolService pool, PlayerRegistry players)
+        public void Construct(IEventBus bus, IPoolService pool, PlayerRegistry players, IPlayerPoseSource poses)
         {
             _bus = bus;
             _players = players;
+            _poses = poses;
             if (playerPrefab != null) _factory = new PooledPrefabFactory<PlayerView>(pool, playerPrefab, prewarm);
             _onUpdated = OnPlayerUpdated;
             _onRemoved = OnPlayerRemoved;
@@ -65,7 +69,7 @@ namespace JungleMaze.Presentation.Player
         {
             if (_factory == null || _views[evt.NetId] != null || !_players.TryGet(evt.NetId, out var model)) return;
             var view = _factory.Create(new SpawnPose(Vector3.zero, Quaternion.identity, transform));
-            view.Bind(model);
+            view.Bind(model, _poses);
             _views[evt.NetId] = view;
         }
 

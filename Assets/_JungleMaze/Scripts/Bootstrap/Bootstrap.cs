@@ -99,9 +99,15 @@ namespace JungleMaze.Composition
             _registry.Register(input);
             _registry.Register(new WorldSyncService(network, bus, players));
             _registry.Register(connect);
-            var match = new MatchSession(network, network, network, bus, players);
+            var prediction = new LocalPrediction();                              // MOV-02
+            var match = new MatchSession(network, network, network, bus, players, prediction);
             match.PhaseUpdated += flow.ApplyAuthoritativePhase;
+            _registry.Register(prediction);
             _registry.Register(match);
+            var remote = new RemotePlayerInterpolator(bus, players);              // MOV-03
+            _registry.Register(remote);
+            _registry.Register<IPlayerPoseSource>(new PlayerPoseSource(match, remote));
+            var movementLog = new MovementTelemetry(match, network, remote, _log);
             _registry.Register(new GuestHistoryCoordinator(config, network, history, match, bus));
 
             // Presentation (presenter đăng ký trước GameFlow để nhận AppScreenChanged ngay từ Boot)
@@ -110,6 +116,8 @@ namespace JungleMaze.Composition
 
             tickRunner.Add(pool);
             tickRunner.Add(match); // Match-scoped input replaces the local foundation sender in network demo.
+            tickRunner.Add(remote); // Sau match: đồng hồ render tiến sau khi snapshot của frame đã vào buffer.
+            tickRunner.Add(movementLog);
             tickRunner.Add(flow);
             _registry.InitializeAll();
 
