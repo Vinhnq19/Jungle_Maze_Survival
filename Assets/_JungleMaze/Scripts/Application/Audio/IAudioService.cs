@@ -17,7 +17,13 @@ namespace JungleMaze.App.Audio
         /// <summary>General entry used by the router; <see cref="AudioCue.DedupeKey"/> is ignored here.</summary>
         void Play(in AudioCue cue);
 
-        /// <summary>Clamped to [0, 1] and saved.</summary>
+        /// <summary>Stops every voice of <paramref name="id"/> started by <paramref name="sourceKey"/> (a fuse when its bomb explodes).</summary>
+        void Stop(SfxId id, int sourceKey);
+
+        /// <summary>Stops every SFX voice and pending repeat (leaving a match, AC-A27).</summary>
+        void StopAll();
+
+        /// <summary>Clamped to [0, 1]; persisted after a short debounce, not on every call.</summary>
         void SetVolume(AudioBus bus, float volume01);
 
         float GetVolume(AudioBus bus);

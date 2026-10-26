@@ -114,6 +114,7 @@ namespace JungleMaze.Tests.Audio
         public readonly float[] BusDb = new float[4];
         public int Stops;
         public float DuckDb;
+        public int DuckCalls;
 
         public FakeAudioOutput(int voices = 16)
         {
@@ -157,7 +158,7 @@ namespace JungleMaze.Tests.Audio
         public void StopVoice(int voice) { _playing[voice] = false; Stops++; }
         public bool IsVoicePlaying(int voice) => _playing[voice];
         public void SetBusDecibels(AudioBus bus, float decibels) => BusDb[(int)bus] = decibels;
-        public void SetMusicDuckDecibels(float decibels) => DuckDb = decibels;
+        public void SetMusicDuckDecibels(float decibels) { DuckDb = decibels; DuckCalls++; }
         public void FinishAll() { for (var i = 0; i < _playing.Length; i++) _playing[i] = false; }
     }
 
@@ -165,6 +166,8 @@ namespace JungleMaze.Tests.Audio
     {
         public readonly Dictionary<AudioBus, float> Values = new Dictionary<AudioBus, float>();
         public bool? Music;
+        public int Flushes;
+        public void Flush() => Flushes++;
         public float Load(AudioBus bus, float fallback) => Values.TryGetValue(bus, out var v) ? v : fallback;
         public void Save(AudioBus bus, float volume01) => Values[bus] = volume01;
         public bool LoadMusicEnabled(bool fallback) => Music ?? fallback;
@@ -178,6 +181,12 @@ namespace JungleMaze.Tests.Audio
         public void PlaySfx(SfxId id) => Cues.Add(AudioCue.Global(id));
         public void PlaySfx(SfxId id, float worldX, float worldY, int sourceKey = 0) => Cues.Add(AudioCue.At(id, worldX, worldY, sourceKey));
         public void Play(in AudioCue cue) => Cues.Add(cue);
+        /// <summary>Stop calls in order, as (id, source); StopAll is recorded as (None, 0).</summary>
+        public readonly List<(SfxId Id, int Source)> Stops = new List<(SfxId, int)>();
+        /// <summary>Index in <see cref="Cues"/> at the time of each stop, to check ordering against plays.</summary>
+        public readonly List<int> StopAt = new List<int>();
+        public void Stop(SfxId id, int sourceKey) { Stops.Add((id, sourceKey)); StopAt.Add(Cues.Count); }
+        public void StopAll() { Stops.Add((SfxId.None, 0)); StopAt.Add(Cues.Count); }
         public void SetVolume(AudioBus bus, float volume01) { }
         public float GetVolume(AudioBus bus) => 1f;
         public bool MusicEnabled { get; set; }

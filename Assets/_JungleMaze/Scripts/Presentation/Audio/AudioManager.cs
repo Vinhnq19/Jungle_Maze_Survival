@@ -1,3 +1,4 @@
+using System;
 using JungleMaze.App.Audio;
 using JungleMaze.Domain.Audio;
 using UnityEngine;
@@ -9,7 +10,8 @@ namespace JungleMaze.Presentation.Audio
     /// Owns the runtime AudioSources: a fixed pool of SFX voices plus two music sources, all created once in
     /// <see cref="Configure"/>. Implements <see cref="IAudioOutput"/> and only executes what Application decides.
     /// Sources are 2D (spatialBlend 0): distance falloff is computed in cells by the playback service.
-    /// The project scenes have no AudioListener, so this adds a fallback one while no other listener is enabled.
+    /// The project scenes have no AudioListener, so this keeps a fallback one active while no other listener is
+    /// enabled, re-checked on scene load and every <see cref="ListenerCheckSeconds"/> (a camera listener may appear late).
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class AudioManager : MonoBehaviour, IAudioOutput
@@ -27,13 +29,19 @@ namespace JungleMaze.Presentation.Audio
         private float _duckDb;
         private MusicDirector _music;
         private Transform _root;
-        private AudioListener _listener;
+        public const float ListenerCheckSeconds = 2f;
+
+        private GameObject _listener;
+        private AudioListener _sceneListener;
+        private Camera[] _cameras = new Camera[8];
+        private float _nextListenerCheck;
+        private Action _flushSettings;
 
         public bool IsConfigured => _set != null;
         public AudioRuntimeSet RuntimeSet => _set;
         public int VoiceCount => _voices.Length;
         public MusicDirector Music => _music;
-        public bool OwnsListener => _listener != null && _listener.enabled;
+        public bool OwnsListener => _listener != null && _listener.activeSelf;
 
         /// <summary>Creates the voice pool once. Calling again with the same set does nothing.</summary>
         public AudioManager Configure(AudioRuntimeSet set)
@@ -54,6 +62,9 @@ namespace JungleMaze.Presentation.Audio
             EnsureListener();
             return this;
         }
+
+        /// <summary>Called on application pause/quit so staged volume settings reach the disk.</summary>
+        public void BindSettingsFlush(Action flush) => _flushSettings = flush;
 
         /// <summary>Binds the music plan whose slots and weights are applied every frame.</summary>
         public void BindMusic(MusicPlan plan) => _music?.Bind(plan);
@@ -105,30 +116,74 @@ namespace JungleMaze.Presentation.Audio
         // Mixer parameters set before the mixer is live are sometimes lost; apply again once running.
         private void Start() => ApplyMixer();
 
-        private void Update() => _music?.Apply();
+        private void Update()
+        {
+            _music?.Apply();
+            if (Time.unscaledTime < _nextListenerCheck) return;
+            CheckListener();
+        }
+
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) _flushSettings?.Invoke();
+        }
+
+        private void OnApplicationQuit() => _flushSettings?.Invoke();
 
         private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
         private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => EnsureListener();
 
-        /// <summary>Uses a scene's own listener when there is one; otherwise enables the fallback on the audio root.</summary>
-        private void EnsureListener()
+        /// <summary>
+        /// Full check (configure, scene load): uses a scene's own enabled listener when there is one, otherwise
+        /// activates the fallback child. Ours is switched off for the lookup so it never finds itself.
+        /// </summary>
+        public void EnsureListener()
         {
+            _nextListenerCheck = Time.unscaledTime + ListenerCheckSeconds;
             if (_root == null) return;
-            foreach (var other in FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+            if (_listener == null)
             {
-                if (other == _listener || !other.isActiveAndEnabled) continue;
-                if (_listener != null) _listener.enabled = false;
-                return;
+                _listener = new GameObject("[AudioListener]");
+                _listener.transform.SetParent(_root, false);
+                _listener.SetActive(false);
+                _listener.AddComponent<AudioListener>();
             }
-            if (_listener == null) _listener = _root.gameObject.AddComponent<AudioListener>();
-            _listener.enabled = true;
+            else if (_listener.activeSelf) _listener.SetActive(false);
+            var other = FindAnyObjectByType<AudioListener>();
+            _sceneListener = other != null && other.enabled ? other : null;
+            _listener.SetActive(_sceneListener == null);
         }
 
-        private void OnDestroy()
+        /// <summary>
+        /// Periodic check without allocation: the remembered scene listener, then the listeners on enabled cameras
+        /// (a pre-sized array, TryGetComponent). The allocating full lookup runs only when the fallback may need to
+        /// turn back on, so a late camera listener is picked up within <see cref="ListenerCheckSeconds"/>.
+        /// </summary>
+        public void CheckListener()
         {
-            for (var i = 0; i < _voices.Length; i++) if (_voices[i] != null) _voices[i].Stop();
-            _music?.StopAll();
+            _nextListenerCheck = Time.unscaledTime + ListenerCheckSeconds;
+            if (_listener == null) return;
+            if (_sceneListener != null && _sceneListener.isActiveAndEnabled) return;
+            var camera = CameraListener();
+            if (camera != null)
+            {
+                _sceneListener = camera;
+                if (_listener.activeSelf) _listener.SetActive(false);
+                return;
+            }
+            _sceneListener = null;
+            if (!_listener.activeSelf) EnsureListener();
+        }
+
+        private AudioListener CameraListener()
+        {
+            var count = Camera.allCamerasCount;
+            if (count > _cameras.Length) _cameras = new Camera[count * 2];
+            count = Camera.GetAllCameras(_cameras);
+            for (var i = 0; i < count; i++)
+                if (_cameras[i] != null && _cameras[i].TryGetComponent<AudioListener>(out var l) && l.isActiveAndEnabled) return l;
+            return null;
         }
 
         private void ApplyMixer()

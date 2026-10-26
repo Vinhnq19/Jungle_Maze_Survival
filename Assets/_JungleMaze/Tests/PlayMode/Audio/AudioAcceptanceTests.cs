@@ -13,6 +13,8 @@ using JungleMaze.Presentation.Audio;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 using Object = UnityEngine.Object;
 
 namespace JungleMaze.Tests.PlayMode
@@ -49,6 +51,7 @@ namespace JungleMaze.Tests.PlayMode
             public void Save(AudioBus bus, float volume01) => _v[(int)bus] = volume01;
             public bool LoadMusicEnabled(bool fallback) => _music;
             public void SaveMusicEnabled(bool enabled) => _music = enabled;
+            public void Flush() { }
         }
 
         [SetUp]
@@ -349,6 +352,62 @@ namespace JungleMaze.Tests.PlayMode
             var manager = go.AddComponent<AudioManager>().Configure(_set);
             Assert.IsTrue(manager.OwnsListener, "no listener in the scene: the manager provides one");
             Assert.AreEqual(1, Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None).Length);
+        }
+
+        [UnityTest]
+        public IEnumerator FallbackListener_YieldsToLateListener_AndComesBack()
+        {
+            foreach (var l in Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+                if (l.transform.parent == null) Object.DestroyImmediate(l); // the test scene's own listener
+            _manager.EnsureListener();
+            Assert.IsTrue(_manager.OwnsListener);
+            Assert.AreEqual(1, CountEnabledListeners());
+
+            // A camera listener that appears after the scene loaded (Unity logs "2 audio listeners" until the check).
+            var camera = new GameObject("LateCameraListener");
+            _objects.Add(camera);
+            camera.AddComponent<Camera>();
+            camera.AddComponent<AudioListener>();
+            var start = Time.realtimeSinceStartup;
+            while (_manager.OwnsListener && Time.realtimeSinceStartup - start < 3f) yield return null;
+            Assert.IsFalse(_manager.OwnsListener, "fallback switched off");
+            Assert.LessOrEqual(Time.realtimeSinceStartup - start, AudioManager.ListenerCheckSeconds + 0.3f);
+            Assert.AreEqual(1, CountEnabledListeners(), "exactly one listener once the scene has its own");
+
+            Object.DestroyImmediate(camera);
+            start = Time.realtimeSinceStartup;
+            while (!_manager.OwnsListener && Time.realtimeSinceStartup - start < 3f) yield return null;
+            Assert.IsTrue(_manager.OwnsListener, "fallback back when the scene listener goes away");
+            Assert.LessOrEqual(Time.realtimeSinceStartup - start, AudioManager.ListenerCheckSeconds + 0.3f);
+            Assert.AreEqual(1, CountEnabledListeners());
+        }
+
+        [Test]
+        public void PeriodicListenerCheck_DoesNotAllocate()
+        {
+            // Fallback on, no camera listener.
+            foreach (var l in Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None))
+                if (l.transform.parent == null) Object.DestroyImmediate(l);
+            _manager.EnsureListener();
+            Assert.IsTrue(_manager.OwnsListener);
+            _manager.CheckListener();
+            Assert.That(() => { for (var i = 0; i < 50; i++) _manager.CheckListener(); }, Is.Not.AllocatingGCMemory());
+
+            // Fallback off behind a camera listener.
+            var camera = new GameObject("CameraListener");
+            _objects.Add(camera);
+            camera.AddComponent<Camera>();
+            camera.AddComponent<AudioListener>();
+            _manager.CheckListener();
+            Assert.IsFalse(_manager.OwnsListener);
+            Assert.That(() => { for (var i = 0; i < 50; i++) _manager.CheckListener(); }, Is.Not.AllocatingGCMemory());
+        }
+
+        private static int CountEnabledListeners()
+        {
+            var n = 0;
+            foreach (var l in Object.FindObjectsByType<AudioListener>(FindObjectsSortMode.None)) if (l.isActiveAndEnabled) n++;
+            return n;
         }
 
         [Test]

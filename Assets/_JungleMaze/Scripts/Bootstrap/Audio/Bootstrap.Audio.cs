@@ -36,6 +36,7 @@ namespace JungleMaze.Composition
             var music = new MusicPlan();
             var service = new SfxPlaybackService(set.Catalog.BuildRules(), output, hud, new PlayerPrefsAudioSettings(), music, _log);
             output.BindMusic(music);
+            output.BindSettingsFlush(service.FlushSettings);
             var matchSource = new MatchAudioEventSource(receiver, new MatchSessionAudioFeed(match), _registry.Resolve<IPlayerPoseSource>());
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             var mock = new MockAudioEventSource();

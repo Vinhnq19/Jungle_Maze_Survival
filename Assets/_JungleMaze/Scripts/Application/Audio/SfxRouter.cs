@@ -217,12 +217,16 @@ namespace JungleMaze.App.Audio
                 case DangerChangeType.Expired:
                     var expired = FindBomb(change.Id);
                     if (expired < 0) return;
+                    // The placeholder fuse clip outlasts the fuse: cut it when its own bomb goes off.
+                    _audio.Stop(SfxId.BombFuse, BombSource(change.Id));
                     PlayAtBomb(SfxId.Explosion, expired, change.Id);
                     _bombUsed[expired] = false;
                     return;
                 case DangerChangeType.Removed:
                     var removed = FindBomb(change.Id);
-                    if (removed >= 0) _bombUsed[removed] = false;
+                    if (removed < 0) return;
+                    _audio.Stop(SfxId.BombFuse, BombSource(change.Id));
+                    _bombUsed[removed] = false;
                     return;
             }
         }
@@ -243,6 +247,12 @@ namespace JungleMaze.App.Audio
         private void OnScreen(AppScreenChanged change)
         {
             _music?.SetScreen(change.Current);
+            if (change.Previous == AppScreen.InMatch && change.Current != AppScreen.InMatch)
+            {
+                // Leaving the match: nothing of it keeps playing (fuses, pending zone bells), AC-A27.
+                _audio.StopAll();
+                System.Array.Clear(_bombUsed, 0, MaxBombs);
+            }
             if (change.Current == AppScreen.InMatch && change.Previous != AppScreen.InMatch)
             {
                 if (_hud != null) { _armor = _hud.Armor; _helmet = _hud.Helmet; }
@@ -284,9 +294,11 @@ namespace JungleMaze.App.Audio
             return -1;
         }
 
+        private static int BombSource(int dangerId) => unchecked(dangerId + 1);
+
         private void PlayAtBomb(SfxId id, int slot, int dangerId)
         {
-            var source = unchecked(dangerId + 1);
+            var source = BombSource(dangerId);
             _audio.Play(_bombHasSource[slot]
                 ? AudioCue.At(id, _bombX[slot], _bombY[slot], source)
                 : AudioCue.Global(id, source));

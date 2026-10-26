@@ -11,6 +11,8 @@ namespace JungleMaze.Presentation.Audio
         public void PlaySfx(SfxId id) { }
         public void PlaySfx(SfxId id, float worldX, float worldY, int sourceKey = 0) { }
         public void Play(in AudioCue cue) { }
+        public void Stop(SfxId id, int sourceKey) { }
+        public void StopAll() { }
 
         public void SetVolume(AudioBus bus, float volume01)
         {

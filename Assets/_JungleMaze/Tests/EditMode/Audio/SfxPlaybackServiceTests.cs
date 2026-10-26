@@ -176,6 +176,72 @@ namespace JungleMaze.Tests.Audio
         }
 
         [Test]
+        public void Settings_WrittenOnceAfterDebounce_NotPerCall()
+        {
+            for (var i = 0; i < 10; i++) { _service.SetVolume(AudioBus.Sfx, i / 10f); _service.Tick(0.03f); }
+            Assert.AreEqual(0, _settings.Flushes, "dragging a slider does not write on every value");
+            _service.Tick(SfxPlaybackService.SaveDebounceSeconds);
+            Assert.AreEqual(1, _settings.Flushes);
+            _service.Tick(2f);
+            Assert.AreEqual(1, _settings.Flushes, "nothing pending, no write");
+            _service.MusicEnabled = true;
+            _service.Tick(0.6f);
+            Assert.AreEqual(2, _settings.Flushes);
+            _service.SetVolume(AudioBus.Master, 0.3f);
+            _service.FlushSettings();
+            Assert.AreEqual(3, _settings.Flushes, "pause/quit flushes immediately");
+            _service.FlushSettings();
+            _service.Tick(1f);
+            Assert.AreEqual(3, _settings.Flushes);
+        }
+
+        [Test]
+        public void StopAll_StopsVoicesAndPendingBells()
+        {
+            _service.PlaySfx(SfxId.ZoneBell3);
+            _service.Play(AudioCue.Global(SfxId.FootstepGrass, 1));
+            Assert.AreEqual(2, _output.PlayingCount);
+            _service.StopAll();
+            Assert.AreEqual(0, _output.PlayingCount);
+            Assert.AreEqual(0, _service.ActiveVoices);
+            for (var i = 0; i < 120; i++) _service.Tick(1f / 60f);
+            Assert.AreEqual(1, _output.CountPlays(SfxId.ZoneBell3), "pending bells cancelled");
+            Assert.IsFalse(_service.AlertActive);
+        }
+
+        [Test]
+        public void Stop_OnlyThatIdAndSource()
+        {
+            _service.Play(AudioCue.Global(SfxId.BombFuse, 1));
+            _service.Play(AudioCue.Global(SfxId.BombFuse, 2));
+            _service.Play(AudioCue.Global(SfxId.Explosion, 1));
+            _service.Stop(SfxId.BombFuse, 1);
+            Assert.AreEqual(1, _output.PlayingOf(SfxId.BombFuse));
+            Assert.AreEqual(1, _output.PlayingOf(SfxId.Explosion));
+            Assert.AreEqual(1, _service.CountActive(SfxId.BombFuse));
+        }
+
+        [Test]
+        public void MusicDuck_SentOnlyWhenItChanges()
+        {
+            Assert.AreEqual(1, _output.DuckCalls, "initial 0 dB");
+            for (var i = 0; i < 120; i++) _service.Tick(1f / 60f);
+            Assert.AreEqual(1, _output.DuckCalls, "no alert, no calls");
+            _service.PlaySfx(SfxId.DragonRoar);
+            for (var i = 0; i < 30; i++) _service.Tick(1f / 60f);
+            Assert.AreEqual(-9f, _output.DuckDb, 1e-3f);
+            var whileHeld = _output.DuckCalls;
+            for (var i = 0; i < 30; i++) _service.Tick(1f / 60f);
+            Assert.AreEqual(whileHeld, _output.DuckCalls, "held at -9 dB, no calls");
+            _output.FinishAll();
+            for (var i = 0; i < 120; i++) _service.Tick(1f / 60f);
+            Assert.AreEqual(0f, _output.DuckDb, 1e-3f);
+            var released = _output.DuckCalls;
+            for (var i = 0; i < 60; i++) _service.Tick(1f / 60f);
+            Assert.AreEqual(released, _output.DuckCalls);
+        }
+
+        [Test]
         public void MissingClip_WarnOnce_NoThrow()
         {
             var service = new SfxPlaybackService(AudioSpec.Rules(id => id == SfxId.Throw ? 0 : 1), _output, _hud,

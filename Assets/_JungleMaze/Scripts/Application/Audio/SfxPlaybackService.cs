@@ -15,6 +15,8 @@ namespace JungleMaze.App.Audio
     public sealed class SfxPlaybackService : IAudioService, ITickable
     {
         private const float DefaultVolume = 1f;
+        /// <summary>Settings are written to disk this long after the last change (slider drags write once).</summary>
+        public const float SaveDebounceSeconds = 0.5f;
 
         private readonly SfxRuleTable _rules;
         private readonly IAudioOutput _output;
@@ -32,6 +34,8 @@ namespace JungleMaze.App.Audio
         private readonly Action<AudioCue> _playRepeat;
         private bool _musicEnabled;
         private float _now;
+        private float _saveAt = float.PositiveInfinity;
+        private float _appliedDuckDb;
 
         public SfxPlaybackService(SfxRuleTable rules, IAudioOutput output, IHudState listener,
             IAudioSettingsStore settings = null, MusicPlan music = null, ILog log = null, int seed = 12345)
@@ -82,6 +86,7 @@ namespace JungleMaze.App.Audio
                 _musicEnabled = value;
                 _music?.SetEnabled(value);
                 _settings?.SaveMusicEnabled(value);
+                ScheduleSave();
             }
         }
 
@@ -97,6 +102,20 @@ namespace JungleMaze.App.Audio
             _volumes[index] = v;
             _output.SetBusDecibels(bus, AudioVolume.ToDecibels(v));
             _settings?.Save(bus, v);
+            ScheduleSave();
+        }
+
+        /// <summary>Writes staged settings now (application pause/quit). Does nothing when nothing changed.</summary>
+        public void FlushSettings()
+        {
+            if (float.IsPositiveInfinity(_saveAt)) return;
+            _saveAt = float.PositiveInfinity;
+            _settings?.Flush();
+        }
+
+        private void ScheduleSave()
+        {
+            if (_settings != null) _saveAt = _now + SaveDebounceSeconds;
         }
 
         public float GetVolume(AudioBus bus)
@@ -110,13 +129,26 @@ namespace JungleMaze.App.Audio
             if (deltaTime > 0f) _now += deltaTime;
             RefreshFinished();
             _scheduler.Update(_now, _playRepeat);
+            if (_now >= _saveAt) FlushSettings();
             if (_music == null) return;
             _music.SetAlertActive(AlertActive);
             _music.Tick(deltaTime);
-            _output.SetMusicDuckDecibels(_music.DuckDb);
+            if (_music.DuckDb == _appliedDuckDb) return;
+            _appliedDuckDb = _music.DuckDb;
+            _output.SetMusicDuckDecibels(_appliedDuckDb);
         }
 
-        /// <summary>Stops every SFX voice and pending repeat (leaving a match, tests).</summary>
+        public void Stop(SfxId id, int sourceKey)
+        {
+            for (var i = 0; i < _voices.VoiceCount; i++)
+            {
+                if (!_voices.IsActive(i) || _voices.IdAt(i) != id || _voices.SourceAt(i) != sourceKey) continue;
+                _output.StopVoice(i);
+                _voices.Release(i);
+            }
+        }
+
+        /// <summary>Stops every SFX voice and pending repeat (leaving a match, AC-A27).</summary>
         public void StopAll()
         {
             _scheduler.Clear();
@@ -163,7 +195,7 @@ namespace JungleMaze.App.Audio
 
             var clip = _picker.PickClip(id, rule.ClipCount);
             _output.PlayVoice(voice, id, clip, rule.Bus, rule.Volume * gain, _picker.PickPitch(rule.PitchJitter));
-            _voices.Assign(voice, id, rule.Priority, rule.Bus);
+            _voices.Assign(voice, id, rule.Priority, rule.Bus, cue.SourceKey);
 
             if (!isRepeat)
             {

@@ -129,6 +129,43 @@ namespace JungleMaze.Tests.Audio
         }
 
         [Test]
+        public void LeavingMatch_StopsAllBeforeMatchEnd()
+        {
+            _bus.Publish(new AppScreenChanged(AppScreen.MainMenu, AppScreen.Connecting, null));
+            _bus.Publish(new AppScreenChanged(AppScreen.Connecting, AppScreen.InRoom, null));
+            _bus.Publish(new AppScreenChanged(AppScreen.InRoom, AppScreen.InMatch, null));
+            Assert.AreEqual(0, _audio.Stops.Count, "entering screens stops nothing");
+            _bus.Publish(new AppScreenChanged(AppScreen.InMatch, AppScreen.Results, null));
+            Assert.AreEqual(1, _audio.Stops.Count);
+            Assert.AreEqual((SfxId.None, 0), _audio.Stops[0], "StopAll");
+            Assert.AreEqual(0, _audio.StopAt[0], "stopped before MatchEnd was played");
+            Assert.AreEqual(new[] { SfxId.MatchEnd }, _audio.Ids().ToArray());
+
+            _bus.Publish(new AppScreenChanged(AppScreen.Results, AppScreen.InMatch, null));
+            _bus.Publish(new AppScreenChanged(AppScreen.InMatch, AppScreen.MainMenu, null));
+            Assert.AreEqual(2, _audio.Stops.Count, "disconnecting mid-match also stops");
+        }
+
+        [Test]
+        public void BombExplosionOrRemoval_StopsItsOwnFuse()
+        {
+            _hud.SetDanger(7, DangerKind.FusedBomb, 1.5f, true, 3f, 4f);
+            _hud.SetDanger(9, DangerKind.FusedBomb, 5f, true, 1f, 1f);
+            var fuse7 = _audio.Cues[0].SourceKey;
+            for (var i = 0; i < 100; i++) Advance(0.02f);
+            Assert.AreEqual(1, _audio.Stops.Count);
+            Assert.AreEqual((SfxId.BombFuse, fuse7), _audio.Stops[0]);
+            Assert.AreEqual(2, _audio.StopAt[0], "fuse stopped before the explosion played");
+            Assert.AreEqual(SfxId.Explosion, _audio.Cues[2].Id);
+            Assert.AreEqual(fuse7, _audio.Cues[2].SourceKey);
+
+            var fuse9 = _audio.Cues[1].SourceKey;
+            _hud.ClearDanger(9);
+            Assert.AreEqual((SfxId.BombFuse, fuse9), _audio.Stops[1], "a removed bomb's fuse stops too");
+            Assert.AreEqual(3, _audio.Cues.Count, "no explosion for a removed bomb");
+        }
+
+        [Test]
         public void ResetAndInitialState_Silent()
         {
             _bus.Publish(new AppScreenChanged(AppScreen.InRoom, AppScreen.InMatch, null));

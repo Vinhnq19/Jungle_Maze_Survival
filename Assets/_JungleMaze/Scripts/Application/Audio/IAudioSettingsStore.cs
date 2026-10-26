@@ -9,5 +9,7 @@ namespace JungleMaze.App.Audio
         void Save(AudioBus bus, float volume01);
         bool LoadMusicEnabled(bool fallback);
         void SaveMusicEnabled(bool enabled);
+        /// <summary>Writes pending values to disk. <see cref="Save"/>/<see cref="SaveMusicEnabled"/> only stage them.</summary>
+        void Flush();
     }
 }

@@ -13,6 +13,7 @@ namespace JungleMaze.App.Audio
         private readonly SfxId[] _ids;
         private readonly SfxPriority[] _priorities;
         private readonly AudioBus[] _buses;
+        private readonly int[] _sourceKeys;
         private readonly long[] _order;
         private long _sequence;
 
@@ -23,6 +24,7 @@ namespace JungleMaze.App.Audio
             _ids = new SfxId[n];
             _priorities = new SfxPriority[n];
             _buses = new AudioBus[n];
+            _sourceKeys = new int[n];
             _order = new long[n];
         }
 
@@ -41,6 +43,7 @@ namespace JungleMaze.App.Audio
         public bool IsActive(int voice) => _active[voice];
         public SfxId IdAt(int voice) => _ids[voice];
         public SfxPriority PriorityAt(int voice) => _priorities[voice];
+        public int SourceAt(int voice) => _sourceKeys[voice];
 
         public int CountActive(SfxId id)
         {
@@ -74,8 +77,9 @@ namespace JungleMaze.App.Audio
             return victim;
         }
 
-        public void Assign(int voice, SfxId id, SfxPriority priority, AudioBus bus)
+        public void Assign(int voice, SfxId id, SfxPriority priority, AudioBus bus, int sourceKey = 0)
         {
+            _sourceKeys[voice] = sourceKey;
             _active[voice] = true;
             _ids[voice] = id;
             _priorities[voice] = priority;
