@@ -519,6 +519,114 @@ Sau G3, CPO thêm vào `Docs/Client_Developer_Guide.vi.md` mục 4 công thức 
 
 **Còn lại (pha 1, chờ CPO báo "Unity rảnh"):** commit 1–4 và 6–10 của mục 4.6.
 
+### Pha 1 · 27/10/2026 · unity-dev (giữ Unity Editor, đã ghi ở `Agent_Coordination.vi.md` mục 4)
+
+**Đã làm:** đủ các lớp và file của mục 4.3, theo 4.1 và 4.2.
+
+- Âm thanh đã import. SFX dùng Decompress On Load, ADPCM, ép mono. Nhạc dùng Streaming, Vorbis 0,7, load in background.
+- Mixer `Art/Audio/JungleMazeAudio.mixer` dựng bằng reflection (T-2), không cần người dựng tay:
+  - Nhóm: `Master` → `SFX` → `Alert`, `Master` → `Music` → `MusicTrack`.
+  - 5 tham số expose: `MasterVolume`, `SfxVolume`, `AlertVolume`, `MusicVolume`, `MusicDuck`.
+  - Mixer tạo bằng code chưa có "view" nào, nên đã tạo thêm một view mặc định để cửa sổ Audio Mixer hiện đủ nhóm.
+- `SfxCatalog.asset` có 26 mục đúng bảng 2.1. `ZoneBell3` lặp 3 lần, cách 0,8 s.
+- Âm lượng catalog do dev chọn (spec không ghi): HitMarker, ZoneBell3, DragonRoar, MatchEnd 1,0 · FootstepGrass 0,4 · FootstepSwamp 0,45 · âm Low khác 0,5 · còn lại 0,6–0,9. Pitch jitter 0,05; HitMarker 0,03; các âm dài hoặc cảnh báo 0. ART-05 chỉnh lại khi nghe (AC-A28).
+- `Resources/AudioRuntimeSet.asset`: Waiting Room tạm dùng `loading_music.mp3` (T-5).
+
+**Commit (kèm đường dẫn, không push):**
+
+| Commit | Nội dung |
+| --- | --- |
+| `485c10ab` | Âm thanh tạm và `.meta` |
+| `ca7fb134` | Domain |
+| `0b66f8e2` | Port, gate, deduper, allocator, MusicPlan, playback service |
+| `3b04a3cb` | Router, match source, mock và test EditMode |
+| `1fb09b78` | Mixer, catalog, runtime set và `SfxCatalogTests` |
+| `78b4624b` | AudioManager, MusicDirector, NullAudioService, PlayerPrefs |
+| `3d3f8faf` | Panel F6 và `Bootstrap.Audio.cs` |
+| `ec8ad0c5` | Test PlayMode |
+| `4d65a32e` | Sửa: listener dự phòng, `Stop()` source mới |
+| `9ab20f1a` | Hook `Bootstrap.cs`, 1 dòng |
+
+**Lệch kế hoạch và lý do:**
+
+1. **`Bootstrap.cs` chỉ thêm 1 dòng gọi** `ComposeAudio(bus, tickRunner, hudState, inventoryState, balance, match, network, flow)`, không có khai báo `partial void`.
+   - Nếu `Bootstrap.Audio.cs` chứa phần thân của một partial method mà chưa có khai báo, commit 8 sẽ không compile. Vì vậy `ComposeAudio` là method private trong file partial.
+   - Chữ ký dùng `ITickScheduler` thay `TickRunner`, bỏ `IPlayerPoseSource` (resolve trong thân hàm), thêm `GameFlow`.
+   - Lý do thêm `GameFlow`: router đăng ký sau GameFlow nên lỡ `AppScreenChanged` đầu tiên. Router nhận `Func<AppScreen>` để đặt màn hình hiện tại cho `MusicPlan` lúc `Initialize`.
+2. **`IAudioService` thêm `Play(in AudioCue)`.** Router cần phát âm 2D có khóa nguồn, ví dụ để cooldown `PickupItem` tính theo từng món: hai món khác nhau trong cùng frame đều phát (AC-A12).
+3. **Thêm `IMatchAudioFeed` và `MatchSessionAudioFeed`** (trong `MatchAudioEventSource.cs`), để test `MatchAudioEventSource` không cần `MatchSession` và mạng.
+4. **Router có cửa sổ 150 ms (G-6)** cho sự kiện HUD không có khóa, cùng loại và cùng nội dung, chạy trước cooldown của mã. Nhờ vậy hai `HitDealt` cách nhau 100 ms chỉ phát một lần dù cooldown `HitMarker` là 60 ms (AC-A12, AC-A19).
+5. **Nhặt mũ/giáp không phát `PickupItem`.** Tiếng nhặt mũ/giáp đến từ `WearArmor` khi món đang mặc đổi, theo bảng 2.1 ("món không phải vũ khí/giáp").
+6. **Dự phòng AudioListener (ngoài kế hoạch, cần CPO biết).**
+   - Cả `Boot.unity`, `Game.unity` và `HudPreview.unity` đều **không có AudioListener**, nên game không phát ra tiếng và console spam "There are no audio listeners".
+   - `AudioManager` tự gắn một listener lên `[Audio]` khi không có listener nào đang bật. Khi scene load có listener riêng thì tắt listener này. Âm đều 2D nên vị trí listener không quan trọng.
+   - Không sửa scene (file dùng chung).
+7. **Hai lỗi Unity phát hiện khi test:**
+   - AudioSource tạo bằng `AddComponent` đã chạy Awake với `playOnAwake` bật, nên báo `isPlaying = true` dù không có clip. Sửa: gọi `Stop()` ngay khi tạo, và voice chỉ được tính "đang phát" khi có clip.
+   - Thêm mốc kết thúc dự phòng (`clip.length / pitch`) cho trường hợp thiết bị âm thanh tắt.
+8. **`SfxPlaybackService.DroppedNoVoice(priority)`:** bộ đếm chẩn đoán, để AC-A26 kiểm được "không mất âm Critical vì hết voice".
+9. **Chia commit:** commit 1–4 gộp thành 3 commit để commit nào cũng compile được (test dùng chung `AudioTestSupport`). File helper tách đúng tên ở 4.3.
+
+**Test (chạy thật qua Unity MCP):**
+
+- EditMode `JungleMaze.Tests.Audio.*`: 52/52. Toàn bộ EditMode: **326/326**.
+- PlayMode `AudioAcceptanceTests`: 13/13. Toàn bộ PlayMode: **56/56** ở lần chạy cuối.
+  - Một lần chạy toàn bộ trước đó có `HudAcceptanceTests.Hud_HoldsValues10sWithoutUpdates` lệch 4,2e-6 (adrenaline). Test này không liên quan audio, chạy riêng thì đạt, chạy lại toàn bộ cũng đạt. Đây là lỗi chập chờn về timing của test HUD.
+- Console sạch sau compile và sau test. Còn 2 cảnh báo CS0618 cũ ở `HudFeedbackPrefabBuild.cs`, không thuộc AUD-01.
+- Smoke trong `Scenes/Dev/HudPreview.unity` (mở sẵn, không lưu):
+  - Play: Bootstrap nối audio, 16 voice SFX và 2 nguồn nhạc, listener dự phòng bật.
+  - Gọi nút panel F6 (HitMarker, ZoneBell3, DragonRoar, Spam 100, Gửi lặp ×5): phát đúng, voice ≤ 16, console không lỗi hay cảnh báo.
+  - Đã thoát Play Mode. `ProjectSettings/EditorSettings.asset` đã `git checkout`.
+- `git status -- Assets/Imported/JSurviv`: trống.
+
+**Ánh xạ AC → test:**
+
+| AC | Test |
+| --- | --- |
+| A1 | E `SfxCatalogTests.Has26Ids_EachHasClipAndRuleFromTable` |
+| A2 | P `PlaySfx_EachOfThe26_OneVoiceRightClipAndBus` |
+| A3 | P `Spam100_NeverMoreThan16_NoNewAudioSources`; E `PoolBound_100Requests_…` |
+| A4 | E `VoiceAllocatorTests.*`; P `PoolFullOfLow_CriticalEvictsExactlyOne` |
+| A5 | E `AudioVolumeTests`, `SetVolume_DecibelsClampedAndSaved`; P `SetVolume_MixerDecibels`; E `RuntimeSet_MixerHasBusesAndExposedParams` (nhóm con) |
+| A6 | E `CooldownAndMaxInstances_PerGroup`, `SfxGateTests.*` |
+| A7 | E `DistanceFalloff`, `NoPose_PositionalSilent_2DPlays`, `SfxDistanceTests` |
+| A8 | P `DebugPanel_PlayButtonsCallService`; review `#if UNITY_EDITOR \|\| DEVELOPMENT_BUILD` (chưa kiểm trên Release build thật) |
+| A9 | E `DistinguishableIdsUseDistinctClips`, `BeepsHaveDistinctFrequencies`; git diff JSurviv trống |
+| A10 | E `ClipPickerTests`; P `SwapClipInCatalogCopy_NoCodeChange` |
+| A11 | E `SfxDeduperTests.*`, `KeyedCues_PlayOncePerKey`, `PlayerDied_KeyedCue` |
+| A12 | E `HudEventsWithinCooldown_OnePlay`, `DifferentPickupIds_BothPlay` |
+| A13 | P `RepeatServerEvent_AddsAtMostOneVoice` |
+| A14 | E `MapsEveryAvailableEvent` |
+| A15 | E `ResetAndInitialState_Silent`, `TakeOff_Silent`, `DurabilityDropWithoutDamage_Silent` |
+| A16 | E `SecondSourceImplementation_SameOutput`; review: `Application/Audio` chỉ dùng HUD port, EventBus, Protocol, MatchSession |
+| A17 | E `MockRaisesAll12Unsourced`, `NothingWithoutCalls_600Ticks` |
+| A18 | E `MissingClip_WarnOnce_NoThrow`; P `LogAssert.NoUnexpectedReceived` ở A2/A3/A26 |
+| A19 | E `HitMarker_FiveIn60ms_OnePlay`, `HitMarkerLoud_…`; P `HitMarker_StartsSameFrame_With15Others` |
+| A20 | E `WarningRisingEdge_OncePerPhase`, `SfxSchedulerTests.ThreeBells_08s`, `ZoneBell_ThreePlaysOnAlert_…`; P đếm 3 tiếng chuông |
+| A21 | E `HitMarkerLoud_DragonRoarLongAndUnique` (2,0 s, Alert, 5 s, clip riêng) |
+| A22 | E `DuckMinus9In02_ReleaseIn1`; P `ZoneBell_ThreeBellsOnAlert_DucksMusic_SfxUntouched` (đo `MusicDuck`/`SfxVolume` theo thời gian thật; SFX ≤ 16, Music ≤ 2 theo T-4) |
+| A23 | P `MusicOffByDefault_NoMusicSource`, `EnableMusic_PlaysScreenTrackWithin1s_DisableFadesOut` |
+| A24 | E `ScreenMapping`, `Crossfade1s_AtMostTwo`, `SameTrack_NoRestart` |
+| A25 | E `DisableFadesOutIn04`; P phần tắt nhạc của test A23 |
+| A26 | P `Burst10s_2000Requests_NoErrors_CriticalNotLost` (≥ 2 000 yêu cầu, `DroppedNoVoice(Critical) = 0`) |
+| A27 | E `PlaySfx100_NoGcAlloc`, `Dispose_UnsubscribesAll`, `MatchAudioEventSourceTests.Dispose_Unsubscribes`; Profiler (P2) chưa đo |
+| A28 | Cần PIC nghe qua F6, chưa làm |
+
+**Chưa kiểm chứng:**
+
+- Nghe bằng tai (AC-A28).
+- F6 không có trong Release build: mới kiểm bằng review `#if`, chưa build.
+- Profiler GC trong trận thật (AC-A27, P2).
+- Scene Game với GameServer: chưa chạy, vì AUD-01 không đổi luồng mạng; `PlayerDied` và zone mới đo bằng packet giả.
+
+**Rủi ro và việc cho ticket khác:**
+
+- **Cho ART-05:**
+  - `bomb_fuse_countdown.mp3` dài 11,8 s trong khi ngòi chỉ 1,5 s. Âm này giữ một voice 11,8 s và vẫn kêu sau khi bom nổ. ART-05 nên cắt, hoặc ticket sau dừng `BombFuse` khi `Explosion`.
+  - `bomb_explosion.mp3` (5,4 s), `cola`/`gauze` (khoảng 3 s) cũng dài.
+- **Panel F6** ở góc trái dưới có thể chồng F3/F4/F5 (đã ghi ở 4.7).
+- **AudioListener:** nên do camera của scene giữ (World/scene ticket). Bản dự phòng tự tắt khi scene có listener riêng.
+
 ## 6. Review
 
 <code-reviewer: lỗi theo mức Chặn / Nên sửa / Gợi ý, trạng thái đã xử lý.>
