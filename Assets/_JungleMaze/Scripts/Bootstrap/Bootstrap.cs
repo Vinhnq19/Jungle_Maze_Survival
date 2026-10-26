@@ -163,6 +163,7 @@ namespace JungleMaze.Composition
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             tickRunner.Add(feedbackScenarios);
 #endif
+            ComposeAudio(bus, tickRunner, hudState, inventoryState, balance, match, network, flow); // AUD-01, Bootstrap.Audio.cs
             _registry.InitializeAll();
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
