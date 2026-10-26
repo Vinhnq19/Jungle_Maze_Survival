@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 432d59ef3aa30e24ca73a14f08b743b9, type: 3}
+  m_Name: HudEffectCatalog
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.UI.Hud.HudEffectCatalog
+  entries:
+  - Kind: 1
+    Label: Adrenaline
+    Icon: {fileID: 0}
+  - Kind: 2
+    Label: "\u0110\u1ED9c"
+    Icon: {fileID: 0}
+  - Kind: 3
+    Label: "Ch\u1EADm"
+    Icon: {fileID: 0}
+  - Kind: 4
+    Label: "\u1EA8n"
+    Icon: {fileID: 0}
+  - Kind: 5
+    Label: "Ng\u1EA5t"
+    Icon: {fileID: 0}
+  - Kind: 6
+    Label: "Tr\xF3i"
+    Icon: {fileID: 0}
+  - Kind: 7
+    Label: "\u0110\u1EA3o"
+    Icon: {fileID: 0}
+  - Kind: 8
+    Label: "Mi\u1EC5n"
+    Icon: {fileID: 0}

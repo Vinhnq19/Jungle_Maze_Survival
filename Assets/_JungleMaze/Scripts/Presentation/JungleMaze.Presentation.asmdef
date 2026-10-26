@@ -5,7 +5,9 @@
         "JungleMaze.Core",
         "JungleMaze.Domain",
         "JungleMaze.Application",
-        "JungleMaze.Protocol"
+        "JungleMaze.Protocol",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

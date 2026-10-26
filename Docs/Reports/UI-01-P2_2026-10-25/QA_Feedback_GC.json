@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "message": "Code executed successfully.",
+  "data": {
+    "result": {
+      "api": "GC.GetAllocatedBytesForCurrentThread",
+      "context": "HudPreview real HudFeedbackPresenter and prefab views; root LateUpdate disabled; deterministic loops",
+      "warmupFrames": 120,
+      "idleFrames": 6000,
+      "idleTotalBytes": 0,
+      "idleBytesPerTick": 0,
+      "activeFrames": 600,
+      "activeTotalBytes": 0,
+      "activeBytesPerTick": 0,
+      "activeMaxPerTick": 0,
+      "activeNonZeroFrames": 0,
+      "useRemainingStart": 117.999573,
+      "useRemainingEnd": 107.997437,
+      "managedHeapOnly": true,
+      "deferredCanvasRebuildOutsideProbe": true,
+      "profilerMarkers": [
+        "QA.HudFeedback.Idle.RealViews",
+        "QA.HudFeedback.ActiveTimers.RealViews"
+      ]
+    },
+    "compiler": "codedom"
+  }
+}

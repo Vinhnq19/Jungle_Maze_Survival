@@ -1,0 +1,4 @@
+frames=300
+vs previous-frame position: max=0.071 cells (0.28 px) mean=0.001
+vs two-frames-earlier position: max=0.221 cells (0.88 px) mean=0.150
+step/frame=0.15 cell (0.6 px)

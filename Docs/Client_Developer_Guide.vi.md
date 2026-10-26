@@ -135,10 +135,46 @@ Bình thường bạn không cần gửi input trực tiếp: `PlayerInputServic
 
 State cấp ứng dụng nằm trong `Application/States/GameStates.cs`. Kế thừa `GameState`, override `Enter`/`Exit`/`Tick` và hai hàm `OnNetworkStateChanged`/`OnGameEvent` nếu cần, rồi tạo state trong constructor của `GameFlow`. Load scene qua `ISceneLoader`, không gọi `SceneManager` trực tiếp. AI hoặc nhân vật dùng lại `Core.States.StateMachine`.
 
+### 4.7. Đẩy dữ liệu lên HUD (UI-01)
+
+HUD đọc ba port trong `Application/Hud/State/`; chỉ tính cách hiển thị, không quyết định gameplay. Gameplay ghi qua port ghi tương ứng (inject bằng `[Inject]` hoặc constructor):
+
+```csharp
+_hud.SetHp(72);                                // IHudStateWriter: HP, giáp/mũ, vũ khí cầm, đạn, bo, còn sống, pose
+_hud.SetAmmo(inMagazine: 4, reserve: 30);
+_hud.SetAliveCount(alive: 7, total: 8);        // total = số người lúc vào trận
+_inventory.SetConsumableSlot(0, "GOD_LEAF", 6); // IInventoryStateWriter: 4 khe vũ khí, 4 khe dược, khe đang chọn
+_effects.Apply(EffectKind.Adrenaline, 8f, 8f);  // IEffectStateWriter: store tự đếm ngược và tự xoá khi hết hạn
+```
+
+- Ghi trên main thread. Store chỉ phát `Changed` khi giá trị đổi, và tự `Reset` khi mất kết nối.
+- Ai ghi gì: WPN-02 `SetHp`, ITM-01 khe/giáp/mũ/`SetHeldWeapon`, WPN-01 `SetAmmo`, Game-10 `Apply`, ZON-01 `SetZoneCountdown` (ít nhất 1 lần/giây, HUD không tự đếm bo), SRV-03 `SetAliveCount`, ART-04 thay `NullItemIconProvider` trong Bootstrap. Hiệu ứng mới: thêm giá trị vào `EffectKind`, không đổi port.
+- Thử không cần GameServer: mở `Scenes/Dev/HudPreview.unity`, Play, bấm **F4**. Panel F4 và `Mock*State` chỉ có trong Editor/Development build.
+- Art HUD hiện là bản tạm: màu, sprite, font chỉ gán trên `Prefabs/UI/Hud.prefab` và `HudPalette`. Thay art thì sửa prefab rồi chạy context menu "Apply palette" trên `HudRoot`, không sửa code.
+
+**Phản hồi HUD — UI-01 phần 2 (đã nghiệm thu 25/10):**
+
+```csharp
+_hud.NotifyPickup("RUBBER_GUN", 1);                  // Chỉ thông báo; ITM-01 tự ghi số lượng/khe riêng.
+_hud.NotifyHitDealt(HitTargetKind.Hero);             // Other không hiện hit marker.
+_hud.NotifyDamageTaken(true, 225f);                 // 0=Đông, 90=Bắc; false nếu nguồn không cho biết hướng.
+_hud.SetDanger(123, DangerKind.FusedBomb, 1.5f, true, 7f, 7f); // Vị trí nguồn theo cell thế giới, không phải dx/dy.
+_hud.ClearDanger(123);                             // Nguồn gỡ sớm: HUD ẩn ở frame kế tiếp.
+_inventory.BeginUse(4, "GOD_LEAF", 0.5f, 0.5f, true); // Khe toàn cục 0..7; dược phẩm 4..7, giây từ balance JSON.
+_inventory.CancelUse("GOD_LEAF");                  // Hoặc CompleteUse khi gameplay xác nhận xong.
+_effects.Apply(EffectKind.Poison, 3f, 3f);           // Slow không thời lượng: Apply(Slow, 0f, 0f).
+```
+
+- `IHudStateWriter` và `IInventoryStateWriter` chứa các hàm mới; ba port đọc không phụ thuộc nguồn network/gameplay. Không phát pickup để tự trừ/tăng túi, không gửi damage feedback để tự đổi HP.
+- `HudStateStore`, `InventoryStateStore`, `EffectStateStore` được Bootstrap tick trước scenario; HUD đọc trong LateUpdate. Dùng đồ về 0 vẫn chờ nguồn `CompleteUse`/`CancelUse`; HUD không tự kết luận gameplay đã xong. Id cũ khi đã đổi món bị bỏ qua.
+- Bomb dùng id ổn định do nguồn cấp; bẫy không đồng hồ dùng `DangerKind.Trap`, làm mới ít nhất mỗi 4 giây nếu còn hiện. Nguồn quyết định tầm nhìn/LOS và quyền tiết lộ hướng; UI không suy vị trí đối thủ.
+- **F5** là panel phản hồi Editor/Development, có từng loại sự kiện và preset Dồn/Giao tranh; F4 vẫn là HUD lõi. `HudFeedbackTuning` trên prefab chỉnh thời gian/giới hạn; `HudEffectCatalog.asset` chỉnh nhãn/icon hiệu ứng. Icon vật phẩm thật vẫn thuộc ART-04.
+- QA đo 0 B trong Tick đồng bộ của store/presenter/view sau warm-up; chưa bao gồm deferred Canvas rebuild, toàn frame hay Release player. Xem báo cáo `Docs/Reports/UI-01-P2_2026-10-25/`.
+
 ## 5. Kiểm thử
 
-- **Window → General → Test Runner → EditMode → Run All:** assembly `JungleMaze.Tests.EditMode`; kết quả 23/10 là **125/125 PASS**, gồm DI, EventBus, StateMachine, pool, config, serializer 0 GC và `NetworkClient` với `FakeGameServer` trên loopback.
-- **PlayMode → Run All:** assembly `JungleMaze.Tests.PlayMode`; các test nền tảng chạy Unity Physics2D, config sau Awake, aim, camera, map, projectile và pooling. Các test này không cần EC2/API/MongoDB. Kết quả chi tiết ở tài liệu nghiệm thu.
+- **Window → General → Test Runner → EditMode → Run All:** assembly `JungleMaze.Tests.EditMode`; kết quả 23/10 là **125/125 PASS**, gồm DI, EventBus, StateMachine, pool, config, serializer 0 GC và `NetworkClient` với `FakeGameServer` trên loopback. Sau UI-01 lõi và merge main (24/10) là **193/193 PASS**. Sau build UI-01 phần 2, QA độc lập ngày 25/10 đạt **247/247 PASS**, gồm test feedback trong `Tests/EditMode/Hud/Feedback/`. Đây là kết quả test, không thay nghiệm thu G3.
+- **PlayMode → Run All:** assembly `JungleMaze.Tests.PlayMode`; các test nền tảng chạy Unity Physics2D, config sau Awake, aim, camera, map, projectile và pooling. Sau UI-01 lõi là **20/20 PASS**; QA phần 2 ngày 25/10 đạt **37/37 PASS**, thêm 17 `HudFeedbackAcceptanceTests` và giữ hồi quy lõi. Các test này không cần EC2/API/MongoDB. Bằng chứng mới ở `Docs/Reports/UI-01-P2_2026-10-25/`.
 - Phía server: `Backend/Tests/run_all.cmd` (cần Docker).
 - Đo RTT để nghiệm thu: bật F3, hoặc xem dòng `[client-summary]` trong log khi mất kết nối, cùng format với NetSmokeClient.
 

@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "message": "Test job status retrieved.",
+  "error": null,
+  "data": {
+    "job_id": "af9e52c2cbae4260b2208000b0b15df6",
+    "status": "succeeded",
+    "mode": "PlayMode",
+    "started_unix_ms": 1792933483806,
+    "finished_unix_ms": 1792933498752,
+    "last_update_unix_ms": 1792933498752,
+    "progress": {
+      "completed": 37,
+      "total": 37,
+      "current_test_full_name": null,
+      "current_test_started_unix_ms": null,
+      "last_finished_test_full_name": "JungleMaze.Tests.PlayMode.HudFeedbackAcceptanceTests.Use_GodLeafJsonProgress_HintAndSlotFrame_SelectedKept",
+      "last_finished_unix_ms": 1792933498727,
+      "stuck_suspected": false,
+      "editor_is_focused": false,
+      "run_in_background": false,
+      "focus_nudge_attempts": null,
+      "focus_nudge_limit": null,
+      "focus_nudge_status": null,
+      "blocked_reason": null,
+      "failures_so_far": [],
+      "failures_capped": false
+    },
+    "error": null,
+    "result": null
+  },
+  "hint": null
+}
