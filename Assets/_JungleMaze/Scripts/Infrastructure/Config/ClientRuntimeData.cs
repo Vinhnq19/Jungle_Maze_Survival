@@ -14,6 +14,8 @@ namespace JungleMaze.Infrastructure.Config
         private readonly string _directory;
         public IReadOnlyList<RuntimeCover> Covers { get; private set; } = Array.Empty<RuntimeCover>();
         public RuntimeMapBounds Bounds { get; private set; }
+        public float PlayerSpeed { get; private set; }
+        public float PlayerRadius { get; private set; }
         public ClientRuntimeData(string streamingAssets) => _directory = Path.Combine(streamingAssets, "JungleMaze", "runtime");
         public string Verify(string expectedVersion, string expectedHash)
         {
@@ -44,7 +46,14 @@ namespace JungleMaze.Infrastructure.Config
                 foreach (var item in (JArray)map["obstacles"])
                     covers.Add(new RuntimeCover { Name = (string)item["name"], MinX = (float)item["minX"], MinY = (float)item["minY"],
                         MaxX = (float)item["maxX"], MaxY = (float)item["maxY"] });
+                var settings = JObject.Parse(File.ReadAllText(Path.Combine(_directory, "match_settings.json")));
+                var speed = (float)settings["playerSpeed"];
+                var radius = (float)settings["playerRadius"];
+                if (!(speed > 0) || !(radius > 0) || float.IsInfinity(speed) || float.IsInfinity(radius))
+                    return "Tốc độ/bán kính người chơi trong dữ liệu trận không hợp lệ.";
                 Covers = covers;
+                PlayerSpeed = speed;
+                PlayerRadius = radius;
                 return null;
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { return "Thiếu hoặc sai dữ liệu trận; chạy công cụ đồng bộ dữ liệu trước khi build."; }

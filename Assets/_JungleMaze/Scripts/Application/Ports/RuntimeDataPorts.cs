@@ -12,6 +12,9 @@ namespace JungleMaze.App.Ports
     {
         IReadOnlyList<RuntimeCover> Covers { get; }
         RuntimeMapBounds Bounds { get; }
+        /// <summary>Tốc độ/bán kính server dùng cho movement; chỉ hợp lệ sau khi Verify trả null.</summary>
+        float PlayerSpeed { get; }
+        float PlayerRadius { get; }
         string Verify(string expectedVersion, string expectedHash);
     }
 }

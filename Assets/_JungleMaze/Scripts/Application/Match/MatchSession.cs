@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JungleBackend.Protocol.Gameplay;
+using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
 using JungleMaze.Core.Events;
@@ -10,7 +11,10 @@ using JungleMaze.Domain.Player;
 
 namespace JungleMaze.App.Match
 {
-    /// <summary>Authoritative demo binding. No prediction, local damage or client-owned match timer.</summary>
+    /// <summary>
+    /// Authoritative match binding: phase, snapshot, zone, result. Movement input is predicted locally by
+    /// <see cref="LocalPrediction"/> (MOV-02) and reconciled with each snapshot; no local damage or client-owned timer.
+    /// </summary>
     public sealed class MatchSession : IInitializable, ITickable, IDisposable
     {
         private readonly INetworkClient _network;
@@ -34,9 +38,10 @@ namespace JungleMaze.App.Match
         private uint _lastSnapshotTick;
 
         public MatchSession(INetworkClient network, IPacketSender sender, IPacketReceiver receiver,
-            IEventBus bus, PlayerRegistry players)
+            IEventBus bus, PlayerRegistry players, LocalPrediction prediction = null)
         {
             _network = network; _sender = sender; _receiver = receiver; _bus = bus; _players = players;
+            Prediction = prediction ?? new LocalPrediction();
             _onNetwork = NetworkChanged; _onPhase = PhaseChanged; _onSnapshot = Snapshot;
             _onZone = p => { if (p.MatchId == MatchId && (!_hasZone || unchecked((int)(p.Tick - Zone.Tick)) >= 0)) { Zone = p; _hasZone = true; } };
             _onWelcome = p => { if (p.MatchId == MatchId) { OwnNetId = p.NetId; ResumeProof = p.ResumeToken; } };
@@ -70,6 +75,8 @@ namespace JungleMaze.App.Match
         public byte OwnHp => OwnNetId != 255 && _players.TryGet(OwnNetId, out var p) && p.HasState ? p.Current.Hp : (byte)0;
         public bool CanResume => !Connected && Phase == MatchPhase.InGame && ResumeProof != Guid.Empty;
         public PlayerRegistry Players => _players;
+        /// <summary>MOV-02: dự đoán nhân vật của mình; cần SetWorld (map đã kiểm hash) trước khi hoạt động.</summary>
+        public LocalPrediction Prediction { get; }
 
         public void Initialize()
         {
@@ -86,6 +93,7 @@ namespace JungleMaze.App.Match
         public void SetIntent(in PlayerIntent intent) => _intent = intent;
         public void Tick(float deltaTime)
         {
+            Prediction.Advance(deltaTime);
             if (!Connected) return;
             if (!_helloSent) Hello();
             _tickFraction += deltaTime * 30f;
@@ -98,11 +106,13 @@ namespace JungleMaze.App.Match
             while (_sendElapsed >= 1f / 30 && sent++ < 3)
             {
                 _sendElapsed -= 1f / 30;
-                var input = new PlayerInputPacket { Tick = ServerTick, InputSeq = ++_inputSequence };
+                // Seq 0 is reserved for "server has processed nothing yet" (see LocalPrediction ack handling).
+                if (++_inputSequence == 0) _inputSequence = 1;
+                var input = new PlayerInputPacket { Tick = ServerTick, InputSeq = _inputSequence };
                 input.SetMove(_intent.MoveX, _intent.MoveY); input.SetAimDegrees(_intent.AimDegrees);
                 // Demo sends movement/aim only; this task does not implement combat actions.
                 var scoped = new MatchInputPacket { MatchId = MatchId, Input = input };
-                if (_sender.Send(ref scoped, PacketDelivery.Unreliable)) InputsSent++;
+                if (_sender.Send(ref scoped, PacketDelivery.Unreliable)) { InputsSent++; Prediction.RecordInput(input); }
             }
             if (_sendElapsed > .1f) { _sendElapsed = 0; InputCatchupDrops++; }
         }
@@ -119,7 +129,7 @@ namespace JungleMaze.App.Match
             if (change.Current == NetworkState.Failed || change.Current == NetworkState.Disconnected)
             {
                 // Retain only the short-lived resume proof; scene state is repopulated by the server.
-                ClearPlayers(); _intent = default; _sendElapsed = 0; _hasSnapshot = false; _helloSent = false;
+                ClearPlayers(); _intent = default; _sendElapsed = 0; _hasSnapshot = false; _helloSent = false; Prediction.Reset();
             }
         }
         private void PhaseChanged(MatchPhasePacket packet)
@@ -131,6 +141,7 @@ namespace JungleMaze.App.Match
                 if (MatchId != Guid.Empty) { _retiredMatches.Enqueue(MatchId); if (_retiredMatches.Count > 8) _retiredMatches.Dequeue(); }
                 ClearPlayers(); MatchId = packet.MatchId; _hasSnapshot = false; HasResult = false; _hasZone = false;
                 Roster = Array.Empty<MatchParticipantState>(); OwnNetId = 255; ResumeProof = Guid.Empty; _inputSequence = 0;
+                Prediction.Reset();
             }
             Phase = packet.Phase; PhaseState = packet; ServerTick = packet.ServerTick; _tickFraction = 0;
             PhaseUpdated?.Invoke(packet);
@@ -156,6 +167,7 @@ namespace JungleMaze.App.Match
                 var model = new PlayerSnapshot { Tick = packet.ServerTick, X = state.X, Y = state.Y,
                     RotationDegrees = state.RotationDegrees, Hp = state.Hp, IsDead = state.IsDead,
                     LastProcessedInputSeq = state.LastProcessedInputSeq };
+                if (state.NetId == OwnNetId) Prediction.Reconcile(model);
                 if (_players.GetOrAdd(state.NetId).Apply(model)) _bus.Publish(new PlayerStateUpdated(state.NetId));
             }
             for (var i = _players.ActiveIds.Count - 1; i >= 0; i--)
