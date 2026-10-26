@@ -239,7 +239,12 @@ Dev bổ sung output/commit, số lần sửa và giới hạn. Hiện đã có 
 
 ## 6. Review
 
-Reviewer độc lập ghi sau build.
+**27/10/2026 02:45 · Code Reviewer (phiên độc lập, chỉ đọc): Qua, không có lỗi Chặn.** Review diff build `49c4943b`…`dd84914a` theo kiến trúc (lớp, Bootstrap/Inject, `Resources.Load` một lần lúc compose, không `Find*`/singleton) và theo phạm vi ticket. Các điểm Nên sửa đã giao và xử lý trước QA:
+- A8: smoke test `ConnectionMenuView` trên Boot, hover nút menu, chiều cao thanh in-game → Unity Dev sửa ở `054b8a76`, `a9c89458`, ghi log ở `cc283d4a` (EditMode 326/326, PlayMode 57/57 lúc đó).
+- Icon hiệu ứng 256 px → 64 px, KeyArt không có alpha → art: Codex `b96db211` (icon), CPO `81de7d82` (KeyArt, EffectFrame).
+- Manifest "imported, not bound" cho 5 sprite chưa gắn → CPO ghi ở `7e341d51`. Trạng thái sau restyle cập nhật ở `48165122`.
+
+(CPO ghi lại mục này vì phiên review báo kết quả qua tin nhắn, không ghi thẳng vào ticket.)
 
 ## 7. QA
 
@@ -268,4 +273,19 @@ AC ART-04 phần build (3–7, 9, 12, 13, 15–19, 21–23): xem bảng ánh x�
 
 ## 8. Nghiệm thu
 
-Chờ G3 sau review/QA. Quyền bắt đầu build ngày27/10 không thay cho nghiệm thu chất lượng toàn bộasset. Không tự đóng ART-04/UI-02.
+**27/10/2026 06:30 · G3: nghiệm thu (CPO duyệt thay người dùng, theo quyền giao tới 12:00 ngày 27/10).**
+
+Lý do: review Qua; QA chạy mới sau restyle 32 px, EditMode 333/333, PlayMode 59/59, console sạch; A2–A9 và A11 Đạt. Ba mục "Một phần" đã được xử lý hoặc chuyển đi, không còn lỗi chất lượng trong phạm vi ticket:
+- A1 (manifest cũ): CPO cập nhật 43 dòng ở `48165122`, không còn dòng "queued".
+- A12 (mục Review trống): CPO đã ghi mục 6 với các hash sửa review.
+- A10 (scene Game chưa chụp được vì phải vào phòng qua GameServer): chuyển sang QA-01 (playtest có server). HudPreview và Boot đã chụp ở 3 độ phân giải.
+
+Follow-up (không chặn, giao chủ sở hữu):
+1. Panel kết nối IMGUI vẽ đè khe 1 và Vitals ở HudPreview. Đây là panel dev, không do art; chủ UI-01 cho ẩn panel khi chụp nghiệm thu.
+2. Tên dài trong toast ngắt giữa từ ("Crossbo/w") và tên khe bị cắt: layout UI-01, sửa ở ticket UI tiếp theo.
+3. `HudArcFilled`, `HudArrowOutline` còn Bilinear (reuse có chủ đích); đổi khi vẽ lại hai sprite này.
+4. 6 prefab HUD phụ thuộc shader TMP trong `Assets/Imported/JSurviv`, có từ UI-01: đưa TMP Essentials ra khỏi `Imported` ở một ticket dọn dẹp.
+5. Cảnh báo `RHINO.move must be marked as Legacy` khi mở scene Game: asset thế giới, báo chủ Hero/map.
+6. Chưa kiểm chứng: click và hover chuột thật, Release Player, GameServer thật (QA-01/BLD-01).
+
+ART-04 đóng riêng sau khi có test R2 (xem ART-04.md). UI-02 không đóng theo ticket này.
