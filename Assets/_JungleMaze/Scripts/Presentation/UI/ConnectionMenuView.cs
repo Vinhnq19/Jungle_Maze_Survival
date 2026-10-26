@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JungleMaze.App.Config;
 using JungleMaze.App.Flow;
 using JungleMaze.Core.DI;
@@ -13,6 +14,12 @@ namespace JungleMaze.Presentation.UI
     public sealed class ConnectionMenuView : MonoBehaviour
     {
         private static readonly string[] ModeNames = { "Local", "LAN", "Online" };
+        public const string JoinLabel = "Vào phòng";
+        public const string CancelLabel = "Hủy";
+        public const string LeaveLabel = "Rời phòng";
+        private const float BarButtonHeight = 28f;
+        private static readonly Color HoverOverlay = new Color(1f, 1f, 1f, 0.14f);
+        private static readonly Color PressedOverlay = new Color(0f, 0f, 0f, 0.22f);
         private ConnectionMenuPresenter _presenter;
         private GUIStyle _status;
         private UiMenuArtCatalog _art;
@@ -21,6 +28,8 @@ namespace JungleMaze.Presentation.UI
         private string _backdropScene;
         private bool _backdropActive;
         private GUIStyle _panel, _primary, _secondary, _ghost, _label;
+        private Vector2 _areaOrigin;
+        private readonly Dictionary<string, Rect> _buttonRects = new Dictionary<string, Rect>();
 
         [Inject]
         public void Construct(ConnectionMenuPresenter presenter) => _presenter = presenter;
@@ -42,6 +51,19 @@ namespace JungleMaze.Presentation.UI
         public UiMenuArtCatalog Art => _art;
         /// <summary>True when the backdrop (background, logo, key art) is drawn on MainMenu/Connecting.</summary>
         public bool BackdropActive => _art != null && _backdropActive;
+        /// <summary>True when the backdrop is drawn this frame: art set, menu scene active and screen MainMenu/Connecting.</summary>
+        public bool ShowsBackdrop => BackdropActive && _presenter != null
+                                     && (_presenter.Screen == AppScreen.MainMenu || _presenter.Screen == AppScreen.Connecting);
+        /// <summary>The cached style of the primary button (default skin copy when no art is configured).</summary>
+        public GUIStyle PrimaryStyle => _primary;
+        /// <summary>Height of the in-room/in-match bar: button plus the panel's vertical padding, so nothing is clipped.</summary>
+        public float InGameBarHeight => BarButtonHeight + (_panel != null ? _panel.padding.vertical : 8f);
+
+        /// <summary>
+        /// Screen rect (GUI pixels, top-left origin) of a labelled button as drawn on the last repaint
+        /// (<see cref="JoinLabel"/>, <see cref="CancelLabel"/>, <see cref="LeaveLabel"/>). For smoke tests and QA.
+        /// </summary>
+        public bool TryGetButtonRect(string label, out Rect rect) => _buttonRects.TryGetValue(label, out rect);
 
         private void OnEnable() => SceneManager.activeSceneChanged += OnActiveSceneChanged;
 
@@ -66,13 +88,13 @@ namespace JungleMaze.Presentation.UI
 
         private void DrawMenu()
         {
-            GUILayout.BeginArea(new Rect(20, 20, 380, Screen.height - 40), _panel);
+            BeginArea(new Rect(20, 20, 380, Screen.height - 40));
             GUILayout.Label("Jungle Maze — Kết nối", _status);
 
             GUILayout.Label("Profile (StreamingAssets/JungleMaze)", _label);
             GUILayout.BeginHorizontal();
             foreach (var profile in _presenter.Profiles)
-                if (GUILayout.Button(profile, _ghost)) _presenter.SelectProfile(profile);
+                if (Button(profile, _ghost)) _presenter.SelectProfile(profile);
             GUILayout.EndHorizontal();
 
             _presenter.Mode = (ConnectionMode)GUILayout.Toolbar((int)_presenter.Mode, ModeNames);
@@ -91,8 +113,8 @@ namespace JungleMaze.Presentation.UI
             GUILayout.Space(6);
             GUILayout.BeginHorizontal();
             GUI.enabled = !_presenter.IsBusy;
-            if (GUILayout.Button("Vào phòng", _primary, GUILayout.Height(32))) _presenter.Join();
-            if (GUILayout.Button("Lưu endpoint", _secondary, GUILayout.Height(32))) _presenter.SaveEndpoint();
+            if (Button(JoinLabel, _primary, GUILayout.Height(32))) _presenter.Join();
+            if (Button("Lưu endpoint", _secondary, GUILayout.Height(32))) _presenter.SaveEndpoint();
             GUI.enabled = true;
             GUILayout.EndHorizontal();
 
@@ -104,20 +126,45 @@ namespace JungleMaze.Presentation.UI
 
         private void DrawConnecting()
         {
-            GUILayout.BeginArea(new Rect(20, 20, 380, 120), _panel);
+            BeginArea(new Rect(20, 20, 380, 120));
             GUILayout.Label(_presenter.Status, _status);
-            if (GUILayout.Button("Hủy", _secondary, GUILayout.Height(28))) _presenter.Disconnect();
+            if (Button(CancelLabel, _secondary, GUILayout.Height(28))) _presenter.Disconnect();
             GUILayout.EndArea();
         }
 
         private void DrawInGameBar()
         {
-            GUILayout.BeginArea(new Rect(10, 10, 520, 34), _panel);
+            // Height follows the panel padding (10 + 10 with art), so the 28 px button is never clipped.
+            BeginArea(new Rect(10, 10, 520, InGameBarHeight));
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"{_presenter.Screen} · {_presenter.Endpoint} · {_presenter.PlayerId}", _label);
-            if (GUILayout.Button("Rời phòng", _secondary, GUILayout.Width(90))) _presenter.Disconnect();
+            GUILayout.Label($"{_presenter.Screen} · {_presenter.Endpoint} · {_presenter.PlayerId}", _label, GUILayout.Height(BarButtonHeight));
+            if (Button(LeaveLabel, _secondary, GUILayout.Width(90), GUILayout.Height(BarButtonHeight))) _presenter.Disconnect();
             GUILayout.EndHorizontal();
             GUILayout.EndArea();
+        }
+
+        private void BeginArea(Rect rect)
+        {
+            _areaOrigin = rect.position;
+            GUILayout.BeginArea(rect, _panel);
+        }
+
+        /// <summary>
+        /// GUILayout button with visible hover/pressed feedback for the art faces (a light or dark overlay, no new
+        /// texture) and its screen rect recorded on repaint. Returns the click exactly like GUILayout.Button.
+        /// </summary>
+        private bool Button(string text, GUIStyle style, params GUILayoutOption[] options)
+        {
+            var clicked = GUILayout.Button(text, style, options);
+            if (Event.current.type != EventType.Repaint) return clicked;
+            var rect = GUILayoutUtility.GetLastRect();
+            _buttonRects[text] = new Rect(rect.position + _areaOrigin, rect.size);
+            if (_art == null || !GUI.enabled || !rect.Contains(Event.current.mousePosition)) return clicked;
+            var color = GUI.color;
+            GUI.color = GUIUtility.hotControl != 0 ? PressedOverlay : HoverOverlay;
+            GUI.DrawTexture(rect, Texture2D.whiteTexture);
+            GUI.color = color;
+            return clicked;
         }
 
         private string Field(string label, string value)
@@ -134,22 +181,33 @@ namespace JungleMaze.Presentation.UI
         {
             if (!BackdropActive || Event.current.type != EventType.Repaint) return;
             if (_art.Background != null) GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _art.Background, ScaleMode.ScaleAndCrop);
-            // Column right of the 20 + 380 px panel with a 40 px gap; logo above key art, both centred in it.
+            BackdropLayout(_art, Screen.width, Screen.height, out var logo, out var keyArt);
+            if (logo.width > 0f) GUI.DrawTexture(logo, _art.Logo, ScaleMode.ScaleToFit);
+            if (keyArt.width > 0f) GUI.DrawTexture(keyArt, _art.KeyArt, ScaleMode.ScaleToFit);
+        }
+
+        /// <summary>
+        /// Logo and key art rects in the column right of the 20 + 380 px panel (40 px gap), logo above key art, both
+        /// centred. Empty rects when the art is missing or the screen is too narrow. Public for layout tests.
+        /// </summary>
+        public static void BackdropLayout(UiMenuArtCatalog art, float screenWidth, float screenHeight, out Rect logo, out Rect keyArt)
+        {
+            logo = keyArt = default;
             const float left = 440f;
-            var width = Screen.width - left - 40f;
-            if (width < 160f) return;
+            var width = screenWidth - left - 40f;
+            if (art == null || width < 160f) return;
             var top = 40f;
-            if (_art.Logo != null)
+            if (art.Logo != null)
             {
                 var logoWidth = Mathf.Min(width, 640f);
-                var logoHeight = logoWidth * _art.Logo.height / _art.Logo.width;
-                GUI.DrawTexture(new Rect(left + (width - logoWidth) * 0.5f, top, logoWidth, logoHeight), _art.Logo, ScaleMode.ScaleToFit);
+                var logoHeight = logoWidth * art.Logo.height / art.Logo.width;
+                logo = new Rect(left + (width - logoWidth) * 0.5f, top, logoWidth, logoHeight);
                 top += logoHeight + 24f;
             }
-            if (_art.KeyArt != null)
+            if (art.KeyArt != null)
             {
-                var size = Mathf.Min(width, Screen.height - top - 40f);
-                if (size > 64f) GUI.DrawTexture(new Rect(left + (width - size) * 0.5f, top, size, size), _art.KeyArt, ScaleMode.ScaleToFit);
+                var size = Mathf.Min(width, screenHeight - top - 40f);
+                if (size > 64f) keyArt = new Rect(left + (width - size) * 0.5f, top, size, size);
             }
         }
 
