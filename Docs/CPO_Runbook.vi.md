@@ -55,6 +55,9 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 - **27/10 02:45 · AUD-01 pha 1 build xong** (`485c10ab`…`16df4be5`, EditMode 326/326, PlayMode 56/56). Chấp nhận `AudioListener` dự phòng trong `AudioManager` vì không scene nào có listener. Follow-up: gắn listener vào camera, thuộc người sở hữu scene/camera. `bomb_fuse` 11,8 s giao ART-05. Code Reviewer đang review AUD-01.
 - **Thứ tự Unity tiếp theo:** Unity Dev sửa ADHOC → QA Tester QA AUD-01 → (sau khi có icon 32 px của Codex) QA Tester QA ADHOC → CPO G3.
 
+- **27/10 03:00 · ADHOC: đã sửa xong các điểm review** (Unity Dev `054b8a76`, `a9c89458`, `cc283d4a`; EditMode 326/326, PlayMode 57/57; ảnh Boot và InRoom lưu trong `Docs/Reports/ADHOC-UI-ASSETS-A/`). Chờ icon 32 px rồi QA.
+- **27/10 03:00 · Review AUD-01: Qua.** Sửa ngay 4 điểm Nên sửa: không ghi PlayerPrefs mỗi lần kéo slider; dừng âm khi rời trận; kiểm listener dự phòng định kỳ; dừng BombFuse khi nổ. Lý do: lỗi thật, sửa nhỏ, nằm trong vùng AUD-01, nên làm trước QA để không phải QA hai lần.
+
 ## 5. Khởi động lại khi hết token
 
 Đã hẹn các lượt tự chạy lại (scheduled task "CPO resume"). Mỗi lượt làm:
