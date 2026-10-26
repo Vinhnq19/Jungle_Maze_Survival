@@ -1,0 +1,8 @@
+{
+  "unity": "6000.3.15f1",
+  "head": "17ea59ef",
+  "editmode": {"job_id": "c59f815890d14ab087342439f8e5b0ea", "total": 333, "passed": 333, "failed": 0, "skipped": 0, "durationSeconds": 19.81},
+  "playmode": {"job_id": "b6285589a1604f72adecb60370a8c185", "total": 59, "passed": 59, "failed": 0, "skipped": 0, "durationSeconds": 22.43},
+  "console_after_refresh_and_tests": {"errors": 0, "warnings": 0},
+  "validator_UiArtAssetBuild_Validate_problems": 0
+}

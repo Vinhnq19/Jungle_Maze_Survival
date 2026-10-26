@@ -243,9 +243,28 @@ Reviewer độc lập ghi sau build.
 
 ## 7. QA
 
+**Kết quả QA 27/10/2026 (bản dựng `17ea59ef`, sau khi vẽ lại icon 32 px): Một phần.** Chi tiết, số đo và ảnh: [`Docs/Reports/ADHOC-UI-ASSETS-A/QA_report.md`](../Reports/ADHOC-UI-ASSETS-A/QA_report.md). Import PNG lại: console 0 error, 0 warning, không `.meta` nào đổi. EditMode **333/333**, PlayMode **59/59** (chạy mới, job `c59f8158…`, `b6285589…`, `test_results.json`).
+
 | AC | Kết quả | Bằng chứng |
 | --- | --- | --- |
-| A1–A12 | Chưa kiểm chứng | Sẽ ghi job JSON, screenshot và mapping thật sau integration. |
+| A1 | Một phần | 64 dòng đều có đường dẫn hoặc mapping reuse, file và `.meta` tồn tại, 5 dòng "imported, not bound" khớp thực tế. Nhưng `asset_manifest.csv` còn trạng thái cũ: 34 icon `bound (32px restyle queued)`, 7 effect `bound (256px, 64px re-export queued)` (file đã 64×64), KeyArt `bound (no alpha, re-export queued)` (đã có alpha). CPO cần cập nhật |
+| A2 | Đạt | `UiArtCatalogTests` 8/8: 34 ID, mỗi ID một sprite, null/rỗng/sai hoa thường → null; 34 ảnh đôi một khác nội dung; `git diff` 0 file dưới `Assets/Imported/JSurviv/` |
+| A3 | Đạt | Đo PNG: 34/34 là 64×64 RGBA, góc alpha 0, cạnh dài 56 px, lệch tâm ≤ 1,0 px, bán trong suốt 0 %, ≤ 8 màu. Import Point, không mipmap, Uncompressed (66/68 texture; 2 ảnh arc reuse cũ giữ Bilinear). 590 KiB. HAND và ROPE đọc được ở 28 px và 18 px; ô 28×28 quanh icon có 5 màu (4 icon + nền), tức không nội suy |
+| A4 | Đạt | `RealQuickbar_KnownUnknownKnownAndEmpty` xanh; 34 icon qua 5 ảnh Game view thật, khe rỗng nét đứt, ID lạ ra ô giữ chỗ |
+| A5 | Đạt | `PickupRow_ReusedIdsAndUnknownReset` xanh; 12 ảnh Game view: 34 ID qua 3 dòng tái dùng, icon đúng, màu trắng, `ZZ_UNKNOWN` ra ô xám |
+| A6 | Đạt | `EffectIcons_AndFallbackOverflow` + `EffectCatalog_EightKinds…` xanh; ảnh có 5 chip (Poison, Slow, Stun, Root, Reverse) icon và nhãn không đè nhau. Invisible, CcImmune, chip Adrenaline, `+n`: chỉ có test, chưa có ảnh |
+| A7 | Đạt | `HudPrefabs_PaletteA_OneOverlayPairPerBlock_NoRaycast`, `HudAcceptanceTests`, `HudFeedbackAcceptanceTests` xanh; `Validate()` 0 vấn đề; 0 script thiếu ở 7 prefab. Ghi chú: 6 prefab HUD phụ thuộc shader TMP trong `Imported/JSurviv` (có từ UI-01, không phải sprite) |
+| A8 | Đạt (giới hạn) | `ConnectionMenuSmokeTests` xanh; `boot_1280.png`, `boot_1920.png`: nền, logo, key art (nền trong suốt, hết ô vuông), panel không bị che. Chưa bấm chuột thật, chưa chụp hover; nhánh có GameServer của smoke test chưa chạy |
+| A9 | Đạt | 23 file ngoài Docs/Art/Tools/Tests/Audio đều là Presentation UI, `Bootstrap.cs`, prefab, asset, `Boot.unity`; không đụng Domain/Application/Infrastructure/Core/Backend/balance. Bootstrap chỉ thêm ref serialized, một `Resources.Load` lúc compose và đăng ký provider; không `Find*`/singleton mới. `Lookup_…DoesNotAllocateAfterWarmup` và `ScopedLookupAndViewWarmGC` 0 B |
+| A10 | Một phần | Ảnh thật HudPreview 1280/1920/2560 và Boot 1280/1920; console sạch. **Scene Game không chụp được**: Play Mode từ Game khởi động ở Boot, cần GameServer để vào Game |
+| A11 | Đạt | EditMode 333/333, PlayMode 59/59 chạy mới sau import; `test_results.json` |
+| A12 | Một phần | 6 commit theo 4.6 cộng commit sửa review, message tiếng Anh, 0 dòng attribution, chưa push (ahead 62). Mục 6 (Review) của ticket còn trống nên QA không xác nhận được review độc lập |
+
+AC ART-04 phần build (3–7, 9, 12, 13, 15–19, 21–23): xem bảng ánh xạ trong `QA_report.md` mục 5. Không đạt AC23 (manifest chưa cập nhật). Còn thiếu so với ART-04 là việc riêng của R1/R2 (AC1, AC2, test quét 28 ID, test giao rect, test hai writer). AC14, AC20 không kiểm.
+
+**Quan sát ngoài AC:** (1) panel kết nối IMGUI ở HudPreview vẽ đè khe 1 (1280) và một phần Vitals/chip (1920, 2560); (2) tên dài trong toast ngắt giữa từ ("Crossbo/w"); (3) `HudArcFilled`/`HudArrowOutline` còn Bilinear; (4) mở scene Game báo 3 cảnh báo `RHINO.move must be marked as Legacy` (asset thế giới, ngoài phạm vi).
+
+**Chưa kiểm chứng:** click chuột thật và hover, scene Game, GameServer thật, Release Player, nhận diện mù 3 người (ART-04 AC20b).
 
 ## 8. Nghiệm thu
 
