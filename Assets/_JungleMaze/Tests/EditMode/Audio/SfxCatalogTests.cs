@@ -1,0 +1,113 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Text.RegularExpressions;
+using JungleMaze.Domain.Audio;
+using JungleMaze.Presentation.Audio;
+using NUnit.Framework;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Audio;
+
+namespace JungleMaze.Tests.Audio
+{
+    /// <summary>The shipped catalog, runtime set and mixer match spec table 2.1 and the placeholder rules (AC-A1, A5, A9, A19, A21).</summary>
+    public sealed class SfxCatalogTests
+    {
+        private const string CatalogPath = "Assets/_JungleMaze/Art/Audio/SfxCatalog.asset";
+        private SfxCatalog _catalog;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _catalog = AssetDatabase.LoadAssetAtPath<SfxCatalog>(CatalogPath);
+            Assert.IsNotNull(_catalog, CatalogPath);
+        }
+
+        [Test]
+        public void Has26Ids_EachHasClipAndRuleFromTable()
+        {
+            var missing = new List<SfxId>();
+            var table = _catalog.BuildRules();
+            Assert.AreEqual(0, table.CollectMissing(missing), string.Join(", ", missing));
+            foreach (var row in AudioSpec.Table)
+            {
+                Assert.IsTrue(table.TryGet(row.Id, out var rule), row.Id.ToString());
+                Assert.IsNotNull(_catalog.GetClip(row.Id, 0), row.Id.ToString());
+                Assert.AreEqual(row.Priority, rule.Priority, $"{row.Id} priority");
+                Assert.AreEqual(row.Bus, rule.Bus, $"{row.Id} bus");
+                Assert.AreEqual(row.Range, rule.RangeCells, 1e-4f, $"{row.Id} range");
+                Assert.AreEqual(row.Max, rule.MaxInstances, $"{row.Id} max");
+                Assert.AreEqual(row.Cooldown, rule.CooldownSeconds, 1e-4f, $"{row.Id} cooldown");
+                Assert.LessOrEqual(rule.PitchJitter, 0.05f + 1e-4f, $"{row.Id} pitch ±5%");
+            }
+            Assert.IsTrue(table.TryGet(SfxId.ZoneBell3, out var bell));
+            Assert.AreEqual(3, bell.RepeatCount);
+            Assert.AreEqual(0.8f, bell.RepeatInterval, 1e-4f);
+        }
+
+        [Test]
+        public void DistinguishableIdsUseDistinctClips()
+        {
+            var ids = new[] { SfxId.HitMarker, SfxId.HurtLocal, SfxId.ZoneBell3, SfxId.DragonRoar, SfxId.MatchEnd, SfxId.Explosion };
+            var clips = new HashSet<AudioClip>();
+            foreach (var id in ids) Assert.IsTrue(clips.Add(_catalog.GetClip(id, 0)), $"{id} shares a clip");
+        }
+
+        [Test]
+        public void BeepsHaveDistinctFrequencies()
+        {
+            var seen = new Dictionary<int, string>();
+            var beeps = 0;
+            foreach (var row in AudioSpec.Table)
+            {
+                var path = AssetDatabase.GetAssetPath(_catalog.GetClip(row.Id, 0));
+                if (!path.Contains("/Placeholder/Beeps/")) continue;
+                beeps++;
+                var match = Regex.Match(Path.GetFileNameWithoutExtension(path), @"_(\d+)hz$");
+                Assert.IsTrue(match.Success, path);
+                var hz = int.Parse(match.Groups[1].Value);
+                Assert.IsFalse(seen.ContainsKey(hz), $"{path} and {(seen.TryGetValue(hz, out var other) ? other : "")} share {hz} Hz");
+                seen[hz] = path;
+            }
+            Assert.AreEqual(14, beeps, "14 ids use generated placeholders");
+        }
+
+        [Test]
+        public void HitMarkerLoud_DragonRoarLongAndUnique()
+        {
+            var table = _catalog.BuildRules();
+            table.TryGet(SfxId.HitMarker, out var hit);
+            table.TryGet(SfxId.FootstepGrass, out var step);
+            Assert.GreaterOrEqual(hit.Volume, 1f);
+            Assert.GreaterOrEqual(hit.Volume, 2f * step.Volume);
+
+            table.TryGet(SfxId.DragonRoar, out var roar);
+            var roarClip = _catalog.GetClip(SfxId.DragonRoar, 0);
+            Assert.GreaterOrEqual(roarClip.length, 1.5f);
+            Assert.AreEqual(AudioBus.Alert, roar.Bus);
+            Assert.AreEqual(5f, roar.CooldownSeconds, 1e-4f);
+            foreach (var row in AudioSpec.Table)
+                if (row.Id != SfxId.DragonRoar) Assert.AreNotSame(roarClip, _catalog.GetClip(row.Id, 0), row.Id.ToString());
+        }
+
+        [Test]
+        public void RuntimeSet_MixerHasBusesAndExposedParams()
+        {
+            var set = Resources.Load<AudioRuntimeSet>(AudioRuntimeSet.ResourcePath);
+            Assert.IsNotNull(set);
+            Assert.AreSame(_catalog, set.Catalog);
+            Assert.AreEqual(16, set.PoolSize);
+            AudioMixer mixer = set.Mixer;
+            Assert.IsNotNull(mixer);
+            Assert.AreEqual(1, mixer.FindMatchingGroups("Master/SFX/Alert").Length, "Alert is a child of SFX");
+            Assert.AreEqual(1, mixer.FindMatchingGroups("Master/Music/MusicTrack").Length);
+            Assert.AreSame(set.SfxGroup, mixer.FindMatchingGroups("Master/SFX")[0]);
+            Assert.AreSame(set.AlertGroup, mixer.FindMatchingGroups("Master/SFX/Alert")[0]);
+            foreach (var p in new[] { AudioRuntimeSet.MasterVolumeParam, AudioRuntimeSet.SfxVolumeParam, AudioRuntimeSet.AlertVolumeParam,
+                         AudioRuntimeSet.MusicVolumeParam, AudioRuntimeSet.MusicDuckParam })
+                Assert.IsTrue(mixer.GetFloat(p, out _), $"exposed parameter {p}");
+            Assert.IsNotNull(set.MusicFor(JungleMaze.App.Audio.MusicTrack.Match));
+            Assert.IsNotNull(set.MusicFor(JungleMaze.App.Audio.MusicTrack.WaitingRoom));
+        }
+    }
+}
