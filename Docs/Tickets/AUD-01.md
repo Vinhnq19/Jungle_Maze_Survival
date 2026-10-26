@@ -627,6 +627,37 @@ Sau G3, CPO thêm vào `Docs/Client_Developer_Guide.vi.md` mục 4 công thức 
 - **Panel F6** ở góc trái dưới có thể chồng F3/F4/F5 (đã ghi ở 4.7).
 - **AudioListener:** nên do camera của scene giữ (World/scene ticket). Bản dự phòng tự tắt khi scene có listener riêng.
 
+### Sửa theo review · 27/10/2026 · unity-dev (commit `cef498fa`)
+
+Review cho kết quả **Qua**, còn 4 điểm Nên sửa. CPO quyết định sửa cả 4. Tất cả nằm trong một commit, vì port và fake test dùng chung giữa các điểm, tách ra thì có commit không compile.
+
+1. **PlayerPrefs.**
+   - `PlayerPrefsAudioSettings.Save`/`SaveMusicEnabled` chỉ `SetFloat`/`SetInt` và đánh dấu đang chờ ghi. `PlayerPrefs.Save()` chỉ chạy trong `IAudioSettingsStore.Flush()`.
+   - `SfxPlaybackService` gọi Flush 0,5 s sau lần đổi cuối (`SaveDebounceSeconds`), nên kéo slider F6 chỉ ghi đĩa một lần.
+   - `AudioManager` gọi `FlushSettings` ở `OnApplicationPause(true)` và `OnApplicationQuit`, nối qua `BindSettingsFlush` trong `Bootstrap.Audio.cs`.
+   - Test: `Settings_WrittenOnceAfterDebounce_NotPerCall`, `PlayerPrefsAudioSettingsTests.SaveStagesValues_FlushWritesOnce` (test khôi phục giá trị PlayerPrefs của người dùng).
+2. **StopAll khi rời trận.**
+   - `IAudioService` có thêm `StopAll()` và `Stop(id, sourceKey)`.
+   - Router gọi `StopAll()` khi `AppScreenChanged` đổi từ `InMatch` sang màn khác, trước khi phát `MatchEnd`. `StopAll` dừng mọi voice, hủy chuông bo đang chờ và xóa danh sách bom.
+   - Test: `LeavingMatch_StopsAllBeforeMatchEnd`, `StopAll_StopsVoicesAndPendingBells`.
+3. **Listener dự phòng.**
+   - `AudioManager` kiểm lại mỗi 2 s (`ListenerCheckSeconds`) trong `Update`. Lần kiểm định kỳ không cấp phát: trước hết xem listener của scene đã nhớ, sau đó quét camera đang bật bằng mảng dùng lại và `TryGetComponent`. Lượt tìm đầy đủ `FindAnyObjectByType` (có cấp phát) chỉ chạy ở `Configure`, khi load scene, hoặc khi listener dự phòng có thể phải bật lại.
+   - Listener dự phòng nằm trên GameObject con `[AudioListener]`, bật/tắt bằng `SetActive`.
+   - Giới hạn: một listener **không gắn trên camera** xuất hiện muộn thì chỉ được nhận ra ở lần load scene sau. Trong tối đa 2 s trước khi listener dự phòng tự tắt, Unity log "There are 2 audio listeners".
+   - Test PlayMode: `FallbackListener_YieldsToLateListener_AndComesBack` (listener dự phòng tắt rồi bật lại, mỗi lần ≤ 2,3 s, luôn đúng 1 listener bật); `PeriodicListenerCheck_DoesNotAllocate` (`Is.Not.AllocatingGCMemory`, ở cả hai trạng thái).
+   - Lần đầu thử bằng `FindAnyObjectByType` cho mỗi lần kiểm thì test GC đỏ. Vì vậy đã đổi sang quét camera như trên.
+4. **BombFuse.**
+   - Voice lưu thêm khóa nguồn (`VoiceAllocator.SourceAt`). Router gọi `Stop(BombFuse, nguồn của bom)` ngay trước khi phát `Explosion` của chính bom đó.
+   - Ngoài ý CPO nêu, router cũng dừng fuse khi cảnh báo bom bị gỡ (`Removed`), vì quả bom đó không còn. Khi rời trận thì `StopAll` lo.
+   - Clip `bomb_fuse_countdown.mp3` dài 11,8 s vẫn ghi cho ART-05.
+   - Test: `BombExplosionOrRemoval_StopsItsOwnFuse`, `Stop_OnlyThatIdAndSource`.
+5. **Gợi ý.** `SetMusicDuckDecibels` chỉ được gọi khi giá trị duck đổi. Test: `MusicDuck_SentOnlyWhenItChanges`.
+
+**Test:**
+- EditMode Audio 59/59. Toàn bộ EditMode **333/333**.
+- PlayMode Audio 15/15. Toàn bộ PlayMode **59/59**.
+- Console sạch. `EditorSettings.asset` đã `git checkout`.
+
 ## 6. Review
 
 <code-reviewer: lỗi theo mức Chặn / Nên sửa / Gợi ý, trạng thái đã xử lý.>
