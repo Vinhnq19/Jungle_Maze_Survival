@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "local2-movement",
+  "maxDurationSeconds": 120,
+  "minConnectedSeconds": 20,
+  "expectedPlayers": 2,
+  "requireMovement": true,
+  "requireZone": true,
+  "requireHpDamage": false,
+  "requireResult": false,
+  "requireReplay": false,
+  "requireHistory": false,
+  "minInputHz": 28.5,
+  "minSnapshotHz": 28.5,
+  "maxPongTimeoutRatio": 0.01,
+  "driver": "movement",
+  "extraAssertions": ["mov02.prediction", "mov03.interpolation"]
+}

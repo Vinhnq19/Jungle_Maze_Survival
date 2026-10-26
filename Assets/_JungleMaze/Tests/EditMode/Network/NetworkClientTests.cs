@@ -252,6 +252,36 @@ namespace JungleMaze.Tests.Network
         }
 
         [Test]
+        public void Auto_WhenRoomFull_DoesNotFallback()
+        {
+            _server.RoomFull = true;
+            var cfg = Config(_server.Port, version: 2, transport: "Auto", wsUrl: "ws://127.0.0.1:7781/game");
+            _client.Connect(new ConnectRequest(cfg, "ROOM42", "FullTester"));
+            Assert.IsTrue(Pump(() => _client.State == NetworkState.Failed));
+            Assert.AreEqual(DisconnectReason.RoomFull, _client.LastReason);
+            Assert.AreEqual("Udp", _client.Stats.Transport, "Lỗi nghiệp vụ không được thử WSS (tránh chiếm slot thứ hai)");
+            Assert.IsNull(_client.Stats.FallbackReason);
+        }
+
+        [Test]
+        public void Auto_WhenUdpUnreachable_FallsBackToWss_WithSameAttemptId()
+        {
+            var port = _server.Port;
+            _server.Dispose();
+            _server = new FakeGameServer(); // port cũ không còn ai nghe UDP
+            var cfg = Config(port, version: 2, timeoutMs: 600, transport: "Auto", wsUrl: "ws://127.0.0.1:9/game");
+            _client.Connect(new ConnectRequest(cfg, "ROOM42", "FallbackTester"));
+            var attempt = _client.AttemptId;
+            Assert.AreNotEqual(Guid.Empty, attempt);
+            Assert.IsTrue(Pump(() => _client.Stats.Transport == "Wss", 4000), "UDP lỗi transport phải fallback sang WSS");
+            Assert.AreEqual(attempt, _client.AttemptId, "Cùng attempt ID để server không cấp hai slot");
+            Assert.IsNotNull(_client.Stats.FallbackReason);
+            // WSS cũng không có server: thất bại rõ ràng, không quay lại UDP và không treo.
+            Assert.IsTrue(Pump(() => _client.State == NetworkState.Failed, 12000));
+            Assert.AreEqual("Wss", _client.Stats.Transport);
+        }
+
+        [Test]
         public void Stats_ExposesP50_P99_Transport_FallbackReason()
         {
             JoinRoom(version: 2);
