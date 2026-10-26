@@ -19,6 +19,8 @@ namespace JungleMaze.Presentation.UI.Hud
         [SerializeField] private QuickbarView quickbar;
         [SerializeField] private MinimapView minimap;
         [SerializeField] private MatchStatusView matchStatus;
+        [Tooltip("Direction A edge/bevel overlays of the block panels (slots own theirs).")]
+        [SerializeField] private HudArtFrameView[] artFrames = new HudArtFrameView[0];
 
         private IHudState _hud;
         private IInventoryState _inventory;
@@ -32,6 +34,7 @@ namespace JungleMaze.Presentation.UI.Hud
         public QuickbarView Quickbar => quickbar;
         public MinimapView Minimap => minimap;
         public MatchStatusView MatchStatus => matchStatus;
+        public HudArtFrameView[] ArtFrames => artFrames;
 
         [Inject]
         public void Construct(IHudState hud, IInventoryState inventory, IEffectState effects, IItemIconProvider icons)
@@ -77,6 +80,9 @@ namespace JungleMaze.Presentation.UI.Hud
             if (quickbar != null) quickbar.ApplyPalette(palette);
             if (minimap != null) minimap.ApplyPalette(palette);
             if (matchStatus != null) matchStatus.ApplyPalette(palette);
+            if (artFrames != null)
+                foreach (var frame in artFrames)
+                    if (frame != null) frame.ApplyPalette(palette);
         }
     }
 }

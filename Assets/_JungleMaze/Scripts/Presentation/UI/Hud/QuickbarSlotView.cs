@@ -18,6 +18,8 @@ namespace JungleMaze.Presentation.UI.Hud
         [SerializeField] private TMP_Text keyLabel;
         [SerializeField] private TMP_Text countLabel;
         [SerializeField] private TMP_Text nameLabel;
+        [Tooltip("Optional direction A edge/bevel overlays; hidden on an empty slot.")]
+        [SerializeField] private HudArtFrameView frame;
         [Header("Border sprites per state")]
         [SerializeField] private Sprite defaultBorder;
         [SerializeField] private Sprite selectedBorder;
@@ -26,6 +28,7 @@ namespace JungleMaze.Presentation.UI.Hud
         private HudPalette _palette = HudPalette.Default;
         private Sprite _placeholderIcon;
         private bool _hasPlaceholder;
+        private Image.Type _placeholderType;
         private bool _hasItem;
 
         public SlotVisual Visual { get; private set; } = SlotVisual.Empty;
@@ -37,12 +40,15 @@ namespace JungleMaze.Presentation.UI.Hud
         public TMP_Text CountLabel => countLabel;
         public TMP_Text NameLabel => nameLabel;
         public Image InUseFrame=>inUseFrame;
+        public Image Icon => icon;
+        public HudArtFrameView Frame => frame;
         public void SetInUse(bool inUse){if(inUseFrame!=null)inUseFrame.enabled=inUse;}
 
         public void ApplyPalette(HudPalette palette)
         {
             _palette = palette;
             if(inUseFrame!=null)inUseFrame.color=palette.Amber;
+            if (frame != null) frame.ApplyPalette(palette);
             if (keyLabel != null) keyLabel.color = palette.Faint;
             if (countLabel != null) countLabel.color = palette.Text;
             SetVisual(Visual);
@@ -71,7 +77,15 @@ namespace JungleMaze.Presentation.UI.Hud
             if (icon != null)
             {
                 CapturePlaceholder();
-                icon.sprite = iconSprite != null ? iconSprite : _placeholderIcon;
+                var sprite = iconSprite != null ? iconSprite : _placeholderIcon;
+                if (icon.sprite != sprite)
+                {
+                    icon.sprite = sprite;
+                    // Item art keeps its aspect (Simple); the placeholder square stays 9-sliced.
+                    var placeholder = sprite == _placeholderIcon;
+                    icon.type = placeholder ? _placeholderType : Image.Type.Simple;
+                    icon.preserveAspect = !placeholder;
+                }
             }
             SetVisual(visual);
         }
@@ -82,6 +96,7 @@ namespace JungleMaze.Presentation.UI.Hud
             var empty = visual == SlotVisual.Empty;
             // A selected slot with nothing in it keeps the amber frame but shows no item: dim icon, no name.
             var noItem = empty || !_hasItem;
+            if (frame != null) frame.SetVisible(!empty);
             if (background != null)
             {
                 background.enabled = !empty;
@@ -113,6 +128,7 @@ namespace JungleMaze.Presentation.UI.Hud
         {
             if (_hasPlaceholder || icon == null) return;
             _placeholderIcon = icon.sprite;
+            _placeholderType = icon.type;
             _hasPlaceholder = true;
         }
     }

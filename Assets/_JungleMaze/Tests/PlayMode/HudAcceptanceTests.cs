@@ -445,10 +445,10 @@ namespace JungleMaze.Tests.PlayMode
             AssertColor(Hex(0xF5, 0xC5, 0x42), _root.Vitals.AdrenalineRow.Bar.FillImage.color, "adrenaline fill");
             AssertColor(Hex(0xF5, 0xC5, 0x42), _root.Vitals.AdrenalineRow.Label.color, "adrenaline label");
             AssertColor(Hex(0xF5, 0xC5, 0x42), _root.Vitals.AdrenalineRow.Value.color, "adrenaline number");
-            AssertColor(Hex(0xF2, 0xA3, 0x3A), _root.Quickbar.GetSlotView(1).Border.color, "selected slot border");
+            AssertColor(Hex(0xC6, 0xAE, 0x78), _root.Quickbar.GetSlotView(1).Border.color, "selected slot border (direction A gold)");
             AssertColor(Hex(0xA2, 0x74, 0xFF), _root.MatchStatus.ZoneValue.color, "zone clock");
-            var surface = Hex(0x15, 0x23, 0x1B);
-            surface.a = 0.72f;
+            var surface = Hex(0x20, 0x2A, 0x2D); // direction A surface (ADHOC-UI-ASSETS-A)
+            surface.a = 0.92f;
             foreach (var block in new Component[] { _root.Vitals, _root.Minimap, _root.MatchStatus })
                 AssertColor(surface, block.GetComponent<Image>().color, block.name + " background");
             AssertColor(surface, _root.Quickbar.WeaponStrip.GetComponent<Image>().color, "weapon strip background");
@@ -460,7 +460,7 @@ namespace JungleMaze.Tests.PlayMode
             _hud.SetHp(25);
             AssertColor(Hex(0xE5, 0x48, 0x4D), _root.Vitals.HpNumber.color, "HP number at 25");
             _hud.SetHp(26);
-            AssertColor(Hex(0xF3, 0xEE, 0xDB), _root.Vitals.HpNumber.color, "HP number at 26");
+            AssertColor(Hex(0xED, 0xF2, 0xEE), _root.Vitals.HpNumber.color, "HP number at 26");
         }
 
         // ---------- helpers ----------

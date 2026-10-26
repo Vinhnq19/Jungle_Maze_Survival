@@ -93,9 +93,9 @@ namespace JungleMaze.Tests.PlayMode
         [UnityTest] public IEnumerator Effects_PositionsColorsCountdownUntimedAndAdrenaline()
         {
             yield return Spawn();_effects.Apply(EffectKind.Poison,3,3);_effects.Apply(EffectKind.Invisible,5,5);_effects.Apply(EffectKind.Adrenaline,8,8);Tick(0);
-            var first=_feedback.EffectRow.Chips[0];var second=_feedback.EffectRow.Chips[1];Assert.AreEqual(2,Visible(_feedback.EffectRow.Chips));Assert.AreEqual("Độc",first.Label.GetParsedText());Assert.AreEqual("Ẩn",second.Label.GetParsedText());Assert.AreEqual(_core.Palette.Red,first.Border.color);Assert.AreEqual(_core.Palette.Green,second.Border.color);Assert.AreEqual("3s",first.Seconds.GetParsedText());
-            Tick(1);Assert.AreEqual("2s",first.Seconds.GetParsedText());Assert.That(first.Fill.anchorMax.x,Is.EqualTo(2f/3).Within(.02f));_effects.Apply(EffectKind.Slow,0,0);Tick(0);var untimed=_feedback.EffectRow.Chips[1];Assert.AreEqual("Chậm",untimed.Label.GetParsedText());Assert.False(untimed.Seconds.enabled);Assert.False(untimed.Fill.gameObject.activeSelf);
-            for(var i=0;i<300;i++)Tick(1f/30);Assert.AreEqual(1,Visible(_feedback.EffectRow.Chips));Assert.AreEqual("Chậm",first.Label.GetParsedText());_effects.Remove(EffectKind.Slow);for(var i=0;i<10;i++)Tick(1f/30);Assert.AreEqual(0,Visible(_feedback.EffectRow.Chips));
+            var first=_feedback.EffectRow.Chips[0];var second=_feedback.EffectRow.Chips[1];Assert.AreEqual(2,Visible(_feedback.EffectRow.Chips));Assert.AreEqual("Độc",first.Label.text);Assert.AreEqual("Ẩn",second.Label.text);Assert.AreEqual(_core.Palette.Red,first.Border.color);Assert.AreEqual(_core.Palette.Green,second.Border.color);Assert.AreEqual("3s",first.Seconds.GetParsedText());
+            Tick(1);Assert.AreEqual("2s",first.Seconds.GetParsedText());Assert.That(first.Fill.anchorMax.x,Is.EqualTo(2f/3).Within(.02f));_effects.Apply(EffectKind.Slow,0,0);Tick(0);var untimed=_feedback.EffectRow.Chips[1];Assert.AreEqual("Chậm",untimed.Label.text);Assert.False(untimed.Seconds.enabled);Assert.False(untimed.Fill.gameObject.activeSelf);
+            for(var i=0;i<300;i++)Tick(1f/30);Assert.AreEqual(1,Visible(_feedback.EffectRow.Chips));Assert.AreEqual("Chậm",first.Label.text);_effects.Remove(EffectKind.Slow);for(var i=0;i<10;i++)Tick(1f/30);Assert.AreEqual(0,Visible(_feedback.EffectRow.Chips));
         }
         [UnityTest] public IEnumerator Pickup_NewestAtBottom_MergesAndDoesNotWriteInventory()
         {

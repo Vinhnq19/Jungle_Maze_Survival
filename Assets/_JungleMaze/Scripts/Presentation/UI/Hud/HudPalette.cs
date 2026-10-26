@@ -37,29 +37,35 @@ namespace JungleMaze.Presentation.UI.Hud
         public Color Green;
         public Color HitMarker;
         public Color DangerFill;
+        /// <summary>Dark outer edge of direction A frames (overlay tint, ADHOC-UI-ASSETS-A).</summary>
+        public Color Edge;
 
-        /// <summary>Style guide v2 hex values plus the T5 proposals.</summary>
+        /// <summary>
+        /// Direction A (charcoal / jade / soft gold, Figma 51:32) on top of the UI-01 semantic colors: HP red,
+        /// armor/helmet blue, adrenaline yellow and zone purple keep their meaning and values.
+        /// </summary>
         public static HudPalette Default => new HudPalette
         {
             Red = Hex(0xE5, 0x48, 0x4D),
             Blue = Hex(0x5B, 0xB8, 0xE8),
             Yellow = Hex(0xF5, 0xC5, 0x42),
-            Amber = Hex(0xF2, 0xA3, 0x3A),
+            Amber = Hex(0xC6, 0xAE, 0x78),
             Purple = Hex(0xA2, 0x74, 0xFF),
-            Text = Hex(0xF3, 0xEE, 0xDB),
-            Muted = Hex(0xA7, 0xB5, 0xA3),
-            Faint = Hex(0x6E, 0x80, 0x70),
-            Surface = Hex(0x15, 0x23, 0x1B, 0.72f),
-            Raised = Hex(0x1F, 0x33, 0x27),
-            Line = Hex(0x34, 0x50, 0x3F),
-            Track = Hex(0x34, 0x50, 0x3F, 0.70f),
+            Text = Hex(0xED, 0xF2, 0xEE),
+            Muted = Hex(0xA6, 0xBB, 0xB7),
+            Faint = Hex(0x77, 0x90, 0x8A),
+            Surface = Hex(0x20, 0x2A, 0x2D, 0.92f),
+            Raised = Hex(0x0C, 0x14, 0x17),
+            Line = Hex(0x52, 0x6B, 0x69),
+            Track = Hex(0x0C, 0x14, 0x17, 0.80f),
             Trail = Hex(0xE5, 0x48, 0x4D, 0.35f),
-            SelectedFill = Hex(0xF2, 0xA3, 0x3A, 0.25f),
-            Grid = Hex(0x34, 0x50, 0x3F, 0.60f),
-            IconPlaceholder = Hex(0x6E, 0x80, 0x70),
-            Green = Hex(0x5D, 0xD3, 0x9E),
+            SelectedFill = Hex(0x28, 0x53, 0x4F, 0.25f),
+            Grid = Hex(0x52, 0x6B, 0x69, 0.60f),
+            IconPlaceholder = Hex(0x77, 0x90, 0x8A),
+            Green = Hex(0x63, 0xBA, 0xA5),
             HitMarker = Color.white,
-            DangerFill = Hex(0xE5, 0x48, 0x4D, 0.15f)
+            DangerFill = Hex(0xE5, 0x48, 0x4D, 0.15f),
+            Edge = Hex(0x0C, 0x14, 0x17)
         };
 
         private static Color Hex(byte r, byte g, byte b, float alpha = 1f) => new Color(r / 255f, g / 255f, b / 255f, alpha);
