@@ -181,26 +181,112 @@ Mỗi câu có mặc định khuyến nghị; nếu người không trả lời,
 - Hint nhặt item sàn có thể chồng việc với ITM-01/ENV-02 (chưa có port); nếu Q2 đổi thì AC14 bỏ.
 - Không bị ITM-01 chặn: chỉ phần kiểm tích hợp thật (AC15, câu cuối) phải chờ ITM-01; mọi AC còn lại làm bằng mock.
 
-## 4. Kế hoạch kỹ thuật
+**Câu hỏi kỹ thuật (tech-lead, 27/10/2026, sau khi đối chiếu với ADHOC-UI-ASSETS-A; chi tiết ở mục 4):**
 
-(Phần này do tech-lead điền.)
-
-**Lớp và file:**
-
-| Lớp | File mới/sửa | Ghi chú |
+| # | Câu hỏi | Mặc định khuyến nghị |
 | --- | --- | --- |
+| T-1 | Catalog icon gắn qua field serialized của Bootstrap, nhưng chỉ `Boot.unity` có object Bootstrap. Bấm Play ở `HudPreview`/`Game` thì `BootstrapAutoCreate` tạo Bootstrap rỗng, field serialized null, provider rơi về Null và icon không hiện. Ai sửa? | Báo chủ ADHOC sửa trong phạm vi ADHOC (ví dụ: tạo Bootstrap từ prefab có sẵn catalog, hoặc đặt catalog vào chính object Bootstrap của scene dev). ART-04 không sửa Bootstrap cho việc này. R4 chờ sửa xong |
+| T-2 | AC5 ghi PPU 64; ADHOC không nêu PPU | Chấp nhận PPU ADHOC đặt (không ảnh hưởng `Image` UI có `preserveAspect`). Sửa AC5 thành "Point, không mipmap, không nén, pivot 0,5" theo ADHOC |
+| T-3 | AC1 đòi "một trong ba trạng thái", AC2 đòi đổi sang `Đã chuẩn hóa`/`Dùng tạm` khi đóng: mâu thuẫn | Test R2-a chấp nhận 5 giá trị; lúc G3 chỉ được còn `Đã chuẩn hóa` / `Dùng tạm` |
+| T-4 | Gợi ý nhặt dưới sàn (AC14): ADHOC hoãn. ART-04 làm sau ADHOC (port mock mới, sửa `Hud.prefab`, khoảng 4–6 giờ) hay chuyển sang ITM-01? | Làm nếu ADHOC commit xong prefab/Bootstrap trước trưa 29/10. Nếu không: hoãn AC14 sang ITM-01, ART-04 đóng với AC14 "Hoãn (người duyệt)" |
+| T-5 | Script chuẩn hóa dùng Pillow (Python, ngoài stdlib) thay vì stdlib/Editor script | Chấp nhận: chỉ là công cụ ngoài Unity, không vào build. Ghi phiên bản Pillow trong báo cáo ADHOC để chạy lại được |
+| T-6 | Test ART-04 viết ở đâu để không đụng test ADHOC? | File riêng `Tests/EditMode/Art04/` và `Tests/PlayMode/Art04IconSweepTests.cs`, chỉ chứa assert ADHOC chưa có |
 
-**Protocol / config:** (tech-lead)
+## 4. Kế hoạch kỹ thuật — theo ADHOC-UI-ASSETS-A
 
-**Test sẽ viết:**
+**Bối cảnh (27/10/2026).** Người dùng đã duyệt ticket [ADHOC-UI-ASSETS-A](ADHOC-UI-ASSETS-A.md) (gọi tắt **ADHOC**) và Codex đang build ticket đó song song. ADHOC đã bao phần lớn việc build của ART-04: 34 icon `Assets/_JungleMaze/Art/UI/Icons/{Weapons,Equipments}/<ID>.png` (hiện chưa commit, chưa có `.meta`), script `Tools/Art/normalize_item_icons.py`, `HudItemIconCatalog` (ScriptableObject ở Presentation, implement `IItemIconProvider`), đăng ký provider trong `Bootstrap`, gắn icon vào 8 khe nhanh, pickup toast và effect chip (mục 4 của ADHOC). Vì vậy ART-04 **không** lập kế hoạch build, code hay asset trùng. Mục này chỉ gồm: (1) AC nào ADHOC đã đáp ứng, (2) phần ART-04 còn phải làm, (3) quyết định ADHOC đã chốt thay cho Q/G của ART-04, (4) rủi ro phối hợp. ART-04 chỉ bắt đầu phần việc của mình sau khi Codex commit xong các commit liên quan của ADHOC (xem 4.2). Theo chính ADHOC (cuối mục 3): ADHOC xong không tự đóng ART-04.
 
--
+### 4.1. Đối chiếu AC ART-04 → ADHOC (A1–A12)
 
-**Chia commit:**
+Ý nghĩa trạng thái: **do ADHOC đáp ứng** = ART-04 chỉ đọc lại bằng chứng của ADHOC ở QA. **ADHOC đáp ứng một phần** = phần còn lại ghi ở cột cuối và thuộc ART-04. **Còn thiếu — thuộc ART-04** = ADHOC không làm.
 
-1.
+| AC ART-04 | Tương ứng ADHOC | Trạng thái | Phần ART-04 còn làm |
+| --- | --- | --- | --- |
+| AC1 Bảng đối chiếu đủ 34 | A2 (test catalog từ roster JSON + CSV nguồn) | ADHOC đáp ứng một phần | ADHOC kiểm 34 ID của catalog khớp JSON. ART-04 còn: kiểm chính file CSV (34 dòng, cột `trang_thai` hợp lệ, nguồn thực tồn tại), test R2-a |
+| AC2 Không còn Thiếu/Cần chỉnh; HAND, ROPE có icon thật | A1, A2 (HAND/ROPE sinh mới) | ADHOC đáp ứng một phần | Icon có rồi. Còn cập nhật cột trạng thái và nguồn thực trong CSV (R1) |
+| AC3 34 file 64×64, alpha góc 0, nội dung 44–60, lệch tâm ≤ 2 px | A3 | ADHOC đáp ứng một phần | Script ADHOC tự assert các số này lúc xuất. Chưa có test trong Unity đo bbox/tâm: R2-a |
+| AC4 Bán trong suốt ≤ 10%; icon tối có viền | A3 ("không nền caro/viền trắng") | ADHOC đáp ứng một phần | Thêm test tỉ lệ bán trong suốt (R2-a). Chụp icon trên nền `Selected` (ADHOC mới có contact sheet trên nền Surface) |
+| AC5 Thiết lập import | A3 | ADHOC đáp ứng, giá trị đổi | Filter là **Point** thay Bilinear (xem 4.3, G-3). ADHOC không ghi PPU 64: T-2 |
+| AC6 Provider: 34 khác null, đúng asset, đôi một khác nhau, null/unknown → null | A2 (+ test duplicates/unknown của ADHOC) | Do ADHOC đáp ứng | Không |
+| AC7 Đổi ID mock → đúng sprite ở khe (18 vũ khí vào khe 1–4, 10 dược vào khe 5–8) | A4 (`RealQuickbar_KnownUnknownKnownAndEmpty`) | ADHOC đáp ứng một phần | ADHOC chỉ thử known/unknown/known. Còn test quét đủ 28 ID theo nhóm khe (R2-b) và QA bằng F4 |
+| AC8 HAND là icon mặc định ở khe 1 | A4 (gián tiếp) | ADHOC đáp ứng một phần | Assert riêng trạng thái mặc định (R2-b) |
+| AC9 Ô Empty không icon | A4 ("…AndEmpty") | Do ADHOC đáp ứng | Không |
+| AC10 Khe đang chọn, alpha icon | A4 | Do ADHOC đáp ứng | Test quét R2-b assert thêm `color.a` (không tốn thêm việc) |
+| AC11 Số lượng/đạn đọc được, rect icon không giao số phím/`×n`/tên | A4, A7 (giữ hình học UI-01) | ADHOC đáp ứng một phần | Assert giao rect = 0 px² ở 1280×720 và 1920×1080 (R2-b) |
+| AC12 Ô icon 28 ± 1 px, toast 18 ± 1 px, texture ≥ cỡ hiển thị | A3, A7, A10 | Do ADHOC đáp ứng | ADHOC giữ 28×28/18×18 và chụp 3 độ phân giải. Nếu test UI-01 hiện có chưa đo rect icon thì R2-b đo thêm |
+| AC13 Toast có icon đúng cho cả 34 ID | A5 (`PickupRow_ReusedIdsAndUnknownReset`) | ADHOC đáp ứng một phần | Quét đủ 34 ID qua toast (R2-b) |
+| AC14 Icon trong gợi ý nhặt "[F] Nhặt X" | **Không có.** ADHOC ghi rõ "gợi ý nhặt dưới sàn … deferred sang ART-04/ITM-01", không thêm port pickup | **Còn thiếu — thuộc ART-04** | R3 (có điều kiện, T-4) |
+| AC15 Writer giả thứ hai cho cùng sprite; không sửa logic item | A9 (không đổi gameplay/port) | ADHOC đáp ứng một phần | Test hai writer (R2-b). Kiểm với ITM-01 thật khi ITM-01 xong (R5) |
+| AC16 3 độ phân giải: icon đủ, không cắt | A10 | ADHOC đáp ứng một phần | Khe và toast đã có ảnh ADHOC. Gợi ý nhặt thuộc R3 |
+| AC17 Không missing reference; 0 GUID trỏ `Assets/Imported/JSurviv/` | A10 (console, missing ref), A2 (giữ nguồn) | ADHOC đáp ứng một phần | Quét dependency của `Hud.prefab`, `HudSlot.prefab`, `HudPickupToast.prefab`, catalog: không phụ thuộc nào nằm dưới `Assets/Imported/` (R2-a) |
+| AC18 Diff không chạm Imported/Backend/balance | Phạm vi ADHOC (mục 2), A9 | Do ADHOC đáp ứng | Review `git diff --stat` cả hai ticket ở G3 |
+| AC19 0 GC khi cấp icon | A9 (`ScopedLookupAndViewWarmGC`) | ADHOC đáp ứng một phần | AC19 đòi xoay vòng 34 ID qua 8 khe 600 lần. Nếu test ADHOC chỉ lặp một ID thì R2-b thêm vòng xoay |
+| AC20 (a) PIC ký CSV, (b) thử nhận diện mù 3 người, (c) ảnh không nhòe | A3, A10 (chỉ phần c). ADHOC ghi rõ không thay AC20(b) | **Còn thiếu — thuộc ART-04** ((a), (b)); (c) dùng ảnh ADHOC | R4 |
+| AC21 Đổi art chỉ sửa asset | `SwapCatalogSprite_PreservesSlotAndToastRects` | Do ADHOC đáp ứng | Không |
+| AC22 Bộ nhớ ≤ 1 MB | Test "tổng texture item ≤ 1 MB" trong `UiArtCatalogTests` | Do ADHOC đáp ứng | Không |
+| AC23 Manifest cập nhật 34 dòng | A1 (CPO cập nhật manifest, `export_px` 64) | Do ADHOC đáp ứng | Đối chiếu manifest với CSV ở R1 |
 
-**Rủi ro / câu hỏi mở:** (tech-lead bổ sung; rủi ro từ phía spec ở mục 3.1)
+Tổng: **9 do ADHOC đáp ứng · 12 ADHOC đáp ứng một phần · 2 còn thiếu (AC14, AC20)**.
+
+### 4.2. Phần việc ART-04 còn lại (chỉ những gì ADHOC không làm)
+
+Agent: chỉ **unity-dev** (không cần backend-dev). Không làm song song với ADHOC trên file chung. Thứ tự và điều kiện bắt đầu:
+
+| # | Việc | Bắt đầu khi | File (ART-04 sở hữu) | AC |
+| --- | --- | --- | --- | --- |
+| R1 | Cập nhật CSV: `trang_thai` → `Đã chuẩn hóa` / `Dùng tạm` (+ ghi chú); **thêm** cột cuối `nguon_thuc` (đường dẫn nguồn thật lấy từ provenance ADHOC: JSurviv / vẽ lại / ImageGen). **Không đổi tên hay xóa cột cũ**, vì `normalize_item_icons.py` đọc `id`, `loai`, `ten_cu_gdd`, `sprite_de_xuat`, `dich_chuan_hoa`. Đối chiếu với manifest | Codex commit xong 34 icon (commit 2 của ADHOC 4.6) | `Docs/Tickets/ART-04_icon_inventory.csv` | AC1, AC2, AC23 |
+| R2-a | Test EditMode **chỉ cho các assert ADHOC thiếu**: CSV 34 dòng khớp JSON, trạng thái thuộc tập hợp lệ (T-3), `nguon_thuc` tồn tại; mỗi PNG đọc bằng `File.ReadAllBytes` + `Texture2D.LoadImage` (không cần Read/Write import): bbox alpha > 8 dài 44–60, lệch tâm ≤ 2, 4 góc alpha 0, tỉ lệ bán trong suốt ≤ 10%; `AssetDatabase.GetDependencies` của 3 prefab + catalog không có đường dẫn nào dưới `Assets/Imported/` | ADHOC commit catalog + test (commit 3–4, 6) | `Assets/_JungleMaze/Tests/EditMode/Art04/Art04IconInventoryTests.cs` (thư mục riêng, không viết vào `Tests/EditMode/UiArt/` của ADHOC) | AC1, AC3, AC4, AC17 |
+| R2-b | Test PlayMode quét: dựng `Hud.prefab` như `HudAcceptanceTests` nhưng truyền **provider thật từ asset catalog**. Gồm: mặc định khe 1 = sprite HAND, Selected, alpha 1 (AC8, AC10); 18 vũ khí qua khe 1–4 và 10 dược qua khe 5–8, mỗi lần sprite = `GetIcon(id)` và ≠ lần trước (AC7); giao rect icon với số phím/`×n`/tên = 0 ở 1280×720 và 1920×1080 (AC11); 34 ID qua pickup toast (AC13); writer giả thứ hai cho cùng sprite (AC15); xoay vòng 34 ID × 600 lần sau warm-up 120 → 0 B nếu ADHOC chưa đo (AC19). Trước khi viết, đọc test của ADHOC đã commit và bỏ mọi assert trùng | Như R2-a, sau khi ADHOC QA xong (Unity chỉ một phiên chạy test) | `Assets/_JungleMaze/Tests/PlayMode/Art04IconSweepTests.cs` | AC7, AC8, AC10, AC11, AC13, AC15, AC19 |
+| R3 | Gợi ý nhặt dưới sàn có icon (**có điều kiện, T-4**). Thiết kế tối thiểu, chỉ thêm, không đổi chữ ký ba port UI-01: port đọc `IGroundItemState` (`HasItem`, `ItemId`, `Count`, event `Changed`) + `IGroundItemStateWriter` + store trong `JungleMaze.App.Hud.State`; mock nối vào panel F4 hiện có; view `GroundPickupHintView` (Presentation) đặt trong `Hud.prefab` theo Figma `41:172` (676,414 · 141×34), gồm KeyCap "F" + icon 20×20 (G-5) + tên `displayName`, `raycastTarget = false`; Bootstrap thêm 2 dòng đăng ký store. Trước khi làm, grep ITM-01/ENV-02 xem đã có port "món gần nhất" chưa; có thì dùng lại, không tạo port thứ hai | ADHOC commit xong mọi thay đổi `Hud.prefab` và `Bootstrap.cs` (commit 4–5 của ADHOC 4.6) **và** G1 chọn làm ở T-4 | App: port + store + mock; Presentation: view; `Hud.prefab`; `Bootstrap.cs` (2 dòng); test EditMode store + PlayMode rect ⊂ vùng giữa 640×360 ở 3 độ phân giải, thử `SHOTGUN`/`GOD_LEAF`/`ARMOR` | AC14, AC16 (phần hint) |
+| R4 | PIC ký từng dòng CSV (đặc biệt 9 dòng từng "Cần chỉnh" và các dòng vẽ lại). Thử nhận diện mù: 3 người xem 34 icon trong HUD ở 28 px (1280×720), ghi tỉ lệ đúng từng người (≥ 80%, G-6) và danh sách ID bị gọi sai. ID sai **báo lại chủ asset ADHOC sửa**, ART-04 không sửa PNG. (c) dùng ảnh 3 độ phân giải của ADHOC A10 | Sau R2-b (HUD đã có icon thật trong HudPreview, xem rủi ro T-1) | Kết quả ghi vào mục 7 và một file báo cáo QA trong `Docs/Reports/ART-04_<ngày>/` | AC20 |
+| R5 | Kiểm lại AC7/AC13/AC15 với GameServer thật | ITM-01 Done (không chặn G3 ART-04, ghi "chưa kiểm chứng") | Không thêm file | AC15 câu cuối |
+| R6 | Nhắc người: sửa ô Ref GDD (Q11); cập nhật Assets STT 4 và STT 6 (Q12); "Đạn" vẫn dùng ô giữ chỗ đến khi ITM-01 chốt ID (Q9) | Khi G3 | Không có file trong repo | — |
+
+**Protocol / config:** không đổi protocol, wire format hay balance JSON, **không cần G2**. R3 chỉ thêm port/store phía client (Application + Presentation), không đụng `Backend/`.
+
+**Chia commit ART-04** (tiếng Anh, `git commit -m "…" -- <đường dẫn>`, không attribution, không push, không `git add -A`):
+
+1. `docs(art-04): align plan with the in-progress UI asset build` — `Docs/Tickets/ART-04.md` (commit này).
+2. `docs(art-04): record final icon sources and statuses` — `Docs/Tickets/ART-04_icon_inventory.csv` (R1).
+3. `test(art-04): check icon inventory and normalized files` — `Tests/EditMode/Art04/*` (R2-a).
+4. `test(art-04): sweep all item IDs through HUD slots and toasts` — `Tests/PlayMode/Art04IconSweepTests.cs` (R2-b).
+5. Chỉ khi T-4 = làm: `feat(hud): add ground item state port and mock` (App + test EditMode) → `feat(hud): show ground pickup hint with item icon` (view + `Hud.prefab` + 2 dòng Bootstrap) → `test(hud): cover ground pickup hint rects` (PlayMode).
+6. `docs(art-04): add QA and blind recognition results` — ticket + `Docs/Reports/ART-04_<ngày>/`.
+
+**Ước lượng trước deadline 30/10:** R1 0,5 giờ; R2-a 1–2 giờ; R2-b 2–3 giờ; R3 4–6 giờ; R4 khoảng 1 giờ cho 3 người. Nếu ADHOC commit xong trong 28/10 thì R1, R2 và R4 kịp trước 30/10. **R3 chỉ kịp nếu bắt đầu muộn nhất trưa 29/10**; quá mốc này dùng nhánh "hoãn" của T-4.
+
+### 4.3. Q/G của spec ART-04 mà ADHOC đã quyết thay
+
+Tất cả ghi **"đã quyết theo ADHOC, chờ người xác nhận ở G1"** của ART-04. Người đã duyệt ADHOC, nên G1 ở đây chỉ xác nhận ART-04 chấp nhận các quyết định đó, không mở lại việc build.
+
+| Q/G | Spec ART-04 (mặc định) | ADHOC đã quyết | Ảnh hưởng tới ART-04 |
+| --- | --- | --- | --- |
+| G-3 | Bilinear, không mipmap, không nén, PPU 64 | **Point**, không mipmap, không nén, pivot 0,5. Không ghi PPU | Sửa giá trị AC5 thành Point. PPU: T-2. Rủi ro hiển thị ở 4.4 |
+| G-1 | Canvas 64×64 RGBA | 64×64 RGBA (manifest đổi `export_px` từ 256 xuống 64) | Khớp |
+| G-2 | Nội dung 44–60 px | Script đặt đích 56 px (58 px với icon có viền) | Khớp |
+| Q1 | JSurviv trước, Codex lấp chỗ thiếu | JSurviv trước, sinh mới HAND/ROPE | Khớp |
+| Q3 | (a) Codex cho HAND, ROPE | HAND, ROPE sinh bằng ImageGen (source + prompt lưu riêng) | Khớp (a). AC2 đạt về mặt có icon |
+| Q4 | Tạm chấp nhận Mũ cối, Vest, mũ gỗ; ADRENALINE xóa logo | Theo provenance hiện có (đọc trước khi có yêu cầu đổi hướng, có thể đổi khi Codex commit): **vẽ lại pixel 32 px** cho SPIKE_HELMET (mũ có gai), WOODEN_ARMOR (giáp gỗ nâu), ADRENALINE (lon không logo), cả **SEED**; WOODEN_HELMET giữ JSurviv | Tốt hơn mặc định. CSV ghi các dòng này `Đã chuẩn hóa (vẽ lại)` thay `Dùng tạm`. Người xác nhận hình ở R4(a) |
+| Q5 | Chấp nhận lẫn phong cách; viền chỉ cho icon tối | Viền sáng 1 px cho SHOTGUN, ARMOR, MAGIC_ARMOR, TREE_BRANCH; alpha nhị phân hóa | Khớp. AC4 bán trong suốt thực tế ≈ 0% |
+| Q6 | Giữ 28 px khe, 18 px toast | Giữ 28×28 và 18×18, `preserveAspect` | Khớp |
+| Q10 | Bản sao trong `_JungleMaze`; công cụ do tech-lead đề xuất (ưu tiên script tái chạy được) | Bản sao; công cụ `Tools/Art/normalize_item_icons.py` dùng **Pillow** (không phải stdlib) | Chấp nhận. Pillow là thư viện của script công cụ, không vào build Unity: T-5 |
+| Q2 | (a) gợi ý nhặt, ART-04 làm bằng mock | Hoãn, không thêm port | ART-04 tự làm (R3) hoặc hoãn sang ITM-01 (T-4) |
+| Q7, Q8 | Không làm Inventory toàn màn, không icon ở Vitals | Ngoài phạm vi | Khớp |
+| Q9, Q11, Q12, G-5, G-6 | — | ADHOC không quyết | Vẫn thuộc ART-04 (R3, R4, R6) |
+
+Ngoài phạm vi ART-04 nhưng ADHOC làm thêm: 7 icon hiệu ứng, khung HUD hướng A, menu. Không xung đột với ART-04 (spec ART-04 mục 2 xếp icon hiệu ứng vào UI-01 P2 / Game-10).
+
+### 4.4. Rủi ro phối hợp
+
+- **Chung working tree và index git.** Hai phiên commit trên cùng nhánh `huycv`. ART-04 luôn commit theo đường dẫn tường minh. Không commit `Assets/_JungleMaze/Art/**` (gồm 5 PNG `Art/Hud/*.png` đang sửa dở và thư mục `Art/UI/` chưa track), `Tools/Art/*`, `Docs/Art/*`, `ProjectSettings/TimeManager.asset`, `.codex/config.toml`: đều thuộc ADHOC hoặc phiên khác. ART-04 không phụ thuộc trực tiếp vào 5 PNG khung HUD, chỉ phụ thuộc 34 icon và catalog.
+- **File chung không merge được bằng text:** `Hud.prefab`, `Bootstrap.cs`, `HudFeedbackRoot.cs`, scene. ADHOC đang sửa các file này, nên R3 chỉ bắt đầu sau khi ADHOC commit. Nếu ADHOC còn sửa prefab sau mốc đó thì R3 dừng và báo CPO, không tự gộp.
+- **Một Unity Editor.** ADHOC quy định integration dev của họ là người duy nhất mutate/chạy test Unity trong giai đoạn build. ART-04 chạy R2/R3 sau ADHOC QA. Sau mỗi lần chạy PlayMode qua MCP: `git checkout -- ProjectSettings/EditorSettings.asset` (giữ `m_EnterPlayModeOptions: 0`).
+- **CSV là đầu vào script của ADHOC.** Đổi tên/xóa cột hay đổi `dich_chuan_hoa` sẽ làm hỏng lần chạy lại `normalize_item_icons.py`. R1 chỉ đổi `trang_thai`/`ghi_chu` và thêm cột cuối. Báo Codex trước khi commit R1.
+- **Catalog gắn qua field serialized của Bootstrap nhưng Bootstrap có thể tự tạo (T-1).** Chỉ `Scenes/Boot.unity` chứa object Bootstrap. Khi bấm Play thẳng ở `HudPreview.unity`/`Game.unity`, `BootstrapAutoCreate` tạo `new GameObject("[Bootstrap]").AddComponent<Bootstrap>()`, field serialized là null, và theo kế hoạch ADHOC sẽ rơi về `NullItemIconProvider`. Hậu quả: demo F4 trong HudPreview (bằng chứng AC7 và môi trường thử AC20) **hiện ô giữ chỗ**. ADHOC 4.7 đã ghi "phải kiểm thật". Cần ADHOC xử lý trước R4.
+- **Point filter khi thu nhỏ** texture 64 px xuống 28/42 px (tỉ lệ 0,44 và 0,66, không nguyên) có thể làm rơi pixel viền 1 px, nhất là các icon có viền sáng. Contact sheet 28 px của ADHOC dùng nearest nên đã phản ánh phần nào. Phải xem ở R4(c) cả 3 độ phân giải. Nếu răng cưa rõ thì cân nhắc Bilinear riêng cho icon item (quay về G-3): sửa asset import, không sửa code.
+- **Đếm AC hai lần.** G3 của ADHOC không đóng ART-04. G3 ART-04 cần thêm AC20(b) do người làm và quyết định T-4.
+- **Trùng test.** R2 phải đọc test ADHOC đã commit rồi bỏ assert trùng. Nếu ADHOC đổi tên/vị trí test thì cập nhật cột "Tương ứng ADHOC" của 4.1 ở nhật ký build.
+- **Ticket kề cận:** ITM-01 (Quang Huy) sau này ghi vào writer port và có thể ghi `IGroundItemStateWriter` nếu R3 làm. ENV-02/ART-03 có thể gọi `IItemIconProvider` cho đồ trên sàn. WPN-01 (Hào) không bị ảnh hưởng. ART-04 không sửa vùng của Hào hay ITM-01.
 
 ## 5. Nhật ký build
 
