@@ -1,8 +1,8 @@
 # Kế hoạch sản xuất bộ asset UI
 
-Ngày: **27/10/2026**. Trạng thái: **Đề xuất pack và kiểm kê; art direction bộ mới chưa được duyệt**.
+Ngày: **27/10/2026**. Trạng thái: **Đề xuất pack và kiểm kê; người dùng chọn tham chiếu fantasy nâu đá / vàng cổ để dựng demo K, chưa nghiệm thu bộ production**.
 
-Người dùng yêu cầu chia pack và sinh ảnh để gắn vào game. H · Rừng gọn là tham chiếu đã dùng trong UI-01 trước đây, **không đồng nghĩa đã chọn cho bộ asset mới**. Chưa khóa palette, nét vẽ hay chất liệu; chưa thay prefab, catalog hoặc ảnh đang chạy. UI-01 đã Done, không mở lại ticket.
+Người dùng yêu cầu chia pack và sinh ảnh để gắn vào game. H · Rừng gọn là tham chiếu đã dùng trong UI-01 trước đây, **không đồng nghĩa đã chọn cho bộ asset mới**. Sau bản I và bản nháp J, người dùng gửi [ảnh tham chiếu](references/K_user_style_reference.png) và nói **“kiểu này đi”**: khung nâu đá, viền vàng cổ vát nhẹ, góc trang trí, hốc icon tối và icon nhiều màu. Đây là hướng để dựng demo K; cần xem demo trước khi khóa thông số palette/border và nhân rộng cả pack. Chưa thay prefab, catalog hoặc ảnh đang chạy. UI-01 đã Done, không mở lại ticket.
 
 ## 1. Căn cứ và phạm vi
 
