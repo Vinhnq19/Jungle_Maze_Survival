@@ -77,7 +77,8 @@ namespace JungleMaze.Presentation.Audio
         }
 
         public bool IsVoicePlaying(int voice) =>
-            voice >= 0 && voice < _voices.Length && (_voices[voice].isPlaying || Time.unscaledTime < _endTimes[voice]);
+            voice >= 0 && voice < _voices.Length && _voices[voice].clip != null
+            && (_voices[voice].isPlaying || Time.unscaledTime < _endTimes[voice]);
 
         /// <summary>The AudioSource behind a voice (tests and the F6 panel only).</summary>
         public AudioSource VoiceSource(int voice) => _voices[voice];
@@ -120,6 +121,8 @@ namespace JungleMaze.Presentation.Audio
             go.transform.SetParent(_root, false);
             var source = go.AddComponent<AudioSource>();
             source.playOnAwake = false;
+            // AddComponent already ran Awake with playOnAwake on: without Stop, isPlaying reports true with no clip.
+            source.Stop();
             source.loop = loop;
             source.spatialBlend = 0f;
             source.outputAudioMixerGroup = group;

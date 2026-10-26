@@ -28,6 +28,7 @@ namespace JungleMaze.App.Audio
         private readonly SfxScheduler _scheduler = new SfxScheduler();
         private readonly float[] _volumes = new float[4];
         private readonly bool[] _warned = new bool[SfxIds.TableSize];
+        private readonly int[] _droppedNoVoice = new int[4];
         private readonly Action<AudioCue> _playRepeat;
         private bool _musicEnabled;
         private float _now;
@@ -68,6 +69,9 @@ namespace JungleMaze.App.Audio
         public bool AlertActive => _voices.AnyActiveOn(AudioBus.Alert) || _scheduler.AnyPendingOn(AudioBus.Alert);
 
         public int CountActive(SfxId id) { RefreshFinished(); return _voices.CountActive(id); }
+
+        /// <summary>Requests of <paramref name="priority"/> dropped because no voice could be freed (diagnostics, AC-A26).</summary>
+        public int DroppedNoVoice(SfxPriority priority) => _droppedNoVoice[(int)priority];
 
         public bool MusicEnabled
         {
@@ -153,7 +157,7 @@ namespace JungleMaze.App.Audio
             {
                 RefreshFinished();
                 voice = _voices.Acquire(rule.Priority, out evicted);
-                if (voice < 0) return false;
+                if (voice < 0) { _droppedNoVoice[(int)rule.Priority]++; return false; }
             }
             if (evicted) _output.StopVoice(voice);
 
