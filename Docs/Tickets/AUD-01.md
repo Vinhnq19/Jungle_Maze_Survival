@@ -7,7 +7,7 @@
 | Ưu tiên | P1 |
 | PIC | V.Huy |
 | Phụ thuộc | Chính thức: CLI-03 (Done). Làm song song bằng âm thanh tạm ("Làm song song: dùng placeholder để test event bus trước khi ART-05 nộp asset cuối"). Nguồn sự kiện thật, **không chặn** ticket này (xem mục 2): WPN-01 · WPN-02 · ITM-01 · Game-10 · ZON-01 · SRV-03 · DRG-01 · FOW-01: đều Not Yet. ART-05 (kiểm kê file, license, metadata): Not Yet, P2, phụ thuộc None |
-| Trạng thái | Đã duyệt G1 (27/10, CPO thay người dùng), chờ build |
+| Trạng thái | Done — G3 27/10/2026 (CPO duyệt thay người dùng) |
 | Sheet GDD tham chiếu | Dòng AUD-01 trong PROJECT TRACKING (khớp dòng người dùng dán). Ref ghi "Assets!11–16; WIREFRAME!13–15" là **số dòng trong sheet** (lệch +2 so với cột STT): ứng với **Assets STT 9–14** (9 Bước chân/Tương tác môi trường · 10 Dùng vũ khí/Bom/Bẫy · 11 Gây/Nhận sát thương/Bị loại · 12 Nhặt/Đổi/Dùng đồ · 13 Cảnh báo/Kết quả/Kết nối · 14 Nhạc nền) và **WIREFRAME STT 11–13** (11 Gây/Nhận sát thương · 12 Nguy hiểm sắp xảy ra · 13 Loot/Hành động/Trạng thái). Số liệu thêm: Weapons (STT 6, 11–18), Equipments (STT 7–16), Obstacles (STT 12–14), MATCH DESIGN DATA (`visionRadius`, `zoneWarningTime`, `targetFPS`), Hero (STT 13), PROJECT TRACKING (ART-05, UI-03, DRG-01, ZON-01, WPN-01, WPN-02, ITM-01, Game-10, FOW-01, SRV-03). Đầu vào kiến trúc: `Docs/Tickets/AUD-01_proposal.vi.md` (27/10/2026) |
 | Figma node | Không có. Wireframe v2 không vẽ phần âm thanh; tín hiệu âm thanh bám WIREFRAME STT 11–13 và UI-01 phần 2 (`Docs/Tickets/UI-01-P2.md`: các tín hiệu hình đi kèm) |
 
@@ -708,5 +708,23 @@ Review cho kết quả **Qua**, còn 4 điểm Nên sửa. CPO quyết định s
 4. `ProjectSettings/EditorSettings.asset` bị PlayMode đổi `m_EnterPlayModeOptions` 0 → 1 và **chưa được khôi phục** vì `git checkout` bị từ chối quyền; cần CPO hoặc người dùng chạy `git checkout -- ProjectSettings/EditorSettings.asset`.
 
 ## 8. Nghiệm thu
+
+**G3 · 27/10/2026 03:40 · CPO duyệt thay người dùng** (quyền tới 12:00 27/10, `Docs/CPO_Runbook.vi.md` mục 1). **Nghiệm thu AUD-01.**
+- Căn cứ:
+  - Mọi AC P0 đạt; QA Tester tự chạy lại EditMode 333/333, PlayMode 59/59, console sạch (`cc029109`, `Docs/Reports/AUD-01_2026-10-27/QA_report.md`).
+  - Code review Qua; 4 điểm Nên sửa đã sửa (`cef498fa`).
+- Chuyển sang việc khác, không chặn G3:
+  - **AC-A28 và phần "nghe rõ" của A19/A21** (hitmarker, chuông 3 tiếng, tiếng rồng): người dùng tự nghe bằng panel F6 theo mục 5 của QA_report.
+  - **AC-A8** (F6 vắng mặt trong Release): kiểm khi build Windows ở BLD-01.
+  - **A27 Profiler** (P2): đo khi có buổi chạy Profiler chung.
+  - Chạy scene `Game` với GameServer thật: kiểm cùng QA-01 hoặc khi có server gameplay.
+- Follow-up ghi nhận:
+  - Gắn `AudioListener` vào camera (người sở hữu scene/camera).
+  - Listener dự phòng mất khoảng 12 s mới tắt khi listener không gắn camera xuất hiện muộn: chỉ là ghi chú, chỉ đáng sửa nếu gặp thật.
+  - Panel F6 đè lên màn Kết nối ở Game view nhỏ (công cụ dev).
+  - Chuông bo chạy theo `deltaTime`.
+  - ART-05 cắt clip `bomb_fuse` dài 11,8 s và kiểm giấy phép âm thanh JSurviv.
+- Người dùng: cập nhật Status AUD-01 trong sheet PROJECT TRACKING.
+
 
 <CPO tổng hợp; người duyệt G3, ngày, ghi chú. Nhắc cập nhật Status trong GDD.>
