@@ -297,7 +297,38 @@ Ngoài phạm vi ART-04 nhưng ADHOC làm thêm: 7 icon hiệu ứng, khung HUD 
 
 ## 5. Nhật ký build
 
-(Dev điền.)
+### R2-a, R2-b · 27/10/2026 · unity-dev (commit e8b57415, 8e047049)
+
+Chỉ thêm test, không sửa code production, PNG hay prefab. Đã đọc `UiArtCatalogTests`, `UiArtIntegrationTests`, `HudAcceptanceTests` và bỏ các assert trùng: phủ 34 ID của catalog, import, cỡ sprite, 1 MB, known/unknown/known, placeholder, swap art, GC 3 ID.
+
+**R2-a** `Tests/EditMode/Art04/Art04IconInventoryTests.cs` (4 test, đạt 4/4):
+
+| Test | AC | Kết quả đo |
+| --- | --- | --- |
+| `Csv_34Rows_MatchRosterOneToOne_WithValidStatusAndRealSource` | AC1, AC2 | 34 dòng khớp 1-1 với JSON (18 Weapon + 16 Equipment, cột `loai` đúng); 34/34 `Đã chuẩn hóa`; 34/34 `nguon_thuc` tồn tại (10 JSurviv, 24 `Tools/Art/native32_recipes.py`) |
+| `Csv_TargetPath_IsTheSpriteTheCatalogServes` | AC1 | `dich_chuan_hoa` của cả 34 dòng = đường dẫn sprite catalog trả về |
+| `Png_64x64_TransparentCorners_Content44To60_Centered_FewSemiTransparent` | AC3, AC4 | 34/34 64×64; 4 góc alpha 0; cạnh dài nhất của bbox alpha > 8 = 56 px; lệch tâm ≤ 1 px; bán trong suốt 0 % |
+| `HudPrefabsAndCatalog_DependOnNoImageUnderImported` | AC17 | 100 phụ thuộc. Dưới `Assets/Imported/` chỉ có `JSurviv/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader`, loại trừ có chủ đích theo quyết định của CPO, có chú thích trong test. 0 ảnh |
+
+**R2-b** `Tests/PlayMode/Art04IconSweepTests.cs` (6 test, đạt 5/6), dùng `Hud.prefab` với catalog thật:
+
+| Test | AC | Kết quả |
+| --- | --- | --- |
+| `DefaultSlot1_IsHand_Selected_FullAlpha_AndSelectionMovesWithoutSwappingIcons` | AC8, AC10 | Đạt. Mặc định khe 1 có sprite HAND, Selected, alpha 1. Chọn lần lượt 8 khe: khung đi theo, sprite không đổi, alpha 1 |
+| `Sweep_18WeaponsThroughSlots1To4_10ConsumablesThroughSlots5To8` | AC7 | Đạt. 112 lần ghi; sprite = `GetIcon(id)`, khác lần trước (trừ HAND ghi đè HAND mặc định) |
+| `IconRect_ClearOfKeyCountAndName_At1280x720And1920x1080` | AC11 | **Đỏ, layout UI-01 giao nhau thật** (giữ nguyên assert, xem dưới) |
+| `PickupToast_ShowsTheRightIconForAll34Ids` | AC13 | Đạt. 34/34 ID, mỗi lần đúng 1 dòng, sprite đúng, không tô màu |
+| `SecondWriter_StandInForItm01_GivesTheSameSprites` | AC15 | Đạt. Writer giả ITM-01 ghi snapshot theo thứ tự khác qua `IInventoryStateWriter`/`IHudStateWriter`: 8 sprite, 8 trạng thái khe và sprite toast ARMOR giống writer mock |
+| `Rotate34IdsThrough8Slots600Times_AfterWarmup_NoGc` | AC19 | Đạt. Warm-up 120 frame; 600 vòng × (8 khe + 1 dòng toast), 34 ID luân phiên: **0 B** |
+
+**AC11 đỏ, số đo.** Canvas world-space theo hệ số của scaler Expand (1 đơn vị = 1 px màn hình):
+- 1280×720: icon 28×28 lấn **1 px theo chiều dọc** lên ô số phím (giao 2×1 = **2 px²**, cả 8 khe) và lên `×n` (giao 12×1 = **12 px²**, khe 5–8).
+- 1920×1080: số phím 3×1,5 = **4,5 px²**; `×n` 18×1,5 = **27 px²**.
+- Tên: 0 px² ở cả hai độ phân giải.
+- Đây là rect `RectTransform` của bố cục UI-01: icon y −317…−289, nhãn y −290…−274. Phần ảnh nhìn thấy không chạm, vì nội dung 56/64 để lại khoảng trong suốt khoảng 1,75 px quanh icon 28 px.
+- Cần CPO chọn: (a) UI-01 dời số phím/`×n` lên 1 px hoặc thu icon; (b) đổi AC11 sang đo rect nội dung nhìn thấy.
+
+**Toàn bộ suite:** EditMode 337/337. PlayMode 64/65 (chỉ đỏ AC11 ở trên). Console 0 Error/Warning. Đã `git checkout -- ProjectSettings/EditorSettings.asset`.
 
 ## 6. Review
 
