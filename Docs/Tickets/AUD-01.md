@@ -7,7 +7,7 @@
 | Ưu tiên | P1 |
 | PIC | V.Huy |
 | Phụ thuộc | Chính thức: CLI-03 (Done). Làm song song bằng âm thanh tạm ("Làm song song: dùng placeholder để test event bus trước khi ART-05 nộp asset cuối"). Nguồn sự kiện thật, **không chặn** ticket này (xem mục 2): WPN-01 · WPN-02 · ITM-01 · Game-10 · ZON-01 · SRV-03 · DRG-01 · FOW-01: đều Not Yet. ART-05 (kiểm kê file, license, metadata): Not Yet, P2, phụ thuộc None |
-| Trạng thái | Spec (chờ G1) |
+| Trạng thái | Đã duyệt G1 (27/10, CPO thay người dùng), chờ build |
 | Sheet GDD tham chiếu | Dòng AUD-01 trong PROJECT TRACKING (khớp dòng người dùng dán). Ref ghi "Assets!11–16; WIREFRAME!13–15" là **số dòng trong sheet** (lệch +2 so với cột STT): ứng với **Assets STT 9–14** (9 Bước chân/Tương tác môi trường · 10 Dùng vũ khí/Bom/Bẫy · 11 Gây/Nhận sát thương/Bị loại · 12 Nhặt/Đổi/Dùng đồ · 13 Cảnh báo/Kết quả/Kết nối · 14 Nhạc nền) và **WIREFRAME STT 11–13** (11 Gây/Nhận sát thương · 12 Nguy hiểm sắp xảy ra · 13 Loot/Hành động/Trạng thái). Số liệu thêm: Weapons (STT 6, 11–18), Equipments (STT 7–16), Obstacles (STT 12–14), MATCH DESIGN DATA (`visionRadius`, `zoneWarningTime`, `targetFPS`), Hero (STT 13), PROJECT TRACKING (ART-05, UI-03, DRG-01, ZON-01, WPN-01, WPN-02, ITM-01, Game-10, FOW-01, SRV-03). Đầu vào kiến trúc: `Docs/Tickets/AUD-01_proposal.vi.md` (27/10/2026) |
 | Figma node | Không có. Wireframe v2 không vẽ phần âm thanh; tín hiệu âm thanh bám WIREFRAME STT 11–13 và UI-01 phần 2 (`Docs/Tickets/UI-01-P2.md`: các tín hiệu hình đi kèm) |
 
@@ -447,6 +447,21 @@ Sau G3, CPO thêm vào `Docs/Client_Developer_Guide.vi.md` mục 4 công thức 
 | **T-6** | Panel F6 dùng ở scene dev sẵn có `Scenes/Dev/HudPreview.unity` (và Game), không tạo scene mới, không sửa scene? | **Có.** Scene là file dùng chung; Bootstrap tự tạo đã gắn panel |
 | **T-7** | Âm có vị trí chỉ giảm âm lượng theo khoảng cách (mono, không pan trái/phải)? | **Có** cho AUD-01; pan theo hướng để mở rộng sau (gắn với FOW-01) |
 | **T-8** | `MatchEnd` chỉ lấy từ `AppScreenChanged → Results`, không lấy `EventPacket.MatchEnded`; hit/hurt/pickup chỉ lấy từ port UI-01, không lấy `EventPacket` | **Có**, tránh phát đôi (rủi ro 4) |
+
+**G1 · 27/10/2026 02:25 · CPO duyệt thay người dùng** (người dùng giao toàn quyền quyết định tới 12:00 27/10, xem `Docs/CPO_Runbook.vi.md` mục 1). Duyệt toàn bộ mặc định khuyến nghị của Q1–Q14, T-1…T-8 và giả định G-x. Cụ thể:
+- 26 SFX theo bảng 2.1. Các âm ngoài 26 mã để ticket sau.
+- BGM mặc định tắt; chỉ dựng `MusicDirector` và công tắc F6.
+- Phạm vi nghe tối đa 12 ô, âm nhỏ thì ngắn hơn.
+- Rồng và các âm còn thiếu dùng tiếng tạm tổng hợp.
+- Giấy phép âm thanh JSurviv thuộc ART-05.
+- Hit marker chỉ khi trúng Hero. `BushEnter` chỉ người chơi local nghe. Tiếng dùng đồ phát lúc bắt đầu và lúc hủy.
+- AUD-01 lưu âm lượng (PlayerPrefs); UI-03 chỉ gọi API.
+- Có bus Alert. Chuông bo 3 tiếng cách nhau 0,8 s. Bẫy và bước chân dùng mock hoặc suy từ vị trí. `ArmorAbsorb` phát chồng với `HurtLocal`.
+- T-1: hook 2 dòng trong `Bootstrap.cs`, sửa sau cùng, sau khi ADHOC commit file này.
+- T-5: không chép file nhạc 25,7 MB.
+- T-8: không phát đôi từ `EventPacket`.
+
+**Điều kiện thứ tự:** Unity Editor đang được ADHOC-UI-ASSETS-A dùng. AUD-01 chỉ viết C# và dùng Unity khi ADHOC đã commit xong code và test (CPO báo). Trước đó chỉ làm phần không cần Unity: script sinh âm thanh tạm, file WAV/OGG tạm, chép clip JSurviv vào `Art/Audio`.
 
 ## 5. Nhật ký build
 
