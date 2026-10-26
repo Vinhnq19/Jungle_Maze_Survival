@@ -51,6 +51,10 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 - **27/10 02:15 · Bổ sung việc cho Codex:** xuất lại `KeyArt.png` có alpha; làm viền `EffectFrame.png` mỏng hơn. Lý do: lỗi art subagent phát hiện khi gắn; sửa ảnh là việc của art, không sửa code.
 - **27/10 02:15 · Thứ tự Unity:** Unity Dev (AUD-01 pha 1) dùng trước. QA ADHOC chạy sau khi có icon 32 px của Codex và Unity Dev trả Editor.
 
+- **27/10 02:45 · Review ADHOC: Qua** (Code Reviewer, không lỗi Chặn). Giao xử lý: A8 test menu + hover nút + chiều cao thanh in-game → Unity Dev; icon effect 256→64 px và KeyArt alpha → Codex; manifest "imported, not bound" → CPO đã ghi.
+- **27/10 02:45 · AUD-01 pha 1 build xong** (`485c10ab`…`16df4be5`, EditMode 326/326, PlayMode 56/56). Chấp nhận `AudioListener` dự phòng trong `AudioManager` vì không scene nào có listener. Follow-up: gắn listener vào camera, thuộc người sở hữu scene/camera. `bomb_fuse` 11,8 s giao ART-05. Code Reviewer đang review AUD-01.
+- **Thứ tự Unity tiếp theo:** Unity Dev sửa ADHOC → QA Tester QA AUD-01 → (sau khi có icon 32 px của Codex) QA Tester QA ADHOC → CPO G3.
+
 ## 5. Khởi động lại khi hết token
 
 Đã hẹn các lượt tự chạy lại (scheduled task "CPO resume"). Mỗi lượt làm:
