@@ -39,6 +39,7 @@ Giao ngày 27/10/2026. Bắt đầu khi Codex có lại hạn mức (khoảng 5:
 4. **Việc bổ sung (CPO duyệt 27/10 02:15, được sửa trực tiếp, không cần ghi báo cáo trước):**
    - `Assets/_JungleMaze/Art/UI/Menu/KeyArt.png` không có alpha: Unity import RGB24, nên trong menu hiện thành ô vuông nền tối. Xuất lại **RGBA, nền trong suốt** quanh hòn đảo/key art, giữ nguyên kích thước 1040×1040. `Background.png` để nền đặc như cũ.
    - `Assets/_JungleMaze/Art/Hud/EffectFrame.png`: viền dày 3 px nằm sát thanh thời gian cùng màu, nên cạnh dưới trông dày hơn. Làm viền mỏng còn 2 px (ở 88×88) và để 1 px trống giữa viền với vùng thanh thời gian. Giữ kích thước 88×88 và viền 9-slice 18 px.
+   - **7 icon hiệu ứng** (`Art/UI/Icons/Effects/*.png`) đang là 256×256. Khi thu về ô 20 px bằng Point, hình bị vỡ. Xuất lại **64×64 = lưới 32 ×2 nearest**, đúng chuẩn mục 2 như icon vật phẩm, giữ tên file. Ghi đè đúng tên, không sửa `.meta`. Importer vẫn đúng vì không đặt max size cố định theo 256.
    - Các sprite đã import nhưng chưa gắn (`BarFill`, `BarTrack`, `MinimapFrame`, `Crosshair`, `HitMarker`): chỉ đồng bộ màu với bảng chung, không đổi kích thước.
 
 ## 4. Cách làm và sản phẩm
