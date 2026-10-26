@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81f9fb8296e794442b64fa10b4747abf, type: 3}
+  m_Name: UiArtSet
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.UI.UiArtSet
+  itemIcons: {fileID: 11400000, guid: a58989df9062e8a4a81253516bf9e186, type: 2}
+  menuArt: {fileID: 11400000, guid: a7a75408d4c67cd4887dbdfda12a3067, type: 2}

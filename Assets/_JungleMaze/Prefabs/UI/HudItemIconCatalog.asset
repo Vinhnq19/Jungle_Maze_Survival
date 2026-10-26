@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6841bf57bc1ae6b4080b70f47f535021, type: 3}
+  m_Name: HudItemIconCatalog
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.UI.Hud.HudItemIconCatalog
+  entries:
+  - Id: HAND
+    Icon: {fileID: 21300000, guid: 0fa86ac6b19b8e94094a7723d1ccf1bd, type: 3}
+  - Id: TREE_BRANCH
+    Icon: {fileID: 21300000, guid: d7058c92750ef334eb07e83c6af80f6f, type: 3}
+  - Id: KNIFE
+    Icon: {fileID: 21300000, guid: e76d62d42031f5d4b8646df841949384, type: 3}
+  - Id: BONE
+    Icon: {fileID: 21300000, guid: b5c5c47d761c46649a57f98afdfe84ed, type: 3}
+  - Id: AXE
+    Icon: {fileID: 21300000, guid: 8d2f2bdb5b737cc46bb9b0f5d9c374a0, type: 3}
+  - Id: MACE
+    Icon: {fileID: 21300000, guid: 24538ac7a9fd18444a7796246e2e9f4f, type: 3}
+  - Id: RUBBER_GUN
+    Icon: {fileID: 21300000, guid: 12172ac468dd7da4781c081d482bf320, type: 3}
+  - Id: SCEPTER
+    Icon: {fileID: 21300000, guid: 2840a536af74e184889ff4b80aa565a0, type: 3}
+  - Id: CROSSBOW
+    Icon: {fileID: 21300000, guid: bfddcade029d6ce46ad6a3928e39ddd1, type: 3}
+  - Id: SHOTGUN
+    Icon: {fileID: 21300000, guid: f27658ff77ccca84c84ccc16ac19a4e5, type: 3}
+  - Id: BANANA
+    Icon: {fileID: 21300000, guid: b8b71e0ad6248a945813b6a456eabe56, type: 3}
+  - Id: SMOKE
+    Icon: {fileID: 21300000, guid: cfb6bc584a929c34da46575411654f73, type: 3}
+  - Id: METEORITE_FRAGMENT
+    Icon: {fileID: 21300000, guid: ffdc4e15b79845d48ad6cacf6e0f0437, type: 3}
+  - Id: CRYSTAL
+    Icon: {fileID: 21300000, guid: a7ded15cc9d24ed4ba6d860c8e74a715, type: 3}
+  - Id: SEED
+    Icon: {fileID: 21300000, guid: 8c8f24a532b8e8b4ca39035ab3b66358, type: 3}
+  - Id: ROPE
+    Icon: {fileID: 21300000, guid: ec7e611c686281549870ae6511eebc11, type: 3}
+  - Id: BELL
+    Icon: {fileID: 21300000, guid: 2730c62a22034a04d846c1f674301607, type: 3}
+  - Id: SAHUR_BAT
+    Icon: {fileID: 21300000, guid: 38bf5e3f9675b9c47aa6defa28adc9eb, type: 3}
+  - Id: WOODEN_HELMET
+    Icon: {fileID: 21300000, guid: 59b77c90c31e1024c837b705db83f79c, type: 3}
+  - Id: SPIKE_HELMET
+    Icon: {fileID: 21300000, guid: 29866830606dc8140a81cd3bff0a8524, type: 3}
+  - Id: MAGIC_HELMET
+    Icon: {fileID: 21300000, guid: f9252fc512fe56b449b926b66cb1dfc1, type: 3}
+  - Id: WOODEN_ARMOR
+    Icon: {fileID: 21300000, guid: d4d88c0f738d5d849a953304c6ae7b30, type: 3}
+  - Id: ARMOR
+    Icon: {fileID: 21300000, guid: 65d1e1e5d72d3e74e8708f778014cbbd, type: 3}
+  - Id: MAGIC_ARMOR
+    Icon: {fileID: 21300000, guid: 7a71f7246d666d14c9b550971c7d96b2, type: 3}
+  - Id: GOD_LEAF
+    Icon: {fileID: 21300000, guid: d02d1fd614ea8e9478ef046275723d1d, type: 3}
+  - Id: SPIRIT_TEAR
+    Icon: {fileID: 21300000, guid: 52cfac1036525d14ca90e58f6e68c154, type: 3}
+  - Id: MERMAID_TAIL
+    Icon: {fileID: 21300000, guid: bb0b836c55be37845ab8b83d6e45e13e, type: 3}
+  - Id: PHOENIX_FEATHERS
+    Icon: {fileID: 21300000, guid: 7821f60f8b946524ca67c50a9d719dee, type: 3}
+  - Id: UNICORN_BLOOD
+    Icon: {fileID: 21300000, guid: 9f167757209f1eb46bb5bfbe71bd0a56, type: 3}
+  - Id: ADRENALINE
+    Icon: {fileID: 21300000, guid: b53ead583a7178e478c356576908e90b, type: 3}
+  - Id: ELIXIR
+    Icon: {fileID: 21300000, guid: 2a3c349b4feeab7428ef0d5bc0966c0e, type: 3}
+  - Id: MAGIC
+    Icon: {fileID: 21300000, guid: 6c004c80dad0e1b4cb39e92dffcdca37, type: 3}
+  - Id: ELIXIR_OF_LIFE
+    Icon: {fileID: 21300000, guid: 3eca9ca51c9b81443a21335a2bfe20cd, type: 3}
+  - Id: COMPASS
+    Icon: {fileID: 21300000, guid: af3c73ab478f37d4fbac152396cad70f, type: 3}
