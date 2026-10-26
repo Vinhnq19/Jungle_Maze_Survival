@@ -202,6 +202,41 @@ Dev bổ sung output/commit, số lần sửa và giới hạn. Hiện đã có 
 - Chưa kiểm nhận diện mù 3 người (ART-04 AC20b), chưa build Release Player, chưa playtest qua GameServer thật (HUD đo bằng mock state).
 - Codex sẽ vẽ lại icon 32 px và ghi đè PNG cùng tên từ 28/10: importer giữ Point/no mipmap/uncompressed, test chỉ kiểm ID, tham chiếu, 64×64 và Point, nên ảnh mới không cần chỉnh lại.
 
+### 5.2. Sửa theo review · 27/10/2026 (Claude, Unity Dev)
+
+**Commit** (nhánh `huycv`, chưa push): `054b8a76` `fix(ui): add menu button hover feedback and fit the in-room bar`, `a9c89458` `test(ui): smoke the connection menu art on the Boot scene`. Chỉ sửa `ConnectionMenuView.cs`, thêm test và ảnh. Không đụng PNG, prefab, scene hay presenter.
+
+- **A8 (Nên sửa), smoke test.** `Tests/PlayMode/ConnectionMenuSmokeTests.cs` chạy trên scene Boot thật với Bootstrap thật:
+  - Boot gắn menu art đủ 6 ảnh. Backdrop chỉ hiện ở MainMenu và Connecting, ẩn ở InRoom.
+  - Logo và key art không đè lên panel (20, 20, 380 px) ở 1280×720, 1920×1080, 2560×1440, và không đè lên rect thật của nút "Vào phòng"/"Hủy" vừa vẽ.
+  - `ConfigureArt(null)` trả về skin mặc định, không backdrop, nút vẫn được vẽ. Gắn lại art thì skin A quay lại.
+  - Màn hình được chuyển bằng đúng các action mà nút gọi: `Join` không có mã phòng thì báo "Nhập mã phòng."; `Join` → Connecting; `Disconnect` → MainMenu.
+  - Có GameServer local thì test đi tiếp vào InRoom và kiểm thanh in-room.
+  - Để test được, view có thêm: rect của nút ghi lại lúc repaint (`TryGetButtonRect`), `ShowsBackdrop`, `PrimaryStyle`, `InGameBarHeight`, và hàm tĩnh `BackdropLayout` (tách từ `DrawBackdrop`, hình học giữ nguyên).
+- **Giới hạn: chưa bấm chuột thật.** Đã thử cả `EditorGUIUtility.QueueGameViewInputEvent` và `EditorWindow.SendEvent` lên GameView (kể cả khi đã focus): trong test runner không sự kiện nào tới OnGUI của game. Vì vậy test không bấm chuột thật. Cú bấm tay vẫn cần QA hoặc người dùng làm.
+- **Gợi ý (a), hover/active.** Các nút trong menu và thanh in-room có phản hồi nhìn thấy được khi có art:
+  - Khi chuột ở trên nút: phủ trắng α 0,14 (sáng lên).
+  - Khi đang bấm (`hotControl` khác 0): phủ đen α 0,22 (tối xuống).
+  - Không tạo texture mới, không đổi flow. Chữ vẫn chuyển trắng ở hover/active như trước.
+  - Chưa chụp được trạng thái hover vì không có chuột thật trong phiên.
+- **Gợi ý (b), thanh in-game.**
+  - Lỗi cũ: thanh cao 34 px mà padding dọc 20 px, chỉ còn 14 px cho nội dung, nên nút "Rời phòng" bị cắt.
+  - Sửa: chiều cao thanh = 28 px của nút + padding dọc của panel (48 px khi có art). Label và nút cùng cao 28 px.
+  - Đo thật ở InRoom với GameServer local: thanh 48 px, nút "Rời phòng" (428, 20, 90×28) nằm trọn trong thanh (y 10–58).
+  - Mép dưới thanh (y 58) sát hộp `MatchDemoView` (y ≈ 58). Đây là view khác, không sửa.
+- **Ảnh GameView thật 1280×720** (ScreenCapture, có IMGUI):
+  - `Docs/Reports/ADHOC-UI-ASSETS-A/boot_menu_1280.png`: MainMenu có backdrop, logo, key art, panel không bị che.
+  - `Docs/Reports/ADHOC-UI-ASSETS-A/inroom_bar_1280.png`: InRoom, thanh mới, nút "Rời phòng" đủ.
+  - Size GameView tạm đã xóa, trả về size cũ (index 2). Scene mở lại `HudPreview`, không lưu thay đổi.
+- **GameServer local:**
+  - Chạy bằng `dotnet run`, `AUTH_MODE=RoomCode`, mã phòng thử `SMOKE`, 127.0.0.1:7777. Đã tắt sau khi chụp.
+  - Lần chạy `dotnet` đầu tiên trên máy tự cài chứng chỉ HTTPS dev của ASP.NET Core vào kho người dùng. Chứng chỉ chưa được trust.
+- **Test:**
+  - EditMode **326/326**.
+  - PlayMode **57/57**, gồm `ConnectionMenuSmokeTests`, `UiArtIntegrationTests`, `HudAcceptanceTests`, `HudFeedbackAcceptanceTests`.
+  - Smoke đã chạy đạt cả hai nhánh: không server (Connecting → hủy) và có server (InRoom, thanh 48 px).
+  - Console sạch. `EditorSettings.asset` đã `git checkout`.
+
 ## 6. Review
 
 Reviewer độc lập ghi sau build.
