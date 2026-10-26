@@ -1,0 +1,758 @@
+[
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound10.png",
+    "size": [
+      96,
+      96
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      20,
+      20,
+      20,
+      20
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6Stroke2.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      20,
+      20,
+      20,
+      20
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6Dashed.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      20,
+      20,
+      20,
+      20
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6Stroke1.png",
+    "size": [
+      96,
+      96
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      16,
+      16,
+      16,
+      16
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/BarFill.png",
+    "size": [
+      64,
+      16
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      6,
+      6,
+      6,
+      6
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/BarTrack.png",
+    "size": [
+      64,
+      16
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      6,
+      6,
+      6,
+      6
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/KeyCap.png",
+    "size": [
+      48,
+      48
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      12,
+      12,
+      12,
+      12
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/MinimapFrame.png",
+    "size": [
+      400,
+      400
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/EffectFrame.png",
+    "size": [
+      88,
+      88
+    ],
+    "pack": "P02",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      18,
+      18,
+      18,
+      18
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/ToastBg.png",
+    "size": [
+      96,
+      64
+    ],
+    "pack": "P02",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      20,
+      20,
+      20,
+      20
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/DangerBanner.png",
+    "size": [
+      192,
+      80
+    ],
+    "pack": "P02",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      28,
+      28,
+      28,
+      28
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/ABevel96.png",
+    "size": [
+      96,
+      96
+    ],
+    "pack": "P01-overlay",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "role": "independent white overlay, transparent center; tint after base",
+    "tint": "#526B69"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/ABevelSlot128.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P01-overlay",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      20,
+      20,
+      20,
+      20
+    ],
+    "role": "independent white overlay, transparent center; tint after base",
+    "tint": "#526B69"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/AFrameEdge96.png",
+    "size": [
+      96,
+      96
+    ],
+    "pack": "P01-overlay",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      24,
+      24,
+      24,
+      24
+    ],
+    "role": "independent white overlay, transparent center; tint after base",
+    "tint": "#0C1417"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/AFrameEdgeSlot128.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P01-overlay",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      20,
+      20,
+      20,
+      20
+    ],
+    "role": "independent white overlay, transparent center; tint after base",
+    "tint": "#0C1417"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudCircle16.png",
+    "size": [
+      64,
+      64
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/Crosshair.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P01",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HitMarker.png",
+    "size": [
+      128,
+      128
+    ],
+    "pack": "P02",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "neutral white RGBA mask; Image tint owns A or semantic color",
+    "tint": "integration palette"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/Poison.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/Poison_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/Slow.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/Slow_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/Invisible.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/Invisible_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/Stun.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/Stun_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/Root.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/Root_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/Reverse.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/Reverse_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Icons/Effects/CcImmune.png",
+    "size": [
+      256,
+      256
+    ],
+    "pack": "P06",
+    "mode": "RGBA",
+    "source": "Docs/Art/Production_A/UI/CcImmune_native32.png",
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonPrimary.png",
+    "size": [
+      192,
+      96
+    ],
+    "pack": "P07",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonSecondary.png",
+    "size": [
+      192,
+      96
+    ],
+    "pack": "P07",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonGhost.png",
+    "size": [
+      192,
+      96
+    ],
+    "pack": "P07",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      32,
+      32,
+      32,
+      32
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/Logo.png",
+    "size": [
+      1024,
+      256
+    ],
+    "pack": "P07",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/KeyArt.png",
+    "size": [
+      1040,
+      1040
+    ],
+    "pack": "P07",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/Background.png",
+    "size": [
+      1920,
+      1080
+    ],
+    "pack": "P07",
+    "mode": "RGBA",
+    "source": null,
+    "binding": "prepared; Unity binding/import QA pending",
+    "ppu": 100,
+    "filter": "Point",
+    "mipmaps": false,
+    "compression": "None",
+    "border_LTRB": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "role": "colored pixel art; Image tint must be white",
+    "tint": "#FFFFFF"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudArcFilled.png",
+    "size": [
+      88,
+      232
+    ],
+    "pack": "P02",
+    "binding": "reuse existing; unchanged PNG/meta",
+    "sha256": "b185f980a817b3fe3f1837eab7227d8598507b7fe3950cabd91f3f44199b6891"
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudArrowOutline.png",
+    "size": [
+      120,
+      120
+    ],
+    "pack": "P02",
+    "binding": "reuse existing; unchanged PNG/meta",
+    "sha256": "4f19c0341438bde53832fdcce245b5b2bbaeb9b039b8eee599e0e26a7d3d0dbf"
+  }
+]
