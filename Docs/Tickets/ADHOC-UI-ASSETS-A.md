@@ -149,6 +149,59 @@ Commit English ngắn, explicit path list khi add/commit, không attribution, kh
 
 Dev bổ sung output/commit, số lần sửa và giới hạn. Hiện đã có kiểm kênguồn và plan; chưa coi64dòng là sản xuất hoặcbound.
 
+### 5.1. Build 27/10/2026 (Claude, Unity integration, tiếp quản phần Codex)
+
+**Commit** (nhánh `huycv`, chưa push):
+
+| # | Hash | Nội dung |
+| --- | --- | --- |
+| 1 | `a529b10a` | `art(ui): produce direction A HUD and feedback sprites`: 19 PNG `Art/Hud` (13 mới + 6 ghi đè, giữ GUID), 7 effect, 6 menu, kèm `.meta` |
+| 2 | `02804008` | `art(items): normalize weapon and equipment icons`: 34 PNG + `.meta` + `.meta` thư mục |
+| 3 | `49c4943b` | `feat(ui): add item and menu art catalogs`: `HudItemIconCatalog`, `UiMenuArtCatalog`, `UiArtSet` + 3 asset |
+| 4 | `1760cf68` | `feat(ui): bind item and effect art to HUD`: palette A, `HudArtFrameView`, slot/toast/feed/chip, editor `UiArtAssetBuild`, hook builder cũ, 5 prefab + `HudEffectCatalog`, sửa kỳ vọng palette trong 2 test cũ |
+| 5 | `8ee4f49d` | `feat(ui): skin connection menu with direction A assets`: `ConnectionMenuView`, wiring `Bootstrap.cs`, `Boot.unity` (+1 dòng `uiArt`) |
+| 6 | `b56dac75` | `test(ui): verify asset bindings and HUD regressions`: `UiArtCatalogTests` (EditMode, 8 test), `UiArtIntegrationTests` (PlayMode, 6 test) |
+
+**Import (A3).** 66 texture (47 trong `Art/UI/**` + 19 sprite `Art/Hud` mới/ghi đè): Sprite, Single, Point, không mipmap, Uncompressed, pivot 0.5, FullRect, PPU 100, border theo `asset_mapping.json`. 34 icon 64×64 border 0; 7 effect 256²; nút menu border 32 (uGUI). `HudArcFilled`/`HudArrowOutline` reuse nguyên, không đổi meta. Cấu hình lặp lại được bằng menu **Jungle Maze/UI Art/Build And Bind Direction A** (`UiArtAssetBuild.ConfigureImporters`).
+
+**Lựa chọn T-1 (Bootstrap tự tạo không có ref serialized).** Thêm ScriptableObject `UiArtSet` (giữ `HudItemIconCatalog` + `UiMenuArtCatalog`) ở `Assets/_JungleMaze/Resources/UiArtSet.asset`. `Boot.unity` gán `Bootstrap.uiArt` trực tiếp. Khi field rỗng (Bootstrap do `BootstrapAutoCreate` tạo ở Game/HudPreview), `Compose()` gọi `Resources.Load<UiArtSet>("UiArtSet")` **một lần** lúc nối service, không mỗi frame, không singleton. Thiếu asset thì cảnh báo một dòng và dùng `NullItemIconProvider`. Đã kiểm thật: Play ở `HudPreview` → provider resolve là `HudItemIconCatalog`, slot/toast/chip có icon. Lệch kế hoạch 4.1: thay hai field `itemIcons`/`menuArt` bằng một field `uiArt` để chỉ có một nguồn cho cả 3 scene.
+
+**Binding đã gắn thật** (validator `UiArtAssetBuild.Validate()` = 0 lỗi; chạy builder 2 lần → md5 prefab/asset/scene không đổi):
+
+- Item: 34/34 ID roster (18 weapon + 16 equipment) → `HudItemIconCatalog`, dictionary `StringComparer.Ordinal` dựng một lần ở `OnEnable/OnValidate/SetEntries`; null/rỗng/unknown/sai hoa thường → null.
+- Khe nhanh: sprite thật dùng `Image.Type.Simple` + `preserveAspect`, màu trắng; unknown/empty về placeholder 9-slice + màu `IconPlaceholder`. Ô 28×28 giữ nguyên.
+- Pickup feed/toast: `HudFeedbackRoot.ConstructIcons` (method `[Inject]` riêng, `Construct` 3 port giữ nguyên) → `PickupFeedView.ConfigureIcons` → 3 row. Row cache ID, chỉ tra khi ID đổi; unknown về placeholder. Icon 18×18 giữ nguyên.
+- Effect: 8/8 kind có icon trong `HudEffectCatalog` (Adrenaline dùng `Equipments/ADRENALINE.png`). Có icon thì bật icon, tắt renderer label (text vẫn set); overflow `+n` hoặc thiếu art thì tắt icon, bật label. Timer/fill/polarity không đổi.
+- Khung A: base giữ tint Surface của view, thêm 2 overlay con `ArtEdge` (`AFrameEdge*`, tint `Edge`) và `ArtBevel` (`ABevel*`, tint `Line`) qua `HudArtFrameView`, stretch, `raycastTarget=false`, `LayoutElement.ignoreLayout=true`. Gắn ở Vitals, Minimap, MatchStatus, WeaponStrip (ppum 2) và HudSlot (ẩn khi slot Empty). KeyCap → `KeyCap.png`; toast + overflow → `ToastBg` (ppum 2); chip border → `EffectFrame`; danger banner nền → `DangerBanner` (ppum 2); UseActionStrip ppum 2. Không đổi RectTransform khối nào (test layout UI-01 vẫn xanh).
+- Menu: `ConnectionMenuView.ConfigureArt(art, menuScene)`: style GUIStyle tạo một lần (khi có GUI.skin hoặc khi đổi art), không đổi `GUI.skin`. Panel dùng `ButtonGhost`, nút "Vào phòng" `ButtonPrimary`, nút còn lại `ButtonSecondary`/`ButtonGhost`, border IMGUI 10 px (khung ảnh dày 7 px; border 32 của uGUI không vừa nút cao 28–32 px). Background/logo/key art chỉ vẽ ở Repaint, khi MainMenu/Connecting **và** scene đang mở là `menuScene` (Boot). Lệch kế hoạch: thêm điều kiện scene vì ở HudPreview/Game background full-screen che mất HUD/world. Presenter, action Local/LAN/Online/profile/login/vào/rời/hủy không đổi.
+- Builder cũ `HudFeedbackPrefabBuild.Build` có event `AfterBuild`; `UiArtAssetBuild` đăng ký `[InitializeOnLoad]` nên chạy lại builder cũ không mất art (đã thử: chạy builder cũ → chip `EffectFrame`, toast `ToastBg`, 4 frame, 8 effect icon, validator 0 lỗi; sau đó trả prefab về bản đã commit).
+
+**Palette A đã áp** (`HudPalette.Default`, prefab Hud): Surface `#202A2D` α 0.92; Text `#EDF2EE`; Muted `#A6BBB7`; Faint `#77908A`; Line (bevel) `#526B69`; Edge (mới) `#0C1417`; Raised `#0C1417`; Track `#0C1417` α 0.80; Grid `#526B69` α 0.60; Amber (chọn/đang dùng) `#C6AE78`; SelectedFill `#28534F` α 0.25; Green `#63BAA5`; IconPlaceholder `#77908A`. Giữ nguyên ngữ nghĩa UI-01: Red `#E5484D`, Blue `#5BB8E8`, Yellow `#F5C542`, Purple `#A274FF`, Trail, DangerFill, HitMarker trắng.
+
+**Chưa gắn (đã sản xuất, có import):** `BarFill`, `BarTrack` (thanh HP/giáp đang dùng anchor fill phẳng; đổi sang sliced có rủi ro hình học, để sau), `MinimapFrame`, `Crosshair` (HUD chưa có crosshair), `HitMarker.png` (hit marker vẫn 4 tick do code dựng). Manifest cần ghi các dòng này là "imported, not bound".
+
+**Test (kết quả thật, Unity 6000.3.15f1, build ổn định cuối cùng):**
+
+- EditMode `JungleMaze.Tests.EditMode`: **274/274 pass** (job `89476790…`), gồm 8 test `UiArtCatalogTests`.
+- PlayMode `JungleMaze.Tests.PlayMode`: **43/43 pass** (job `7c892fcc…`), gồm 6 test `UiArtIntegrationTests` và toàn bộ `HudAcceptanceTests`/`HudFeedbackAcceptanceTests`.
+- GC: `Lookup_KnownAndUnknown_DoesNotAllocateAfterWarmup` (4000 lookup) và `ScopedLookupAndViewWarmGC` (300 vòng lookup + `SetSlot` + toast `Show`, xen ID known/unknown) đều 0 byte. Không claim 0 GC cả frame/Canvas.
+- Console sau build: 0 error, 0 warning của `_JungleMaze`. `ProjectSettings/EditorSettings.asset` đã `git checkout` sau mỗi lượt PlayMode (`m_EnterPlayModeOptions: 0`).
+- Ảnh GameView thật (ScreenCapture, có Overlay UI): HudPreview 1280×720, 1920×1080, 2560×1440 (MockupV2 + 3 pickup gồm 1 ID lạ + 6 effect), Boot menu 1280×720 (MainMenu, lỗi "Nhập mã phòng", Connecting → Hủy về MainMenu). Ảnh để ở scratchpad phiên, chưa đưa vào repo. GameView size tạm và các size "QA" đã xóa, trả về 16:10.
+
+**Lỗi gặp và số vòng:**
+
+1. Lỗi biên dịch có sẵn trước phiên (không do ticket): 9 script MOV-02/03 (`LocalPrediction`, `MovementSimulation`, `MovementTelemetry`, `PlayerPoseSource`, `RemotePlayerInterpolator`, `SnapshotBuffer`, `IPlayerPoseSource`, `PlayerPose`, `Bootstrap.MovementChecks`) có file và `.meta` đúng nhưng không nằm trong danh sách biên dịch của Editor → `MatchSession.cs: LocalPrediction could not be found`. Vòng 1 ForceUpdate import, vòng 2 clean build cache: chưa hết. Vòng 3 `AssetDatabase.MoveAsset` ra tên tạm rồi trả lại: hết lỗi. Nội dung file không đổi (git không có diff).
+2. Test `SwapCatalogSprite…` đỏ lần đầu vì presenter chỉ đẩy slot khi state đổi; sửa test để phát lại cùng state qua view (1 vòng).
+3. Background menu che HUD khi Play ở HudPreview: thêm điều kiện scene (1 vòng).
+
+**Giới hạn / việc cho art hoặc QA:**
+
+- `Menu/KeyArt.png` và `Menu/Background.png` là RGB không có alpha (Unity import RGB24): key art hiện thành ô vuông nền tối trên background. Không sửa PNG; cần art xuất lại KeyArt có nền trong suốt nếu muốn hòa vào nền.
+- Viền chip `EffectFrame` dày 3 px và thanh fill 3 px cùng màu nằm sát cạnh dưới, nhìn như cạnh dưới dày hơn. Hình học UI-01 giữ nguyên; QA/art quyết có đổi ppum hay không.
+- Hàng nút profile trên menu tràn ngang khi có nhiều profile (có từ trước, không do skin).
+- Chưa kiểm nhận diện mù 3 người (ART-04 AC20b), chưa build Release Player, chưa playtest qua GameServer thật (HUD đo bằng mock state).
+- Codex sẽ vẽ lại icon 32 px và ghi đè PNG cùng tên từ 28/10: importer giữ Point/no mipmap/uncompressed, test chỉ kiểm ID, tham chiếu, 64×64 và Point, nên ảnh mới không cần chỉnh lại.
+
 ## 6. Review
 
 Reviewer độc lập ghi sau build.
