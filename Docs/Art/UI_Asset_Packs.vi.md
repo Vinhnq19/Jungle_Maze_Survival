@@ -1,8 +1,8 @@
 # Kế hoạch sản xuất bộ asset UI
 
-Ngày: **27/10/2026**. Trạng thái: **Đề xuất pack và kiểm kê; người dùng chọn tham chiếu fantasy nâu đá / vàng cổ để dựng demo K, chưa nghiệm thu bộ production**.
+Ngày: **27/10/2026**. Trạng thái: **Đề xuất pack và kiểm kê; fantasy nâu đá / vàng cổ phải thể hiện bằng pixel art theo nhắc lại của người dùng; dựng demo L, chưa nghiệm thu bộ production**.
 
-Người dùng yêu cầu chia pack và sinh ảnh để gắn vào game. H · Rừng gọn là tham chiếu đã dùng trong UI-01 trước đây, **không đồng nghĩa đã chọn cho bộ asset mới**. Sau bản I và bản nháp J, người dùng gửi [ảnh tham chiếu](references/K_user_style_reference.png) và nói **“kiểu này đi”**: khung nâu đá, viền vàng cổ vát nhẹ, góc trang trí, hốc icon tối và icon nhiều màu. Đây là hướng để dựng demo K; cần xem demo trước khi khóa thông số palette/border và nhân rộng cả pack. Chưa thay prefab, catalog hoặc ảnh đang chạy. UI-01 đã Done, không mở lại ticket.
+Người dùng yêu cầu chia pack và sinh ảnh để gắn vào game. H · Rừng gọn là tham chiếu đã dùng trong UI-01 trước đây, **không đồng nghĩa đã chọn cho bộ asset mới**. Sau bản I và bản nháp J, người dùng gửi [ảnh tham chiếu](references/K_user_style_reference.png) và nói **“kiểu này đi”**: khung nâu đá, viền vàng cổ vát nhẹ, góc trang trí, hốc icon tối và icon nhiều màu. Sau demo K, người dùng nhắc **“nó là game đồ họa pixel”**: giữ ngôn ngữ khung/màu của tham chiếu nhưng thay cách thể hiện mượt bằng pixel art ở demo L. K không phải hướng render được duyệt. Cần xem demo trước khi khóa thông số palette/border và nhân rộng cả pack. Chưa thay prefab, catalog hoặc ảnh đang chạy. UI-01 đã Done, không mở lại ticket.
 
 ## 1. Căn cứ và phạm vi
 
@@ -111,16 +111,16 @@ Mỗi lỗi tối đa3 vòng thử/sửa theo yêu cầu người dùng; chưa �
 
 ## 5. Chuẩn xuất và import
 
-- Icon: PNG RGBA256×256, một món ở giữa, pivot(0.5,0.5), tỉ lệ1:1, có vùng trong suốt quanh mép; silhouette chiếm khoảng72–80% khung là **đề xuất pilot**. Không nền caro giả, chữ, watermark, bàn tay cầm thêm hoặc bóng đổ ngoài asset.
+- Icon: giữ đích PNG RGBA256×256 của manifest cũ để đối chiếu; pixel source phải có kích thước native riêng, không coi ảnh gen lớn thu nhỏ là pixel sprite đã đạt. Pilot dùng lưới16×16 cho icon đọc ở32/48px bằng nhân2/3; chỉ tăng native khi pilot chứng minh cần thêm chi tiết. Xuất lớn bằng nearest-neighbor hệ số nguyên. Một món ở giữa, pivot(0.5,0.5), tỉ lệ1:1, có vùng trong suốt quanh mép; silhouette chiếm khoảng72–80% khung là **đề xuất pilot**. Không nền caro giả, chữ, watermark, bàn tay cầm thêm hoặc bóng đổ ngoài asset.
 - Ảnh gen nguồn giữ nguyên chất lượng trong thư mục source; bản export/candidate tách riêng. Không phóng file nhỏ để gọi là source độ phân giải cao.
 - Downsample chất lượng cao; xem alpha trên trắng/đen và màu slot để bắt viền sáng. Không dùng tẩy nền tự động làm mất chi tiết trong suốt của pha lê/chai.
-- UI import dự kiến: Sprite2D/UI, Single, FullRect, PPU100, CompressionNone, MaxSize≥cạnh dài; FilterBilinear cho art mượt, Point chỉ khi hướng pixel được chọn. Tắt mipmap cho UI. Border theo từng dòng, không áp chung cho icon.
+- UI import dự kiến: Sprite2D/UI, Single, FullRect, PPU100, CompressionNone, MaxSize≥cạnh dài; **FilterPoint, tắt mipmap**. Kiểm scale nguyên và căn lưới ở kích thước sử dụng thật để tránh pixel không đều; không bật bilinear làm mờ cạnh. Border theo từng dòng và lưới pixel, không áp chung cho icon; chưa đổi import hiện tại khi chưa triển khai.
 - Nếu thay file đang dùng: giữ GUID/.meta, kiểm SpriteMode và internalIDs trước vì một số asset cũ có thể là Multiple; không áp Single mù quáng. File mới: tạo.meta bằng Unity sau khi chấp thuận import.
 - Không bake màu cảnh báo/selected vào mask trắng nếu view đang tint. Ảnh item màu có thể giữ màu bản thân; không dùng màu duy nhất làm dấu phân biệt.
 
 ## 6. Prompt dùng lại
 
-Chưa có prompt style cuối vì **chưa chọn hướng**. Mẫu dưới chỉ cố định cấu trúc bàn giao:
+Đã có ràng buộc style: **pixel art, fantasy nâu đá / vàng cổ**, đang kiểm bằng demo L; chưa khóa palette và mật độ pixel production. Mọi prompt phải yêu cầu silhouette bậc thang, bảng màu hạn chế, bóng cứng2–3mức, không gradient/blur/antialias hay chất liệu render3D. Ảnh gen chỉ là nguồn tham khảo cho bước làm sạch sprite native; kiểm lưới thật trước khi nhận. Mẫu dưới cố định cấu trúc bàn giao:
 
 ```text
 Use case: stylized-concept
