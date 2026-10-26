@@ -1,0 +1,522 @@
+<svg width="2728" height="980" viewBox="0 0 2728 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="2728" height="980" rx="24" fill="#0B0F0D"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="40" font-weight="800" letter-spacing="0em"><tspan x="64" y="88.2">H&#x1b0;&#x1edb;ng A &#xb7; R&#x1eeb;ng Pixel</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="18" font-weight="500" letter-spacing="0em"><tspan x="64" y="126.115">Pixel art 16-bit, khung g&#x1ed7; kh&#x1eaf;c, thanh chia kh&#xfa;c. G&#x1ea7;n v&#x1edb;i phong c&#xe1;ch 2D Pixel Art trong GDD, d&#x1ec5; &#x111;&#x1ed3;ng b&#x1ed9; v&#x1edb;i tileset v&#xe0; Hero pixel.</tspan></text>
+<text fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="14" font-weight="500" letter-spacing="0em"><tspan x="64" y="184.145">Font: Pixelify Sans (s&#x1ed1;, ti&#xea;u &#x111;&#x1ec1; Latin) &#xb7; Be Vietnam Pro (ch&#x1eef; Vi&#x1ec7;t)</tspan></text>
+<text fill="#6E8070" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="14" font-weight="500" letter-spacing="0em"><tspan x="64" y="210.145">Prompt n&#x1ec1;n cho Codex: 16-bit pixel art game UI, carved dark wood frame with light bevel, jungle survival, limited palette, crisp pixels, no anti-aliasing, transparent background</tspan></text>
+<rect x="1480.5" y="56.5" width="129" height="63" rx="9.5" fill="#3B2A1A" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="1480" y="140.778">Panel</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="1480" y="159.91">#3B2A1A</tspan></text>
+<rect x="1630.5" y="56.5" width="129" height="63" rx="9.5" fill="#1E140C" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="1630" y="140.778">Vi&#x1ec1;n</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="1630" y="159.91">#1E140C</tspan></text>
+<rect x="1780.5" y="56.5" width="129" height="63" rx="9.5" fill="#8BC34A" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="1780" y="140.778">Nh&#x1ea5;n</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="1780" y="159.91">#8BC34A</tspan></text>
+<rect x="1930.5" y="56.5" width="129" height="63" rx="9.5" fill="#D9473F" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="1930" y="140.778">M&#xe1;u</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="1930" y="159.91">#D9473F</tspan></text>
+<rect x="2080.5" y="56.5" width="129" height="63" rx="9.5" fill="#4FA3D9" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="2080" y="140.778">Gi&#xe1;p</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="2080" y="159.91">#4FA3D9</tspan></text>
+<rect x="2230.5" y="56.5" width="129" height="63" rx="9.5" fill="#F2C230" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="2230" y="140.778">Adrenaline</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="2230" y="159.91">#F2C230</tspan></text>
+<rect x="2380.5" y="56.5" width="129" height="63" rx="9.5" fill="#B37BFF" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="2380" y="140.778">Bo</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="2380" y="159.91">#B37BFF</tspan></text>
+<rect x="2530.5" y="56.5" width="129" height="63" rx="9.5" fill="#E2483D" stroke="#34503F"/>
+<text fill="#F3EEDB" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="2530" y="140.778">Nguy hi&#x1ec3;m</tspan></text>
+<text fill="#A7B5A3" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="2530" y="159.91">#E2483D</tspan></text>
+<g clip-path="url(#clip0_51_3)">
+<rect width="1280" height="720" transform="translate(64 236)" fill="#2E4A2A"/>
+<rect x="64" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="64" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="112" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="160" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="208" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="256" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="304" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="352" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="400" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="448" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="496" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="544" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="592" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="640" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="688" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="736" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="784" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="832" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="880" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="928" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="976" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="1024" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="1072" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="1120" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="1168" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="1216" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="284" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="380" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="476" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="572" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="668" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="764" width="48" height="48" fill="#34532F"/>
+<rect x="1264" y="860" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="236" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="332" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="428" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="524" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="620" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="716" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="812" width="48" height="48" fill="#34532F"/>
+<rect x="1312" y="908" width="48" height="48" fill="#34532F"/>
+<rect x="448.5" y="380.5" width="47" height="191" rx="3.5" fill="#233128" stroke="#3E5A47"/>
+<rect x="534.5" y="656.5" width="47" height="95" rx="3.5" fill="#233128" stroke="#3E5A47"/>
+<rect x="928.5" y="620.5" width="167" height="167" rx="3.5" fill="#233128" stroke="#3E5A47"/>
+<rect x="208.5" y="524.5" width="143" height="143" rx="3.5" fill="#233128" stroke="#3E5A47"/>
+<ellipse cx="809" cy="426" rx="55" ry="40" fill="#274A2F"/>
+<circle cx="704" cy="596" r="18.5" fill="#E9DFC0" stroke="#1A1206" stroke-width="3"/>
+<circle cx="1091" cy="553" r="16" fill="#6B4A4A" stroke="#E2483D" stroke-width="2"/>
+<rect x="89.5" y="261.5" width="187" height="23" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="89.5" y="261.5" width="187" height="23" stroke="#1E140C" stroke-width="3"/>
+<rect x="91" y="263" width="184" height="2" fill="#6B4A2B"/>
+<rect x="91" y="263" width="2" height="20" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="98" y="276.778">H&#xe0;o</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="140" y="276.91">N&#x1ecf;</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="200" y="276.778">Vinh</tspan></text>
+<g opacity="0.8">
+<rect x="89.5" y="293.5" width="187" height="23" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="89.5" y="293.5" width="187" height="23" stroke="#1E140C" stroke-width="3"/>
+<rect x="91" y="295" width="184" height="2" fill="#6B4A2B"/>
+<rect x="91" y="295" width="2" height="20" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="98" y="308.778">V&#x169;</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="140" y="308.91">Shotgun</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="200" y="308.778">Quang Huy</tspan></text>
+</g>
+<g opacity="0.5">
+<rect x="89.5" y="325.5" width="187" height="23" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="89.5" y="325.5" width="187" height="23" stroke="#1E140C" stroke-width="3"/>
+<rect x="91" y="327" width="184" height="2" fill="#6B4A2B"/>
+<rect x="91" y="327" width="2" height="20" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="98" y="340.778">Bo</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="500" letter-spacing="0em"><tspan x="140" y="340.91">&#xb7;</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="bold" letter-spacing="0em"><tspan x="200" y="340.778">V.Huy</tspan></text>
+</g>
+<rect x="1121.5" y="261.5" width="197" height="197" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="1121.5" y="261.5" width="197" height="197" stroke="#1E140C" stroke-width="3"/>
+<rect x="1123" y="263" width="194" height="2" fill="#6B4A2B"/>
+<rect x="1123" y="263" width="2" height="194" fill="#6B4A2B"/>
+<circle cx="1220" cy="360" r="87" stroke="#B37BFF" stroke-width="2" stroke-dasharray="6 4"/>
+<circle cx="1258" cy="342" r="41.25" fill="#B37BFF" fill-opacity="0.15" stroke="#F7EBD0" stroke-width="1.5"/>
+<circle cx="1179" cy="385" r="6.25" fill="#8BC34A" stroke="black" stroke-width="1.5"/>
+<rect x="1121.5" y="469.5" width="197" height="71" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="1121.5" y="469.5" width="197" height="71" stroke="#1E140C" stroke-width="3"/>
+<rect x="1123" y="471" width="194" height="2" fill="#6B4A2B"/>
+<rect x="1123" y="471" width="2" height="68" fill="#6B4A2B"/>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="1132" y="492.778">Bo thu sau</tspan></text>
+<text fill="#B37BFF" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="22" font-weight="bold" letter-spacing="0em"><tspan x="1246" y="494.04">01:24</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="1132" y="524.778">C&#xf2;n s&#x1ed1;ng</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="22" font-weight="bold" letter-spacing="0em"><tspan x="1260" y="526.04">7/10</tspan></text>
+<rect x="89.5" y="703.5" width="41" height="41" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="89.5" y="703.5" width="41" height="41" stroke="#E2483D" stroke-width="3"/>
+<rect x="91" y="705" width="38" height="2" fill="#6B4A2B"/>
+<rect x="91" y="705" width="2" height="38" fill="#6B4A2B"/>
+<text fill="#E2483D" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="97.6016" y="722.91">&#x110;&#x1ed9;c</tspan></text>
+<g clip-path="url(#clip1_51_3)">
+<rect x="94" y="736" width="32" height="4" rx="1" fill="black" fill-opacity="0.4"/>
+<rect x="94" y="736" width="19" height="4" rx="1" fill="#E2483D"/>
+</g>
+<rect x="139.5" y="703.5" width="41" height="41" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="139.5" y="703.5" width="41" height="41" stroke="#E2483D" stroke-width="3"/>
+<rect x="141" y="705" width="38" height="2" fill="#6B4A2B"/>
+<rect x="141" y="705" width="2" height="38" fill="#6B4A2B"/>
+<text fill="#E2483D" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="142.328" y="722.91">Ch&#x1ead;m</tspan></text>
+<g clip-path="url(#clip2_51_3)">
+<rect x="144" y="736" width="32" height="4" rx="1" fill="black" fill-opacity="0.4"/>
+<rect x="144" y="736" width="19" height="4" rx="1" fill="#E2483D"/>
+</g>
+<rect x="189.5" y="703.5" width="41" height="41" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="189.5" y="703.5" width="41" height="41" stroke="#8BC34A" stroke-width="3"/>
+<rect x="191" y="705" width="38" height="2" fill="#6B4A2B"/>
+<rect x="191" y="705" width="2" height="38" fill="#6B4A2B"/>
+<text fill="#8BC34A" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="201.803" y="722.91">&#x1ea8;n</tspan></text>
+<g clip-path="url(#clip3_51_3)">
+<rect x="194" y="736" width="32" height="4" rx="1" fill="black" fill-opacity="0.4"/>
+<rect x="194" y="736" width="19" height="4" rx="1" fill="#8BC34A"/>
+</g>
+<rect x="89.5" y="769.5" width="293" height="161" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="89.5" y="769.5" width="293" height="161" stroke="#1E140C" stroke-width="3"/>
+<rect x="91" y="771" width="290" height="2" fill="#6B4A2B"/>
+<rect x="91" y="771" width="2" height="158" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="34" font-weight="bold" letter-spacing="0em"><tspan x="104" y="807.38">72</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="bold" letter-spacing="0em"><tspan x="156" y="806.98">/100</tspan></text>
+<g clip-path="url(#clip4_51_3)">
+<rect x="104" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="116.091" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="128.182" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="140.273" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="152.364" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="164.455" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="176.545" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="188.636" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="200.727" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="212.818" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="224.909" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="237" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="249.091" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="261.182" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="273.273" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="285.364" y="831" width="10.0909" height="12" fill="#D9473F"/>
+<rect x="297.455" y="831" width="10.0909" height="12" fill="black" fill-opacity="0.35"/>
+<rect x="309.545" y="831" width="10.0909" height="12" fill="black" fill-opacity="0.35"/>
+<rect x="321.636" y="831" width="10.0909" height="12" fill="black" fill-opacity="0.35"/>
+<rect x="333.727" y="831" width="10.0909" height="12" fill="black" fill-opacity="0.35"/>
+<rect x="345.818" y="831" width="10.0909" height="12" fill="black" fill-opacity="0.35"/>
+<rect x="357.909" y="831" width="10.0909" height="12" fill="black" fill-opacity="0.35"/>
+</g>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="104" y="864.778">Gi&#xe1;p gai</tspan></text>
+<g clip-path="url(#clip5_51_3)">
+<rect x="190" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="201.833" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="213.667" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="225.5" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="237.333" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="249.167" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="261" y="857" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="272.833" y="857" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="284.667" y="857" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="296.5" y="857" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="308.333" y="857" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="320.167" y="857" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+</g>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="bold" letter-spacing="0em"><tspan x="340" y="862.98">48</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="104" y="889.778">M&#x169; g&#x1ed7;</tspan></text>
+<g clip-path="url(#clip6_51_3)">
+<rect x="190" y="882" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="201.833" y="882" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="213.667" y="882" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="225.5" y="882" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="237.333" y="882" width="9.83333" height="7" fill="#4FA3D9"/>
+<rect x="249.167" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="261" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="272.833" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="284.667" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="296.5" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="308.333" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="320.167" y="882" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+</g>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="bold" letter-spacing="0em"><tspan x="340" y="887.98">12</tspan></text>
+<text fill="#F2C230" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="104" y="914.778">Adrenaline</tspan></text>
+<g clip-path="url(#clip7_51_3)">
+<rect x="190" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="201.833" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="213.667" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="225.5" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="237.333" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="249.167" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="261" y="907" width="9.83333" height="7" fill="#F2C230"/>
+<rect x="272.833" y="907" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="284.667" y="907" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="296.5" y="907" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="308.333" y="907" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+<rect x="320.167" y="907" width="9.83333" height="7" fill="black" fill-opacity="0.35"/>
+</g>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="14" font-weight="bold" letter-spacing="0em"><tspan x="340" y="912.98">5s</tspan></text>
+<rect x="587.5" y="803.5" width="233" height="31" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="587.5" y="803.5" width="233" height="31" stroke="#1E140C" stroke-width="3"/>
+<rect x="589" y="805" width="230" height="2" fill="#6B4A2B"/>
+<rect x="589" y="805" width="2" height="28" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="602" y="823.88">N&#x1ecf;</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="18" font-weight="bold" letter-spacing="0em"><tspan x="646" y="823.76">4 / 30</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="736" y="822.778">[R] N&#x1ea1;p</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="bold" letter-spacing="0.1em"><tspan x="534" y="857.042">V&#x168; KH&#xcd;</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="11" font-weight="bold" letter-spacing="0.1em"><tspan x="809" y="857.042">D&#x1af;&#x1ee2;C PH&#x1ea8;M</tspan></text>
+<rect x="423.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="423.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3"/>
+<rect x="440" y="878" width="28" height="28" fill="white" fill-opacity="0.18"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="10" font-weight="600" letter-spacing="0em"><tspan x="428.448" y="924.175">Tay kh&#xf4;ng</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="427" y="880.02">1</tspan></text>
+<rect x="494" y="870" width="60" height="60" fill="#8BC34A" fill-opacity="0.25"/>
+<rect x="494" y="870" width="60" height="60" stroke="#8BC34A" stroke-width="4"/>
+<rect x="510" y="878" width="28" height="28" fill="white" fill-opacity="0.18"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="10" font-weight="600" letter-spacing="0em"><tspan x="517.022" y="924.175">N&#x1ecf;</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="497" y="880.02">2</tspan></text>
+<rect x="563.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="563.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3"/>
+<rect x="580" y="878" width="28" height="28" fill="white" fill-opacity="0.18"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="10" font-weight="600" letter-spacing="0em"><tspan x="569.513" y="924.175">N&#xe1; cao su</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="567" y="880.02">3</tspan></text>
+<rect x="633.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.4"/>
+<rect x="633.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3" stroke-dasharray="4 3"/>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="637" y="880.02">4</tspan></text>
+<rect x="717.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="717.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3"/>
+<rect x="734" y="878" width="28" height="28" fill="white" fill-opacity="0.18"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="10" font-weight="600" letter-spacing="0em"><tspan x="729.118" y="924.175">L&#xe1; th&#x1ea7;n</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="760" y="880.84">&#xd7;6</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="721" y="880.02">5</tspan></text>
+<rect x="787.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="787.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3"/>
+<rect x="804" y="878" width="28" height="28" fill="white" fill-opacity="0.18"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="10" font-weight="600" letter-spacing="0em"><tspan x="791.599" y="924.175">M&#xe1;u k&#x1ef3; l&#xe2;n</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="830" y="880.84">&#xd7;1</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="791" y="880.02">6</tspan></text>
+<rect x="857.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.4"/>
+<rect x="857.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3" stroke-dasharray="4 3"/>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="861" y="880.02">7</tspan></text>
+<rect x="927.5" y="869.5" width="61" height="61" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="927.5" y="869.5" width="61" height="61" stroke="#1E140C" stroke-width="3"/>
+<rect x="944" y="878" width="28" height="28" fill="white" fill-opacity="0.18"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="10" font-weight="600" letter-spacing="0em"><tspan x="936.867" y="924.175">T&#x103;ng l&#x1ef1;c</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="12" font-weight="bold" letter-spacing="0em"><tspan x="970" y="880.84">&#xd7;4</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="11" font-weight="bold" letter-spacing="0em"><tspan x="931" y="880.02">8</tspan></text>
+<g opacity="0.7">
+<rect x="1181.5" y="857.5" width="137" height="29" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="1181.5" y="857.5" width="137" height="29" stroke="#1E140C" stroke-width="3"/>
+<rect x="1183" y="859" width="134" height="2" fill="#6B4A2B"/>
+<rect x="1183" y="859" width="2" height="26" fill="#6B4A2B"/>
+<text fill="#8BC34A" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="1190" y="874.62">+</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1208" y="875.778">L&#xe1; th&#x1ea7;n &#xd7;2</tspan></text>
+</g>
+<rect x="1181.5" y="895.5" width="137" height="29" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="1181.5" y="895.5" width="137" height="29" stroke="#1E140C" stroke-width="3"/>
+<rect x="1183" y="897" width="134" height="2" fill="#6B4A2B"/>
+<rect x="1183" y="897" width="2" height="26" fill="#6B4A2B"/>
+<text fill="#8BC34A" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="16" font-weight="bold" letter-spacing="0em"><tspan x="1190" y="912.62">+</tspan></text>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="600" letter-spacing="0em"><tspan x="1208" y="913.778">Shotgun &#xd7;1</tspan></text>
+<rect x="555.5" y="261.5" width="297" height="37" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="555.5" y="261.5" width="297" height="37" stroke="#E2483D" stroke-width="3"/>
+<rect x="557" y="263" width="294" height="2" fill="#6B4A2B"/>
+<rect x="557" y="263" width="2" height="34" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="14" font-weight="bold" letter-spacing="0em"><tspan x="568" y="284.145">!  Bom n&#x1ed5; sau</tspan></text>
+<text fill="#E2483D" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="20" font-weight="bold" letter-spacing="0em"><tspan x="690" y="284.4">2s</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="732" y="283.778">T&#xe2;y Nam &#xb7; 4 &#xf4;</tspan></text>
+<path d="M884 535C890.075 535 895 530.075 895 524C895 517.925 890.075 513 884 513C877.925 513 873 517.925 873 524C873 530.075 877.925 535 884 535Z" stroke="#F7EBD0" stroke-width="2"/>
+<path d="M884 507V514V507ZM884 534V541V534ZM867 524H874H867ZM894 524H901H894Z" fill="black"/>
+<path d="M884 507V514M884 534V541M867 524H874M894 524H901" stroke="#F7EBD0" stroke-width="2"/>
+<path d="M884 526C885.105 526 886 525.105 886 524C886 522.895 885.105 522 884 522C882.895 522 882 522.895 882 524C882 525.105 882.895 526 884 526Z" fill="#8BC34A"/>
+</g>
+<g clip-path="url(#clip8_51_3)">
+<rect width="1280" height="720" transform="translate(1384 236)" fill="#0F1A12"/>
+<circle cx="2454" cy="426" r="450" fill="#2E4A2A" fill-opacity="0.6"/>
+<circle cx="1464" cy="916" r="260" fill="#2E4A2A" fill-opacity="0.4"/>
+<text fill="#8BC34A" style="white-space: pre" xml:space="preserve" font-family="Pixelify Sans" font-size="76" font-weight="bold" letter-spacing="0.04em"><tspan x="1480" y="455.82">LASTAWAY</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="18" font-weight="500" letter-spacing="0em"><tspan x="1480" y="504.115">Sinh t&#x1ed3;n tr&#xea;n &#x111;&#x1ea3;o r&#x1eeb;ng. 10 ng&#x1b0;&#x1edd;i v&#xe0;o, 1 ng&#x1b0;&#x1edd;i ra.</tspan></text>
+<rect x="1481.5" y="537.5" width="297" height="49" fill="#8BC34A"/>
+<rect x="1481.5" y="537.5" width="297" height="49" stroke="#8BC34A" stroke-width="3"/>
+<rect x="1483" y="539" width="294" height="2" fill="#6B4A2B"/>
+<rect x="1483" y="539" width="2" height="46" fill="#6B4A2B"/>
+<text fill="#07120F" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="17" font-weight="bold" letter-spacing="0em"><tspan x="1609.97" y="567.247">Ch&#x1a1;i</tspan></text>
+<rect x="1481.5" y="601.5" width="297" height="49" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="1481.5" y="601.5" width="297" height="49" stroke="#1E140C" stroke-width="3"/>
+<rect x="1483" y="603" width="294" height="2" fill="#6B4A2B"/>
+<rect x="1483" y="603" width="2" height="46" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="17" font-weight="bold" letter-spacing="0em"><tspan x="1598.06" y="631.247">C&#xe0;i &#x111;&#x1eb7;t</tspan></text>
+<rect x="1481.5" y="665.5" width="297" height="49" fill="#3B2A1A" fill-opacity="0.92"/>
+<rect x="1481.5" y="665.5" width="297" height="49" stroke="#1E140C" stroke-width="3"/>
+<rect x="1483" y="667" width="294" height="2" fill="#6B4A2B"/>
+<rect x="1483" y="667" width="2" height="46" fill="#6B4A2B"/>
+<text fill="#F7EBD0" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="17" font-weight="bold" letter-spacing="0em"><tspan x="1604.2" y="695.247">Tho&#xe1;t</tspan></text>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="1480" y="908.778">&#x25cf; M&#xe1;y ch&#x1ee7; Local &#xb7; 127.0.0.1:7777 &#xb7; s&#x1eb5;n s&#xe0;ng</tspan></text>
+<rect x="2049.5" y="337.5" width="517" height="517" fill="#2E4A2A"/>
+<rect x="2049.5" y="337.5" width="517" height="517" stroke="#1E140C" stroke-width="3"/>
+<rect x="2051" y="339" width="514" height="2" fill="#6B4A2B"/>
+<rect x="2051" y="339" width="2" height="514" fill="#6B4A2B"/>
+<circle cx="2308" cy="596" r="178.5" fill="#B37BFF" fill-opacity="0.08" stroke="#B37BFF" stroke-width="3" stroke-dasharray="12 8"/>
+<circle cx="2308" cy="596" r="26.5" fill="#E9DFC0" stroke="#1A1206" stroke-width="3"/>
+<text fill="#C9B48E" style="white-space: pre" xml:space="preserve" font-family="Be Vietnam Pro" font-size="13" font-weight="500" letter-spacing="0em"><tspan x="2111.72" y="818.778">Key art do Codex sinh: &#x111;&#x1ea3;o r&#x1eeb;ng, v&#xf2;ng bo t&#xed;m, nh&#xe2;n v&#x1ead;t &#x1edf; gi&#x1eef;a</tspan></text>
+</g>
+<defs>
+<clipPath id="clip0_51_3">
+<rect width="1280" height="720" fill="white" transform="translate(64 236)"/>
+</clipPath>
+<clipPath id="clip1_51_3">
+<rect width="32" height="4" fill="white" transform="translate(94 736)"/>
+</clipPath>
+<clipPath id="clip2_51_3">
+<rect width="32" height="4" fill="white" transform="translate(144 736)"/>
+</clipPath>
+<clipPath id="clip3_51_3">
+<rect width="32" height="4" fill="white" transform="translate(194 736)"/>
+</clipPath>
+<clipPath id="clip4_51_3">
+<rect width="264" height="12" fill="white" transform="translate(104 831)"/>
+</clipPath>
+<clipPath id="clip5_51_3">
+<rect width="140" height="7" fill="white" transform="translate(190 857)"/>
+</clipPath>
+<clipPath id="clip6_51_3">
+<rect width="140" height="7" fill="white" transform="translate(190 882)"/>
+</clipPath>
+<clipPath id="clip7_51_3">
+<rect width="140" height="7" fill="white" transform="translate(190 907)"/>
+</clipPath>
+<clipPath id="clip8_51_3">
+<rect width="1280" height="720" fill="white" transform="translate(1384 236)"/>
+</clipPath>
+</defs>
+</svg>
+
