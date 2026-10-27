@@ -176,11 +176,11 @@ namespace JungleMaze.Tests.MatchUi
     public sealed class LeaveMatchContractTests
     {
         [Test]
-        public void NoListener_OneEvent_NoNetworkCall_ScreenUnchanged()
+        public void NoListener_OneEvent_ScreenUnchanged()
         {
+            // The controller holds no network port (see Controller_HasNoNetworkOrFlowDependency), so a network fake
+            // could not observe anything here; what it guarantees is one event and no screen change.
             var bus = new EventBus();
-            var network = new FakeNetwork(bus);
-            network.SetState(NetworkState.Joined, DisconnectReason.None);
             var screens = new Recorder<AppScreenChanged>();
             var leaves = new Recorder<LeaveMatchRequested>();
             bus.Subscribe(screens.Handler);
@@ -189,8 +189,6 @@ namespace JungleMaze.Tests.MatchUi
 
             Assert.IsTrue(menu.LeaveWithoutConfirm(LeaveMatchSource.Spectator));
             Assert.AreEqual(1, leaves.Count);
-            Assert.AreEqual(NetworkState.Joined, network.State, "UI-03 does not disconnect");
-            Assert.AreEqual(0, network.Sent, "UI-03 sends no packet itself");
             Assert.AreEqual(0, screens.Count, "UI-03 does not change AppScreen");
             menu.Dispose();
         }

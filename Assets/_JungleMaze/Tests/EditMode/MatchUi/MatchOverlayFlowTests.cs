@@ -41,15 +41,25 @@ namespace JungleMaze.Tests.MatchUi
             var cam = new SpectatorCameraFollow(0.25f);
             cam.Snap(5f, 5f);
             cam.Retarget(0.0);
+            // The target runs at 4 cells/s from the first frame, during the switch as well.
             var x = 30f;
             var maxDeviation = 0f;
+            var previousGap = float.MaxValue;
             for (var frame = 1; frame <= 120; frame++)
             {
                 var now = frame / 60.0;
-                if (frame > 30) x += 4f / 60f;
+                x += 4f / 60f;
                 cam.Step(x, 20f, now);
-                if (now > 0.25) maxDeviation = Math.Max(maxDeviation, Math.Abs(cam.X - x) + Math.Abs(cam.Y - 20f));
+                var gap = Math.Abs(cam.X - x) + Math.Abs(cam.Y - 20f);
+                if (now <= 0.25)
+                {
+                    Assert.LessOrEqual(cam.X, x + 1e-4f, "never ahead of the running target");
+                    Assert.LessOrEqual(gap, previousGap + 1e-4f, "the gap only closes during the switch");
+                    previousGap = gap;
+                }
+                else maxDeviation = Math.Max(maxDeviation, gap);
             }
+            Assert.LessOrEqual(maxDeviation, 0.5f, "AC24: ≤ 0.5 cell while the target runs");
             Assert.LessOrEqual(maxDeviation, 0.1f);
         }
 
@@ -231,7 +241,11 @@ namespace JungleMaze.Tests.MatchUi
             Assert.AreEqual(MatchOverlayPhase.Inactive, _flow.Phase);
             Assert.IsFalse(_flow.Targets.HasTarget);
             Assert.AreEqual(0, _flow.Info.Rank);
+            _elimination.Reset();
+            var raised = 0;
+            _elimination.LocalEliminated += _ => raised++;
             Eliminate();
+            Assert.AreEqual(1, raised, "the source did raise the event");
             Assert.AreEqual(MatchOverlayPhase.Inactive, _flow.Phase, "eliminations outside a match are ignored");
         }
 
@@ -246,17 +260,34 @@ namespace JungleMaze.Tests.MatchUi
         [Test]
         public void EscWorksInAllPhases()
         {
+            _flow.Dispose();
+            var replay = new MockKillcamReplaySource(_clock.Read);
+            var killcam = new KillcamSession(_clock.Read, new KillcamOptions(true, 5f, 1f), replay);
+            _flow = new MatchOverlayFlow(_bus, _clock.Read, _elimination, _spectator, AppScreen.InMatch, null, killcam);
             var menu = new MatchMenuController(_bus, _clock.Read, () => Match, AppScreen.InMatch);
+            var keys = new HashSet<UnityEngine.KeyCode>();
+            var input = new JungleMaze.Presentation.UI.MatchOverlay.MatchOverlayInput(menu, _flow, keys.Contains);
+            void Press(UnityEngine.KeyCode key)
+            {
+                keys.Clear();
+                keys.Add(key);
+                input.Poll();
+            }
             void Check(MatchOverlayPhase expected)
             {
                 Assert.AreEqual(expected, _flow.Phase);
-                Assert.IsTrue(menu.PressEscape());
+                Press(UnityEngine.KeyCode.Escape);
                 Assert.IsTrue(menu.IsOpen, expected.ToString());
-                Assert.IsTrue(menu.PressEscape());
+                Press(UnityEngine.KeyCode.Space);
+                Press(UnityEngine.KeyCode.D);
+                Assert.AreEqual(expected, _flow.Phase, "other UI-03 keys are ignored while the menu is open");
+                Press(UnityEngine.KeyCode.Escape);
                 Assert.IsFalse(menu.IsOpen);
             }
             Check(MatchOverlayPhase.Playing);
             Eliminate();
+            Check(MatchOverlayPhase.Killcam);
+            Press(UnityEngine.KeyCode.Space);
             Check(MatchOverlayPhase.Eliminated);
             _flow.Spectate();
             Check(MatchOverlayPhase.Spectating);
