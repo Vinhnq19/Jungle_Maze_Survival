@@ -1,0 +1,3 @@
+{"v":1,"type":"_header","schema":"telemetry.v1","src":"server","wid":"a1b2c3d4","matchId":null,"build":"dev","opened":1793059260000}
+{"v":1,"type":"perf_server","matchId":null,"roomId":null,"src":"server","wid":"a1b2c3d4","seq":1,"tick":null,"mt":null,"utc":1793059260033,"build":"dev","cfg":null,"cfgHash":null,"balHash":null,"windowSec":10.0,"ticksPerSecond":30.01,"tickP95Ms":1.234,"tickP99Ms":2.5,"loopP95Ms":0.12,"loopP99Ms":0.8,"tickOverruns":0,"droppedTicks":0,"cpuOneCorePercent":4.5,"workingSetMiB":88.25,"peers":10,"active":10,"rooms":1}
+{"v":1,"type":"_trailer","src":"server","wid":"a1b2c3d4","matchId":null,"written":1,"droppedQueue":0,"droppedIo":0,"truncated":false,"closed":1793059261000}
