@@ -1047,6 +1047,7 @@ Nên nghe thêm:
 
 **Việc tiếp theo:**
 - **F1 (unity-dev, trước khi phát hành):** thay `MatchEnd` bằng một jingle CC0 lấy từ `Tools/Audio/Sources/ART-05/kenney_music-jingles.zip` (đã tải ngày 27/10). Theo recipe, giữ GUID, giấy phép ghi `có bằng chứng` khi `License.txt` có trong zip. PIC nghe xong mới đóng.
+- **F1 đóng:** `157101eb` dùng `jingles_NES00`. PIC nghe ngày 27/10, nguyên văn: "tạm thời ổn nếu cần tôi sẽ thay sau." `heard = có: V.Huy, 2026-10-27`.
 - **F2 (PIC, qua panel F6):** nghe 10 mã ★ còn lại (AC36) và điểm lặp của nhạc (AC34). Nhớ bấm "Fake pose (0,0)" trước khi nghe. Ghi kết quả vào cột `heard`.
 - **F3 (follow-up):** Gợi ý 2, 6, 7, 8 của review; cue `Explosion` của F6; chọn lời cho AC4 và AC41 về chữ "CC0".
 - **F4 (sau G3, như plan 4.5):** dọn `Placeholder/`. Làm sau F1.
