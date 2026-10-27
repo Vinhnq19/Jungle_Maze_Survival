@@ -7,6 +7,7 @@ Các file trong thư mục này là bản tải về nguyên vẹn, giữ lại 
 | `kenney_impact-sounds.zip` | https://kenney.nl/assets/impact-sounds | CC0 1.0 (`License.txt` trong zip) | 27/10/2026 |
 | `kenney_interface-sounds.zip` | https://kenney.nl/assets/interface-sounds | CC0 1.0 (`License.txt` trong zip) | 27/10/2026 |
 | `kenney_rpg-audio.zip` | https://kenney.nl/assets/rpg-audio | CC0 1.0 (`License.txt` trong zip) | 27/10/2026 |
+| `kenney_music-jingles.zip` | https://kenney.nl/assets/music-jingles | CC0 1.0 (theo trang Kenney; kiểm `License.txt` trong zip khi giải nén) | 27/10/2026 |
 | `monster_roar.wav` | https://opengameart.org/content/cc0-deep-monster-roar (tác giả trazzz123) | CC0 1.0, theo trang OpenGameArt (file không kèm license) | 27/10/2026 |
 
 Script xử lý lần đầu: `Tools/Audio/art05_make_sfx.py` (cần Python có `numpy`, `soundfile`; giải nén zip vào thư mục tạm trước).

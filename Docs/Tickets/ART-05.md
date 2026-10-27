@@ -1009,4 +1009,22 @@ Nên nghe thêm:
 
 ## 8. Nghiệm thu
 
-<CPO tổng hợp; người duyệt G3, ngày, ghi chú. Nhắc cập nhật Status trong GDD.>
+### G3 · 27/10/2026 · CPO (quyền người dùng giao: "Bạn được quyền quyết thay thôi. ko đợi tôi quyết"): **Nghiệm thu có điều kiện**
+
+**Căn cứ:**
+- Review (mục 6, `fe5d2fba`): Chặn 0. Ba mục Nên sửa đã sửa ở `62895305` … `1df1c92e`, theo quyết định ở 4.9.
+- QA (mục 7, `ae497d13`, `983b8d88`): **Đạt 35 · Một phần 5 · Chưa kiểm chứng 2 · Không đạt 0**, không lỗi chặn. EditMode 479/479, PlayMode 106/106, Python 7/7. Manifest và 40 WAV dựng lại giống từng byte.
+- Điều kiện nghe nhóm `HitMarker`, `BombFuse`, `Reload`, `EmptyClick`: **đạt**. PIC nghe ngày 27/10 (4.9, `689a0b34`).
+
+**Quyết định cho các mục Một phần:**
+- **AC19, AC40: chấp nhận ngoại lệ.** `bomb_fuse` có E −24 dBFS, `wear_armor_0…3` có L −23. Đây là ngoại lệ đã duyệt ở 4.9: trần limiter 6 dB, clip JSurviv được phép nhỏ hơn tầng. PIC đã nghe `BombFuse` và thấy ổn.
+- **AC42 → giữ tạm cả 14 mục JSurviv,** nhãn `chưa kiểm chứng`, riêng **`TimeOver.wav` (`MatchEnd`) phải thay.** File này mang thẻ hollywoodedge.com, một thư viện thương mại, nên không giữ được khi phát hành. Việc thay ghi ở F1.
+- **AC15 (P2) và AC37 (nghe lại sau khi thay):** không chặn. AC37 tính vào việc nghe của PIC.
+
+**Việc tiếp theo:**
+- **F1 (unity-dev, trước khi phát hành):** thay `MatchEnd` bằng một jingle CC0 lấy từ `Tools/Audio/Sources/ART-05/kenney_music-jingles.zip` (đã tải ngày 27/10). Theo recipe, giữ GUID, giấy phép ghi `có bằng chứng` khi `License.txt` có trong zip. PIC nghe xong mới đóng.
+- **F2 (PIC, qua panel F6):** nghe 10 mã ★ còn lại (AC36) và điểm lặp của nhạc (AC34). Nhớ bấm "Fake pose (0,0)" trước khi nghe. Ghi kết quả vào cột `heard`.
+- **F3 (follow-up):** Gợi ý 2, 6, 7, 8 của review; cue `Explosion` của F6; chọn lời cho AC4 và AC41 về chữ "CC0".
+- **F4 (sau G3, như plan 4.5):** dọn `Placeholder/`. Làm sau F1.
+
+**Việc của người dùng:** đổi Status của ART-05 trong GDD sang Done; làm F2.
