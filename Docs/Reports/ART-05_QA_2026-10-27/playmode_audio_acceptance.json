@@ -1,0 +1,87 @@
+{
+ "summary": {
+  "total": 15,
+  "passed": 15,
+  "failed": 0,
+  "skipped": 0,
+  "durationSeconds": 9.7657559,
+  "resultState": "Passed"
+ },
+ "tests": [
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.Burst10s_2000Requests_NoErrors_CriticalNotLost",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.DebugPanel_PlayButtonsCallService",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.EnableMusic_PlaysScreenTrackWithin1s_DisableFadesOut",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.FallbackListener_OnlyWhenSceneHasNone",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.FallbackListener_YieldsToLateListener_AndComesBack",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.HitMarker_StartsSameFrame_With15Others",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.MusicOffByDefault_NoMusicSource",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.PeriodicListenerCheck_DoesNotAllocate",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.PlaySfx_EachOfThe26_OneVoiceRightClipAndBus",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.PoolFullOfLow_CriticalEvictsExactlyOne",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.RepeatServerEvent_AddsAtMostOneVoice",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.SetVolume_MixerDecibels",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.Spam100_NeverMoreThan16_NoNewAudioSources",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.SwapClipInCatalogCopy_NoCodeChange",
+   "Passed",
+   null
+  ],
+  [
+   "JungleMaze.Tests.PlayMode.AudioAcceptanceTests.ZoneBell_ThreeBellsOnAlert_DucksMusic_SfxUntouched",
+   "Passed",
+   null
+  ]
+ ]
+}

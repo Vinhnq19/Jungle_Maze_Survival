@@ -1,0 +1,19 @@
+AC13 overlapping pairs: []
+AC10 clips total 40 unique 40 all under Sfx/: True ids with >=1 clip: 26
+AC13 byte-identical clips shared: []
+AC8 bad names: [] dup names: 0
+AC8 max variants per id: 5
+AC9 duplicate guids across Imported + Art/Audio: {}
+AC35 total bytes 7843080 = 7.84 MB files over per-file limit: []
+Music sizes {'loading.ogg': 569649, 'match.ogg': 2551882, 'waiting_room.ogg': 2695023}
+files >= 5MB under Assets/_JungleMaze: []
+Waiting Room wav copied? False []
+AC29 waiting_room.ogg 145.532 s vs 145.53 delta 0.002
+AC29 loading.ogg 43.651 s vs 43.65 delta 0.001
+AC29 match.ogg 123.429 s vs 123.48 delta -0.051
+AC29 vs real original waiting_room orig 145.532 new 145.532 delta 0.000
+AC29 vs real original loading orig 43.699 new 43.651 delta -0.048
+AC29 vs real original match orig 123.429 new 123.429 delta 0.000
+AC2 jsurviv rows re-measured: 30 mismatches: []
+AC5 notes on zips: [('bot di chuyển.zip', '', 'zip 8 thành viên Leather Armor Put On; tên zip sai nội dung (M5)'), ('pick-impacts-2023-11-27-05-02-53-utc.zip', '', 'zip 1 thành viên'), ('bot di chuyển.zip', 'Leather Armor Put On 01.wav', 'tên zip sai nội dung (M5)')]
+AC5 sfx row ZIP note M5: ['zip 8 thành viên Leather Armor Put On; tên zip sai nội dung (M5)', 'tên zip sai nội dung (M5)']

@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-27",
+  "head": "689a0b34 (+ QA coordination commits)",
+  "editmode_all": {"total": 479, "passed": 479, "failed": 0, "skipped": 0, "seconds": 28.9},
+  "editmode_audio_filter_JungleMaze.Tests.Audio": {"total": 82, "passed": 82, "failed": 0, "skipped": 0, "seconds": 8.1,
+    "note": "59 AUD-01 + 23 ArtAudio* (5 files); the run is repeated twice with the same result"},
+  "playmode_all": {"total": 106, "passed": 106, "failed": 0, "skipped": 0, "seconds": 40.7},
+  "playmode_AudioAcceptanceTests": {"total": 15, "passed": 15, "failed": 0, "skipped": 0, "seconds": 9.8,
+    "tests": ["Burst10s_2000Requests_NoErrors_CriticalNotLost", "DebugPanel_PlayButtonsCallService",
+      "EnableMusic_PlaysScreenTrackWithin1s_DisableFadesOut", "FallbackListener_OnlyWhenSceneHasNone",
+      "FallbackListener_YieldsToLateListener_AndComesBack", "HitMarker_StartsSameFrame_With15Others",
+      "MusicOffByDefault_NoMusicSource", "PeriodicListenerCheck_DoesNotAllocate",
+      "PlaySfx_EachOfThe26_OneVoiceRightClipAndBus", "PoolFullOfLow_CriticalEvictsExactlyOne",
+      "RepeatServerEvent_AddsAtMostOneVoice", "SetVolume_MixerDecibels", "Spam100_NeverMoreThan16_NoNewAudioSources",
+      "SwapClipInCatalogCopy_NoCodeChange", "ZoneBell_ThreeBellsOnAlert_DucksMusic_SfxUntouched"]},
+  "python_unittest_Tools_Audio_test_art05_audio.py": {"total": 7, "passed": 7},
+  "console_after_real_run": "0 error, 0 warning (clear before Play Mode; 26 ids played)",
+  "console_after_test_runs": "1 warning '[Audio] No clip for SFX Throw' from SfxPlaybackServiceTests (LogAssert.Expect, empty rule table), not from the real catalog"
+}

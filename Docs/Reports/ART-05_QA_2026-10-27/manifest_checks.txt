@@ -1,0 +1,22 @@
+rows 99 {'sfx': 26, 'jsurviv': 30, 'clip': 43}
+AC1 order match: True {'Cần chỉnh': 9, 'Thiếu': 13, 'Có': 4}
+Imported files 21 zip members 9
+jsurviv rows 30 {'ngoài 26': 4, 'BGM': 3, 'mã SFX': 15, 'không dùng': 7, 'UI': 1}
+jsurviv sample {'file': 'Bo co.mp3', 'source': '', 'zip_member': '', 'class': 'ngoài 26', 'licence': 'chưa kiểm chứng', 'md5': '95baeb3aa91501eb57a669a2ba3ec3ce'}
+files without row: []
+licence vocab {'có bằng chứng': 37, 'chưa kiểm chứng': 60, 'chưa kiểm chứng (nguồn tự khai CC0)': 2}
+licence problems []
+jsurviv rows not "chưa kiểm chứng": []
+derived JSurviv clip rows licence: [('Sfx/melee_swing.wav', 'chưa kiểm chứng'), ('Sfx/melee_hit.wav', 'chưa kiểm chứng'), ('Sfx/shoot_ranged.wav', 'chưa kiểm chứng'), ('Sfx/bomb_fuse.wav', 'chưa kiểm chứng'), ('Sfx/explosion.wav', 'chưa kiểm chứng'), ('Sfx/hurt_local.wav', 'chưa kiểm chứng'), ('Sfx/pickup_weapon.wav', 'chưa kiểm chứng'), ('Sfx/pickup_item.wav', 'chưa kiểm chứng'), ('Sfx/wear_armor_0.wav', 'chưa kiểm chứng'), ('Sfx/wear_armor_1.wav', 'chưa kiểm chứng'), ('Sfx/wear_armor_2.wav', 'chưa kiểm chứng'), ('Sfx/wear_armor_3.wav', 'chưa kiểm chứng'), ('Sfx/use_heal.wav', 'chưa kiểm chứng'), ('Sfx/use_drink.wav', 'chưa kiểm chứng'), ('Sfx/match_end.wav', 'chưa kiểm chứng'), ('Music/waiting_room.ogg', 'chưa kiểm chứng'), ('Music/loading.ogg', 'chưa kiểm chứng'), ('Music/match.ogg', 'chưa kiểm chứng')]
+DragonRoar rows: [('sfx', 'chưa kiểm chứng (nguồn tự khai CC0)'), ('clip', 'chưa kiểm chứng (nguồn tự khai CC0)')]
+TimeOver note: ['thẻ bext: Clock/Alarm Loop/Wind Up/Ringing; www.hollywoodedge.com (thư viện thương mại; rủi ro cao)']
+clip rows 43 on disk 43 row-without-file/mismatch [] file-without-row []
+downloaded clips (url): 25 missing author/date/licence: []
+downloaded licence mix: {'có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt': 15, 'có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt': 6, 'có bằng chứng: Docs/Licenses/Audio/Kenney_InterfaceSounds_License.txt': 3, 'chưa kiểm chứng (nguồn tự khai CC0)': 1}
+copy_md5_match: {'': 16, 'có: Placeholder/JSurviv/Music/loading_music.mp3': 1, 'có: Placeholder/JSurviv/pickup_item_gun_put_on.mp3': 1, 'có: Placeholder/JSurviv/wear_armor_helmet_put_on.mp3': 1, 'có: Placeholder/JSurviv/Music/parking_map_music.mp3': 1, 'có: Placeholder/JSurviv/match_end_time_over.wav': 1, 'có: Placeholder/JSurviv/hurt_bleed.mp3': 1, 'có: Placeholder/JSurviv/bomb_explosion.mp3': 1, 'có: Placeholder/JSurviv/use_drink_cola.mp3': 1, 'có: Placeholder/JSurviv/bomb_fuse_countdown.mp3': 1, 'có: Placeholder/JSurviv/use_heal_gauze.mp3': 1, 'có: Placeholder/JSurviv/melee_slash.mp3': 1, 'có: Placeholder/JSurviv/pickup_weapon.mp3': 1, 'có: Placeholder/JSurviv/gun_shot.mp3': 1, 'có: Placeholder/JSurviv/hit_thud.wav': 1}
+heard clip: {'chưa': 39, 'có: V.Huy, 2026-10-27': 4}
+heard sfx rows: {'Reload': 'có: V.Huy, 2026-10-27', 'EmptyClick': 'có: V.Huy, 2026-10-27', 'BombFuse': 'có: V.Huy, 2026-10-27', 'HitMarker': 'có: V.Huy, 2026-10-27'}
+exceptions: [('Sfx/bomb_fuse.wav', 'L thấp hơn đích: tích tắc cách 0.3 s; limiter 6 dB (TR1) chỉ lên -24 dBFS; JSurv'), ('Sfx/wear_armor_0.wav', 'L thấp hơn đích: Leather 01/04 chỉ lên -21…-23 dBFS ở 6 dB; cả 4 biến thể đặt -2'), ('Sfx/wear_armor_1.wav', 'L thấp hơn đích: Leather 01/04 chỉ lên -21…-23 dBFS ở 6 dB; cả 4 biến thể đặt -2'), ('Sfx/wear_armor_2.wav', 'L thấp hơn đích: Leather 01/04 chỉ lên -21…-23 dBFS ở 6 dB; cả 4 biến thể đặt -2'), ('Sfx/wear_armor_3.wav', 'L thấp hơn đích: Leather 01/04 chỉ lên -21…-23 dBFS ở 6 dB; cả 4 biến thể đặt -2')]
+reduction_db>6: []
+sfx clip rows 40 missing before/after: []
+jsurviv rows used by SFX/BGM: {'ngoài 26': 4, 'BGM': 3, 'mã SFX': 15, 'không dùng': 7, 'UI': 1}

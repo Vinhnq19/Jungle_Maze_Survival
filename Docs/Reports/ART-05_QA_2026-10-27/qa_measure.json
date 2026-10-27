@@ -1,0 +1,1397 @@
+{
+ "sfx": {
+  "FootstepGrass": {
+   "entry": {
+    "clips": [
+     "ed4e67c009d350589ec419dd3fb2cd9c",
+     "91952c949b915cc0991f41ac485e969e",
+     "61eb32da8f725e6cb2c88bf2a0ad819f",
+     "35dd689d59545f879cc2fb1283f50df8",
+     "44ec4d6a2a54567fad7ccc1c3c21503c"
+    ],
+    "volume": 0.45,
+    "pitchJitter": 0.05,
+    "priority": 0,
+    "bus": 1,
+    "rangeCells": 6.0,
+    "maxInstances": 6,
+    "cooldown": 0.25,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_0.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 7156,
+     "dur": 0.1622675736961451,
+     "size": 14356,
+     "peak_db": -6.157926980208216,
+     "L_db": -24.00007899869614,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 2,
+     "md5": "4cf7cf684bda05e466ba8c08b561797c"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_1.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6622,
+     "dur": 0.15015873015873016,
+     "size": 13288,
+     "peak_db": -6.862195226698091,
+     "L_db": -24.000133376514118,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "81e9537e1fefd13c73c6996adb05b7fb"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_2.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6819,
+     "dur": 0.15462585034013607,
+     "size": 13682,
+     "peak_db": -6.215748464229981,
+     "L_db": -24.000080102624374,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "5ea149aedd8342756ef376722e6bd34a"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_3.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6075,
+     "dur": 0.1377551020408163,
+     "size": 12194,
+     "peak_db": -6.08231542454336,
+     "L_db": -24.00014045923619,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "2801b09bd8c4455b399a46d1593494b8"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_4.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 5420,
+     "dur": 0.12290249433106576,
+     "size": 10884,
+     "peak_db": -6.50292513384273,
+     "L_db": -24.000133206970972,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "70b832330b07dcbb0428ab1515f5e43a"
+    }
+   ],
+   "len_range": [
+    0.05,
+    0.4
+   ],
+   "tier": -29,
+   "L_mean": -24.000113228808356,
+   "E": -30.93586295330148,
+   "E_per_clip": [
+    -30.935828723189267,
+    -30.935883101007242,
+    -30.9358298271175,
+    -30.935890183729313,
+    -30.9358829314641
+   ]
+  },
+  "FootstepSwamp": {
+   "entry": {
+    "clips": [
+     "c21296372255515a9cff9df425dd0788",
+     "719554c4f2325c9d8823d7a528cced4c",
+     "82ac8c3dc46654229a719d5ab6785b15",
+     "3fa1a27ea4bb53d491001ecf9ad54af4",
+     "6b02d30bc9845ae38141a8cbdd40c030"
+    ],
+    "volume": 0.45,
+    "pitchJitter": 0.05,
+    "priority": 0,
+    "bus": 1,
+    "rangeCells": 6.0,
+    "maxInstances": 6,
+    "cooldown": 0.3,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_0.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 5380,
+     "dur": 0.1219954648526077,
+     "size": 10804,
+     "peak_db": -10.822449990722019,
+     "L_db": -23.999978518597736,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "8570794f6f9944dab97f2aeb7119c6d2"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_1.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 8259,
+     "dur": 0.18727891156462584,
+     "size": 16562,
+     "peak_db": -10.134440966146666,
+     "L_db": -24.00054390292121,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 2,
+     "md5": "6dd30d52e6ed783f8cb50811a8bd5b36"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_2.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6138,
+     "dur": 0.13918367346938776,
+     "size": 12320,
+     "peak_db": -10.95055456458401,
+     "L_db": -23.99998277730031,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "f1f5d37450cb5aa907a0fe17dab5a425"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_3.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6360,
+     "dur": 0.14421768707482993,
+     "size": 12764,
+     "peak_db": -10.786586333198047,
+     "L_db": -24.000802501645744,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "aa3aa9ad96a0c2cc01cff53b7283aafb"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_4.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6665,
+     "dur": 0.15113378684807255,
+     "size": 13374,
+     "peak_db": -10.613053557408502,
+     "L_db": -24.000029344772457,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "34a7c6562c2261f4bd80df4393189ecc"
+    }
+   ],
+   "len_range": [
+    0.08,
+    0.5
+   ],
+   "tier": -29,
+   "L_mean": -24.00026740904749,
+   "E": -30.936017133540616,
+   "E_per_clip": [
+    -30.935728243090864,
+    -30.936293627414337,
+    -30.93573250179344,
+    -30.936552226138872,
+    -30.935779069265585
+   ]
+  },
+  "BushEnter": {
+   "entry": {
+    "clips": [
+     "8cf1fccd34c551f7a95fce42d4dfb1dc",
+     "49db103c06cb5804b1bae153ccfd6bd0"
+    ],
+    "volume": 0.28,
+    "pitchJitter": 0.05,
+    "priority": 0,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 2,
+    "cooldown": 0.5,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/bush_enter_0.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 24431,
+     "dur": 0.5539909297052155,
+     "size": 48906,
+     "peak_db": -1.0499638076332665,
+     "L_db": -18.434840984454784,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "11fc56ba15cac9e549003b1506fc901e"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/bush_enter_1.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 20658,
+     "dur": 0.46843537414965986,
+     "size": 41360,
+     "peak_db": -1.050262944569155,
+     "L_db": -17.99755380857168,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "3dcafbabb8a5b460d0670b9f0ff32548"
+    }
+   ],
+   "len_range": [
+    0.1,
+    0.6
+   ],
+   "tier": -29,
+   "L_mean": -18.21619739651323,
+   "E": -29.273036769668845,
+   "E_per_clip": [
+    -29.4916803576104,
+    -29.054393181727296
+   ]
+  },
+  "MeleeSwing": {
+   "entry": {
+    "clips": [
+     "b28a732b6a7a4df9ad6cabc5653e4a3c"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 8.0,
+    "maxInstances": 4,
+    "cooldown": 0.15,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/melee_swing.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 13097,
+     "dur": 0.29698412698412696,
+     "size": 26238,
+     "peak_db": -4.363420494532092,
+     "L_db": -17.99999788931929,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "64e93232ca56c1c7b415aefd9a1baeea"
+    }
+   ],
+   "len_range": [
+    0.15,
+    0.6
+   ],
+   "tier": -20,
+   "L_mean": -17.99999788931929,
+   "E": -20.04745606351046,
+   "E_per_clip": [
+    -20.04745606351046
+   ]
+  },
+  "MeleeHit": {
+   "entry": {
+    "clips": [
+     "a9a0cb61dce64a86abfc23a19d2a3b1c"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 8.0,
+    "maxInstances": 4,
+    "cooldown": 0.1,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/melee_hit.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 7891,
+     "dur": 0.1789342403628118,
+     "size": 15826,
+     "peak_db": -1.050262944569155,
+     "L_db": -17.99552630191549,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "ceeabcaa7a5294f28eb0c79bd7706d08"
+    }
+   ],
+   "len_range": [
+    0.1,
+    0.5
+   ],
+   "tier": -20,
+   "L_mean": -17.99552630191549,
+   "E": -20.04298447610666,
+   "E_per_clip": [
+    -20.04298447610666
+   ]
+  },
+  "ShootRanged": {
+   "entry": {
+    "clips": [
+     "ac8a366222234131a00d42fd72f29b0b"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 2,
+    "bus": 1,
+    "rangeCells": 12.0,
+    "maxInstances": 6,
+    "cooldown": 0.08,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/shoot_ranged.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 43098,
+     "dur": 0.9772789115646259,
+     "size": 86240,
+     "peak_db": -2.8378865664157042,
+     "L_db": -17.999997101274346,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "92a13695c28d26c125617414af081a40"
+    }
+   ],
+   "len_range": [
+    0.15,
+    1.2
+   ],
+   "tier": -20,
+   "L_mean": -17.999997101274346,
+   "E": -20.047455275465516,
+   "E_per_clip": [
+    -20.047455275465516
+   ]
+  },
+  "ShootCrossbow": {
+   "entry": {
+    "clips": [
+     "db9898d751f25fd68d9c19fa69ed9294"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 2,
+    "bus": 1,
+    "rangeCells": 12.0,
+    "maxInstances": 3,
+    "cooldown": 0.3,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/shoot_crossbow.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 10072,
+     "dur": 0.22839002267573696,
+     "size": 20188,
+     "peak_db": -1.050262944569155,
+     "L_db": -18.563621071364448,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "ae740d36d01f2aa407e1447c484ff003"
+    }
+   ],
+   "len_range": [
+    0.15,
+    1.0
+   ],
+   "tier": -20,
+   "L_mean": -18.563621071364448,
+   "E": -20.61107924555562,
+   "E_per_clip": [
+    -20.61107924555562
+   ]
+  },
+  "Throw": {
+   "entry": {
+    "clips": [
+     "b72c136c4b6a5f29af9bff823ab128fa"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 8.0,
+    "maxInstances": 3,
+    "cooldown": 0.3,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/throw.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 19275,
+     "dur": 0.4370748299319728,
+     "size": 38594,
+     "peak_db": -1.2108825123351754,
+     "L_db": -18.00000527959175,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "bab717e7b3d55d66695f5ec1b8aadd21"
+    }
+   ],
+   "len_range": [
+    0.1,
+    0.6
+   ],
+   "tier": -20,
+   "L_mean": -18.00000527959175,
+   "E": -20.04746345378292,
+   "E_per_clip": [
+    -20.04746345378292
+   ]
+  },
+  "Reload": {
+   "entry": {
+    "clips": [
+     "6180e5fd39335fdb9f0ec431ed58543c"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.05,
+    "priority": 0,
+    "bus": 1,
+    "rangeCells": 6.0,
+    "maxInstances": 2,
+    "cooldown": 0.5,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/reload.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 14248,
+     "dur": 0.32308390022675737,
+     "size": 28540,
+     "peak_db": -5.021143463840011,
+     "L_db": -17.999999483563563,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "339ac15bd911a2058ee09324e066c7b2"
+    }
+   ],
+   "len_range": [
+    0.2,
+    1.5
+   ],
+   "tier": -24,
+   "L_mean": -17.999999483563563,
+   "E": -24.02059939684319,
+   "E_per_clip": [
+    -24.02059939684319
+   ]
+  },
+  "EmptyClick": {
+   "entry": {
+    "clips": [
+     "3f8ac44c1acd5b1a9e63478557e2ae71"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.05,
+    "priority": 0,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 0.3,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/empty_click.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 3704,
+     "dur": 0.08399092970521542,
+     "size": 7452,
+     "peak_db": -3.174717487526468,
+     "L_db": -18.00006621284983,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "c968e7515bf6cebbdf014a3c6b03c108"
+    }
+   ],
+   "len_range": [
+    0.03,
+    0.3
+   ],
+   "tier": -24,
+   "L_mean": -18.00006621284983,
+   "E": -24.020666126129456,
+   "E_per_clip": [
+    -24.020666126129456
+   ]
+  },
+  "BombFuse": {
+   "entry": {
+    "clips": [
+     "bd6d384002cf45b4b9dfed89490063a6"
+    ],
+    "volume": 1.0,
+    "pitchJitter": 0.0,
+    "priority": 2,
+    "bus": 1,
+    "rangeCells": 12.0,
+    "maxInstances": 3,
+    "cooldown": 0.2,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/bomb_fuse.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 42071,
+     "dur": 0.9539909297052154,
+     "size": 84186,
+     "peak_db": -1.0499638076332665,
+     "L_db": -24.001561886950636,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "3ef01cfdddb998db9820254dcadfd96e"
+    }
+   ],
+   "len_range": [
+    0.8,
+    1.5
+   ],
+   "tier": -20,
+   "L_mean": -24.001561886950636,
+   "E": -24.001561886950636,
+   "E_per_clip": [
+    -24.001561886950636
+   ]
+  },
+  "Explosion": {
+   "entry": {
+    "clips": [
+     "3df56862e1e94caba7b1f283fd8b1826"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 2,
+    "bus": 1,
+    "rangeCells": 12.0,
+    "maxInstances": 3,
+    "cooldown": 0.08,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/explosion.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 123655,
+     "dur": 2.8039682539682538,
+     "size": 247354,
+     "peak_db": -4.37920505349345,
+     "L_db": -18.000001245218794,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "60e4ac14de25347129090af5242290eb"
+    }
+   ],
+   "len_range": [
+    0.5,
+    3.0
+   ],
+   "tier": -20,
+   "L_mean": -18.000001245218794,
+   "E": -20.047459419409964,
+   "E_per_clip": [
+    -20.047459419409964
+   ]
+  },
+  "TrapTriggered": {
+   "entry": {
+    "clips": [
+     "565a99b8feb451038ae190ea0ed07219"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 8.0,
+    "maxInstances": 3,
+    "cooldown": 0.15,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/trap_triggered.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 5349,
+     "dur": 0.12129251700680273,
+     "size": 10742,
+     "peak_db": -1.050262944569155,
+     "L_db": -19.30842833795967,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "706017aa40eedcf5010a13fda0cfc75e"
+    }
+   ],
+   "len_range": [
+    0.1,
+    0.8
+   ],
+   "tier": -20,
+   "L_mean": -19.30842833795967,
+   "E": -21.35588651215084,
+   "E_per_clip": [
+    -21.35588651215084
+   ]
+  },
+  "HitMarker": {
+   "entry": {
+    "clips": [
+     "c85a4724836c59f09bf50ce317e26ead"
+    ],
+    "volume": 1.0,
+    "pitchJitter": 0.03,
+    "priority": 3,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 0.06,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/hit_marker.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 5613,
+     "dur": 0.12727891156462584,
+     "size": 11270,
+     "peak_db": -1.050262944569155,
+     "L_db": -15.999434173097045,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "ded12f9918433dcc26f4cd18ba76c17e"
+    }
+   ],
+   "len_range": [
+    0.03,
+    0.15
+   ],
+   "tier": -16,
+   "L_mean": -15.999434173097045,
+   "E": -15.999434173097045,
+   "E_per_clip": [
+    -15.999434173097045
+   ]
+  },
+  "HurtLocal": {
+   "entry": {
+    "clips": [
+     "13930e28031e432aa12e54c72c49cbe9"
+    ],
+    "volume": 1.0,
+    "pitchJitter": 0.05,
+    "priority": 3,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 2,
+    "cooldown": 0.1,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/hurt_local.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 24431,
+     "dur": 0.5539909297052155,
+     "size": 48906,
+     "peak_db": -1.0499638076332665,
+     "L_db": -15.995123751511848,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "aadc53cdaadaf44ceea9d59234553b3a"
+    }
+   ],
+   "len_range": [
+    0.2,
+    0.6
+   ],
+   "tier": -16,
+   "L_mean": -15.995123751511848,
+   "E": -15.995123751511848,
+   "E_per_clip": [
+    -15.995123751511848
+   ]
+  },
+  "ArmorAbsorb": {
+   "entry": {
+    "clips": [
+     "22f6497cbb365f7aa4fca070a3265394",
+     "dbdb65883c535a0c8f3d89aeb4cc0192",
+     "ade9a71c274751febc716c54d237c375"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.05,
+    "priority": 2,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 2,
+    "cooldown": 0.1,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/armor_absorb_0.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 16493,
+     "dur": 0.3739909297052154,
+     "size": 33030,
+     "peak_db": -1.0499638076332665,
+     "L_db": -19.07965538895894,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "ef588acd9d221a2022d61278ef329bf9"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/armor_absorb_1.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 16493,
+     "dur": 0.3739909297052154,
+     "size": 33030,
+     "peak_db": -1.0499638076332665,
+     "L_db": -19.00081354293413,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "7214552b6af46afe098ec7e01e8fcc96"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/armor_absorb_2.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 16493,
+     "dur": 0.3739909297052154,
+     "size": 33030,
+     "peak_db": -1.0499638076332665,
+     "L_db": -18.99435513586234,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "b0a5f2e42fa5bfddda7e109341e96c1e"
+    }
+   ],
+   "len_range": [
+    0.1,
+    0.4
+   ],
+   "tier": -20,
+   "L_mean": -19.024941355918468,
+   "E": -21.07239953010964,
+   "E_per_clip": [
+    -21.12711356315011,
+    -21.0482717171253,
+    -21.04181331005351
+   ]
+  },
+  "Eliminated": {
+   "entry": {
+    "clips": [
+     "48e8d6ed10aa5f16b6baf2686db8418f"
+    ],
+    "volume": 0.79,
+    "pitchJitter": 0.0,
+    "priority": 2,
+    "bus": 1,
+    "rangeCells": 12.0,
+    "maxInstances": 2,
+    "cooldown": 0.5,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/eliminated.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 16342,
+     "dur": 0.37056689342403626,
+     "size": 32728,
+     "peak_db": -4.929019528340888,
+     "L_db": -18.000001529872186,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "ff7f239a45ef33904dfe775eb681c04f"
+    }
+   ],
+   "len_range": [
+    0.3,
+    1.5
+   ],
+   "tier": -20,
+   "L_mean": -18.000001529872186,
+   "E": -20.047459704063357,
+   "E_per_clip": [
+    -20.047459704063357
+   ]
+  },
+  "PickupWeapon": {
+   "entry": {
+    "clips": [
+     "fae3ad87b5be40aba5c7f6d8a9e4cee7"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 2,
+    "cooldown": 0.15,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/pickup_weapon.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 24038,
+     "dur": 0.545079365079365,
+     "size": 48120,
+     "peak_db": -1.1081900999621936,
+     "L_db": -17.999979753307144,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "45860b039051905e5f5265780332a134"
+    }
+   ],
+   "len_range": [
+    0.15,
+    0.8
+   ],
+   "tier": -24,
+   "L_mean": -17.999979753307144,
+   "E": -24.02057966658677,
+   "E_per_clip": [
+    -24.02057966658677
+   ]
+  },
+  "PickupItem": {
+   "entry": {
+    "clips": [
+     "ccfd2da173b4479488264bcb3d7d2e46"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 3,
+    "cooldown": 0.1,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/pickup_item.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 17816,
+     "dur": 0.40399092970521544,
+     "size": 35676,
+     "peak_db": -1.0499638076332665,
+     "L_db": -19.40112038075197,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "61a5e8da21dc6f5ab27e74b1d2651866"
+    }
+   ],
+   "len_range": [
+    0.15,
+    0.8
+   ],
+   "tier": -24,
+   "L_mean": -19.40112038075197,
+   "E": -25.421720294031594,
+   "E_per_clip": [
+    -25.421720294031594
+   ]
+  },
+  "WearArmor": {
+   "entry": {
+    "clips": [
+     "0dff018d9ed341778e642785631021d5",
+     "319e44be2e6447fa9514dbbf5396ea17",
+     "af89be1d44184f8885bb5948f4859228",
+     "a30b3eddc31d41feb9961f2efb5f9cdb"
+    ],
+    "volume": 0.89,
+    "pitchJitter": 0.05,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 2,
+    "cooldown": 0.2,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_0.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 34602,
+     "dur": 0.7846258503401361,
+     "size": 69248,
+     "peak_db": -1.0499638076332665,
+     "L_db": -23.00827944068508,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "ac01a62753eb3bab19a369d058e78449"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_1.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 35456,
+     "dur": 0.8039909297052155,
+     "size": 70956,
+     "peak_db": -1.808754061685478,
+     "L_db": -22.999993939208103,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "11da36719ce5b229647cb3fb7205a6df"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_2.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 35456,
+     "dur": 0.8039909297052155,
+     "size": 70956,
+     "peak_db": -2.4406537135384916,
+     "L_db": -23.000010944824677,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "74c1f8b66e48cb76ee2e9395057d8916"
+    },
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_3.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 35456,
+     "dur": 0.8039909297052155,
+     "size": 70956,
+     "peak_db": -1.0499638076332665,
+     "L_db": -22.99094230524387,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "6f85d368a1bf4b847ce4b7e4d342aa04"
+    }
+   ],
+   "len_range": [
+    0.3,
+    1.2
+   ],
+   "tier": -24,
+   "L_mean": -22.99980665749043,
+   "E": -24.012006524592177,
+   "E_per_clip": [
+    -24.020479307786825,
+    -24.01219380630985,
+    -24.012210811926423,
+    -24.003142172345616
+   ]
+  },
+  "UseHeal": {
+   "entry": {
+    "clips": [
+     "c8c0d6fbdb924db0a078214974e1b213"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.0,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 0.3,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/use_heal.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 26636,
+     "dur": 0.6039909297052154,
+     "size": 53316,
+     "peak_db": -1.0499638076332665,
+     "L_db": -18.818010732230988,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "28808ddda6ab81fc823da60d502c1a8b"
+    }
+   ],
+   "len_range": [
+    0.5,
+    1.5
+   ],
+   "tier": -24,
+   "L_mean": -18.818010732230988,
+   "E": -24.838610645510613,
+   "E_per_clip": [
+    -24.838610645510613
+   ]
+  },
+  "UseDrink": {
+   "entry": {
+    "clips": [
+     "5266da1f02f741b2971fc3743e7f447b"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.0,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 0.3,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/use_drink.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 22226,
+     "dur": 0.5039909297052154,
+     "size": 44496,
+     "peak_db": -1.0499638076332665,
+     "L_db": -19.422307961635973,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "72e84ec1737ea437d4cefa3a73504d6a"
+    }
+   ],
+   "len_range": [
+    0.5,
+    1.5
+   ],
+   "tier": -24,
+   "L_mean": -19.422307961635973,
+   "E": -25.442907874915598,
+   "E_per_clip": [
+    -25.442907874915598
+   ]
+  },
+  "UseCancel": {
+   "entry": {
+    "clips": [
+     "277391faba825378972dbca4e52cc98f"
+    ],
+    "volume": 0.5,
+    "pitchJitter": 0.0,
+    "priority": 1,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 0.2,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/use_cancel.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 6693,
+     "dur": 0.1517687074829932,
+     "size": 13430,
+     "peak_db": -5.261648409996381,
+     "L_db": -18.000010812128355,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "089de6741d09ac248360fd532d0ba3ad"
+    }
+   ],
+   "len_range": [
+    0.1,
+    0.4
+   ],
+   "tier": -24,
+   "L_mean": -18.000010812128355,
+   "E": -24.02061072540798,
+   "E_per_clip": [
+    -24.02061072540798
+   ]
+  },
+  "ZoneBell3": {
+   "entry": {
+    "clips": [
+     "dd4ef9f9725f58daa5dc44b2842fa9fe"
+    ],
+    "volume": 1.0,
+    "pitchJitter": 0.0,
+    "priority": 3,
+    "bus": 3,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 0.0,
+    "repeatCount": 3,
+    "repeatInterval": 0.8
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/zone_bell.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 30034,
+     "dur": 0.6810430839002267,
+     "size": 60112,
+     "peak_db": -1.0499638076332665,
+     "L_db": -17.47362998562202,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "01109f08570bf26bcbff47eca06d6522"
+    }
+   ],
+   "len_range": [
+    0.4,
+    0.75
+   ],
+   "tier": -16,
+   "L_mean": -17.47362998562202,
+   "E": -17.47362998562202,
+   "E_per_clip": [
+    -17.47362998562202
+   ]
+  },
+  "DragonRoar": {
+   "entry": {
+    "clips": [
+     "f9b49467e9245ffeaf53069de61b2d29"
+    ],
+    "volume": 1.0,
+    "pitchJitter": 0.0,
+    "priority": 3,
+    "bus": 3,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 5.0,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/dragon_roar.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 132476,
+     "dur": 3.0039909297052154,
+     "size": 264996,
+     "peak_db": -2.8118330978925608,
+     "L_db": -16.00000196146449,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "d5079d9bc959d26c8df4083aaaf437bb"
+    }
+   ],
+   "len_range": [
+    1.5,
+    4.0
+   ],
+   "tier": -16,
+   "L_mean": -16.00000196146449,
+   "E": -16.00000196146449,
+   "E_per_clip": [
+    -16.00000196146449
+   ]
+  },
+  "MatchEnd": {
+   "entry": {
+    "clips": [
+     "993283ea802a4bc195bc8a286f25e723"
+    ],
+    "volume": 1.0,
+    "pitchJitter": 0.0,
+    "priority": 3,
+    "bus": 1,
+    "rangeCells": 0.0,
+    "maxInstances": 1,
+    "cooldown": 5.0,
+    "repeatCount": 1,
+    "repeatInterval": 0.0
+   },
+   "clips": [
+    {
+     "path": "Assets/_JungleMaze/Art/Audio/Sfx/match_end.wav",
+     "sr": 44100,
+     "ch": 1,
+     "frames": 123186,
+     "dur": 2.7933333333333334,
+     "size": 246416,
+     "peak_db": -1.0499638076332665,
+     "L_db": -16.00668084414781,
+     "head_db": -240.0,
+     "tail_db": -240.0,
+     "ceil_run": 1,
+     "md5": "69fee5ee8b50b47f091273f43dc45571"
+    }
+   ],
+   "len_range": [
+    1.0,
+    3.0
+   ],
+   "tier": -16,
+   "L_mean": -16.00668084414781,
+   "E": -16.00668084414781,
+   "E_per_clip": [
+    -16.00668084414781
+   ]
+  }
+ },
+ "music": {
+  "waitingRoomMusic": {
+   "path": "Assets/_JungleMaze/Art/Audio/Music/waiting_room.ogg",
+   "sr": 44100,
+   "ch": 2,
+   "dur": 145.53190476190477,
+   "size": 2695023,
+   "peak_db": -10.680496825391291,
+   "L_db": -25.998833703297734
+  },
+  "loadingMusic": {
+   "path": "Assets/_JungleMaze/Art/Audio/Music/loading.ogg",
+   "sr": 44100,
+   "ch": 1,
+   "dur": 43.65061224489796,
+   "size": 569649,
+   "peak_db": -18.707425750870037,
+   "L_db": -25.94930771704966
+  },
+  "matchMusic": {
+   "path": "Assets/_JungleMaze/Art/Audio/Music/match.ogg",
+   "sr": 44100,
+   "ch": 2,
+   "dur": 123.42854875283447,
+   "size": 2551882,
+   "peak_db": -13.549297415992534,
+   "L_db": -25.981569504145064
+  }
+ },
+ "problems": [],
+ "all_guids_in_imported": [],
+ "all_guid_paths": [
+  "Assets/_JungleMaze/Art/Audio/Music/loading.ogg",
+  "Assets/_JungleMaze/Art/Audio/Music/match.ogg",
+  "Assets/_JungleMaze/Art/Audio/Music/waiting_room.ogg",
+  "Assets/_JungleMaze/Art/Audio/Sfx/armor_absorb_0.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/armor_absorb_1.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/armor_absorb_2.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/bomb_fuse.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/bush_enter_0.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/bush_enter_1.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/dragon_roar.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/eliminated.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/empty_click.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/explosion.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_0.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_1.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_2.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_3.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_grass_4.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_0.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_1.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_2.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_3.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/footstep_swamp_4.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/hit_marker.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/hurt_local.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/match_end.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/melee_hit.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/melee_swing.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/pickup_item.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/pickup_weapon.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/reload.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/shoot_crossbow.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/shoot_ranged.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/throw.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/trap_triggered.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/use_cancel.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/use_drink.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/use_heal.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_0.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_1.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_2.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/wear_armor_3.wav",
+  "Assets/_JungleMaze/Art/Audio/Sfx/zone_bell.wav"
+ ],
+ "beep_refs": []
+}
