@@ -2,7 +2,7 @@
 
 Bảng này liệt kê mọi clip trong `Assets/_JungleMaze/Art/Audio/Sfx/` lấy từ thư viện ngoài. Mỗi clip có đúng một dòng ở đây và một dòng `clip` trong `Docs/Tickets/ART-05_audio_manifest.csv` (AC41). Bản gốc nguyên vẹn nằm ở `Tools/Audio/Sources/ART-05/`; cách xử lý và điểm cắt nằm trong `Tools/Audio/art05_recipe.csv`, chạy lại bằng `Tools/Audio/process_clips.py`.
 
-Giấy phép ghi theo G-11: chỉ ghi `có bằng chứng: <đường dẫn>` khi tệp bằng chứng nằm trong `Docs/Licenses/Audio/`. Ba gói Kenney có `License.txt` đi kèm zip, chép nguyên văn ra `Docs/Licenses/Audio/`. Clip rồng (OpenGameArt, trazzz123) ghi `chưa kiểm chứng (nguồn tự khai CC0)`: trang nguồn ghi CC0 nhưng repo chưa có ảnh chụp hay PDF trang do người lưu; tệp `OpenGameArt_cc0-deep-monster-roar.txt` chỉ là bản chép chữ của agent, không tính là bằng chứng (CPO 4.9).
+Giấy phép ghi theo G-11: chỉ ghi `có bằng chứng: <đường dẫn>` khi tệp bằng chứng nằm trong `Docs/Licenses/Audio/`. Bốn gói Kenney (Impact, Interface, RPG Audio, Music Jingles) có `License.txt` đi kèm zip, chép nguyên văn ra `Docs/Licenses/Audio/`. Clip rồng (OpenGameArt, trazzz123) ghi `chưa kiểm chứng (nguồn tự khai CC0)`: trang nguồn ghi CC0 nhưng repo chưa có ảnh chụp hay PDF trang do người lưu; tệp `OpenGameArt_cc0-deep-monster-roar.txt` chỉ là bản chép chữ của agent, không tính là bằng chứng (CPO 4.9).
 
 Xử lý chung: trộn mono, 44,1 kHz (đổi tần số bằng sinc nếu nguồn khác), cắt từ tiếng đầu, 2 ms im lặng + fade-in 3 ms, fade-out cosine rồi 2 ms im lặng, đưa mức hoạt động L về đích qua limiter trần −1,05 dBFS, giảm tối đa 6 dB. Cột "Cắt" là giây trong file gốc; "Độ lợi" là độ lợi trước limiter; "Giảm" là mức limiter giảm lớn nhất.
 
@@ -33,5 +33,6 @@ Xử lý chung: trộn mono, 44,1 kHz (đổi tần số bằng sinc nếu ngu�
 | UseCancel | `use_cancel.wav` | [kenney_interface-sounds.zip: close_001.ogg](https://kenney.nl/assets/interface-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.148 | -3.1 | 0.00 | -18.00 | 0.152 | có bằng chứng: Docs/Licenses/Audio/Kenney_InterfaceSounds_License.txt |
 | ZoneBell3 | `zone_bell.wav` | [kenney_impact-sounds.zip: impactBell_heavy_002.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.677 | +10.3 | 6.00 | -17.47 | 0.681 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
 | DragonRoar | `dragon_roar.wav` | [monster_roar.wav: monster_roar.wav](https://opengameart.org/content/cc0-deep-monster-roar) | trazzz123 | 2026-10-27 | 0.120–3.120 | -1.7 | 0.00 | -16.00 | 3.004 | chưa kiểm chứng (nguồn tự khai CC0) |
+| MatchEnd | `match_end.wav` | [kenney_music-jingles.zip: jingles_NES00.ogg](https://kenney.nl/assets/music-jingles) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–1.758 | -2.0 | 0.00 | -16.00 | 1.762 | có bằng chứng: Docs/Licenses/Audio/Kenney_MusicJingles_License.txt |
 
-Tổng: 25 clip tải về. 18 file còn lại trong `Sfx/` và `Music/` dẫn xuất từ JSurviv, giấy phép `chưa kiểm chứng`; xem dòng `clip` và `jsurviv` của manifest.
+Tổng: 26 clip tải về. 17 file còn lại trong `Sfx/` và `Music/` dẫn xuất từ JSurviv, giấy phép `chưa kiểm chứng`; xem dòng `clip` và `jsurviv` của manifest.
