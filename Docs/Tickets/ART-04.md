@@ -445,4 +445,39 @@ Phạm vi: `e8b57415`, `8e047049`, `0a5a4e28` (test) và `6c1ea276`, `f61cf4e8` 
 
 ## 8. Nghiệm thu
 
-(CPO điền; người duyệt G3, ngày, ghi chú. Nhắc cập nhật Status trong GDD.)
+### G3 · 27/10/2026 08:20 · CPO (quyền người dùng giao tới 12:00): **Nghiệm thu**
+
+**Căn cứ:**
+- Review test R2: **Qua**, không có lỗi Chặn (mục 6).
+- Hai mục Nên sửa và Gợi ý 1, 5 đã sửa ở `e43e7727` (test) và `1712d3ef` (log):
+  - Test PNG đòi đệm ≥ 3 px mỗi cạnh; đo được tối thiểu 4 px trên 34/34 icon.
+  - Test mới kiểm 0 script thiếu trên mọi GameObject của 3 prefab HUD.
+  - Hai test lặp theo CSV giờ tự đòi đủ 34 dòng.
+- Suite chạy sau khi sửa: EditMode **338/338**, PlayMode **65/65**, console sạch.
+- QA (mục 7, HEAD `f61cf4e8`): Đạt 19 · Một phần 2 · Không kiểm 2 · **Không đạt 0**. Mọi AC P0 đo được đều Đạt.
+- `EditorSettings.asset` đã hoàn về; working tree chỉ còn `TimeManager.asset` và `.codex/config.toml` (không commit).
+
+**Chấp nhận có điều kiện ở các AC chưa trọn:**
+- **AC11:** đạt theo định nghĩa phần nhìn thấy (quyết định CPO 06:20). Từ `e43e7727`, đệm ≥ 3 px được test giữ cho cả 34 icon, không chỉ 8 icon quét qua khe.
+- **AC14:** hoãn sang ITM-01 (G1, T-4).
+- **AC15:** kiểm ở mức port bằng writer thứ hai. GameServer thật chờ ITM-01 (R5).
+- **AC17:** đạt với ảnh. Shader TMP JSurviv được loại trừ (quyết định CPO 06:30).
+- **AC20:** việc của người dùng, không chặn G3 kỹ thuật (G1).
+- **AC23:** manifest không có cột nguồn; nguồn nằm ở `nguon_thuc` (CSV) và `Provenance.csv`. Chấp nhận, không thêm cột vào manifest dùng chung.
+
+**Follow-up:**
+
+| # | Việc | Giao cho |
+| --- | --- | --- |
+| F1 | Rect `RectTransform` icon lấn số phím, `×n` 1 px (2–27 px²); sửa khi đổi layout ô khe | UI-01 |
+| F2 | Dời shader TMP khỏi `Imported/JSurviv`; sau đó thu hẹp loại trừ AC17 về đúng đường dẫn (Gợi ý 4) | Dọn dẹp UI (TMP Essentials) |
+| F3 | Panel kết nối IMGUI ở HudPreview che khe 1 và Vitals | UI-01 |
+| F4 | Tên dài trong toast ngắt giữa từ | UI-01 |
+| F5 | AC14 hint nhặt dưới sàn; icon đạn (Q9); AC15 với GameServer thật (R5) | ITM-01 |
+| F6 | AC10 vế khe rỗng ≤ 0,35 chưa test giữ (`HudAcceptanceTests` đang kiểm < 0,5); AC19 phần rebuild canvas chỉ có Profiler trong trận | QA-01 |
+| F7 | `ghi_chu` trong CSV còn mô tả hiện trạng trước 32 px | Người dùng khi ký CSV (AC20) |
+
+**Việc của người dùng:**
+- AC20: ký CSV, nhận diện mù với 3 người, cảm nhận độ nhòe.
+- Q11: sửa ô Ref trong GDD. Q12: cập nhật STT 4/6 sheet Assets.
+- Cập nhật Status của ART-04 trong GDD thành Done.

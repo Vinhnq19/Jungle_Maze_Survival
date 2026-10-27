@@ -18,7 +18,7 @@ Người dùng (HuyCV, PIC V.Huy), ngày 27/10/2026, khoảng 02:00, nguyên vă
 | # | Luồng | Ai làm | Trạng thái | Bước tiếp theo |
 | --- | --- | --- | --- | --- |
 | A | **ADHOC-UI-ASSETS-A**: gắn bộ asset hướng A (34 icon, 7 icon hiệu ứng, khung HUD, art menu) vào HUD và màn kết nối | Subagent unity-dev trong phiên CPO | **Build xong** (`49c4943b`…`dd84914a`): EditMode 274/274, PlayMode 43/43, T-1 sửa bằng `UiArtSet` + `Resources.Load` một lần. Code Reviewer đang review | **Done (G3 06:30)**. Follow-up ghi ở mục 8 của ticket |
-| B | **ART-04** icon HUD/Inventory | Phần build nằm trong luồng A | Spec `24eedbf4`, đối chiếu ADHOC `f208314d`, **G1 đã duyệt** (mục 4) | R1 xong. **R2-a/R2-b: phiên Unity Dev đang làm** (hạn 09:30) → Code Reviewer → QA Tester → G3. AC14 hoãn sang ITM-01, AC20 là việc của người dùng |
+| B | **ART-04** icon HUD/Inventory | Phần build nằm trong luồng A | Spec `24eedbf4`, đối chiếu ADHOC `f208314d`, **G1 đã duyệt** (mục 4) | **Done (G3 08:20)**. Follow-up F1–F7 ở mục 8 của ticket. AC20, Q11, Q12, Status GDD là việc của người dùng |
 | C | **Vẽ lại icon theo lưới 32×32** | Codex, chạy không tương tác | Hẹn chạy lúc 05:45 (script nền trong phiên CPO, thử lại mỗi 15 phút), nhiệm vụ trong `Docs/Art/CODEX_TASK_32px_Restyle.md` | Khi xong: kiểm commit, báo cáo `Restyle32_Report.vi.md`, refresh Unity, chạy lại test HUD |
 | D | **AUD-01** AudioManager | Phiên **Game Designer** → **Tech Lead** → **Unity Dev** | Spec `560346dd`, plan `de02fcff`, **G1 đã duyệt** `a5d53cde`. Unity Dev đang làm pha 0 (âm thanh tạm, không Unity) | **Done (G3 03:40)**. Còn việc của người dùng: nghe bằng panel F6 (AC-A28) → (không còn bước build) (vùng `Audio/**`; `Bootstrap.cs` chỉ sửa sau khi luồng A đã commit file này) → review → QA → **G3** |
 
@@ -64,6 +64,9 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 - **27/10 06:30 · ART-04 chưa đóng.** R1 xong (`29cf9797`: 34 dòng `Đã chuẩn hóa`, cột `nguon_thuc`). R2-a/R2-b (test) giao phiên Unity Dev, hạn commit 09:30. Sau đó Code Reviewer xem nhanh, QA Tester chạy lại, rồi CPO duyệt G3 trước 12:00. **Quyết AC17:** chỉ cấm ảnh/sprite dưới `Assets/Imported/`. Shader TMP JSurviv có từ UI-01, được loại trừ và ghi follow-up. Lý do: ý của AC17 là không dùng sprite JSurviv trực tiếp; dời TMP Essentials là việc dọn dẹp riêng, ngoài phạm vi icon.
 - **27/10 06:20 · ART-04 R2 build xong** (`e8b57415`, `8e047049`, `6c1ea276`): EditMode 337/337, PlayMode 64/65. **Quyết AC11: phương án (b), đo rect nội dung nhìn thấy.** RectTransform icon lấn số phím/`×n` 1 px (2–27 px²) do bố cục Figma UI-01, phần ảnh nhìn thấy không chạm (khoảng trong suốt khoảng 1,75 px). Lý do: AC11 nhằm giữ chữ đọc được; dời nhãn sẽ đổi hình học UI-01 đã nghiệm thu chỉ để sửa phần trong suốt. Unity Dev sửa test, ghi follow-up cho UI-01.
 - 06:20 · CPO hoàn `EditorSettings.asset` về 0 sau PlayMode của QA (theo quyết định "Hoàn về 0" của người dùng).
+
+- **27/10 08:10 · Review test ART-04 R2: Qua**, không lỗi Chặn (2 Nên sửa, 6 Gợi ý). **QA ART-04:** Đạt 19, Một phần 2, Không kiểm 2, Không đạt 0 (`f8ad29df`, `489cbae4`). Giao Unity Dev sửa 2 Nên sửa cùng Gợi ý 1, 5 trước G3. Lý do: chỉ là test thêm, nhỏ, trong vùng ART-04, và giữ AC11/AC17 khi icon được vẽ lại.
+- **27/10 08:20 · G3 ART-04: nghiệm thu.** Unity Dev sửa xong (`e43e7727`, `1712d3ef`; EditMode 338/338, PlayMode 65/65). Mọi AC P0 đo được đều Đạt. AC14 chuyển ITM-01, AC20 cho người dùng. Chấp nhận AC23 không thêm cột nguồn vào manifest dùng chung, vì nguồn đã có ở CSV và `Provenance.csv`. Follow-up F1–F7 ở mục 8 của ticket.
 
 ## 5. Khởi động lại khi hết token
 
