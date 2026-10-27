@@ -11,9 +11,10 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
     /// <summary>
     /// Connects the UI-03 logic to the prefab views. Setting rows write straight to <see cref="IAudioService"/> and
     /// <see cref="IPlayerSettingsWriter"/> and read back in the same frame (AC7, AC10); the menu and confirm box are
-    /// shown and hidden by CanvasGroup fades only (AC1). The canvas is off outside a match.
+    /// shown and hidden by CanvasGroup fades only (AC1). The canvas is off outside a match. The phase panels
+    /// (killcam, eliminated, spectator, notice) are in <c>MatchOverlayPresenter.Phases.cs</c>.
     /// </summary>
-    public sealed class MatchOverlayPresenter : IDisposable
+    public sealed partial class MatchOverlayPresenter : IDisposable
     {
         public const string MusicOffText = "Nhạc nền đang tắt";
         public const string RetryText = "Chưa thoát được, thử lại";
@@ -81,6 +82,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             root.Confirm.Confirm.onClick.AddListener(_onConfirmLeave);
             root.Confirm.Stay.onClick.AddListener(_onStay);
 
+            BindPhases();
             RefreshSettingRows();
             RefreshLeaveState();
             OnPhase(_flow != null ? _flow.Phase : MatchOverlayPhase.Playing);
@@ -93,6 +95,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         {
             _menuFade.Step(unscaledDelta, _tuning.MenuFadeSeconds);
             _confirmFade.Step(unscaledDelta, _tuning.MenuFadeSeconds);
+            TickPhases(unscaledDelta);
         }
 
         /// <summary>Re-reads every row from its owner (opening the menu, after "Mặc định", after a setting event).</summary>
@@ -131,6 +134,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             _menu.LeaveStateChanged -= _onLeaveState;
             if (_settings != null) _settings.Changed -= _onSettings;
             if (_flow != null) _flow.PhaseChanged -= _onPhase;
+            UnbindPhases();
             if (_root == null) return;
             var v = _root.Menu;
             v.Master.onValueChanged.RemoveListener(_onMaster);
@@ -155,6 +159,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private void OnPhase(MatchOverlayPhase phase)
         {
             if (_root.Canvas != null) _root.Canvas.enabled = phase != MatchOverlayPhase.Inactive;
+            ShowPhase(phase);
         }
 
         private void SetVolume(AudioBus bus, float value)

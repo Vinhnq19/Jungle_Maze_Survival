@@ -13,6 +13,10 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         [SerializeField] private Canvas canvas;
         [SerializeField] private MatchMenuView menu;
         [SerializeField] private LeaveConfirmView confirm;
+        [SerializeField] private EliminatedView eliminated;
+        [SerializeField] private SpectatorView spectator;
+        [SerializeField] private KillcamView killcam;
+        [SerializeField] private OverlayNoticeView notice;
         [Tooltip("Inactive child; turned on at composition only when the scene has no EventSystem.")]
         [SerializeField] private GameObject eventSystem;
 
@@ -20,6 +24,10 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         public GameObject EventSystemObject => eventSystem;
         public MatchMenuView Menu => menu;
         public LeaveConfirmView Confirm => confirm;
+        public EliminatedView Eliminated => eliminated;
+        public SpectatorView Spectator => spectator;
+        public KillcamView Killcam => killcam;
+        public OverlayNoticeView Notice => notice;
         public MatchOverlayPresenter Presenter { get; private set; }
         public MatchOverlayInput Input { get; private set; }
 

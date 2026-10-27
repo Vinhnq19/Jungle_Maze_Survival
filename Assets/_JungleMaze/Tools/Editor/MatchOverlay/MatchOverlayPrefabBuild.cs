@@ -19,6 +19,7 @@ namespace JungleMaze.EditorTools
     {
         public const string PrefabFolder = "Assets/_JungleMaze/Prefabs/UI/MatchOverlay/";
         public const string PrefabPath = PrefabFolder + "MatchOverlay.prefab";
+        public const string RowPrefabPath = PrefabFolder + "SpectatorRow.prefab";
         public const string SetFolder = "Assets/_JungleMaze/Art/UI/MatchOverlay/Resources/";
         public const string SetPath = SetFolder + "MatchOverlaySet.asset";
 
@@ -32,6 +33,7 @@ namespace JungleMaze.EditorTools
         {
             Directory.CreateDirectory(PrefabFolder);
             Directory.CreateDirectory(SetFolder);
+            BuildRowPrefab();
             var root = new GameObject("MatchOverlay", typeof(RectTransform));
             try
             {
@@ -70,8 +72,197 @@ namespace JungleMaze.EditorTools
 
         private static void BuildPanels(RectTransform rt, MatchOverlayRoot overlay)
         {
+            // Sibling order is draw order: killcam board at the back, the ESC menu and its confirm box on top.
+            Set(overlay, "killcam", BuildKillcam(rt));
+            Set(overlay, "spectator", BuildSpectator(rt));
+            Set(overlay, "eliminated", BuildEliminated(rt));
+            Set(overlay, "notice", BuildNotice(rt));
             Set(overlay, "menu", BuildMenu(rt));
             Set(overlay, "confirm", BuildConfirm(rt));
+        }
+
+        private static RectTransform Screen(string name, RectTransform parent)
+        {
+            var r = Rect(name, parent, 0, 0, 1280, 720);
+            Stretch(r);
+            return r;
+        }
+
+        // ---------- Eliminated (Figma v2 43:283, AC45) ----------
+
+        private static EliminatedView BuildEliminated(RectTransform parent)
+        {
+            var root = Screen("Eliminated", parent);
+            var group = Group(root);
+            var view = root.gameObject.AddComponent<EliminatedView>();
+            var frame = Rect("Frame", root, 320, 141, 640, 417);
+            Img(frame, P.Surface, true);
+            var title = Txt("Title", frame, 32, 28, 576, 40, "Bạn đã bị loại", 28, TextFont, TextAlignmentOptions.Center, P.Red);
+            title.fontStyle = FontStyles.Bold;
+            var rank = Txt("Rank", frame, 32, 84, 576, 64, "#4 / 10", 48, NumberFont, TextAlignmentOptions.Center, P.Amber);
+            var cause = Txt("Cause", frame, 32, 164, 576, 28, "Không rõ nguyên nhân", 17, TextFont, TextAlignmentOptions.Center, P.Text);
+            var kills = Txt("Kills", frame, 32, 204, 576, 24, "Hạ gục: 0", TextSize, TextFont, TextAlignmentOptions.Center, P.Muted);
+            var survival = Txt("Survival", frame, 32, 236, 576, 24, "Sống sót: 00:00", TextSize, TextFont, TextAlignmentOptions.Center, P.Muted);
+            var blocked = Txt("BlockedReason", frame, 32, 330, 576, 24, "Không còn người chơi nào để theo dõi", 13, TextFont, TextAlignmentOptions.Center, P.Muted);
+            // Absolute Figma positions: "Về menu" (461,508), "Theo dõi người khác" (599,508).
+            var home = Btn("Home", frame, 461 - 320, 508 - 141, 126, 50, "Về menu", P.Raised, P.Text);
+            var spectate = Btn("Spectate", frame, 599 - 320, 508 - 141, 220, 48, "Theo dõi người khác", P.Amber, P.Raised);
+            Set(view, "group", group);
+            Set(view, "frame", frame);
+            Set(view, "title", title);
+            Set(view, "rank", rank);
+            Set(view, "cause", cause);
+            Set(view, "kills", kills);
+            Set(view, "survival", survival);
+            Set(view, "blockedReason", blocked);
+            Set(view, "home", home);
+            Set(view, "spectate", spectate);
+            return view;
+        }
+
+        // ---------- Spectator (Figma v1 7:304, AC46; list G-12) ----------
+
+        private static void BuildRowPrefab()
+        {
+            var row = Rect("SpectatorRow", null, 0, 0, 160, 32);
+            try
+            {
+                var bg = Img(row, P.Surface, true);
+                var button = row.gameObject.AddComponent<Button>();
+                button.targetGraphic = bg;
+                var label = Txt("Label", row, 10, 0, 146, 32, "Người chơi", TextSize, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
+                var view = row.gameObject.AddComponent<SpectatorRowView>();
+                Set(view, "button", button);
+                Set(view, "background", bg);
+                Set(view, "label", label);
+                PrefabUtility.SaveAsPrefabAsset(row.gameObject, RowPrefabPath);
+            }
+            finally { Object.DestroyImmediate(row.gameObject); }
+        }
+
+        private static SpectatorView BuildSpectator(RectTransform parent)
+        {
+            var root = Screen("Spectator", parent);
+            var group = Group(root);
+            var view = root.gameObject.AddComponent<SpectatorView>();
+
+            var block = Rect("Watching", root, 430, 24, 420, 71);
+            Img(block, P.Surface, true);
+            Txt("Caption", block, 16, 8, 200, 18, "Đang theo dõi", 13, TextFont, TextAlignmentOptions.MidlineLeft, P.Muted);
+            var name = Txt("Name", block, 16, 28, 260, 34, "Người chơi", 22, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
+            name.fontStyle = FontStyles.Bold;
+            var alive = Txt("Alive", block, 270, 8, 134, 56, "Còn sống 9/10", TextSize, NumberFont, TextAlignmentOptions.MidlineRight, P.Amber);
+
+            var list = Rect("List", root, 24, 130, 160, 9 * 38 - 6);
+            var rowPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(RowPrefabPath);
+            var rows = new Object[9];
+            for (var i = 0; i < rows.Length; i++)
+            {
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(rowPrefab, list);
+                var r = (RectTransform)go.transform;
+                r.anchorMin = r.anchorMax = r.pivot = new Vector2(0, 1);
+                r.anchoredPosition = new Vector2(0, -i * 38);
+                go.name = "Row" + (i + 1);
+                rows[i] = go.GetComponent<SpectatorRowView>();
+            }
+
+            var card = Rect("TargetCard", root, 24, 560, 300, 90);
+            Img(card, P.Surface, true);
+            var cardName = Txt("Name", card, 16, 10, 268, 24, "Người chơi", 17, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
+            var hp = Rect("Hp", card, 16, 40, 268, 18);
+            var track = Rect("Track", hp, 0, 4, 200, 10);
+            Img(track, P.Track);
+            var fill = Rect("Fill", track, 0, 0, 200, 10);
+            Stretch(fill);
+            Img(fill, P.Red);
+            var hpText = Txt("Value", hp, 208, 0, 60, 18, "100/100", 13, NumberFont, TextAlignmentOptions.MidlineRight, P.Text);
+            var weapon = Txt("Weapon", card, 16, 62, 268, 20, "Súng nước", 13, TextFont, TextAlignmentOptions.MidlineLeft, P.Muted);
+
+            var keys = Rect("KeyBar", root, 440, 640, 400, 44);
+            Img(keys, P.Surface);
+            Txt("Keys", keys, 12, 0, 376, 44, "←/A  →/D đổi người · E kẻ hạ bạn · ESC menu", 13, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
+            var killer = Btn("Killer", root, 852, 640, 250, 44, "Kẻ đã hạ bạn (E)", P.Raised, P.Text);
+            var home = Btn("Home", root, 1114, 640, 100, 47, "Về sảnh", P.Amber, P.Raised);
+
+            Set(view, "group", group);
+            Set(view, "watchingBlock", block);
+            Set(view, "watchingName", name);
+            Set(view, "aliveCount", alive);
+            Set(view, "keyBar", keys);
+            Set(view, "killer", killer);
+            Set(view, "home", home);
+            Set(view, "card", card);
+            Set(view, "cardName", cardName);
+            Set(view, "cardHp", hp.gameObject);
+            Set(view, "cardHpFill", fill);
+            Set(view, "cardHpText", hpText);
+            Set(view, "cardWeapon", weapon);
+            SetArray(view, "rows", rows);
+            return view;
+        }
+
+        // ---------- Killcam (T-5: own flat board, no world) ----------
+
+        private static KillcamView BuildKillcam(RectTransform parent)
+        {
+            var root = Screen("Killcam", parent);
+            var group = Group(root);
+            Img(root, new Color(0.047f, 0.078f, 0.090f, 0.97f), true);
+            var view = root.gameObject.AddComponent<KillcamView>();
+            var board = Centered("Board", root, 1280, 720);
+            var knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
+            var zone = Centered("Zone", board, 480, 480);
+            var zoneImage = Img(zone, new Color(P.Purple.r, P.Purple.g, P.Purple.b, 0.18f));
+            zoneImage.sprite = knob;
+            var dots = new Object[10];
+            var images = new Object[10];
+            var names = new Object[10];
+            var fills = new Object[10];
+            for (var i = 0; i < 10; i++)
+            {
+                var dot = Centered("Player" + i, board, 18, 18);
+                var image = Img(dot, P.Text);
+                image.sprite = knob;
+                var label = Txt("Name", dot, -51, -24, 120, 18, "#" + (i + 1), 13, TextFont, TextAlignmentOptions.Center, P.Text);
+                var track = Rect("Hp", dot, -3, 22, 24, 4);
+                Img(track, P.Track);
+                var fill = Rect("Fill", track, 0, 0, 24, 4);
+                Stretch(fill);
+                Img(fill, P.Red);
+                dot.gameObject.SetActive(false);
+                dots[i] = dot;
+                images[i] = image;
+                names[i] = label;
+                fills[i] = fill;
+            }
+            var title = Txt("Title", root, 340, 24, 600, 28, "Killcam · góc nhìn của kẻ hạ bạn", 17, TextFont, TextAlignmentOptions.Center, P.Text);
+            var countdown = Txt("Countdown", root, 490, 56, 300, 40, "Killcam 5,0 s", 26, NumberFont, TextAlignmentOptions.Center, P.Amber);
+            var skip = Btn("Skip", root, 540, 640, 200, 48, "Bỏ qua (Space)", P.Raised, P.Text);
+            Set(view, "group", group);
+            Set(view, "board", board);
+            Set(view, "zone", zone);
+            SetArray(view, "dots", dots);
+            SetArray(view, "dotImages", images);
+            SetArray(view, "names", names);
+            SetArray(view, "hpFills", fills);
+            Set(view, "title", title);
+            Set(view, "countdown", countdown);
+            Set(view, "skip", skip);
+            return view;
+        }
+
+        // ---------- notice line ----------
+
+        private static OverlayNoticeView BuildNotice(RectTransform parent)
+        {
+            var box = Rect("Notice", parent, 390, 108, 500, 36);
+            var group = Group(box);
+            Img(box, P.Surface);
+            var text = Txt("Text", box, 12, 0, 476, 36, "", TextSize, TextFont, TextAlignmentOptions.Center, P.Text);
+            var view = box.gameObject.AddComponent<OverlayNoticeView>();
+            Set(view, "group", group);
+            Set(view, "text", text);
+            return view;
         }
 
         // ---------- ESC menu (G-10: 560 px wide, centred, ≤ 60 % of the height) ----------
