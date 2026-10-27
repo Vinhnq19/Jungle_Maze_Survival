@@ -31,7 +31,7 @@
         20
       ],
       "binding": "imported, not bound",
-      "note": "Stepped 2px perimeter and inset grip; also previewed at 24px."
+      "note": "Vertical fader cap with one horizontal groove; also previewed at 24px."
     },
     {
       "id": "ov_toggle_box",
@@ -294,7 +294,7 @@
         28
       ],
       "binding": "imported, not bound",
-      "note": "Purple shrinking ring. Suggested 28px preview; current prefab has no icon Image slot."
+      "note": "Purple ring with four inward chevrons around a gold dot. Suggested 28px preview; current prefab has no icon Image slot."
     },
     {
       "id": "ov_cause_left",
@@ -323,7 +323,7 @@
         28
       ],
       "binding": "imported, not bound",
-      "note": "Door with exit arrow. Suggested 28px preview; current prefab has no icon Image slot."
+      "note": "Doorway with a figure walking out; no arrow, unlike IconExit. Suggested 28px preview; current prefab has no icon Image slot."
     },
     {
       "id": "ov_cause_disconnect",
@@ -352,7 +352,7 @@
         28
       ],
       "binding": "imported, not bound",
-      "note": "Broken signal. Suggested 28px preview; current prefab has no icon Image slot."
+      "note": "Signal arcs crossed by a red slash. Suggested 28px preview; current prefab has no icon Image slot."
     },
     {
       "id": "ov_cause_unknown",
@@ -469,7 +469,7 @@
         28
       ],
       "binding": "imported, not bound",
-      "note": "Mouse sensitivity. Suggested 28px preview; current prefab has no icon Image slot."
+      "note": "Light mouse body with jade left button. Suggested 28px preview; current prefab has no icon Image slot."
     },
     {
       "id": "ov_icon_shake",
@@ -498,7 +498,7 @@
         28
       ],
       "binding": "imported, not bound",
-      "note": "Frame with motion ticks. Suggested 28px preview; current prefab has no icon Image slot."
+      "note": "Screen frame between paired shake ticks. Suggested 28px preview; current prefab has no icon Image slot."
     },
     {
       "id": "ov_icon_exit",

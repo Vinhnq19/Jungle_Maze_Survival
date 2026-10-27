@@ -21,13 +21,13 @@
       },
       "passed": true,
       "bbox": [
+        10,
         4,
-        4,
-        44,
+        38,
         44
       ],
       "color_count": 1,
-      "sha256": "3d2a254cd3865382a44f9a4f6d3d8814d4f858556497d2bc92d7c4ae30a38d39"
+      "sha256": "0f17cb9ad3c2f0e2ec21094a88a0bd8681c736496c7f1e7eaa3d37c69ec4a8f5"
     },
     {
       "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ToggleBox.png",
@@ -251,7 +251,7 @@
         60
       ],
       "color_count": 5,
-      "sha256": "8390f821e83bd2746e343e4cde5db14ebe68d213cd447519a0f38e50a8d69b05"
+      "sha256": "ecf2908eccfe2be65dc41dd9df00cee3600f9bfcafb062dd81bd56087eb67bd1"
     },
     {
       "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseLeft.png",
@@ -273,13 +273,13 @@
       },
       "passed": true,
       "bbox": [
-        4,
+        6,
         4,
         58,
         60
       ],
-      "color_count": 6,
-      "sha256": "9868d3675a56d13af5d58a18e07a2078be6da5e48304f3130ca9cd2069d92c1a"
+      "color_count": 5,
+      "sha256": "4d7349390156ab0193bfa4dbb24c6d6b47936c52bb15a6d4d289da6ab95d626d"
     },
     {
       "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseDisconnect.png",
@@ -301,13 +301,13 @@
       },
       "passed": true,
       "bbox": [
-        8,
         6,
-        56,
+        6,
+        58,
         58
       ],
-      "color_count": 6,
-      "sha256": "2b3bf5106d85a32e86c0545364276048fa675457360a969a4a53824377a30a97"
+      "color_count": 3,
+      "sha256": "465b6823933e874065e44d00b8e23a7a709824d94290a7d1eb07223aa6ad0800"
     },
     {
       "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseUnknown.png",
@@ -418,8 +418,8 @@
         54,
         60
       ],
-      "color_count": 7,
-      "sha256": "d0c588e9c8bd2882bef833d99d5f1e0198ea4512924c0b8bb6d95043bafb85cc"
+      "color_count": 5,
+      "sha256": "5be6d9c22b6d16eec0f1a20dc55d6bd14354553e374a422e27c2ac4a5062891d"
     },
     {
       "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconShake.png",
@@ -442,12 +442,12 @@
       "passed": true,
       "bbox": [
         4,
-        4,
-        60,
-        60
+        8,
+        58,
+        56
       ],
-      "color_count": 6,
-      "sha256": "41d7502c17b63484b40acce3a9f4ee5e5d58900e8901f8faf000a33098f0f453"
+      "color_count": 4,
+      "sha256": "46718a239b7ac80915ccd20e7e0f588db5ea9cbd6fe76748a5d7562ff8df2a8f"
     },
     {
       "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconExit.png",

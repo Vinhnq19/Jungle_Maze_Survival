@@ -94,3 +94,22 @@ Tham chiếu layout từ builder: MenuPanel 560×388, hàng 48 px; Eliminated/Fr
 - `4be7cd97` — `art(ui-03): add match overlay sprites`
 
 Tài liệu/manifest và hai dòng nhật ký có commit bàn giao riêng. Hash được liệt kê trong phản hồi cuối; báo cáo không ghi hash tự tham chiếu.
+
+## Lần làm lại 1 (27/10/2026)
+
+CPO xem `Contact.png` và thấy 6 file không đọc đúng ở cỡ hiển thị, nên vẽ lại. 13 file còn lại giữ nguyên từng byte (đã so hash).
+
+| File | Vấn đề cũ | Bản mới |
+| --- | --- | --- |
+| `SliderHandle.png` | Ô vuông có 2 vạch đứng, nhìn như nút **tạm dừng** | Nắp fader dọc, một rãnh ngang 4 px, vẫn thấy rãnh ở 20/24 px |
+| `CauseZone.png` | Vòng tím với 4 núm vàng, nhìn như **phao cứu sinh** | Vòng tím, 4 mũi chevron nhỏ chỉ vào trong (bo đang thu hẹp), chấm vàng ở tâm |
+| `CauseLeft.png` | Gần giống hệt `IconExit.png` | Khung cửa jade, người vàng bước ra, không có mũi tên |
+| `CauseDisconnect.png` | Tia sét đỏ trên cung nhỏ, ở 28 px chỉ còn vệt đỏ | 3 cung sóng jade + chấm, gạch chéo đỏ có viền tối |
+| `IconMouse.png` | Xám trên nền xám, nhỏ, khó đọc ở 28 px | Thân sáng, nút trái jade, bánh xe tối, cao 56/64 |
+| `IconShake.png` | Như điện thoại có tia sét, rối ở 28 px | Màn hình trơn giữa 2 cặp vạch rung vàng |
+
+Bằng chứng: `Redo_Compare.png` (cũ cạnh mới, cỡ 1× và cỡ hiển thị; `CauseLeft` cạnh `IconExit` ở 28 px). `Contact.png`, `asset_mapping.json`, `Validation.json` và các `*_native32.png` đã dựng lại bằng script.
+
+Kiểm tra: `test_ui03_overlay_validation.py` → `PASS: 19/19 exports; 8 validator tests; reuse unchanged=True`.
+
+Giới hạn: ở 28 px các chevron của `CauseZone` dính viền với vòng, đọc như "vòng có mũi nhọn"; chấp nhận cho v1. Chưa gắn vào prefab, chưa chỉnh import (`.meta` vẫn để Unity Dev xử lý sau G3).

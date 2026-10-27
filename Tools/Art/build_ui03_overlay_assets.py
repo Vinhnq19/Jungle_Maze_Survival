@@ -36,7 +36,7 @@ def spec(asset_id, name, size, elements, screen, tint, kind='white mask', border
 
 SPECS = [
     spec('ov_slider_handle', 'SliderHandle', (48,48), SLIDERS, (20,20), P['white'],
-         note='Stepped 2px perimeter and inset grip; also previewed at 24px.'),
+         note='Vertical fader cap with one horizontal groove; also previewed at 24px.'),
     spec('ov_toggle_box', 'ToggleBox', (48,48), [p+'/Background' for p in TOGGLES],
          (24,24), P['metal_dark'], border=12, note='Sliced; empty centre.'),
     spec('ov_toggle_check', 'ToggleCheck', (32,32), [p+'/Background/Checkmark' for p in TOGGLES],
@@ -54,14 +54,14 @@ SPECS = [
 ]
 ICON_SPECS = [
     ('ov_cause_player', 'CausePlayer', ['Eliminated/Frame/Cause'], 'Crossed blades; no gore.'),
-    ('ov_cause_zone', 'CauseZone', ['Eliminated/Frame/Cause'], 'Purple shrinking ring.'),
-    ('ov_cause_left', 'CauseLeft', ['Eliminated/Frame/Cause'], 'Door with exit arrow.'),
-    ('ov_cause_disconnect', 'CauseDisconnect', ['Eliminated/Frame/Cause'], 'Broken signal.'),
+    ('ov_cause_zone', 'CauseZone', ['Eliminated/Frame/Cause'], 'Purple ring with four inward chevrons around a gold dot.'),
+    ('ov_cause_left', 'CauseLeft', ['Eliminated/Frame/Cause'], 'Doorway with a figure walking out; no arrow, unlike IconExit.'),
+    ('ov_cause_disconnect', 'CauseDisconnect', ['Eliminated/Frame/Cause'], 'Signal arcs crossed by a red slash.'),
     ('ov_cause_unknown', 'CauseUnknown', ['Eliminated/Frame/Cause'], 'Question mark.'),
     ('ov_icon_volume', 'IconVolume', ['MenuPanel/MasterRow', 'MenuPanel/SfxRow'], 'Speaker.'),
     ('ov_icon_music', 'IconMusic', ['MenuPanel/MusicRow'], 'Music note.'),
-    ('ov_icon_mouse', 'IconMouse', ['MenuPanel/SensitivityRow'], 'Mouse sensitivity.'),
-    ('ov_icon_shake', 'IconShake', ['MenuPanel/ShakeRow'], 'Frame with motion ticks.'),
+    ('ov_icon_mouse', 'IconMouse', ['MenuPanel/SensitivityRow'], 'Light mouse body with jade left button.'),
+    ('ov_icon_shake', 'IconShake', ['MenuPanel/ShakeRow'], 'Screen frame between paired shake ticks.'),
     ('ov_icon_exit', 'IconExit', ['MenuPanel/Leave', 'LeaveConfirm/Box/Confirm'], 'Leave match.'),
     ('ov_icon_eye', 'IconSpectate', ['Spectator/Watching'], 'Eye.'),
 ]
@@ -77,11 +77,9 @@ def draw_masks():
         im = Image.new('RGBA', (size,size)); out[name] = im
         return ImageDraw.Draw(im)
     d = canvas('SliderHandle', 48)
-    outer = [(8,4),(39,4),(43,8),(43,39),(39,43),(8,43),(4,39),(4,8)]
-    inner = [(9,6),(38,6),(41,9),(41,38),(38,41),(9,41),(6,38),(6,9)]
-    d.polygon(outer, fill=WHITE); d.polygon(inner, fill=CLEAR)
-    d.rectangle((10,10,37,37), fill=WHITE)
-    for x in (19,25): d.rectangle((x,18,x+2,29), fill=CLEAR)
+    # Fader cap, not a square with bars: that read as a pause button.
+    d.polygon([(12,4),(35,4),(37,6),(37,41),(35,43),(12,43),(10,41),(10,6)], fill=WHITE)
+    d.rectangle((14,22,33,25), fill=CLEAR)
     d = canvas('ToggleBox',48)
     d.rectangle((4,4,43,43), outline=WHITE, width=4)
     d = canvas('ToggleCheck',32)
@@ -115,25 +113,32 @@ def draw_icon(name):
         line([(4,20),(11,27)],'gold',2); line([(20,27),(27,20)],'gold',2)
         line([(4,27),(8,24)],'wood_light',3); line([(23,24),(27,27)],'wood_light',3)
     elif name == 'CauseZone':
-        ellipse((4,4,27,27),'purple_dark'); ellipse((6,6,25,25),'purple')
-        d.ellipse((9,9,22,22),fill=CLEAR)
-        d.arc((6,6,25,25),190,290,fill=P['metal_light'],width=2)
-        poly([(14,3),(18,3),(16,7)],'gold')
-        poly([(28,14),(28,18),(24,16)],'gold')
-        poly([(18,28),(14,28),(16,24)],'gold')
-        poly([(3,18),(3,14),(7,16)],'gold')
-    elif name in ('CauseLeft','IconExit'):
+        ellipse((8,8,23,23),'purple_dark'); ellipse((9,9,22,22),'purple')
+        d.ellipse((12,12,19,19),fill=CLEAR)
+        ellipse((14,14,17,17),'gold')
+        # Small inward chevrons clear of the ring: the zone closes in. Ring segments
+        # read as a lifebuoy, large chevrons as a star.
+        chevron = [(12,3),(15,5),(16,5),(19,3),(19,5),(16,7),(15,7),(12,5)]
+        for _ in range(4):
+            poly(chevron,'metal_light')
+            chevron = [(31-y,x) for x,y in chevron]
+    elif name == 'CauseLeft':
+        # Figure walking out of a doorway; no arrow, so it differs from IconExit.
+        box((3,3,14,28),'jade'); box((5,5,12,28),'jade_dark')
+        ellipse((18,3,22,7),'gold_light')
+        line([(20,9),(18,18)],'gold',3)
+        line([(19,11),(25,15)],'gold',2); line([(19,11),(14,16)],'gold',2)
+        line([(18,18),(15,27)],'gold',2); line([(18,18),(23,22),(23,27)],'gold',2)
+    elif name == 'IconExit':
         box((4,3,18,28),'metal_dark'); box((6,5,16,26),'gold')
         box((9,7,18,25),'jade_dark'); box((9,7,10,25),'jade')
-        poly([(15,13),(22,13),(22,8),(28,16),(22,23),(22,18),(15,18)],
-             'metal_light' if name == 'CauseLeft' else 'gold_light')
+        poly([(15,13),(22,13),(22,8),(28,16),(22,23),(22,18),(15,18)],'gold_light')
         box((5,27,21,28),'metal_light')
     elif name == 'CauseDisconnect':
-        d.arc((4,4,27,27),200,340,fill=P['metal'],width=3)
-        d.arc((8,10,23,25),205,335,fill=P['jade'],width=3)
-        ellipse((14,24,17,27),'metal_light')
-        poly([(18,4),(23,4),(17,13),(21,13),(12,26),(15,17),(11,17)],'red')
-        box((19,5,21,6),'skin_light')
+        for r in (13,9,5):
+            d.arc((15-r,24-r,16+r,25+r),218,322,fill=P['jade'],width=2)
+        ellipse((14,23,17,26),'jade')
+        line([(5,5),(26,26)],'ink',4); line([(5,5),(26,26)],'red',2)
     elif name == 'CauseUnknown':
         poly([(6,9),(9,4),(22,4),(26,8),(26,14),(18,20),(18,22),
               (13,22),(13,17),(21,12),(21,9),(18,8),(12,8),(10,12),(6,12)],'gold')
@@ -151,18 +156,19 @@ def draw_icon(name):
         ellipse((4,22,15,28),'gold'); ellipse((18,19,27,25),'gold')
         line([(7,23),(12,23)],'gold_light',2)
     elif name == 'IconMouse':
-        d.rounded_rectangle((6,3,25,28),radius=8,fill=P['metal_dark'])
-        d.rounded_rectangle((8,4,23,26),radius=6,fill=P['metal'])
-        box((9,10,12,19),'metal_light')
-        line([(16,4),(16,14)],'jade_dark')
-        box((14,7,17,12),'jade'); box((15,7,16,9),'white')
-        line([(8,16),(23,16)],'metal_dark')
+        # Light body for contrast at 28 px; left button fills the body's own corner.
+        d.rounded_rectangle((6,3,25,28),radius=9,fill=P['metal_light'])
+        px = im.load(); jade = tuple(int(P['jade'][i:i+2],16) for i in (1,3,5)) + (255,)
+        for y in range(3,14):
+            for x in range(6,16):
+                if px[x,y][3]: px[x,y] = jade
+        line([(16,3),(16,14)],'metal_dark'); line([(6,14),(25,14)],'metal_dark')
+        box((15,6,17,10),'ink')
+        box((20,18,22,25),'white')
     elif name == 'IconShake':
-        box((8,6,23,25),'metal'); box((10,8,21,23),'jade_dark')
-        line([(9,7),(22,7)],'metal_light')
-        line([(13,12),(17,10),(15,16),(19,15),(14,21)],'jade',2)
-        for xy in ([(4,4),(3,11),(5,15)],[(27,17),(27,21),(27,28)],
-                   [(4,20),(3,25),(4,28)],[(27,3),(27,7),(27,12)]):
+        # Screen between paired shake ticks; an offset ghost frame read as "copy".
+        box((10,5,21,26),'metal_light'); box((12,7,19,24),'jade_dark')
+        for xy in ([(7,9),(7,22)],[(4,12),(4,19)],[(24,9),(24,22)],[(27,12),(27,19)]):
             line(xy,'gold',2)
     elif name == 'IconSpectate':
         poly([(3,16),(8,10),(13,7),(18,7),(23,10),(28,16),
