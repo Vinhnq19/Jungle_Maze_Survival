@@ -305,7 +305,7 @@ Chỉ thêm test, không sửa code production, PNG hay prefab. Đã đọc `UiA
 
 | Test | AC | Kết quả đo |
 | --- | --- | --- |
-| `Csv_34Rows_MatchRosterOneToOne_WithValidStatusAndRealSource` | AC1, AC2 | 34 dòng khớp 1-1 với JSON (18 Weapon + 16 Equipment, cột `loai` đúng); 34/34 `Đã chuẩn hóa`; 34/34 `nguon_thuc` tồn tại (10 JSurviv, 24 `Tools/Art/native32_recipes.py`) |
+| `Csv_34Rows_MatchRosterOneToOne_WithValidStatusAndRealSource` | AC1, AC2 | 34 dòng khớp 1-1 với JSON (18 Weapon + 16 Equipment, cột `loai` đúng); 34/34 `Đã chuẩn hóa`; 34/34 `nguon_thuc` tồn tại (13 JSurviv, 21 `Tools/Art/native32_recipes.py`) |
 | `Csv_TargetPath_IsTheSpriteTheCatalogServes` | AC1 | `dich_chuan_hoa` của cả 34 dòng = đường dẫn sprite catalog trả về |
 | `Png_64x64_TransparentCorners_Content44To60_Centered_FewSemiTransparent` | AC3, AC4 | 34/34 64×64; 4 góc alpha 0; cạnh dài nhất của bbox alpha > 8 = 56 px; lệch tâm ≤ 1 px; bán trong suốt 0 % |
 | `HudPrefabsAndCatalog_DependOnNoImageUnderImported` | AC17 | 100 phụ thuộc. Dưới `Assets/Imported/` chỉ có `JSurviv/TextMesh Pro/Shaders/TMP_SDF-Mobile.shader`, loại trừ có chủ đích theo quyết định của CPO, có chú thích trong test. 0 ảnh |
@@ -349,6 +349,16 @@ Chỉ thêm test, không sửa code production, PNG hay prefab. Đã đọc `UiA
 **Toàn bộ suite:** PlayMode 65/65, EditMode 337/337. Console 0 Error/Warning. Đã `git checkout` `EditorSettings.asset`.
 
 **Follow-up UI-01:** rect icon lấn nhãn (số phím, `×n`) 1 px trong phần đệm trong suốt, không ảnh hưởng hình. Sửa khi đổi layout ô khe.
+
+### Sửa theo review R2 · 27/10/2026 · unity-dev (commit e43e7727)
+
+Chỉ sửa `Tests/EditMode/Art04/Art04IconInventoryTests.cs`, không đụng PNG, prefab hay code production. R2-a giờ có 5 test, đạt 5/5.
+- **Nên sửa 1 (AC11).** Test PNG đổi tên thành `Png_64x64_TransparentCorners_Content44To60_Padded3_Centered_FewSemiTransparent`. Test thêm assert đệm trong suốt ≥ 3 px ở mỗi cạnh, đo trên bbox alpha > 8. Lý do: 1 px lấn ÷ 0,4375 px màn hình mỗi px nguồn ở ô 28 cho khoảng 2,3 px nguồn. Đo được: đệm nhỏ nhất là 4 px ở cả 34 icon.
+- **Nên sửa 2 (AC17).** Thêm test mới `HudPrefabs_HaveNoMissingScriptOnAnyGameObject`. Test gọi `GameObjectUtility.GetMonoBehavioursWithMissingScriptCount` riêng cho từng GameObject, kể cả object ẩn: `Hud.prefab` 253, `HudSlot.prefab` 10, `HudPickupToast.prefab` 5. Tổng script thiếu là **0**.
+- **Gợi ý 1.** `Csv_TargetPath…` và test PNG tự kiểm `Assert.AreEqual(34, rows.Count)` nên vòng lặp không thể rỗng.
+- **Gợi ý 5.** Đã sửa số ở bảng R2-a thành 13 JSurviv, 21 công thức, khớp CSV.
+
+**Toàn bộ suite:** EditMode 338/338, PlayMode 65/65. Console 0 Error/Warning. Đã `git checkout` `EditorSettings.asset`.
 
 ## 6. Review
 
