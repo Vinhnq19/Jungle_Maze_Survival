@@ -164,6 +164,7 @@ namespace JungleMaze.Composition
             tickRunner.Add(feedbackScenarios);
 #endif
             ComposeAudio(bus, tickRunner, hudState, inventoryState, balance, match, network, flow); // AUD-01, Bootstrap.Audio.cs
+            ComposeMatchOverlay(bus, tickRunner, match, network, flow, balance); // UI-03, Bootstrap.MatchOverlay.cs
             _registry.InitializeAll();
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
