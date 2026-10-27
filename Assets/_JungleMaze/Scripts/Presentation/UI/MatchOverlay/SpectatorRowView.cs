@@ -10,6 +10,8 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         [SerializeField] private Button button;
         [SerializeField] private Image background;
         [SerializeField] private TMP_Text label;
+        [Tooltip("Outline shown on the selected row only.")]
+        [SerializeField] private Image selectedOutline;
         [SerializeField] private Color normal = new Color(0.125f, 0.165f, 0.176f, 0.92f);
         [SerializeField] private Color selected = new Color(0.776f, 0.682f, 0.471f, 0.35f);
 
@@ -32,6 +34,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             }
             Selected = isSelected;
             background.color = isSelected ? selected : normal;
+            if (selectedOutline != null && selectedOutline.enabled != isSelected) selectedOutline.enabled = isSelected;
         }
 
         public void Hide()

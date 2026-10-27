@@ -23,6 +23,11 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         [SerializeField] private TMP_Text blockedReason;
         [SerializeField] private Button home;
         [SerializeField] private Button spectate;
+        [Tooltip("Icon left of the centred cause line; the line keeps a left margin for it.")]
+        [SerializeField] private Image causeIcon;
+        [Tooltip("Sprite per EliminationCause: Unknown, Player, Zone, LeftMatch, Disconnected.")]
+        [SerializeField] private Sprite[] causeIcons = new Sprite[5];
+        [SerializeField] private float causeIconGap = 8f;
 
         public CanvasGroup Group => group;
         public RectTransform Frame => frame;
@@ -33,12 +38,14 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         public TMP_Text BlockedReason => blockedReason;
         public Button Home => home;
         public Button Spectate => spectate;
+        public Image CauseIcon => causeIcon;
 
         public void Show(in EliminationInfo info)
         {
             if (title != null) title.text = EliminationText.Title;
             Line(rank, EliminationText.Rank(info));
             Line(cause, EliminationText.Cause(info));
+            PlaceCauseIcon(info.Cause);
             Line(kills, EliminationText.Kills(info));
             Line(survival, EliminationText.Survival(info));
         }
@@ -47,6 +54,17 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         {
             spectate.interactable = available;
             Line(blockedReason, available ? null : reason);
+        }
+
+        // Once per elimination: picks the cause sprite and puts the icon just left of the rendered text.
+        private void PlaceCauseIcon(EliminationCause value)
+        {
+            if (causeIcon == null || cause == null || causeIcons == null || causeIcons.Length == 0) return;
+            var index = (int)value;
+            causeIcon.sprite = index < causeIcons.Length && causeIcons[index] != null ? causeIcons[index] : causeIcons[0];
+            cause.ForceMeshUpdate(true);
+            var r = causeIcon.rectTransform;
+            r.anchoredPosition = new Vector2(cause.textBounds.min.x - causeIconGap, r.anchoredPosition.y);
         }
 
         private static void Line(TMP_Text text, string value)

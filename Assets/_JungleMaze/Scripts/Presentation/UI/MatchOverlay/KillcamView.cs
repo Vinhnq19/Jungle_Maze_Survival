@@ -20,6 +20,8 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         [SerializeField] private Image[] dotImages = new Image[KillcamClip.MaxPlayers];
         [SerializeField] private TMP_Text[] names = new TMP_Text[KillcamClip.MaxPlayers];
         [SerializeField] private RectTransform[] hpFills = new RectTransform[KillcamClip.MaxPlayers];
+        [Tooltip("Mark over each dot, shown on the killer's dot only.")]
+        [SerializeField] private GameObject[] killerMarks = new GameObject[KillcamClip.MaxPlayers];
         [SerializeField] private TMP_Text title;
         [SerializeField] private TMP_Text countdown;
         [SerializeField] private Button skip;
@@ -35,6 +37,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         public RectTransform Board => board;
         public RectTransform[] Dots => dots;
         public RectTransform[] HpFills => hpFills;
+        public GameObject[] KillerMarks => killerMarks;
         public TMP_Text Title => title;
         public TMP_Text Countdown => countdown;
         public Button Skip => skip;
@@ -69,6 +72,8 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
                 if (!present) continue;
                 dots[i].anchoredPosition = new Vector2((x - cx) * pixelsPerCell, (y - cy) * pixelsPerCell);
                 dotImages[i].color = id == killer ? killerColor : id == victim ? victimColor : otherColor;
+                var mark = killerMarks != null && i < killerMarks.Length ? killerMarks[i] : null;
+                if (mark != null && mark.activeSelf != (id == killer)) mark.SetActive(id == killer);
                 var hp = clip.At(f, i).Hp;
                 hpFills[i].anchorMax = new Vector2(HpFraction(hp, maxHp), 1f);
             }

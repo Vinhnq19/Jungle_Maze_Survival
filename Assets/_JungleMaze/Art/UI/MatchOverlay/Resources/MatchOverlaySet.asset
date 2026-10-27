@@ -16,6 +16,7 @@ MonoBehaviour:
   killcamEnabled: 0
   menuFadeSeconds: 0.12
   killcamWaitSeconds: 1
+  killcamEndTickTolerance: 30
   killcamNoticeSeconds: 3
   eliminatedNoticeSeconds: 2
   cameraSwitchSeconds: 0.25
