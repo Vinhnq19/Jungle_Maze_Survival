@@ -91,6 +91,40 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             Assert.IsFalse(_menu.IsConfirmOpen, "no confirm box after elimination (Q7)");
         }
 
+        // AC16/G-7 after elimination (review lát 7–11, Gợi ý 1): "Về menu" and "Về sảnh" lock for 5 s with the ESC
+        // menu's buttons, then unlock with "Chưa thoát được, thử lại" on the notice bar.
+        [Test]
+        public void HomeButtons_LockedFiveSeconds_ThenRetryOnNotice()
+        {
+            Build(false);
+            var leaves = new MatchUiPlayFakes.Recorder<LeaveMatchRequested>();
+            _bus.Subscribe(leaves.Handler);
+            Eliminate(EliminationCause.Player);
+            Assert.IsTrue(_root.Eliminated.Home.interactable);
+            _root.Eliminated.Home.onClick.Invoke();
+            Assert.AreEqual(1, leaves.Count);
+            Assert.IsFalse(_root.Eliminated.Home.interactable, "locked in the same call");
+            Assert.IsFalse(_root.Spectator.Home.interactable);
+            Assert.IsFalse(_presenter.NoticeFade.Visible);
+
+            _clock.Now += 4.9;
+            _menu.Tick(0f);
+            Assert.IsFalse(_root.Eliminated.Home.interactable, "still locked at 4.9 s");
+            _clock.Now += 0.2;
+            _menu.Tick(0f);
+            Assert.IsTrue(_root.Eliminated.Home.interactable, "unlocked at 5 s");
+            Assert.IsTrue(_presenter.NoticeFade.Visible);
+            Assert.AreEqual(MatchOverlayPresenter.RetryText, _root.Notice.Text.text);
+
+            _flow.Spectate();
+            Assert.IsTrue(_root.Spectator.Home.interactable);
+            _root.Spectator.Home.onClick.Invoke();
+            Assert.AreEqual(2, leaves.Count, "the retry goes through");
+            Assert.AreEqual(LeaveMatchSource.Spectator, leaves.Items[1].Source);
+            Assert.IsFalse(_root.Spectator.Home.interactable);
+            Assert.IsFalse(_presenter.NoticeFade.Visible, "retry line gone while the new request is pending");
+        }
+
         // AC23: nine rows, no self, the watched row marked, keys and clicks change target in the same call.
         [Test]
         public void Spectator_NineRows_ClickAndKeys_SameCall()

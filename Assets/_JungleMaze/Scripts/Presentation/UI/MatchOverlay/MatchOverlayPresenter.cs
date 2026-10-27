@@ -195,15 +195,17 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private void RefreshLeaveState()
         {
             var v = _root.Menu;
-            v.Leave.interactable = !_menu.IsLeaveLocked;
-            v.Resume.interactable = !_menu.IsLeaveLocked;
-            v.Defaults.interactable = !_menu.IsLeaveLocked;
-            _root.Confirm.Confirm.interactable = !_menu.IsLeaveLocked;
+            var locked = _menu.IsLeaveLocked;
+            v.Leave.interactable = !locked;
+            v.Resume.interactable = !locked;
+            v.Defaults.interactable = !locked;
+            _root.Confirm.Confirm.interactable = !locked;
             if (v.RetryNotice != null)
             {
                 v.RetryNotice.text = RetryText;
                 v.RetryNotice.gameObject.SetActive(_menu.ShowRetryNotice);
             }
+            RefreshPhaseLeaveState(locked);
         }
 
         private static void SetSlider(UnityEngine.UI.Slider slider, TMPro.TMP_Text label, float value)

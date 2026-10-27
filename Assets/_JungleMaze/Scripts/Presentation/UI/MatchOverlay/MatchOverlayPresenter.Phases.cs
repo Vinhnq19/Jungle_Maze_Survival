@@ -19,7 +19,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private UnityAction _onHome, _onSpectate, _onSpectatorHome, _onKiller, _onSkip;
         private UnityAction[] _onRows;
         private ISpectatorSource _boundSpectator;
-        private bool _shownCanSpectate, _shownCanJump;
+        private bool _shownCanSpectate, _shownCanJump, _retryOnNotice;
 
         public OverlayFade EliminatedFade => _eliminatedFade;
         public OverlayFade SpectatorFade => _spectatorFade;
@@ -184,8 +184,38 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private void OnNotice(string text)
         {
             if (_root.Notice == null) return;
-            if (text != null) _root.Notice.Text.text = text;
-            _noticeFade.Set(text != null);
+            if (text != null)
+            {
+                _root.Notice.Text.text = text;
+                _retryOnNotice = false;
+            }
+            _noticeFade.Set(text != null || _retryOnNotice);
+        }
+
+        /// <summary>
+        /// "Về menu" (Eliminated) and "Về sảnh" (Spectator) follow the same 5 s lock as the ESC menu; when the lock runs
+        /// out without a screen change, the retry line shows on the notice bar, since the ESC panel is not open there.
+        /// </summary>
+        private void RefreshPhaseLeaveState(bool locked)
+        {
+            if (_root.Eliminated != null) _root.Eliminated.Home.interactable = !locked;
+            if (_root.Spectator != null) _root.Spectator.Home.interactable = !locked;
+            if (_root.Notice == null || _noticeFade == null) return;
+            var phase = _flow != null ? _flow.Phase : MatchOverlayPhase.Playing;
+            var retry = _menu.ShowRetryNotice && (phase == MatchOverlayPhase.Eliminated || phase == MatchOverlayPhase.Spectating);
+            if (retry)
+            {
+                _root.Notice.Text.text = RetryText;
+                _retryOnNotice = true;
+                _noticeFade.Set(true);
+            }
+            else if (_retryOnNotice)
+            {
+                _retryOnNotice = false;
+                var flowNotice = _flow != null ? _flow.Notice : null;
+                if (flowNotice != null) _root.Notice.Text.text = flowNotice;
+                _noticeFade.Set(flowNotice != null);
+            }
         }
 
         private void BindSpectatorSource(ISpectatorSource source)
