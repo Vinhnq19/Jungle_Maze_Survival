@@ -29,7 +29,7 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
         private MatchOverlayRoot _root;
         private MatchOverlayPresenter _presenter;
 
-        private void Build(bool killcam)
+        private void Build(bool killcam, int heroMaxHp = 100)
         {
             _bus = new EventBus();
             _clock = new MatchUiPlayFakes.Clock { Now = 10 };
@@ -41,7 +41,7 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             _menu = new MatchMenuController(_bus, _clock.Read, () => Match, AppScreen.InMatch);
             _flow = new MatchOverlayFlow(_bus, _clock.Read, _elimination, _spectator, AppScreen.InMatch, null, session);
             _root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath)).GetComponent<MatchOverlayRoot>();
-            _presenter = new MatchOverlayPresenter(_root, _menu, _flow, null, null);
+            _presenter = new MatchOverlayPresenter(_root, _menu, _flow, null, null, null, heroMaxHp);
         }
 
         [TearDown]
@@ -207,6 +207,23 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             _root.Killcam.Skip.onClick.Invoke();
             Assert.AreEqual(MatchOverlayPhase.Eliminated, _flow.Phase);
             Assert.IsFalse(_presenter.KillcamFade.Visible);
+        }
+
+        // Review lát 7–11, Gợi ý 2: HP bars use the balance max HP and stay inside 0–1.
+        [Test]
+        public void Killcam_HpBars_UseBalanceMaxHp()
+        {
+            Build(true, heroMaxHp: 160);
+            Eliminate(EliminationCause.Player);
+            _clock.Now += 1.0;
+            _flow.Tick(0f);
+            _presenter.Tick(0f);
+            var fills = _root.Killcam.HpFills;
+            Assert.AreEqual(80f / 160f, fills[MockEliminationSource.KillerNetId].anchorMax.x, 1e-4f, "killer HP 80 of 160");
+            Assert.AreEqual(1f, KillcamView.HpFraction(150, 100), "over max is clamped");
+            Assert.AreEqual(0f, KillcamView.HpFraction(-5, 100));
+            Assert.AreEqual(0f, KillcamView.HpFraction(50, 0), "no max HP draws an empty bar");
+            Assert.AreEqual(0.5f, KillcamView.HpFraction(50, 100), 1e-6f);
         }
 
         // AC29: Vitals and Quick bar off while spectating, Minimap and match status untouched, all back afterwards.

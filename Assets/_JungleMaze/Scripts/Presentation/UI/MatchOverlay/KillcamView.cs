@@ -34,6 +34,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         public CanvasGroup Group => group;
         public RectTransform Board => board;
         public RectTransform[] Dots => dots;
+        public RectTransform[] HpFills => hpFills;
         public TMP_Text Title => title;
         public TMP_Text Countdown => countdown;
         public Button Skip => skip;
@@ -53,8 +54,11 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             countdown.text = KillcamSession.Countdown(remaining);
         }
 
-        /// <summary>Draws frame <paramref name="frame"/> of <paramref name="clip"/> centred on (<paramref name="cx"/>, <paramref name="cy"/>).</summary>
-        public void Draw(KillcamClip clip, float frame, float cx, float cy, byte killer, byte victim)
+        /// <summary>
+        /// Draws frame <paramref name="frame"/> of <paramref name="clip"/> centred on (<paramref name="cx"/>, <paramref name="cy"/>).
+        /// HP bars are <c>hp / maxHp</c> (balance <c>HeroMaxHp</c>), clamped to 0–1.
+        /// </summary>
+        public void Draw(KillcamClip clip, float frame, float cx, float cy, byte killer, byte victim, int maxHp)
         {
             var f = Mathf.Clamp(Mathf.FloorToInt(frame), 0, clip.FrameCount - 1);
             for (var i = 0; i < dots.Length; i++)
@@ -66,7 +70,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
                 dots[i].anchoredPosition = new Vector2((x - cx) * pixelsPerCell, (y - cy) * pixelsPerCell);
                 dotImages[i].color = id == killer ? killerColor : id == victim ? victimColor : otherColor;
                 var hp = clip.At(f, i).Hp;
-                hpFills[i].anchorMax = new Vector2(hp / 100f, 1f);
+                hpFills[i].anchorMax = new Vector2(HpFraction(hp, maxHp), 1f);
             }
             var radius = clip.ZoneRadius[f];
             var showZone = radius > 0f;
@@ -77,6 +81,8 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
                 zone.sizeDelta = Vector2.one * (radius * 2f * pixelsPerCell);
             }
         }
+
+        public static float HpFraction(int hp, int maxHp) => maxHp > 0 ? Mathf.Clamp01((float)hp / maxHp) : 0f;
 
         public void SetNames(System.Func<byte, string> nameOf)
         {

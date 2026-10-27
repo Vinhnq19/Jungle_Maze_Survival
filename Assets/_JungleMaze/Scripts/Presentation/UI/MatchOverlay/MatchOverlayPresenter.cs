@@ -25,6 +25,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private readonly IPlayerSettingsWriter _settings;
         private readonly IAudioService _audio;
         private readonly MatchOverlayTuning _tuning;
+        private readonly int _maxHp;
         private readonly OverlayFade _menuFade, _confirmFade;
         private readonly Action<bool> _onMenuOpen, _onConfirm;
         private readonly Action _onLeaveState;
@@ -35,7 +36,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private readonly UnityAction _onResume, _onDefaults, _onLeave, _onConfirmLeave, _onStay;
 
         public MatchOverlayPresenter(MatchOverlayRoot root, MatchMenuController menu, MatchOverlayFlow flow,
-            IPlayerSettingsWriter settings, IAudioService audio, MatchOverlayTuning tuning = null)
+            IPlayerSettingsWriter settings, IAudioService audio, MatchOverlayTuning tuning = null, int heroMaxHp = 100)
         {
             _root = root ? root : throw new ArgumentNullException(nameof(root));
             _menu = menu ?? throw new ArgumentNullException(nameof(menu));
@@ -43,6 +44,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             _settings = settings;
             _audio = audio;
             _tuning = tuning ?? MatchOverlayTuning.Default;
+            _maxHp = heroMaxHp > 0 ? heroMaxHp : 100;
             _menuFade = new OverlayFade(root.Menu.Group);
             _confirmFade = new OverlayFade(root.Confirm.Group);
 

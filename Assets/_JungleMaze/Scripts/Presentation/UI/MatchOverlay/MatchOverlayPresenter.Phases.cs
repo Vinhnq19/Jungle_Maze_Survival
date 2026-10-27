@@ -171,7 +171,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             _root.Killcam.SetCountdown(session.Remaining);
             if (!session.TryGetKillerPosition(out var cx, out var cy)) return;
             var request = session.LastRequest;
-            _root.Killcam.Draw(session.Clip, session.Frame, cx, cy, request.KillerNetId, request.VictimNetId);
+            _root.Killcam.Draw(session.Clip, session.Frame, cx, cy, request.KillerNetId, request.VictimNetId, _maxHp);
         }
 
         private string NameOf(byte netId)

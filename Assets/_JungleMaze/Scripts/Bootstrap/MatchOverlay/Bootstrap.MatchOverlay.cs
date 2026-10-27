@@ -72,7 +72,7 @@ namespace JungleMaze.Composition
             var root = Instantiate(set.OverlayPrefab, transform);
             root.name = "MatchOverlay";
             root.EnsureEventSystem();
-            root.Bind(new MatchOverlayPresenter(root, menu, overlayFlow, settings, audio, tuning),
+            root.Bind(new MatchOverlayPresenter(root, menu, overlayFlow, settings, audio, tuning, balance.Match.HeroMaxHp),
                 new MatchOverlayInput(menu, overlayFlow));
             root.BindSettingsFlush(settings.Flush);
             gameObject.AddComponent<MatchOverlayCameraDriver>().Construct(overlayFlow, clock, balance.Match.MapSizeCells);
