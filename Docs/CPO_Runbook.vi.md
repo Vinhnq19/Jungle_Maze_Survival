@@ -8,8 +8,10 @@ Người dùng (HuyCV, PIC V.Huy), ngày 27/10/2026, khoảng 02:00, nguyên vă
 
 > "CPO nhận nhiệm vụ quan trọng này cho tôi, bạn được giao quyền điều phối, lên kế hoạch và bàn giao task để đảm bảo task dc hoàn thành, bạn được toàn quyền thay tôi đưa ra các quyết định, tôi sẽ để bạn quyết định toàn bộ cho tới 12h trưa nay. Nếu hết token thì lên kế hoạch để tự khởi động và chạy lại khi làm mới. nhớ là commit đều nhé."
 
-- **Hiệu lực: tới 12:00 ngày 27/10/2026.** Trong thời gian này, CPO được duyệt G1/G3 thay người dùng. Mỗi quyết định ghi vào mục 4, có lý do.
-- **Sau 12:00:** không duyệt thêm; chỉ báo cáo và chờ người dùng.
+**Gia hạn** 27/10/2026 khoảng 08:50, nguyên văn: "Bạn được quyền quyết thay thôi. ko đợi tôi quyết"
+
+- **Hiệu lực: không còn hạn 12:00.** CPO được duyệt G1/G2/G3 và các quyết định trong ticket thay người dùng, không chờ người dùng, cho tới khi người dùng thu hồi. Mỗi quyết định ghi vào mục 4, có lý do và bằng chứng.
+- **Sau mỗi mốc:** báo kết quả cho người dùng; không dừng lại chờ duyệt.
 - **Không làm dù có quyền:** push, deploy, dùng AWS, xóa dữ liệu, sửa vùng code của Hào (Hero/map/balance), Vinh (backend) hay ITM-01 của Quang Huy.
 - **Commit đều:** mỗi phần xong commit ngay. Commit kèm đường dẫn, tiếng Anh, không ghi AI.
 
@@ -76,7 +78,7 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 1. Đọc file này, `Docs/Agent_Coordination.vi.md` mục 4, `git log --oneline -20`, `git status`.
 2. Nếu mục 4 của file phối hợp có dòng "đang dùng Unity" chưa đóng trong 30 phút gần nhất, hoặc có commit trong 20 phút gần nhất: có phiên khác đang chạy. Chỉ ghi nhận xét vào mục 6 rồi dừng.
 3. Nếu không: làm tiếp "Bước tiếp theo" ở mục 2 theo đúng quy trình `Docs/Team_Workflow.vi.md`. Giao việc cho phiên vai trò, hoặc tự làm khi phiên đó không phản hồi. Commit đều.
-4. Sau 12:00 27/10: chỉ báo cáo, không duyệt thêm.
+4. Quyền quyết thay người dùng không còn hạn 12:00 (mục 1, gia hạn 08:50); vẫn ghi mọi quyết định vào mục 4.
 
 ## 6. Ghi chú các lượt chạy
 
