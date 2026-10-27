@@ -1124,4 +1124,16 @@ Commit `ccb58d48` (commit 2), `e3d746a8` (commit 3), `970695e1` (commit 4). Cả
 
 ## 8. Nghiệm thu
 
-_CPO điền._
+### G3 · 27/10/2026 · CPO (quyền người dùng giao): **Nghiệm thu Phase A**; ticket chưa Done
+
+**Căn cứ:**
+- Review (`aa8e8216`): **Qua**, Chặn 0. Nên sửa 1 đã sửa ở `edca904c`; TelemetryChecks 71/71.
+- QA (`29033afb`): **Đạt 30 · Một phần 5 · Chưa kiểm chứng 4 · Không đạt 0**, lỗi chặn 0.
+- Không sửa `Backend/GameServer/**`, không đổi protocol.
+
+**Còn mở (Phase B):**
+- AC33, AC36, AC37 chờ Vinh duyệt và gắn hook H1/H5/H6 (`Docs/Telemetry/GameServer_Hook_Proposal.vi.md`). Sau đó làm commit B1 và đo tick trên tiến trình thật.
+- Các mục Một phần và Chưa kiểm chứng còn lại xem mục 7. Đo FPS bật/tắt telemetry trên bản build cần máy QA.
+- Gợi ý 1–4 của review: để follow-up.
+
+**Status GDD:** giữ **In Progress** cho tới khi Phase B xong.
