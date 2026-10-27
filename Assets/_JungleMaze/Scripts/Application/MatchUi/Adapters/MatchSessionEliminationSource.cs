@@ -16,7 +16,7 @@ namespace JungleMaze.App.MatchUi
     /// </summary>
     public sealed class MatchSessionEliminationSource : IEliminationSource, IInitializable, ITickable, IDisposable
     {
-        private const float TicksPerSecond = 30f;
+        private const float TicksPerSecond = GameplayProtocol.TickRate;
 
         private readonly MatchSession _match;
         private readonly IPacketReceiver _receiver;

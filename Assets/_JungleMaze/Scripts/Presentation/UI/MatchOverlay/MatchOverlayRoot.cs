@@ -31,6 +31,20 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         public MatchOverlayPresenter Presenter { get; private set; }
         public MatchOverlayInput Input { get; private set; }
 
+        private System.Action _flushSettings;
+
+        /// <summary>Called on application pause/quit so a change made less than a debounce ago is not lost (AC12).</summary>
+        public void BindSettingsFlush(System.Action flush) => _flushSettings = flush;
+
+        public void FlushSettings() => _flushSettings?.Invoke();
+
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused) FlushSettings();
+        }
+
+        private void OnApplicationQuit() => FlushSettings();
+
         public void Bind(MatchOverlayPresenter presenter, MatchOverlayInput input)
         {
             Presenter?.Dispose();

@@ -5,13 +5,14 @@ using JungleMaze.Domain.MatchUi;
 namespace JungleMaze.App.MatchUi.Mocks
 {
     /// <summary>
-    /// Dev-only replay source with the six cases of 4.4 (AC35): full 150 frames with known positions, none, short
-    /// (90 frames), slow (answer after 1.5 s), other match, other victim. One clip allocated up front and reused.
+    /// Dev-only replay source with the six cases of 4.4 (AC35) plus a window that ends 3 s before the elimination (AC41):
+    /// full 150 frames with known positions, none, short (90 frames), slow (answer after 1.5 s), other match, other
+    /// victim, wrong window. One clip allocated up front and reused.
     /// The killer walks +3 cells/s along X from (10, 20); the victim stands at (16, 20); nobody else is in the clip.
     /// </summary>
     public sealed class MockKillcamReplaySource : IKillcamReplaySource
     {
-        public enum Case : byte { Full, None, Short, Slow, WrongMatch, WrongPlayer }
+        public enum Case : byte { Full, None, Short, Slow, WrongMatch, WrongPlayer, WrongWindow }
 
         public const float KillerStartX = 10f;
         public const float KillerY = 20f;
@@ -54,7 +55,7 @@ namespace JungleMaze.App.MatchUi.Mocks
             _clip.MatchId = Mode == Case.WrongMatch ? Guid.NewGuid() : request.MatchId;
             _clip.VictimNetId = Mode == Case.WrongPlayer ? (byte)((request.VictimNetId + 1) % KillcamClip.MaxPlayers) : request.VictimNetId;
             _clip.KillerNetId = request.KillerNetId;
-            _clip.EndTick = request.EliminationTick;
+            _clip.EndTick = Mode == Case.WrongWindow ? request.EliminationTick - 90 : request.EliminationTick;
             _clip.FrameCount = frames;
             for (var f = 0; f < frames; f++)
             {

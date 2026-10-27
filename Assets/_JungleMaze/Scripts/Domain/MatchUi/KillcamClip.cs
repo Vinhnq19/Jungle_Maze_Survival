@@ -13,7 +13,8 @@ namespace JungleMaze.Domain.MatchUi
         WrongMatch = 5,
         WrongPlayer = 6,
         TooShort = 7,
-        MatchEnded = 8
+        MatchEnded = 8,
+        WrongWindow = 9
     }
 
     /// <summary>One player in one 30 Hz replay frame: position, HP and state flags only (Q16, no shots or damage).</summary>
@@ -35,6 +36,7 @@ namespace JungleMaze.Domain.MatchUi
     public sealed class KillcamClip
     {
         public const int MaxPlayers = 10;
+        /// <summary>Server tick rate (<c>GameplayProtocol.TickRate</c>; Domain does not reference the protocol, a test keeps them equal).</summary>
         public const int FramesPerSecond = 30;
 
         public readonly KillcamSample[] Samples;

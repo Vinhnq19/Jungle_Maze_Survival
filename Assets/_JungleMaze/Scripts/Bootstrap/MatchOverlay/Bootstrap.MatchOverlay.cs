@@ -73,6 +73,7 @@ namespace JungleMaze.Composition
             root.EnsureEventSystem();
             root.Bind(new MatchOverlayPresenter(root, menu, overlayFlow, settings, audio, tuning),
                 new MatchOverlayInput(menu, overlayFlow));
+            root.BindSettingsFlush(settings.Flush);
             gameObject.AddComponent<MatchOverlayCameraDriver>().Construct(overlayFlow, clock, balance.Match.MapSizeCells);
             _registry.Register(new HudSpectatorMask(overlayFlow));
 

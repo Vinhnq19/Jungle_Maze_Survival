@@ -21,6 +21,7 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
         private EventBus _bus;
         private MatchUiPlayFakes.VolumeAudio _audio;
         private PlayerSettingsService _settings;
+        private MatchUiPlayFakes.Store _store;
         private MatchMenuController _menu;
         private MatchOverlayFlow _flow;
         private MatchOverlayRoot _root;
@@ -31,7 +32,8 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
         {
             _bus = new EventBus();
             _audio = new MatchUiPlayFakes.VolumeAudio();
-            _settings = new PlayerSettingsService(new MatchUiPlayFakes.Store(), _bus, _audio);
+            _store = new MatchUiPlayFakes.Store();
+            _settings = new PlayerSettingsService(_store, _bus, _audio);
             _menu = new MatchMenuController(_bus, () => 0d, () => Guid.Empty, AppScreen.InMatch, _settings);
             _flow = new MatchOverlayFlow(_bus, () => 0d, new MockEliminationSource(), new MockSpectatorSource(), AppScreen.InMatch);
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
@@ -145,6 +147,23 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             Assert.AreEqual(1, leaves.Count);
             Assert.IsFalse(_root.Menu.Leave.interactable, "locked after the request");
             Assert.IsFalse(_root.Menu.RetryNotice.gameObject.activeSelf);
+        }
+
+        // AC12 (review Gợi ý 3): a change made less than the debounce ago is written when the app pauses or quits.
+        [Test]
+        public void PauseOrQuit_FlushesPendingSettings()
+        {
+            _root.BindSettingsFlush(_settings.Flush);
+            _menu.Open();
+            _root.Menu.Sensitivity.value = 15f;
+            Assert.AreEqual(0, _store.Saves, "still inside the 1 s debounce");
+            _root.SendMessage("OnApplicationPause", true);
+            Assert.AreEqual(1, _store.Saves);
+            _root.Menu.ScreenShake.isOn = false;
+            _root.SendMessage("OnApplicationQuit");
+            Assert.AreEqual(2, _store.Saves);
+            _root.SendMessage("OnApplicationPause", false);
+            Assert.AreEqual(2, _store.Saves, "resume writes nothing");
         }
 
         [Test]

@@ -26,7 +26,8 @@ namespace JungleMaze.Tests.MatchUi
             _clock = new FakeClock { Now = 50 };
             _elimination = new MockEliminationSource();
             _spectator = new MockSpectatorSource();
-            _spectator.Populate(5, localNetId: 0);
+            // Local NetId 3, not 0: a request that forgot to set VictimNetId (default 0) must fail AC40/AC35(f).
+            _spectator.Populate(5, localNetId: 3);
             _replay = new MockKillcamReplaySource(_clock.Read) { Mode = mode };
             _killcam = new KillcamSession(_clock.Read, new KillcamOptions(enabled, 5f, 1f), _replay);
             _flow = new MatchOverlayFlow(_bus, _clock.Read, _elimination, _spectator, AppScreen.InMatch, null, _killcam);
@@ -68,10 +69,12 @@ namespace JungleMaze.Tests.MatchUi
             Assert.IsNull(_flow.Notice, "off is normal: no error line");
         }
 
-        // AC32: 5.0 s ± 0.1 s by the clock at 60 fps, also with one 100 ms hitch.
-        [TestCase(false)]
-        [TestCase(true)]
-        public void FiveSeconds_At60fps_WithOptionalHitch(bool hitch)
+        // AC32: 5.0 s ± 0.1 s by the clock at 60 fps, with one 100 ms hitch, and with five: counting 300 frames would
+        // give 5.08 s with one hitch (inside the tolerance) but 5.42 s with five, so only a clock-based player passes.
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(5)]
+        public void FiveSeconds_At60fps_WithHitches(int hitches)
         {
             Build(enabled: true);
             Eliminate();
@@ -81,7 +84,11 @@ namespace JungleMaze.Tests.MatchUi
             Assert.AreEqual("Killcam 5,0 s", KillcamSession.Countdown(_killcam.Remaining));
             Frames(108);
             Assert.AreEqual("Killcam 3,2 s", KillcamSession.Countdown(_killcam.Remaining));
-            if (hitch) Frames(1, 0.1);
+            for (var i = 0; i < hitches; i++)
+            {
+                Frames(1, 0.1);
+                Frames(20);
+            }
             RunUntilEliminated();
             Assert.AreEqual(MatchOverlayPhase.Eliminated, _flow.Phase);
             Assert.AreEqual(5.0, _killcam.EndedAt - start, 0.1, "played 5.0 ± 0.1 s");
@@ -110,15 +117,22 @@ namespace JungleMaze.Tests.MatchUi
         {
             Build(enabled: true);
             Eliminate();
-            for (var i = 0; i < 200; i++)
+            Assert.AreEqual(MatchOverlayPhase.Killcam, _flow.Phase, "the loop below must measure a playing killcam");
+            var measured = 0;
+            for (var i = 0; i < 400; i++)
             {
                 Frames(1);
                 if (_flow.Phase != MatchOverlayPhase.Killcam) break;
+                measured++;
                 Assert.IsTrue(_killcam.TryGetKillerPosition(out var x, out var y));
-                var expectedX = MockKillcamReplaySource.KillerStartX + MockKillcamReplaySource.KillerSpeed * _killcam.Elapsed;
+                // The clip's last frame is 149 (4.967 s); after it the view holds that frame, there is nothing later.
+                var frame = Math.Min(_killcam.Elapsed * KillcamClip.FramesPerSecond, 149f);
+                var expectedX = MockKillcamReplaySource.KillerStartX + MockKillcamReplaySource.KillerSpeed * frame / KillcamClip.FramesPerSecond;
                 Assert.AreEqual(expectedX, x, 0.1f);
                 Assert.AreEqual(MockKillcamReplaySource.KillerY, y, 0.1f);
             }
+            Assert.AreEqual(MatchOverlayPhase.Eliminated, _flow.Phase, "the loop ended because the killcam finished");
+            Assert.Greater(measured, 290, "the whole 5 s (≈ 300 frames) measured");
             Assert.AreEqual(MockEliminationSource.KillerNetId, _killcam.LastRequest.KillerNetId);
         }
 
@@ -128,6 +142,7 @@ namespace JungleMaze.Tests.MatchUi
         [TestCase(MockKillcamReplaySource.Case.Slow, KillcamUnavailableReason.Timeout)]
         [TestCase(MockKillcamReplaySource.Case.WrongMatch, KillcamUnavailableReason.WrongMatch)]
         [TestCase(MockKillcamReplaySource.Case.WrongPlayer, KillcamUnavailableReason.WrongPlayer)]
+        [TestCase(MockKillcamReplaySource.Case.WrongWindow, KillcamUnavailableReason.WrongWindow)]
         public void Fallback(MockKillcamReplaySource.Case mode, KillcamUnavailableReason expected)
         {
             Build(enabled: true, mode);
@@ -154,22 +169,73 @@ namespace JungleMaze.Tests.MatchUi
             Assert.AreEqual("Killcam không khả dụng: không rõ kẻ hạ", _flow.Notice);
         }
 
-        // AC36
+        // AC36: the source ignores Cancel and has its full clip ready at 1.5 s; the session must still drop it.
         [Test]
         public void LateDataDropped_AfterTimeoutOrPhaseChange()
         {
-            Build(enabled: true, MockKillcamReplaySource.Case.Slow);
+            Build(enabled: true);
+            var stubborn = new StubbornLateSource(_clock.Read, 1.5);
+            _killcam.SetSource(stubborn);
             Eliminate();
+            Assert.AreEqual(MatchOverlayPhase.Killcam, _flow.Phase, "waiting for data");
             RunUntilEliminated();
             Assert.AreEqual(KillcamUnavailableReason.Timeout, _killcam.Reason);
-            Assert.GreaterOrEqual(_replay.CancelCount, 1);
+            Assert.AreEqual(1, stubborn.Releases, "the session released the source when it gave up");
+            var takesAtTimeout = stubborn.Takes;
+
             Frames(60);
-            Assert.IsFalse(_replay.TryTake(out _, out _), "the late answer was cancelled at the source");
+            Assert.IsTrue(stubborn.HasLateAnswer, "the late clip exists and would be handed out");
             Assert.AreEqual(MatchOverlayPhase.Eliminated, _flow.Phase, "never pulled back into the killcam");
+            Assert.IsNull(_killcam.Clip);
+            Assert.AreEqual(takesAtTimeout, stubborn.Takes, "nobody asks for an answer after the timeout");
+
             _flow.Spectate();
             Frames(60);
-            Assert.AreEqual(MatchOverlayPhase.Spectating, _flow.Phase);
-            Assert.AreEqual(1, _replay.RequestCount);
+            Assert.AreEqual(MatchOverlayPhase.Spectating, _flow.Phase, "still spectating 2 s after the late answer");
+            Assert.IsNull(_killcam.Clip);
+            Assert.AreEqual(1, stubborn.Requests);
+            Assert.AreEqual(takesAtTimeout, stubborn.Takes);
+        }
+
+        /// <summary>Ignores <see cref="Cancel"/> and answers with a valid full clip once <paramref name="delay"/> has passed.</summary>
+        private sealed class StubbornLateSource : IKillcamReplaySource
+        {
+            private readonly Func<double> _clock;
+            private readonly double _delay;
+            private readonly KillcamClip _clip = new KillcamClip(150);
+            private double _requestedAt = double.MaxValue;
+            public int Requests, Takes, Releases;
+
+            public StubbornLateSource(Func<double> clock, double delay)
+            {
+                _clock = clock;
+                _delay = delay;
+            }
+
+            public bool HasLateAnswer => _clock() - _requestedAt >= _delay;
+
+            public void Request(in KillcamRequest request)
+            {
+                Requests++;
+                _requestedAt = _clock();
+                _clip.MatchId = request.MatchId;
+                _clip.VictimNetId = request.VictimNetId;
+                _clip.KillerNetId = request.KillerNetId;
+                _clip.EndTick = request.EliminationTick;
+                _clip.FrameCount = request.FrameCount;
+                for (var f = 0; f < request.FrameCount; f++) _clip.Set(f, request.KillerNetId, f * 0.1f, 0f, 50);
+            }
+
+            public bool TryTake(out KillcamClip clip, out KillcamUnavailableReason reason)
+            {
+                Takes++;
+                reason = KillcamUnavailableReason.None;
+                clip = HasLateAnswer ? _clip : null;
+                return clip != null;
+            }
+
+            public void Cancel() { }
+            public void Release() => Releases++;
         }
 
         // AC37
@@ -246,6 +312,7 @@ namespace JungleMaze.Tests.MatchUi
                 _pending = true;
                 _clip.MatchId = request.MatchId;
                 _clip.VictimNetId = request.VictimNetId;
+                _clip.EndTick = request.EliminationTick;
                 for (var f = 0; f < _clip.FrameCount; f++) _clip.Set(f, request.KillerNetId, f, 0f, 50);
             }
             public bool TryTake(out KillcamClip clip, out KillcamUnavailableReason reason)

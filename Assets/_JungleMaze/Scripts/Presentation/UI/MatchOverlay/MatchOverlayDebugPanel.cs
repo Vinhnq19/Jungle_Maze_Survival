@@ -8,12 +8,12 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
 {
     /// <summary>
     /// Dev-only UI-03 panel, toggled with F7 (F3–F6 are taken). Thin IMGUI over <see cref="MatchOverlayScenarios"/>:
-    /// mock or live sources, match preview, the five elimination causes, killcam on/off and the six replay cases,
+    /// mock or live sources, match preview, the five elimination causes, killcam on/off and the seven replay cases,
     /// spectator count, "watched player out" and "match ended". Not compiled into Release builds.
     /// </summary>
     public sealed class MatchOverlayDebugPanel : MonoBehaviour
     {
-        private static readonly string[] Cases = { "Full", "None", "Short", "Slow", "WrongMatch", "WrongPlayer" };
+        private static readonly string[] Cases = { "Full", "None", "Short", "Slow", "WrongMatch", "WrongPlayer", "WrongWindow" };
 
         private MatchOverlayScenarios _scenarios;
         private bool _visible, _killcam;

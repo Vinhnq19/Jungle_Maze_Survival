@@ -4,7 +4,9 @@ using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.MatchUi;
 using JungleMaze.App.MatchUi.Mocks;
 using JungleMaze.App.Flow;
+using JungleMaze.App.Ports;
 using JungleMaze.Domain.MatchUi;
+using JungleMaze.Domain.Player;
 using NUnit.Framework;
 
 namespace JungleMaze.Tests.MatchUi
@@ -178,7 +180,7 @@ namespace JungleMaze.Tests.MatchUi
         }
 
         [Test]
-        public void MatchEnded_FromEventOrPhase()
+        public void MatchEnded_FromEvent()
         {
             using (var h = new LiveMatchHarness())
             {
@@ -192,13 +194,98 @@ namespace JungleMaze.Tests.MatchUi
                 source.Dispose();
             }
         }
+
+        [Test]
+        public void MatchEnded_FromEndingPhase()
+        {
+            using (var h = new LiveMatchHarness())
+            {
+                var source = new MatchSessionSpectatorSource(h.Match, h.Network, null, 100);
+                source.Initialize();
+                h.Start(ownNetId: 0, count: 3);
+                source.Tick(0.016f);
+                h.Network.Push(new MatchPhasePacket { MatchId = h.MatchId, Phase = MatchPhase.Ending, ServerTick = h.Tick, MaxPlayers = 10, MinPlayers = 1 });
+                Assert.IsFalse(source.MatchEnded, "seen on the next tick");
+                source.Tick(0.016f);
+                Assert.IsTrue(source.MatchEnded);
+                source.Dispose();
+            }
+        }
+
+        [Test]
+        public void MatchEnded_FromResult()
+        {
+            using (var h = new LiveMatchHarness())
+            {
+                var source = new MatchSessionSpectatorSource(h.Match, h.Network, null, 100);
+                source.Initialize();
+                h.Start(ownNetId: 0, count: 3);
+                source.Tick(0.016f);
+                h.Network.Push(new MatchResultPacket { MatchId = h.MatchId, Participants = new MatchParticipantState[0] });
+                source.Tick(0.016f);
+                Assert.IsTrue(source.MatchEnded);
+                source.Dispose();
+            }
+        }
+
+        [Test]
+        public void TryGetPosition_UsesTheInterpolatedPose()
+        {
+            using (var h = new LiveMatchHarness())
+            {
+                var source = new MatchSessionSpectatorSource(h.Match, h.Network, new Poses(), 100);
+                Assert.IsTrue(source.TryGetPosition(2, out var x, out var y));
+                Assert.AreEqual(12.5f, x);
+                Assert.AreEqual(7.25f, y);
+                Assert.IsFalse(source.TryGetPosition(4, out _, out _));
+            }
+        }
+
+        // Gợi ý 1: a new match starts clean, not with "everybody from the old match was eliminated".
+        [Test]
+        public void NewMatch_DoesNotReportOldPlayersAsEliminated()
+        {
+            using (var h = new LiveMatchHarness())
+            {
+                var source = new MatchSessionSpectatorSource(h.Match, h.Network, null, 100);
+                source.Initialize();
+                h.Start(ownNetId: 0, count: 4);
+                source.Tick(0.016f);
+                Assert.AreEqual(3, source.AliveCount);
+                var gone = new List<byte>();
+                source.PlayerEliminated += gone.Add;
+                h.Network.Push(new MatchPhasePacket { MatchId = Guid.NewGuid(), Phase = MatchPhase.Lobby, ServerTick = 1, MaxPlayers = 10, MinPlayers = 1 });
+                source.Tick(0.016f);
+                Assert.AreEqual(0, source.AliveCount);
+                CollectionAssert.IsEmpty(gone);
+                source.Dispose();
+            }
+        }
+
+        private sealed class Poses : IPlayerPoseSource
+        {
+            public bool TryGetPose(byte netId, out PlayerPose pose)
+            {
+                pose = new PlayerPose { X = 12.5f, Y = 7.25f };
+                return netId == 2;
+            }
+        }
+
+        // Gợi ý 4: the killcam clip runs at the server tick rate.
+        [Test]
+        public void KillcamFramesPerSecond_IsTheProtocolTickRate() =>
+            Assert.AreEqual(GameplayProtocol.TickRate, KillcamClip.FramesPerSecond);
     }
 
-    /// <summary>AC30: watching never sends gameplay packets; only the leave request leaves UI-03.</summary>
+    /// <summary>
+    /// AC30, measured on the real sender: the live <c>MatchSession.Tick</c> sends input while we are alive (control),
+    /// and nothing while we are out and spectating, even if a move/attack intent is left behind and targets change.
+    /// The leave request is an event; only the bridge (composition root) sends PlayerLeave.
+    /// </summary>
     public sealed class SpectatorNoGameplayPacketsTests
     {
         [Test]
-        public void SourcesTicking_SendNothing()
+        public void WhileSpectating_MatchTickSendsNothing_LeaveIsAnEvent()
         {
             using (var h = new LiveMatchHarness())
             {
@@ -206,23 +293,47 @@ namespace JungleMaze.Tests.MatchUi
                 var elimination = new MatchSessionEliminationSource(h.Match, h.Network);
                 spectator.Initialize();
                 elimination.Initialize();
-                h.Start(ownNetId: 0, count: 4);
-                h.Entity(0, MatchEntityEvent.Eliminated);
-                var sentBefore = h.Network.Sent;
-                var leaves = new Recorder<LeaveMatchRequested>();
-                h.Bus.Subscribe(leaves.Handler);
+                var flow = new MatchOverlayFlow(h.Bus, () => 0d, elimination, spectator, AppScreen.InMatch);
                 var menu = new MatchMenuController(h.Bus, () => 0d, () => h.MatchId, AppScreen.InMatch);
+                h.Start(ownNetId: 0, count: 4);
+                var moving = new PlayerIntent { MoveX = 1f, MoveY = 0f, Attack = true };
+
+                // Control: alive, the same loop sends input packets.
+                h.Match.SetIntent(moving);
+                var aliveBefore = h.Network.Sent;
+                for (var i = 0; i < 30; i++) h.Match.Tick(1f / 60f);
+                Assert.Greater(h.Network.Sent, aliveBefore, "control: the sender is observed");
+
+                h.Snapshot(new byte[] { 1, 2, 3 }, new byte[] { 0 });
+                h.Entity(0, MatchEntityEvent.Eliminated);
+                spectator.Tick(1f / 60f);
+                elimination.Tick(1f / 60f);
+                Assert.AreEqual(MatchOverlayPhase.Eliminated, flow.Phase);
+                Assert.IsTrue(flow.Spectate());
+
+                var sentBefore = h.Network.Sent;
+                var inputsBefore = h.Match.InputsSent;
+                h.Match.SetIntent(moving);
                 for (var i = 0; i < 300; i++)
                 {
+                    if (i % 30 == 0) flow.Targets.Next();
+                    h.Match.Tick(1f / 60f);
                     spectator.Tick(1f / 60f);
                     elimination.Tick(1f / 60f);
+                    flow.Tick(1f / 60f);
                     menu.Tick(1f / 60f);
                 }
-                Assert.AreEqual(sentBefore, h.Network.Sent, "no packet while watching");
+                Assert.AreEqual(MatchOverlayPhase.Spectating, flow.Phase);
+                Assert.AreEqual(sentBefore, h.Network.Sent, "no packet while spectating");
+                Assert.AreEqual(inputsBefore, h.Match.InputsSent);
+
+                var leaves = new Recorder<LeaveMatchRequested>();
+                h.Bus.Subscribe(leaves.Handler);
                 menu.LeaveWithoutConfirm(LeaveMatchSource.Spectator);
-                Assert.AreEqual(sentBefore, h.Network.Sent, "the leave request is an event; the bridge sends PlayerLeave");
                 Assert.AreEqual(1, leaves.Count);
+                Assert.AreEqual(sentBefore, h.Network.Sent, "the leave request is an event; the bridge sends PlayerLeave");
                 menu.Dispose();
+                flow.Dispose();
                 spectator.Dispose();
                 elimination.Dispose();
             }

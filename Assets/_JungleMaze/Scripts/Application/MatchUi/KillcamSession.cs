@@ -5,8 +5,9 @@ namespace JungleMaze.App.MatchUi
 {
     /// <summary>
     /// One killcam from request to end. Checks in the order of the plan (AC31, AC35): disabled (no request at all) →
-    /// no killer → wait over <see cref="KillcamOptions.WaitSeconds"/> → no data → other match → other victim → fewer
-    /// frames than the duration. Playback runs on the unscaled clock, not on frame count, so a hitch does not stretch
+    /// no killer → wait over <see cref="KillcamOptions.WaitSeconds"/> → no data → other match → other victim → window not
+    /// ending at our elimination tick → fewer frames than the duration. The killer drawn is the one of the request
+    /// (the server's elimination data), never one named by the clip. Playback runs on the unscaled clock, not on frame count, so a hitch does not stretch
     /// it (AC32). Data that arrives after the wait or after the killcam ended is dropped and the source released
     /// (AC36). Only the last <c>duration × 30</c> frames of a clip are ever shown (AC41).
     /// Draws nothing and computes no damage or death: it only says which frame to show (AC38).
@@ -109,6 +110,7 @@ namespace JungleMaze.App.MatchUi
                 case KillcamUnavailableReason.NoData: return "máy chủ chưa có dữ liệu";
                 case KillcamUnavailableReason.WrongMatch: return "dữ liệu không thuộc trận này";
                 case KillcamUnavailableReason.WrongPlayer: return "dữ liệu không phải của bạn";
+                case KillcamUnavailableReason.WrongWindow: return "dữ liệu không đúng lúc bạn bị loại";
                 case KillcamUnavailableReason.TooShort: return "dữ liệu chưa đủ " + Math.Round(durationSeconds, 1) + " giây";
                 case KillcamUnavailableReason.MatchEnded: return "trận đã kết thúc";
                 default: return null;
@@ -134,6 +136,8 @@ namespace JungleMaze.App.MatchUi
             if (clip == null) { Fail(reason == KillcamUnavailableReason.None ? KillcamUnavailableReason.NoData : reason, true); return; }
             if (clip.MatchId != _request.MatchId) { Fail(KillcamUnavailableReason.WrongMatch, true); return; }
             if (clip.VictimNetId != _request.VictimNetId) { Fail(KillcamUnavailableReason.WrongPlayer, true); return; }
+            // AC41: the window ends at this player's elimination tick; anything else is someone else's moment.
+            if (clip.EndTick != _request.EliminationTick) { Fail(KillcamUnavailableReason.WrongWindow, true); return; }
             if (clip.FrameCount < _request.FrameCount) { Fail(KillcamUnavailableReason.TooShort, true); return; }
             Clip = clip;
             _frameOffset = clip.FrameCount - _request.FrameCount;

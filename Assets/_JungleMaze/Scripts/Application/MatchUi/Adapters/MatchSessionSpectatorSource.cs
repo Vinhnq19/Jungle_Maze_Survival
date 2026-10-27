@@ -104,6 +104,8 @@ namespace JungleMaze.App.MatchUi
             if (_start.Update(_match))
             {
                 _gone = 0;
+                _aliveMask = 0;
+                _hpSignature = 0;
                 _endSignal = false;
                 MatchEnded = false;
             }
