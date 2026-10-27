@@ -1,0 +1,17 @@
+Bản ghi trang nguồn (dạng chữ, không phải ảnh chụp)
+
+URL: https://opengameart.org/content/cc0-deep-monster-roar
+Đọc ngày: 2026-10-27, do Claude (Unity Dev, ART-05) đọc bằng công cụ tải trang.
+
+Nội dung trang tại thời điểm đọc:
+- Tiêu đề: "CC0 Deep Monster Roar | OpenGameArt.org"
+- Tác giả: trazzz123
+- Ngày đăng: Wednesday, January 20, 2021 - 21:18
+- License(s): CC0
+- File(s): monster_roar.wav (1.3 Mb)
+
+Bản tải về trong repo: Tools/Audio/Sources/ART-05/monster_roar.wav
+Kích thước: 1273958 B; md5: 85ade68ada386cb0124185c77757a688
+Clip dẫn xuất: Assets/_JungleMaze/Art/Audio/Sfx/dragon_roar.wav (DragonRoar)
+
+Giới hạn: đây là bản chép lại nội dung trang, không phải ảnh chụp hay PDF. File WAV không kèm license.

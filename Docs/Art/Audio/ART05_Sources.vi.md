@@ -1,35 +1,37 @@
-# Nguồn âm thanh SFX (ART-05)
+# Nguồn âm thanh tải về (ART-05)
 
-Tất cả file trong `Assets/_JungleMaze/Art/Audio/Sfx/` là **CC0 1.0** (public domain), dùng thương mại được, không bắt buộc ghi công.
-Đã cắt khoảng lặng, chuyển mono 44,1 kHz, chuẩn hóa RMS (bước chân -24, mặc định -20…-15 dBFS), đỉnh ≤ -1 dBFS.
-Importer để `normalize: 0` để giữ mức đã chuẩn hóa.
+Bảng này liệt kê mọi clip trong `Assets/_JungleMaze/Art/Audio/Sfx/` lấy từ thư viện ngoài. Mỗi clip có đúng một dòng ở đây và một dòng `clip` trong `Docs/Tickets/ART-05_audio_manifest.csv` (AC41). Bản gốc nguyên vẹn nằm ở `Tools/Audio/Sources/ART-05/`; cách xử lý và điểm cắt nằm trong `Tools/Audio/art05_recipe.csv`, chạy lại bằng `Tools/Audio/process_clips.py`.
 
-| SfxId | File | Nguồn gốc | Dài (s) | RMS dBFS |
-| --- | --- | --- | --- | --- |
-| FootstepGrass | `footstep_grass_0.wav` | [Kenney Impact Sounds: footstep_grass_000.ogg](https://kenney.nl/assets/impact-sounds) | 0.125 | -24.0 |
-| FootstepGrass | `footstep_grass_1.wav` | [Kenney Impact Sounds: footstep_grass_001.ogg](https://kenney.nl/assets/impact-sounds) | 0.136 | -24.0 |
-| FootstepGrass | `footstep_grass_2.wav` | [Kenney Impact Sounds: footstep_grass_002.ogg](https://kenney.nl/assets/impact-sounds) | 0.14 | -24.0 |
-| FootstepGrass | `footstep_grass_3.wav` | [Kenney Impact Sounds: footstep_grass_003.ogg](https://kenney.nl/assets/impact-sounds) | 0.116 | -24.0 |
-| FootstepGrass | `footstep_grass_4.wav` | [Kenney Impact Sounds: footstep_grass_004.ogg](https://kenney.nl/assets/impact-sounds) | 0.106 | -24.0 |
-| FootstepSwamp | `footstep_swamp_0.wav` | [Kenney Impact Sounds: impactSoft_medium_000.ogg](https://kenney.nl/assets/impact-sounds) | 0.118 | -24.0 |
-| FootstepSwamp | `footstep_swamp_1.wav` | [Kenney Impact Sounds: impactSoft_medium_001.ogg](https://kenney.nl/assets/impact-sounds) | 0.183 | -24.0 |
-| FootstepSwamp | `footstep_swamp_2.wav` | [Kenney Impact Sounds: impactSoft_medium_002.ogg](https://kenney.nl/assets/impact-sounds) | 0.135 | -24.0 |
-| FootstepSwamp | `footstep_swamp_3.wav` | [Kenney Impact Sounds: impactSoft_medium_003.ogg](https://kenney.nl/assets/impact-sounds) | 0.14 | -24.0 |
-| FootstepSwamp | `footstep_swamp_4.wav` | [Kenney Impact Sounds: impactSoft_medium_004.ogg](https://kenney.nl/assets/impact-sounds) | 0.147 | -24.0 |
-| BushEnter | `bush_enter_0.wav` | [Kenney RPG Audio: cloth1.ogg](https://kenney.nl/assets/rpg-audio) | 0.548 | -22.8 |
-| BushEnter | `bush_enter_1.wav` | [Kenney RPG Audio: cloth3.ogg](https://kenney.nl/assets/rpg-audio) | 0.472 | -22.0 |
-| ShootCrossbow | `shoot_crossbow.wav` | [Kenney Interface Sounds: pluck_001.ogg](https://kenney.nl/assets/interface-sounds) | 0.082 | -21.0 |
-| Throw | `throw.wav` | [Kenney RPG Audio: drawKnife2.ogg](https://kenney.nl/assets/rpg-audio) | 0.353 | -20.0 |
-| Reload | `reload.wav` | [Kenney RPG Audio: metalLatch.ogg](https://kenney.nl/assets/rpg-audio) | 0.177 | -21.3 |
-| EmptyClick | `empty_click.wav` | [Kenney RPG Audio: metalClick.ogg](https://kenney.nl/assets/rpg-audio) | 0.358 | -26.7 |
-| TrapTriggered | `trap_triggered.wav` | [Kenney Impact Sounds: impactMetal_heavy_000.ogg](https://kenney.nl/assets/impact-sounds) | 0.168 | -20.6 |
-| HitMarker | `hit_marker.wav` | [Kenney Interface Sounds: glass_005.ogg](https://kenney.nl/assets/interface-sounds) | 0.064 | -17.5 |
-| ArmorAbsorb | `armor_absorb_0.wav` | [Kenney Impact Sounds: impactPlate_medium_000.ogg](https://kenney.nl/assets/impact-sounds) | 0.502 | -24.4 |
-| ArmorAbsorb | `armor_absorb_1.wav` | [Kenney Impact Sounds: impactPlate_medium_001.ogg](https://kenney.nl/assets/impact-sounds) | 0.59 | -24.1 |
-| ArmorAbsorb | `armor_absorb_2.wav` | [Kenney Impact Sounds: impactPlate_medium_002.ogg](https://kenney.nl/assets/impact-sounds) | 0.491 | -23.9 |
-| Eliminated | `eliminated.wav` | [Kenney Interface Sounds: minimize_006.ogg](https://kenney.nl/assets/interface-sounds) | 0.369 | -16.0 |
-| UseCancel | `use_cancel.wav` | [Kenney Interface Sounds: back_002.ogg](https://kenney.nl/assets/interface-sounds) | 0.059 | -20.0 |
-| ZoneBell3 | `zone_bell.wav` | [Kenney Impact Sounds: impactBell_heavy_000.ogg](https://kenney.nl/assets/impact-sounds) | 0.75 | -23.2 |
-| DragonRoar | `dragon_roar.wav` | [OpenGameArt "CC0 deep monster roar" by trazzz123: monster_roar.wav](https://opengameart.org/content/cc0-deep-monster-roar) | 3.0 | -15.0 |
+Giấy phép ghi theo G-11: chỉ ghi `có bằng chứng: <đường dẫn>` khi tệp bằng chứng nằm trong `Docs/Licenses/Audio/`. Ba gói Kenney có `License.txt` đi kèm zip, chép nguyên văn ra `Docs/Licenses/Audio/`. Clip rồng chỉ có bản ghi chữ nội dung trang OpenGameArt (đọc ngày 27/10/2026), không có ảnh chụp.
 
-Giấy phép gốc: `LICENSE_Kenney_CC0.txt` (Kenney Impact/Interface/RPG Audio). Tiếng rồng: trang OpenGameArt ghi CC0 1.0.
+Xử lý chung: trộn mono, 44,1 kHz (đổi tần số bằng sinc nếu nguồn khác), cắt từ tiếng đầu, 2 ms im lặng + fade-in 3 ms, fade-out cosine rồi 2 ms im lặng, đưa mức hoạt động L về đích qua limiter trần −1,05 dBFS. Cột "Cắt" là giây trong file gốc; "Độ lợi" là độ lợi trước limiter; "Giảm" là mức limiter giảm lớn nhất.
+
+| SfxId | File | Nguồn gốc | Tác giả | Ngày tải | Cắt (s) | Độ lợi (dB) | Giảm (dB) | L sau (dBFS) | Dài (s) | Giấy phép |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| FootstepGrass | `footstep_grass_0.wav` | [kenney_impact-sounds.zip: footstep_grass_000.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.158 | +4.7 | 0.00 | -24.00 | 0.162 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepGrass | `footstep_grass_1.wav` | [kenney_impact-sounds.zip: footstep_grass_001.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.146 | +1.6 | 0.00 | -24.00 | 0.150 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepGrass | `footstep_grass_2.wav` | [kenney_impact-sounds.zip: footstep_grass_002.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.151 | +2.8 | 0.00 | -24.00 | 0.155 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepGrass | `footstep_grass_3.wav` | [kenney_impact-sounds.zip: footstep_grass_003.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.134 | +4.8 | 0.00 | -24.00 | 0.138 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepGrass | `footstep_grass_4.wav` | [kenney_impact-sounds.zip: footstep_grass_004.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.119 | +3.4 | 0.00 | -24.00 | 0.123 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepSwamp | `footstep_swamp_0.wav` | [kenney_impact-sounds.zip: impactSoft_medium_000.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.118 | -9.9 | 0.00 | -24.00 | 0.122 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepSwamp | `footstep_swamp_1.wav` | [kenney_impact-sounds.zip: impactSoft_medium_001.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.183 | -9.2 | 0.00 | -24.00 | 0.187 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepSwamp | `footstep_swamp_2.wav` | [kenney_impact-sounds.zip: impactSoft_medium_002.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.135 | -10.0 | 0.00 | -24.00 | 0.139 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepSwamp | `footstep_swamp_3.wav` | [kenney_impact-sounds.zip: impactSoft_medium_003.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.140 | -9.8 | 0.00 | -24.00 | 0.144 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| FootstepSwamp | `footstep_swamp_4.wav` | [kenney_impact-sounds.zip: impactSoft_medium_004.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.147 | -9.7 | 0.00 | -24.00 | 0.151 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| BushEnter | `bush_enter_0.wav` | [kenney_rpg-audio.zip: cloth1.ogg](https://kenney.nl/assets/rpg-audio) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.033–0.583 | +9.0 | 6.00 | -18.43 | 0.554 | có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt |
+| BushEnter | `bush_enter_1.wav` | [kenney_rpg-audio.zip: cloth3.ogg](https://kenney.nl/assets/rpg-audio) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.012–0.477 | +12.9 | 2.25 | -18.00 | 0.468 | có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt |
+| ShootCrossbow | `shoot_crossbow.wav` | [kenney_rpg-audio.zip: chop.ogg](https://kenney.nl/assets/rpg-audio) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.016–0.240 | +5.1 | 6.00 | -18.56 | 0.228 | có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt |
+| Throw | `throw.wav` | [kenney_rpg-audio.zip: drawKnife2.ogg](https://kenney.nl/assets/rpg-audio) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.433 | +23.2 | 0.00 | -18.00 | 0.437 | có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt |
+| Reload | `reload.wav` | [kenney_rpg-audio.zip: metalLatch.ogg](https://kenney.nl/assets/rpg-audio) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.012–0.232 | +13.7 | 15.30 | -19.49 | 0.224 | có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt |
+| EmptyClick | `empty_click.wav` | [kenney_rpg-audio.zip: metalClick.ogg](https://kenney.nl/assets/rpg-audio) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.120 | +21.3 | 14.01 | -19.51 | 0.124 | có bằng chứng: Docs/Licenses/Audio/Kenney_RPGAudio_License.txt |
+| TrapTriggered | `trap_triggered.wav` | [kenney_impact-sounds.zip: impactMetal_heavy_000.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.168 | +13.7 | 12.72 | -19.49 | 0.172 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| HitMarker | `hit_marker.wav` | [kenney_interface-sounds.zip: glass_005.ogg](https://kenney.nl/assets/interface-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.070 | +10.2 | 8.00 | -16.52 | 0.074 | có bằng chứng: Docs/Licenses/Audio/Kenney_InterfaceSounds_License.txt |
+| ArmorAbsorb | `armor_absorb_0.wav` | [kenney_impact-sounds.zip: impactPlate_medium_000.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.370 | +8.8 | 6.26 | -19.00 | 0.374 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| ArmorAbsorb | `armor_absorb_1.wav` | [kenney_impact-sounds.zip: impactPlate_medium_001.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.370 | +10.3 | 10.30 | -19.00 | 0.374 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| ArmorAbsorb | `armor_absorb_2.wav` | [kenney_impact-sounds.zip: impactPlate_medium_002.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.370 | +6.5 | 3.74 | -19.01 | 0.374 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| Eliminated | `eliminated.wav` | [kenney_interface-sounds.zip: minimize_006.ogg](https://kenney.nl/assets/interface-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.013–0.380 | -4.0 | 0.00 | -18.00 | 0.371 | có bằng chứng: Docs/Licenses/Audio/Kenney_InterfaceSounds_License.txt |
+| UseCancel | `use_cancel.wav` | [kenney_interface-sounds.zip: close_001.ogg](https://kenney.nl/assets/interface-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.148 | -3.1 | 0.00 | -18.00 | 0.152 | có bằng chứng: Docs/Licenses/Audio/Kenney_InterfaceSounds_License.txt |
+| ZoneBell3 | `zone_bell.wav` | [kenney_impact-sounds.zip: impactBell_heavy_002.ogg](https://kenney.nl/assets/impact-sounds) | Kenney Vleugels (Kenney.nl) | 2026-10-27 | 0.000–0.677 | +10.3 | 6.00 | -17.47 | 0.681 | có bằng chứng: Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt |
+| DragonRoar | `dragon_roar.wav` | [monster_roar.wav: monster_roar.wav](https://opengameart.org/content/cc0-deep-monster-roar) | trazzz123 | 2026-10-27 | 0.120–3.120 | -1.7 | 0.00 | -16.00 | 3.004 | có bằng chứng: Docs/Licenses/Audio/OpenGameArt_cc0-deep-monster-roar.txt |
+
+Tổng: 25 clip tải về. 18 file còn lại trong `Sfx/` và `Music/` dẫn xuất từ JSurviv, giấy phép `chưa kiểm chứng`; xem dòng `clip` và `jsurviv` của manifest.
