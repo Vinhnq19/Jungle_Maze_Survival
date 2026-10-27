@@ -2,6 +2,8 @@
 using System;
 using System.Globalization;
 using System.IO;
+using GameServer.Rooms;
+using GameServer.Simulation;
 
 namespace JungleMaze.Telemetry.Server;
 
@@ -86,6 +88,27 @@ public sealed class TelemetryHost : IDisposable
 
     private static int ParseInt(string? value, int fallback) =>
         int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var v) ? v : fallback;
+
+    /// <summary>Phòng không phải mặc định, trống và im lặng quá khoảng này thì gỡ observer (phòng đã hết hạn hoặc bị xóa).</summary>
+    public TimeSpan StaleRoomAfter { get; set; } = TimeSpan.FromMinutes(15);
+
+    /// <summary>H1: gắn telemetry vào một phòng. Host tắt thì không làm gì và trả null.</summary>
+    public MatchTelemetryObserver? Attach(RoomManager.Room room)
+    {
+        var probe = room.IsDefault ? null : new RoomStaleProbe(() => room.Peers.Count == 0, StaleRoomAfter);
+        return Attach(room.Match, probe);
+    }
+
+    /// <summary>Gắn vào một MatchRuntime (test, harness). probe = null: không bao giờ tự gỡ.</summary>
+    public MatchTelemetryObserver? Attach(MatchRuntime match, RoomStaleProbe? probe = null, TelemetryRing? ring = null)
+    {
+        if (Writer is not { Enabled: true } writer) return null;
+        var observer = new MatchTelemetryObserver(match, writer, ring);
+        writer.Register(new MatchTelemetryAssembler(observer, writer, Options.SampleHz, probe));
+        observer.Subscribe();
+        if ((object)match is ITelemetryAware aware) aware.Telemetry = observer; // H7-prep: chỉ khi Vinh thêm interface
+        return observer;
+    }
 
     /// <summary>Flush tối đa 3 s và ghi _trailer cho mọi file đang mở. Gọi lại là no-op.</summary>
     public void Dispose()

@@ -117,6 +117,14 @@ public sealed class JsonlTelemetryWriter : IDisposable
         }
     }
 
+    public void Unregister(ITelemetryPump pump)
+    {
+        lock (_pumpGate)
+        {
+            _pumps = Array.FindAll(_pumps, p => !ReferenceEquals(p, pump));
+        }
+    }
+
     public void Start()
     {
         if (_thread != null) return;
