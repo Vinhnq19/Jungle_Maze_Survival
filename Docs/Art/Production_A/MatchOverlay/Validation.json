@@ -1,0 +1,513 @@
+{
+  "passed": true,
+  "files": 19,
+  "validator_tests": 8,
+  "validator_tests_passed": true,
+  "reuse_unchanged": true,
+  "assets": [
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/SliderHandle.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        44,
+        44
+      ],
+      "color_count": 1,
+      "sha256": "3d2a254cd3865382a44f9a4f6d3d8814d4f858556497d2bc92d7c4ae30a38d39"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ToggleBox.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        44,
+        44
+      ],
+      "color_count": 1,
+      "sha256": "7626edf4123bc14add736af5acb22b06efd9e42e3693444c30566733eec0c330"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ToggleCheck.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        5,
+        29,
+        26
+      ],
+      "color_count": 1,
+      "sha256": "a853973eda03a314bdc7451ecca4862f6d4a6e423383725f58f42767313f9bb4"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ZoneRing.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        252,
+        252
+      ],
+      "color_count": 1,
+      "sha256": "8e1e3afce318e98d9da4f5a946691a49f9e3dbfaa6ccf68a8e8db2874f03a74b"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/KillcamGrid.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        0,
+        0,
+        48,
+        48
+      ],
+      "color_count": 1,
+      "sha256": "cd928bbc055bd4c6fe11fd278b0a6bcd1926c65e0bdf9db19a6c9b2b074c0f7a"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/PlayerDot.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        5,
+        5,
+        27,
+        27
+      ],
+      "color_count": 1,
+      "sha256": "e18a315fb25c58d8eda49d7c00699a97b2c16a0d79b3143af4964780e47fdec9"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/PlayerDotOutline.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        28,
+        28
+      ],
+      "color_count": 1,
+      "sha256": "4e3046d07700a1bfdbb9063dc70510366107e0478deed25040b7db1a1ac6d07c"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/KillerMark.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "mask_geometry": true
+      },
+      "passed": true,
+      "bbox": [
+        1,
+        1,
+        31,
+        31
+      ],
+      "color_count": 1,
+      "sha256": "3c9a06e37969aab6fccd85ca9969fa4a9011f0b7e1f74455cc261c1cb30fe058"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CausePlayer.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "color_count": 6,
+      "sha256": "26669a4be4134cec904f2f667684b91c1d23d83f2308268692effbbd34e9669f"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseZone.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "color_count": 5,
+      "sha256": "8390f821e83bd2746e343e4cde5db14ebe68d213cd447519a0f38e50a8d69b05"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseLeft.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        58,
+        60
+      ],
+      "color_count": 6,
+      "sha256": "9868d3675a56d13af5d58a18e07a2078be6da5e48304f3130ca9cd2069d92c1a"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseDisconnect.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        8,
+        6,
+        56,
+        58
+      ],
+      "color_count": 6,
+      "sha256": "2b3bf5106d85a32e86c0545364276048fa675457360a969a4a53824377a30a97"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseUnknown.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        8,
+        4,
+        54,
+        58
+      ],
+      "color_count": 4,
+      "sha256": "7f5015ee8938c490eb5b03b5f6a0450fc2857d58e3259ee3ea18fe381f033da6"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconVolume.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        6,
+        60,
+        58
+      ],
+      "color_count": 6,
+      "sha256": "992f616da4e8ac7c9c2973d5e812b0dd8a26f1520fa1014ec5316d77d035dbaf"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconMusic.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        6,
+        4,
+        58,
+        60
+      ],
+      "color_count": 5,
+      "sha256": "11e3f331cbf170cf28bbd80cfddd55ca1c3ba8774bd70e9ba1f37f74200470ce"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconMouse.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        10,
+        4,
+        54,
+        60
+      ],
+      "color_count": 7,
+      "sha256": "d0c588e9c8bd2882bef833d99d5f1e0198ea4512924c0b8bb6d95043bafb85cc"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconShake.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        60,
+        60
+      ],
+      "color_count": 6,
+      "sha256": "41d7502c17b63484b40acce3a9f4ee5e5d58900e8901f8faf000a33098f0f453"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconExit.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        4,
+        58,
+        60
+      ],
+      "color_count": 7,
+      "sha256": "35d5f1fb95068440c059731b191ff8ef6c5e47211d6901fe0f917f41a13709b3"
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconSpectate.png",
+      "checks": {
+        "size": true,
+        "rgba": true,
+        "binary_alpha": true,
+        "nonempty": true,
+        "palette": true,
+        "color_count": true,
+        "white_mask": true,
+        "padding": true,
+        "centering": true,
+        "native32_x2": true,
+        "content_52_to_56px": true,
+        "ink_outline_1px": true,
+        "mask_geometry": true,
+        "native_source_matches": true
+      },
+      "passed": true,
+      "bbox": [
+        4,
+        10,
+        60,
+        52
+      ],
+      "color_count": 5,
+      "sha256": "7be60615bc10311da2304d2f67c7f5bdef876e2f3bc22539ea4577781e6404a4"
+    }
+  ],
+  "exceptions": {
+    "KillcamGrid": "Top/left tile edges intentionally have zero padding and asymmetric coverage."
+  },
+  "unity": "Not run; import settings are handoff metadata, not verified importer state."
+}
