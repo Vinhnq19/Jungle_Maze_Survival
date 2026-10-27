@@ -1,0 +1,191 @@
+=== A ===
+S0 phase=Playing canvas=True menuOpen=False timeScale=1 screen=1280x720
+S0 vol M/S/Mu=1/1/1 musicEnabled=False sens=1 shake=True
+S0 prefs jm.settings.mouseSensitivity=False screenShake=False
+S1 PressEscape=True IsOpen=True blocks=True
+S1 OPEN_MS=121.1 frames=21 transforms before/after=165/165
+S2 10s open: timeScale min/max=1/1 fixedTime advanced=10.00 scaled time advanced=10.00 realtime=10.00 frames=2824 menuStillOpen=True
+S3 sens slider=20 -> settings.MouseSensitivity=2 label=2,0 changedEvents=1
+S3 sens slider=5 -> 0.5 label=0,5
+S3 shake off -> settings.ScreenShakeEnabled=False
+S3 master 0 -> GetVolume=0 label=0%
+S3 sfx .37 -> GetVolume=0.37 label=37%
+S3 music .55 -> GetVolume=0.55 label=55% offLabelActive=True
+S3 music toggle on -> audio.MusicEnabled=True offLabelActive=False
+S3 music toggle off -> audio.MusicEnabled=False offLabelActive=True
+S3 prefs right after drag: sens=False shake=False
+S3 prefs at 0.5s: sens=False
+S3 prefs at 1.3s: sens=2 shake=0
+S4 before close: staged prefs sens=2
+S4 right after close call prefs sens=1.3 (flush on close)
+S4 CLOSE_MS=120.1 frames=34
+S5 20 open/close pairs: max unscaledDeltaTime ms=4.6 transforms before/after=165/165 open=False
+DONE
+=== B ===
+B0 screen=MainMenu menuScreenInMatch=True phase=Playing connView disabled=True
+B1 after Leave click: confirmOpen=True events=0
+B1 confirm alpha=0.792715 text=Bạn sẽ bị loại khỏi trận. confirmBtn=Thoát stayBtn=Ở lại
+B1 after Stay: confirmOpen=False menuOpen=True leaveEvents=0 LeaveRequests=0
+B2 Leave then ESC: confirmOpen=False menuOpen=True (one ESC closes one layer)
+B2 ESC again: menuOpen=False
+B3 5 confirm clicks over 12.3 ms (5 frames): leaveEvents=1 LeaveRequests=1 locked=True Leave.interactable=False Resume.interactable=False screenEvents=0 screen=MainMenu
+B3 unlock after 4.99 s; retry notice active=True text='Chưa thoát được, thử lại' Leave.interactable=True leaveEvents=1 screen=MainMenu screenEvents=0
+B4 after Defaults: sens=1 shake=True M/S/Mu=1/1/1 musicEnabled=False rows: 1,0 100% 100% 100% sensSlider=10 shakeToggle=True musicToggle=False PlayerSettingsChanged events=2
+B4 menu closed=True
+B5 Boot:ESC=False/open=False MainMenu:ESC=False/open=False Connecting:ESC=False/open=False InRoom:ESC=False/open=False Results:ESC=False/open=False 
+B5 InMatch ESC open=True
+B5 screen leaves InMatch with menu open -> open=False
+DONE
+=== C ===
+C0 other player eliminated while local alive: phase=Playing eliminatedAlpha=0
+C1 Player visible after 120 ms; phase=Eliminated rank='#4 / 10' cause='Bị Hào hạ bằng Nỏ · cách 6 ô' kills='Hạ gục: 2' survival='Sống sót: 05:12' blocked=<hidden> spectateInteractable=True homeInteractable=True
+C2 Zone visible after 56 ms; phase=Eliminated rank='#7 / 10' cause='Bị bo thu hẹp loại' kills='Hạ gục: 0' survival='Sống sót: 07:01' blocked=<hidden> spectateInteractable=True homeInteractable=True
+C3 LeftMatch visible after 58 ms; phase=Eliminated rank='#9 / 10' cause='Bạn đã rời trận' kills='Hạ gục: 0' survival='Sống sót: 01:35' blocked=<hidden> spectateInteractable=True homeInteractable=True
+C4 Disconnected visible after 55 ms; phase=Eliminated rank='#8 / 10' cause='Mất kết nối quá lâu' kills='Hạ gục: 1' survival='Sống sót: 02:20' blocked=<hidden> spectateInteractable=True homeInteractable=True
+C5 Unknown visible after 55 ms; phase=Eliminated rank='#6 / 10' cause='Không rõ nguyên nhân' kills=<hidden> survival='Sống sót: 03:20' blocked=<hidden> spectateInteractable=True homeInteractable=True
+C6 Minimal visible after 53 ms; phase=Eliminated rank='#6 / 10' cause='Không rõ nguyên nhân' kills=<hidden> survival='Sống sót: 03:20' blocked=<hidden> spectateInteractable=True homeInteractable=True
+DONE
+=== D ===
+D0 camera=Main Camera ortho=True size=8 pos=(0.00, 0.00, -10.00) aspect=1.777778 hud=True
+D1 hud before spectating: vitals=True quickbar=True
+D1 after Spectate click (same call) phase=Spectating
+D1 spectator visible after 122 ms
+D1 rows active=9 selected=[1 ] watching='Vinh' alive='Còn sống 9/10' card='Vinh' cardWeapon=<hidden> cardHp=True killerBtn=True current=1
+D1 hud in spectating: vitals=False quickbar=False minimapActive=True
+D1 rows: 1:Vinh 2:Hào 3:Vũ 4:Lan 5:Minh 6:Thảo 7:Khoa 8:Ngọc 9:Tùng 
+D2 Next x11 (same-call name): 2:Hào 3:Vũ 4:Lan 5:Minh 6:Thảo 7:Khoa 8:Ngọc 9:Tùng 1:Vinh 2:Hào 3:Vũ 
+D2 Previous x3: 2:Hào 1:Vinh 9:Tùng 
+D2 click row index4 (netId 5) -> current=5 name=Minh selected=[5 ]
+D3 camera reached target (static) in 231 ms, residual=0.085 cells; camPos=(27.93, 19.95, -10.00)
+D3 static residual after 0.5 s = 0.0000
+D3 switch 2->6 camera on target (<=0.1) after 228 ms; residual=0.086
+D3 running target 4 cell/s: max |camera - target| after 0.8 s = 0.058 cells over 1026 frames; final cam=(30.00, 22.00, -10.00) x=30.0
+D3 target at (2,2) corner: cam=(10.67, 6.00, -10.00) view x[0.00,21.33] y[0.00,12.00] inside map 0..50 = True
+DONE
+=== E ===
+E1 watched=5 eliminated: same-call rows=8 aliveText=Còn sống 8/10 current(same call)=6
+E1 notice visible at 61 ms text='Minh đã bị loại'
+E1 notice hidden at 2114 ms
+E1 current after=6 (switched from 5) ; switch time reported above same-call
+E2 watching 4: killerBtn=True canJump=True
+E2 click killer -> current=2 name=Hào
+E2 killer(2) eliminated -> current=3 killerBtn interactable=False canJump=False notice='Hào đã bị loại'
+E3 last player eliminated -> phase=HandedOff after 4.2 ms (incl. frame), eliminations loop=7 frames showing empty list=0 canvasEnabled=True
+E3 later: phase=HandedOff canvasEnabled=True spectatorAlpha=0 eliminatedAlpha=0
+E4 EndMatch -> phase(same call)=HandedOff
+E4 still visible >1s phase=HandedOff
+E5 nobody alive: spectateInteractable=False blockedReason='Không còn người chơi nào để theo dõi' canSpectate=False
+E5 click Spectate -> phase=Eliminated
+  (LeaveMatchRequested source=EliminatedScreen)
+E5 Home click: leaveEvents=1 confirmOpen=False locked=True homeInteractable=False
+E5 Home x3 total leaveEvents=1
+DONE
+=== F ===
+F0 killcamEnabled=True mode=Full
+F1 eliminate call: phase=Killcam requests=1
+F1 phase Killcam entered at +8 ms after elimination; clip frames=150 request victim=0 killer=2 matchIdOk=True frameCount=150
+F1 @1.7s countdown='Killcam 3,3 s' title='Killcam · góc nhìn của Hào' dotsActive=2 killcamAlpha=1 skipBtn=True
+F1 @2.5s ESC during killcam -> menuOpen=True phase=Killcam
+F1 @3.0s ESC again -> menuOpen=False phase=Killcam
+F1 KILLCAM_DURATION=4.996 s (phase now Eliminated) countdown last='Killcam 0,1 s'
+F1 Eliminated visible 118 ms after killcam end; heldFrames=0 releaseCount=32
+F2 Skip click @1.0s -> phase(same call)=Eliminated requests=1
+F2 Eliminated visible 120 ms after skip
+F2 2 s after skip: phase=Eliminated requests=1 (no replay again)
+F3 None: killcamPhaseEntered=no Eliminated visible at 56 ms; notice='Killcam không khả dụng: máy chủ chưa có dữ liệu' shown 62–3115 ms; requests=1
+F3 Short: killcamPhaseEntered=no Eliminated visible at 78 ms; notice='Killcam không khả dụng: dữ liệu chưa đủ 5 giây' shown 62–3116 ms; requests=1
+F3 Slow: killcamPhaseEntered=4ms Eliminated visible at 1123 ms; notice='Killcam không khả dụng: chờ dữ liệu quá lâu' shown 1062–4117 ms; requests=1
+F3 Slow: 2 s after fallback (late data at 1.5 s): phase=Eliminated (late data dropped, not pulled back to Killcam) heldFrames=0
+F3 WrongMatch: killcamPhaseEntered=no Eliminated visible at 64 ms; notice='Killcam không khả dụng: dữ liệu không thuộc trận này' shown 61–3115 ms; requests=1
+F3 WrongPlayer: killcamPhaseEntered=no Eliminated visible at 67 ms; notice='Killcam không khả dụng: dữ liệu không phải của bạn' shown 60–3116 ms; requests=1
+F3 WrongWindow: killcamPhaseEntered=no Eliminated visible at 70 ms; notice='Killcam không khả dụng: dữ liệu không đúng lúc bạn bị loại' shown 63–3595 ms; requests=1
+F3 UnknownKiller(Zone): killcamPhaseEntered=no Eliminated visible at 117 ms; notice='Killcam không khả dụng: không rõ kẻ hạ' shown 61–3113 ms; requests=0
+F3 UnknownKiller(LeftMatch): killcamPhaseEntered=no Eliminated visible at 73 ms; notice='Killcam không khả dụng: không rõ kẻ hạ' shown 62–3114 ms; requests=0
+F4 Killcam disabled: Eliminated visible at 72 ms; killcamPhase=False requests=0 notice=False
+F5 before MatchEnded: phase=Killcam heldFrames=150
+F5 EndMatch during killcam -> phase(same call)=HandedOff heldFrames=0 killcamAlpha=1
+F5 30 frames later: phase=HandedOff killcamAlpha=0 dots=2 eliminatedAlpha=0
+DONE
+=== H ===
+H None #0: notice alpha>0.5 from 65 to 3063 ms = 3.00 s
+H WrongWindow #1: notice alpha>0.5 from 61 to 3060 ms = 3.00 s
+H None #2: notice alpha>0.5 from 60 to 3062 ms = 3.00 s
+H WrongWindow #3: notice alpha>0.5 from 62 to 3060 ms = 3.00 s
+H None #4: notice alpha>0.5 from 60 to 3062 ms = 3.00 s
+H WrongWindow #5: notice alpha>0.5 from 63 to 3061 ms = 3.00 s
+F7 panel component present=True
+DONE
+=== R ===
+R0 screen=GameFlow matchPhase=InGame ownHp=100 zone=25 hud texts: Value='--:--' Value='-/-' 
+R0 intent closed: MoveX=0 MoveY=0 AimDegrees=-47.87518 Attack=False Interact=False Reload=False Dash=False UseItem=False  demo.UseExternalIntent=False guardEngaged=False
+R1 ESC in real InMatch -> opened=True IsOpen=True blocks=True guardEngaged=True demo.UseExternalIntent=True intent: MoveX=0 MoveY=0 AimDegrees=312.1271 Attack=False Interact=False Reload=False Dash=False UseItem=False 
+R2 menu open 10.00 s: snapshots received=299 (30 Hz x 10 s = 300; need >= 270) timeScale min/max=1/1 fixedTime adv=10.00 menuStillOpen=True ownHp=100 matchPhase=InGame
+R2 HUD before: Value='--:--' Value='-/-' 
+R2 HUD after : Value='--:--' Value='-/-' 
+R2 intent while open: MoveX=0 MoveY=0 AimDegrees=312.1271 Attack=False Interact=False Reload=False Dash=False UseItem=False  guardEngaged=True
+R3 closed: guardEngaged=False demo.UseExternalIntent=False intent: MoveX=0 MoveY=0 AimDegrees=312.1271 Attack=False Interact=False Reload=False Dash=False UseItem=False 
+DONE
+=== S ===
+t=1.44 screen=InMatch overlay=Playing alive=5/6 matchEnded=False matchPhase=InGame hasResult=False canvas=True scene=Game
+  t=21.94 PlayerEliminated event netId=0 aliveNow=4
+  t=21.94 PlayerEliminated event netId=1 aliveNow=3
+  t=21.94 PlayerEliminated event netId=2 aliveNow=2
+  t=21.94 PlayerEliminated event netId=3 aliveNow=1
+  t=21.94 PlayerEliminated event netId=4 aliveNow=0
+t=21.94 screen=Results overlay=Inactive alive=0/6 matchEnded=True matchPhase=Ending hasResult=True canvas=False scene=Game
+t=31.99 screen=Results overlay=Inactive alive=0/6 matchEnded=True matchPhase=Cleanup hasResult=True canvas=False scene=Game
+t=32.01 screen=InRoom overlay=Inactive alive=0/0 matchEnded=False matchPhase=Waiting hasResult=False canvas=False scene=Game
+t=41.56 screen=MainMenu overlay=Inactive alive=0/0 matchEnded=False matchPhase=Waiting hasResult=False canvas=False scene=Game
+t=43.01 screen=MainMenu overlay=Inactive alive=0/0 matchEnded=False matchPhase=Waiting hasResult=False canvas=False scene=Boot
+t=49.62 screen=Connecting overlay=Inactive alive=0/0 matchEnded=False matchPhase=Waiting hasResult=False canvas=False scene=Boot
+t=51.06 screen=InRoom overlay=Inactive alive=0/0 matchEnded=False matchPhase=Waiting hasResult=False canvas=False scene=Boot
+t=51.12 screen=InRoom overlay=Inactive alive=0/0 matchEnded=False matchPhase=Waiting hasResult=False canvas=False scene=Game
+t=53.08 screen=InRoom overlay=Inactive alive=0/0 matchEnded=False matchPhase=Lobby hasResult=False canvas=False scene=Game
+t=68.08 screen=InRoom overlay=Inactive alive=0/0 matchEnded=False matchPhase=Loading hasResult=False canvas=False scene=Game
+t=68.16 screen=InMatch overlay=Playing alive=5/6 matchEnded=False matchPhase=InGame hasResult=False canvas=True scene=Game
+  t=87.95 PlayerEliminated event netId=0 aliveNow=0
+  t=87.95 PlayerEliminated event netId=1 aliveNow=0
+  t=87.95 PlayerEliminated event netId=2 aliveNow=0
+  t=87.95 PlayerEliminated event netId=3 aliveNow=0
+  t=87.95 PlayerEliminated event netId=4 aliveNow=0
+t=87.95 screen=MainMenu overlay=Inactive alive=0/6 matchEnded=False matchPhase=InGame hasResult=False canvas=False scene=Game
+t=87.97 screen=MainMenu overlay=Inactive alive=0/6 matchEnded=False matchPhase=InGame hasResult=False canvas=False scene=Boot
+DONE
+  t=354.07 PlayerEliminated event netId=1 aliveNow=4
+  t=355.08 PlayerEliminated event netId=5 aliveNow=3
+  t=355.08 PlayerEliminated event netId=2 aliveNow=2
+  t=356.06 PlayerEliminated event netId=4 aliveNow=1
+  t=356.06 PlayerEliminated event netId=3 aliveNow=0
+=== T ===
+T0 screen=InMatch matchPhase=InGame netState=Joined
+T1 confirm open=True screen=InMatch netState=Joined events=0
+  LeaveMatchRequested source=MatchMenu matchId=9a082acb-3f19-4a3f-abfc-612dbb9bae38
+T1 confirm clicked: events(same call)=1 netState=Disconnected screen=MainMenu
+T2 screen=MainMenu after 13 ms; netState=Disconnected menuOpen=False locked=False overlayCanvas=False events=1
+T3 later: screen=MainMenu netState=Disconnected scene=Boot menuOpen=False
+DONE
+=== U ===
+t=1.65 screen=MainMenu overlay=Inactive alive=0/6 hp=0 zoneR=25.0 ended=False
+t=19.63 screen=Connecting overlay=Inactive alive=0/6 hp=0 zoneR=25.0 ended=False
+t=19.69 screen=InRoom overlay=Inactive alive=0/6 hp=0 zoneR=25.0 ended=False
+t=43.95 screen=InMatch overlay=Playing alive=0/6 hp=0 zoneR=25.0 ended=False
+t=44.00 screen=InMatch overlay=Playing alive=5/6 hp=100 zoneR=25.0 ended=False
+t=158.94 screen=InMatch overlay=Eliminated alive=5/6 hp=0 zoneR=18.0 ended=False
+t=158.94 INFO rank=6/6 cause=Unknown killer=255 survival=114.9667 kills=-1 tick=4493 rankText=#6 / 6 causeText=Không rõ nguyên nhân survivalText=Sống sót: 01:54 killsActive=False
+t=159.45 screenshot real_eliminated_1280.png
+t=171.93 screen=InMatch overlay=Spectating alive=5/6 hp=0 zoneR=18.0 ended=False
+t=173.41 screenshot real_spectator_1280.png
+t=245.94 spectator.PlayerEliminated netId=1 alive=4
+t=245.94 screen=InMatch overlay=Spectating alive=4/6 hp=0 zoneR=12.0 ended=False
+t=246.94 spectator.PlayerEliminated netId=5 alive=3
+t=246.94 spectator.PlayerEliminated netId=2 alive=2
+t=246.94 screen=InMatch overlay=Spectating alive=2/6 hp=0 zoneR=12.0 ended=False
+t=247.93 spectator.PlayerEliminated netId=4 alive=1
+t=247.93 spectator.PlayerEliminated netId=3 alive=0
+t=247.93 screen=Results overlay=Inactive alive=0/6 hp=0 zoneR=12.0 ended=True
+t=258.01 screen=InRoom overlay=Inactive alive=0/0 hp=0 zoneR=12.0 ended=False
+t=268.91 screen=MainMenu overlay=Inactive alive=0/0 hp=0 zoneR=12.0 ended=False
+=== V ===
+value label font=HudNumber SDF size=15 ; master label font=HudNumber SDF size=15 ; row label font=HudText SDF
+confirm alpha=1
+DONE menuOpen=False
