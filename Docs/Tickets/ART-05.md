@@ -898,6 +898,30 @@ Nên nghe thêm:
 - UseHeal, UseDrink, PickupItem (cắt ngắn hơn).
 - HurtLocal (`bleed`).
 
+### F1 và F4 (sau G3) · 27/10/2026 · unity-dev
+
+**F1: thay MatchEnd** (`157101eb`).
+- Bỏ `TimeOver.wav` (thẻ hollywoodedge.com) và dùng `jingles_NES00.ogg` từ `Tools/Audio/Sources/ART-05/kenney_music-jingles.zip`. Đây là jingle 8-bit đi xuống F → E → D# → D rồi ngân, đọc như "hết giờ". Âm sắc 8-bit hợp font pixel của UI và khác hẳn các SFX khác.
+- Chọn trong 85 file theo độ dài và đường nét cao độ (không nghe được). Chỉ có 3 file kêu ≥ 1,5 s: NES00, SAX07 (cùng nét đi xuống, kèn sax) và STEEL07 (trống thép). Hai file sau là dự phòng nếu PIC không ưng; mỗi lần đổi chỉ là sửa một dòng recipe.
+- Xử lý bằng cùng pipeline: 1,762 s, L −16,0, đỉnh −6,9, limiter không giảm. Volume 1,0, E −16,0 (T1).
+- Ghi đè `Sfx/match_end.wav`, nên GUID trong catalog không đổi. `DistinguishableIdsUseDistinctClips` vẫn xanh.
+- Giấy phép: `có bằng chứng: Docs/Licenses/Audio/Kenney_MusicJingles_License.txt` (chép nguyên `License.txt` trong zip, CC0).
+- Kiểm kê: `TimeOver.wav` chuyển thành "không dùng". Manifest sinh lại; `heard` của MatchEnd vẫn `chưa`.
+- **File để nghe:** `Assets/_JungleMaze/Art/Audio/Sfx/match_end.wav` (hoặc mã `MatchEnd` trên panel F6). Bản gốc trong zip ở `Audio/8-Bit jingles/jingles_NES00.ogg`.
+
+**F4: dọn `Placeholder/`** (`dd4b28ea`).
+- Trước khi xóa:
+  - `copy_jsurviv_placeholders.py --check` đạt 14/14 (AC38).
+  - Tìm GUID của mọi file trong `Placeholder/` ở toàn bộ asset, scene, prefab, mixer và `ProjectSettings`: không còn chỗ nào tham chiếu.
+- Đã xóa cả thư mục `Art/Audio/Placeholder/` (14 bíp, 12 bản chép SFX, 2 bản chép nhạc) và `.meta` của nó.
+- `SfxCatalogTests.BeepsHaveDistinctFrequencies` (đếm 0 bíp từ khi có ART-05) đổi thành `NoClipPointsIntoPlaceholder`. Test kiểm cả 26 mã (mọi biến thể) và 3 bài nhạc không trỏ vào `Placeholder/`. Bỏ hai `using` không còn dùng.
+- `build_manifest.py` giữ kết quả AC38 đã đo trước khi xóa, có ghi chú "(đã xóa sau G3)", thay vì báo "không".
+- README ghi rằng `copy_jsurviv_placeholders.py --check` và `make_placeholder_sfx.py` không còn dùng.
+
+**Test:** EditMode **479/479**, PlayMode **106/106**, console 0 Error/Warning, `EditorSettings.asset` đã `git checkout`.
+
+**Còn mở:** PIC nghe MatchEnd (đóng F1) và F2.
+
 ## 6. Review
 
 ### Review ART-05 · 27/10/2026 · code-reviewer
