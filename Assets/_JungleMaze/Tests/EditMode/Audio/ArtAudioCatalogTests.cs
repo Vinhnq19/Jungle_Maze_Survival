@@ -50,7 +50,7 @@ namespace JungleMaze.Tests.Audio
         public void NothingFromImported()
         {
             var imported = new HashSet<string>();
-            foreach (var meta in Directory.GetFiles(ArtAudioSpec.ProjectPath("Assets/Imported"), "*.meta", SearchOption.AllDirectories))
+            foreach (var meta in Directory.GetFiles(ArtAudioSpec.ImportedOrIgnore(ArtAudioSpec.ImportedFolder), "*.meta", SearchOption.AllDirectories))
             {
                 foreach (var line in File.ReadLines(meta))
                 {
@@ -98,15 +98,25 @@ namespace JungleMaze.Tests.Audio
                     Assert.That(clip.length, Is.InRange(row.MinSeconds, row.MaxSeconds), $"{row.Id}: {clip.name}");
         }
 
-        // AC11, AC28: ART-05 changes clips and volume only; the bell keeps three strikes 0.8 s apart.
+        // AC11, AC28: ART-05 changes clips, volume and pitchJitter only. Every other column of the 26 entries equals
+        // the AUD-01 table (AudioSpec.Table); only the bell repeats (3 strikes, 0.8 s apart).
         [Test]
-        public void VolumesAtMostOne_BellStillRingsThreeTimes()
+        public void UnchangedColumns_EqualTheAud01Table()
         {
-            foreach (var row in ArtAudioSpec.Table)
-                Assert.That(_catalog.Find(row.Id).volume, Is.InRange(0.05f, 1f), row.Id.ToString());
-            var bell = _catalog.Find(SfxId.ZoneBell3);
-            Assert.AreEqual(3, bell.repeatCount);
-            Assert.AreEqual(0.8f, bell.repeatIntervalSeconds, 1e-4f);
+            foreach (var row in AudioSpec.Table)
+            {
+                var e = _catalog.Find(row.Id);
+                Assert.That(e.volume, Is.InRange(0.05f, 1f), row.Id + " volume");
+                Assert.LessOrEqual(e.pitchJitter, 0.05f + 1e-4f, row.Id + " pitchJitter");
+                Assert.AreEqual(row.Priority, e.priority, row.Id + " priority");
+                Assert.AreEqual(row.Bus, e.bus, row.Id + " bus");
+                Assert.AreEqual(row.Range, e.rangeCells, 1e-4f, row.Id + " rangeCells");
+                Assert.AreEqual(row.Max, e.maxInstances, row.Id + " maxInstances");
+                Assert.AreEqual(row.Cooldown, e.cooldownSeconds, 1e-4f, row.Id + " cooldownSeconds");
+                var bell = row.Id == SfxId.ZoneBell3;
+                Assert.AreEqual(bell ? 3 : 1, e.repeatCount, row.Id + " repeatCount");
+                Assert.AreEqual(bell ? 0.8f : 0f, e.repeatIntervalSeconds, 1e-4f, row.Id + " repeatIntervalSeconds");
+            }
         }
     }
 }

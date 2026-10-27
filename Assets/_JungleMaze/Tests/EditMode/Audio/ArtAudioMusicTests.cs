@@ -1,4 +1,7 @@
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using JungleMaze.App.Audio;
 using JungleMaze.Presentation.Audio;
 using NUnit.Framework;
@@ -29,6 +32,23 @@ namespace JungleMaze.Tests.Audio
             Assert.AreEqual(AudioCompressionFormat.Vorbis, importer.defaultSampleSettings.compressionFormat, path);
             Assert.IsTrue(importer.loadInBackground, path);
             StringAssert.Contains("\n  normalize: 0", File.ReadAllText(ArtAudioSpec.ProjectPath(path + ".meta")).Replace("\r", ""), path);
+        }
+
+        // Review G1: Unity re-encodes the OGG, so the importer uses the quality the file was made with (no second,
+        // higher-quality pass on an already lossy source) and the imported size stays under the 3.0 MB budget.
+        [TestCase("waiting_room.ogg")]
+        [TestCase("loading.ogg")]
+        [TestCase("match.ogg")]
+        public void Importer_QualityOfTheSource_ImportedSizeInBudget(string file)
+        {
+            var row = ArtAudioSpec.ReadManifest().Single(r => r["row_type"] == "clip" && r["file"] == "Music/" + file);
+            var quality = float.Parse(row["codec"].Substring(row["codec"].LastIndexOf('q') + 1), CultureInfo.InvariantCulture);
+            var importer = (AudioImporter)AssetImporter.GetAtPath(ArtAudioSpec.MusicFolder + file);
+            Assert.AreEqual(quality, importer.defaultSampleSettings.quality, 1e-3f, file);
+            // AudioImporter exposes the imported size only internally (compSize).
+            var size = typeof(AudioImporter).GetProperty("compSize", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (size == null) Assert.Ignore("AudioImporter.compSize not found in this Unity version");
+            Assert.LessOrEqual(System.Convert.ToInt64(size.GetValue(importer)), 3_000_000L, file + " imported size");
         }
 
         [Test]

@@ -20,6 +20,33 @@ namespace JungleMaze.Tests.Audio
         public const string MusicFolder = "Assets/_JungleMaze/Art/Audio/Music/";
         public const string ManifestPath = "Docs/Tickets/ART-05_audio_manifest.csv";
         public const float ActiveFloor = 0.003f;
+        public const string ImportedFolder = "Assets/Imported";
+        /// <summary>Licence of a clip whose page says CC0 but whose evidence is not in the repo (CPO 4.9).</summary>
+        public const string SelfDeclaredCc0 = "chưa kiểm chứng (nguồn tự khai CC0)";
+
+        /// <summary>
+        /// JSurviv clips that stay quieter than their target under the 6 dB limiter (CPO 4.9): lowest L allowed per
+        /// file. Mirrors the recipe/manifest column "exception"; a test keeps the two lists equal.
+        /// </summary>
+        public static readonly Dictionary<string, float> LevelExceptions = new Dictionary<string, float>
+        {
+            { "bomb_fuse", -24.5f }, { "wear_armor_0", -23.5f }, { "wear_armor_1", -23.5f },
+            { "wear_armor_2", -23.5f }, { "wear_armor_3", -23.5f },
+        };
+
+        /// <summary>Lowest effective level E allowed for an id below its tier (BombFuse: volume is already 1.0).</summary>
+        public static readonly Dictionary<SfxId, float> EffectiveFloorExceptions = new Dictionary<SfxId, float>
+        {
+            { SfxId.BombFuse, -24.5f },
+        };
+
+        /// <summary>Skips a test that reads Assets/Imported when that reference folder has been cleaned up (spec 2.4).</summary>
+        public static string ImportedOrIgnore(string relative)
+        {
+            var path = ProjectPath(relative);
+            if (!Directory.Exists(path)) NUnit.Framework.Assert.Ignore(relative + " is gone: nothing to compare against");
+            return path;
+        }
 
         public readonly struct Row
         {

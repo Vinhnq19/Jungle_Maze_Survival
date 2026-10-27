@@ -36,7 +36,7 @@ namespace JungleMaze.Tests.Audio
         [Test]
         public void JSurvivRows_CoverEveryFileAndZipMember()
         {
-            var root = ArtAudioSpec.ProjectPath(JSurviv);
+            var root = ArtAudioSpec.ImportedOrIgnore(JSurviv);
             var files = Directory.GetFiles(root, "*", SearchOption.AllDirectories).Where(f => !f.EndsWith(".meta")).ToArray();
             Assert.AreEqual(21, files.Length);
             var members = 0;
@@ -66,16 +66,17 @@ namespace JungleMaze.Tests.Audio
                 var label = r["row_type"] + " " + r["file"] + r["sfx_id"];
                 foreach (var part in r["licence"].Split(new[] { " | " }, StringSplitOptions.None))
                 {
-                    if (part == "chưa kiểm chứng" || part.StartsWith("tự tạo (")) continue;
+                    if (part == "chưa kiểm chứng" || part == ArtAudioSpec.SelfDeclaredCc0 || part.StartsWith("tự tạo (")) continue;
                     StringAssert.StartsWith("có bằng chứng: ", part, label);
                     var evidence = part.Substring("có bằng chứng: ".Length);
                     StringAssert.StartsWith("Docs/Licenses/Audio/", evidence, label);
                     FileAssert.Exists(ArtAudioSpec.ProjectPath(evidence), label);
                 }
                 if (r["licence"].Contains("có bằng chứng: ")) continue;
+                // "nguồn tự khai CC0" says whose claim it is, so it is the one allowed mention (CPO 4.9).
                 foreach (var value in r.Values)
                     foreach (var word in Forbidden)
-                        StringAssert.DoesNotContain(word, value, label + " claims a licence without evidence");
+                        StringAssert.DoesNotContain(word, value.Replace("nguồn tự khai CC0", ""), label + " claims a licence without evidence");
             }
         }
 
@@ -94,11 +95,19 @@ namespace JungleMaze.Tests.Audio
             foreach (var r in clips)
             {
                 Assert.IsNotEmpty(r["source"], r["file"]);
-                if (r["licence"] == "chưa kiểm chứng") continue;
+                if (!r["licence"].StartsWith("có bằng chứng: ") && r["licence"] != ArtAudioSpec.SelfDeclaredCc0) continue;
                 Assert.IsNotEmpty(r["url"], r["file"]);
                 Assert.IsNotEmpty(r["author"], r["file"]);
                 Assert.IsNotEmpty(r["download_date"], r["file"]);
             }
+        }
+
+        // The quieter-than-target clips in the manifest are exactly the test's exception table (CPO 4.9).
+        [Test]
+        public void LevelExceptions_MatchTheManifest()
+        {
+            var listed = Rows("clip").Where(r => r["exception"] != "").Select(r => Path.GetFileNameWithoutExtension(r["file"]));
+            CollectionAssert.AreEquivalent(ArtAudioSpec.LevelExceptions.Keys, listed);
         }
 
         // AC6: heard is "chưa" or "có: <name>, <date>".

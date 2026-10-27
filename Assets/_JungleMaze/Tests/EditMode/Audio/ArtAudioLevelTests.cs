@@ -11,12 +11,12 @@ namespace JungleMaze.Tests.Audio
 {
     /// <summary>
     /// ART-05 levels measured on the imported data (AudioClip.GetData), so importer flags cannot hide a change
-    /// (AC16, AC18, AC19, AC20, AC40). The clips import as PCM: ADPCM pushed transient peaks up to +1 dB (hurt_local
-    /// reached 0 dBFS), so the ceiling keeps only a 0.05 dB rounding margin.
+    /// (AC16, AC18, AC19, AC20, AC40). The clips import as PCM (ADPCM pushed transient peaks up to +1 dB), so every
+    /// limit is the AC's own number; only the clips in ArtAudioSpec.LevelExceptions may sit below the L window.
     /// </summary>
     public sealed class ArtAudioLevelTests
     {
-        private const float Ceiling = -1.0f, Rounding = 0.05f;
+        private const float Ceiling = -1.0f;
         private SfxCatalog _catalog;
 
         [SetUp]
@@ -54,7 +54,7 @@ namespace JungleMaze.Tests.Audio
             foreach (var (row, clip) in AllClips())
             {
                 var x = ArtAudioSpec.Samples(clip);
-                Assert.LessOrEqual(ArtAudioSpec.Peak(x), Ceiling + Rounding, clip.name + " peak");
+                Assert.LessOrEqual(ArtAudioSpec.Peak(x), Ceiling, clip.name + " peak");
                 var run = 0;
                 foreach (var s in x)
                 {
@@ -66,21 +66,23 @@ namespace JungleMaze.Tests.Audio
             }
         }
 
-        // AC40: baked level L −24 ± 2 for footsteps, −20…−15 for everything else; variants of one id within 1 dB.
+        // AC40: baked level L −24 ± 2 for footsteps, −20…−15 for everything else (or the clip's recorded exception);
+        // variants of one id within 0.5 dB (plan 4.1), since one volume serves them all.
         [Test]
         public void BakedLevel_InRange_VariantsMatch()
         {
             foreach (var row in ArtAudioSpec.Table)
             {
-                float min = float.MaxValue, max = float.MinValue;
+                float lowest = float.MaxValue, highest = float.MinValue;
                 foreach (var clip in _catalog.Find(row.Id).clips)
                 {
                     var level = ArtAudioSpec.Level(ArtAudioSpec.Samples(clip));
-                    Assert.That(level, Is.InRange(row.MinLevel - 0.2f, row.MaxLevel + 0.2f), $"{row.Id}: {clip.name} L");
-                    min = Mathf.Min(min, level);
-                    max = Mathf.Max(max, level);
+                    var min = ArtAudioSpec.LevelExceptions.TryGetValue(clip.name, out var floor) ? floor : row.MinLevel;
+                    Assert.That(level, Is.InRange(min, row.MaxLevel), $"{row.Id}: {clip.name} L");
+                    lowest = Mathf.Min(lowest, level);
+                    highest = Mathf.Max(highest, level);
                 }
-                Assert.LessOrEqual(max - min, 1f, row.Id + " variants");
+                Assert.LessOrEqual(highest - lowest, 0.5f, row.Id + " variants");
             }
         }
 
@@ -105,7 +107,8 @@ namespace JungleMaze.Tests.Audio
             var loudestBelowT1 = float.MinValue;
             foreach (var row in ArtAudioSpec.Table)
             {
-                Assert.AreEqual(row.TierLevel, e[row.Id], 3f, $"{row.Id} E");
+                var floor = ArtAudioSpec.EffectiveFloorExceptions.TryGetValue(row.Id, out var f) ? f : row.TierLevel - 3f;
+                Assert.That(e[row.Id], Is.InRange(floor, row.TierLevel + 3f), $"{row.Id} E");
                 if (row.Tier > 1) loudestBelowT1 = Mathf.Max(loudestBelowT1, e[row.Id]);
             }
             Assert.GreaterOrEqual(e[SfxId.HitMarker], loudestBelowT1 + 3f, "HitMarker over T2–T4");
@@ -113,7 +116,8 @@ namespace JungleMaze.Tests.Audio
             Assert.GreaterOrEqual(_catalog.Find(SfxId.HitMarker).volume, 1f);
         }
 
-        // AC16: the imported peak equals the peak the manifest measured on the WAV (± 0.5 dB), so no flag rescaled it.
+        // AC16: the imported peak equals the peak the manifest measured on the WAV, so no flag rescaled it. PCM keeps
+        // samples exact; 0.05 dB covers the two-decimal rounding of the manifest.
         [Test]
         public void ImportedPeak_MatchesManifest()
         {
@@ -124,7 +128,7 @@ namespace JungleMaze.Tests.Audio
                 var clip = AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/_JungleMaze/Art/Audio/" + r["file"]);
                 Assert.IsNotNull(clip, r["file"]);
                 var expected = float.Parse(r["peak_after_dbfs"], CultureInfo.InvariantCulture);
-                Assert.AreEqual(expected, ArtAudioSpec.Peak(ArtAudioSpec.Samples(clip)), 0.5f, r["file"]);
+                Assert.AreEqual(expected, ArtAudioSpec.Peak(ArtAudioSpec.Samples(clip)), 0.05f, r["file"]);
                 checkedClips++;
             }
             Assert.AreEqual(40, checkedClips);
