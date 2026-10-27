@@ -69,7 +69,7 @@ namespace JungleMaze.Tests.Audio
                 Assert.IsFalse(seen.ContainsKey(hz), $"{path} and {(seen.TryGetValue(hz, out var other) ? other : "")} share {hz} Hz");
                 seen[hz] = path;
             }
-            Assert.AreEqual(14, beeps, "14 ids use generated placeholders");
+            Assert.AreEqual(0, beeps, "ART-05 replaced every generated placeholder with a CC0 clip");
         }
 
         [Test]

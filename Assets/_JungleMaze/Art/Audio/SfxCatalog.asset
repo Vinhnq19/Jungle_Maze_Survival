@@ -15,7 +15,11 @@ MonoBehaviour:
   entries:
   - id: 1
     clips:
-    - {fileID: 8300000, guid: 37d520cda68052d4ca6cd63ce2eee9a2, type: 3}
+    - {fileID: 8300000, guid: ed4e67c009d350589ec419dd3fb2cd9c, type: 3}
+    - {fileID: 8300000, guid: 91952c949b915cc0991f41ac485e969e, type: 3}
+    - {fileID: 8300000, guid: 61eb32da8f725e6cb2c88bf2a0ad819f, type: 3}
+    - {fileID: 8300000, guid: 35dd689d59545f879cc2fb1283f50df8, type: 3}
+    - {fileID: 8300000, guid: 44ec4d6a2a54567fad7ccc1c3c21503c, type: 3}
     volume: 0.4
     pitchJitter: 0.05
     priority: 0
@@ -27,7 +31,11 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 2
     clips:
-    - {fileID: 8300000, guid: 0bbfa9131ac79f24f9c11350be7a184f, type: 3}
+    - {fileID: 8300000, guid: c21296372255515a9cff9df425dd0788, type: 3}
+    - {fileID: 8300000, guid: 719554c4f2325c9d8823d7a528cced4c, type: 3}
+    - {fileID: 8300000, guid: 82ac8c3dc46654229a719d5ab6785b15, type: 3}
+    - {fileID: 8300000, guid: 3fa1a27ea4bb53d491001ecf9ad54af4, type: 3}
+    - {fileID: 8300000, guid: 6b02d30bc9845ae38141a8cbdd40c030, type: 3}
     volume: 0.45
     pitchJitter: 0.05
     priority: 0
@@ -39,7 +47,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 3
     clips:
-    - {fileID: 8300000, guid: 8ee2d5a2f5e691c4bad2e90067c3fafd, type: 3}
+    - {fileID: 8300000, guid: 8cf1fccd34c551f7a95fce42d4dfb1dc, type: 3}
+    - {fileID: 8300000, guid: 49db103c06cb5804b1bae153ccfd6bd0, type: 3}
     volume: 0.5
     pitchJitter: 0.05
     priority: 0
@@ -87,7 +96,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 7
     clips:
-    - {fileID: 8300000, guid: 1dc204d141655264f90b7422fc1041f5, type: 3}
+    - {fileID: 8300000, guid: db9898d751f25fd68d9c19fa69ed9294, type: 3}
     volume: 0.75
     pitchJitter: 0.05
     priority: 2
@@ -99,7 +108,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 8
     clips:
-    - {fileID: 8300000, guid: b13e887e229619b4b97344f6bb06b8b9, type: 3}
+    - {fileID: 8300000, guid: b72c136c4b6a5f29af9bff823ab128fa, type: 3}
     volume: 0.6
     pitchJitter: 0.05
     priority: 1
@@ -111,7 +120,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 9
     clips:
-    - {fileID: 8300000, guid: e4cd5e3ba41415944aaf3d7bc05e422e, type: 3}
+    - {fileID: 8300000, guid: 6180e5fd39335fdb9f0ec431ed58543c, type: 3}
     volume: 0.5
     pitchJitter: 0.05
     priority: 0
@@ -123,7 +132,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 10
     clips:
-    - {fileID: 8300000, guid: 32ac460ffd89ca147beb29d5bc3bb945, type: 3}
+    - {fileID: 8300000, guid: 3f8ac44c1acd5b1a9e63478557e2ae71, type: 3}
     volume: 0.5
     pitchJitter: 0.05
     priority: 0
@@ -159,7 +168,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 13
     clips:
-    - {fileID: 8300000, guid: a1cd5e05b5d93674ca8cf0de5554c9b4, type: 3}
+    - {fileID: 8300000, guid: 565a99b8feb451038ae190ea0ed07219, type: 3}
     volume: 0.7
     pitchJitter: 0.05
     priority: 1
@@ -171,7 +180,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 14
     clips:
-    - {fileID: 8300000, guid: b443ef2c21263d442b1ff98d28fa58fe, type: 3}
+    - {fileID: 8300000, guid: c85a4724836c59f09bf50ce317e26ead, type: 3}
     volume: 1
     pitchJitter: 0.03
     priority: 3
@@ -195,7 +204,9 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 16
     clips:
-    - {fileID: 8300000, guid: 275c430c94982a342a7e706f78743338, type: 3}
+    - {fileID: 8300000, guid: 22f6497cbb365f7aa4fca070a3265394, type: 3}
+    - {fileID: 8300000, guid: dbdb65883c535a0c8f3d89aeb4cc0192, type: 3}
+    - {fileID: 8300000, guid: ade9a71c274751febc716c54d237c375, type: 3}
     volume: 0.8
     pitchJitter: 0.05
     priority: 2
@@ -207,7 +218,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 17
     clips:
-    - {fileID: 8300000, guid: e45c09f8d95c8d94d90ac23bcdb861ad, type: 3}
+    - {fileID: 8300000, guid: 48e8d6ed10aa5f16b6baf2686db8418f, type: 3}
     volume: 0.9
     pitchJitter: 0
     priority: 2
@@ -279,7 +290,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 23
     clips:
-    - {fileID: 8300000, guid: 9124be80b2d8c364bb1a1591390da339, type: 3}
+    - {fileID: 8300000, guid: 277391faba825378972dbca4e52cc98f, type: 3}
     volume: 0.6
     pitchJitter: 0
     priority: 1
@@ -291,7 +302,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 24
     clips:
-    - {fileID: 8300000, guid: a56f4aa8e07c9b745abb2b36badb20da, type: 3}
+    - {fileID: 8300000, guid: dd4ef9f9725f58daa5dc44b2842fa9fe, type: 3}
     volume: 1
     pitchJitter: 0
     priority: 3
@@ -303,7 +314,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0.8
   - id: 25
     clips:
-    - {fileID: 8300000, guid: a7a529caddc74374db868fdf25f217ba, type: 3}
+    - {fileID: 8300000, guid: f9b49467e9245ffeaf53069de61b2d29, type: 3}
     volume: 1
     pitchJitter: 0
     priority: 3
