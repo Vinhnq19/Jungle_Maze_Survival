@@ -3,6 +3,9 @@
     python -I Tools/Telemetry/telemetry.py validate [--strict] <file|dir>...
     python -I Tools/Telemetry/telemetry.py fake --out DIR [--seed 1] [--cfg A|B] [fault flags]
     python -I Tools/Telemetry/telemetry.py merge <file|dir>... --out DIR [--strict] [--require-real]
+    python -I Tools/Telemetry/telemetry.py report <file|dir>... --out DIR [--run NAME] [--gap-sec 5]
+    python -I Tools/Telemetry/telemetry.py compare <file|dir>... --out DIR [--a CFGKEY --b CFGKEY]
+    python -I Tools/Telemetry/telemetry.py perflog <server.log> --out DIR [--interval 10]
 
 Exit codes (TEL-01 plan 4.2): 0 OK (also with partial data), 1 usage error, 2 conflicts with
 --strict, 3 fake data with --require-real, 4 schema errors with validate --strict.
@@ -83,6 +86,52 @@ def cmd_merge(args) -> int:
     return _merge_exit(result["summary"], args)
 
 
+def cmd_report(args) -> int:
+    import tel_merge
+    import tel_metrics
+    import tel_report
+    schema = _schema(args)
+    result = tel_merge.merge(args.paths, schema, pii_samples=args.pii_sample or ())
+    tel_merge.write_outputs(result, args.out)
+    metrics = tel_metrics.compute(result["events"], schema, gap_sec=args.gap_sec)
+    tel_report.write_files(tel_report.render(result, metrics, schema, run=args.run), args.out)
+    print(tel_merge.summary_line(result["summary"]))
+    print(f"report: {Path(args.out) / 'report.md'} (+{len(tel_report.CSV_NAMES)} csv)")
+    return _merge_exit(result["summary"], args)
+
+
+def cmd_compare(args) -> int:
+    import tel_merge
+    import tel_metrics
+    import tel_report
+    schema = _schema(args)
+    result = tel_merge.merge(args.paths, schema, pii_samples=args.pii_sample or ())
+    metrics = tel_metrics.compute(result["events"], schema, gap_sec=args.gap_sec)
+    keys = tel_report.comparable_keys(metrics)
+    if args.a and args.b:
+        key_a, key_b = tel_report.resolve_key(keys, args.a), tel_report.resolve_key(keys, args.b)
+    elif len(keys) == 2 and not (args.a or args.b):
+        key_a, key_b = keys
+    else:
+        print("telemetry.py: error: give --a and --b; cfgKeys found: " + (", ".join(keys) or "none"), file=sys.stderr)
+        return EXIT_USAGE
+    tel_report.write_files(tel_report.render_compare(metrics, key_a, key_b), args.out)
+    print(tel_merge.summary_line(result["summary"]))
+    print(f"compare A={key_a} B={key_b}: {Path(args.out) / 'compare.md'}")
+    return _merge_exit(result["summary"], args)
+
+
+def cmd_perflog(args) -> int:
+    import tel_perflog
+    schema = _schema(args)
+    data = Path(args.log).read_bytes()
+    result = tel_perflog.convert(data, interval=args.interval, build=args.build, cfg=args.cfg,
+                                 cfg_hash=args.cfg_hash, schema=schema)
+    path = tel_perflog.write(result, args.out)
+    print(f"perflog wid={result['wid']} records={len(result['records'])} malformed={result['malformed']} -> {path}")
+    return EXIT_OK
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = _Parser(prog="telemetry.py", description="TEL-01 telemetry tools.")
     p.add_argument("--schema", help="schema JSON (default Docs/Telemetry/telemetry.schema.v1.json)")
@@ -118,6 +167,32 @@ def build_parser() -> argparse.ArgumentParser:
     m.add_argument("--out", required=True, help="output folder for events.jsonl, conflicts.jsonl, merge_summary.json")
     _add_gate_flags(m)
     m.set_defaults(func=cmd_merge)
+
+    r = sub.add_parser("report", help="merge + report.md + 9 CSV files")
+    r.add_argument("paths", nargs="+", help="files or folders (*.jsonl, recursive)")
+    r.add_argument("--out", required=True, help="output folder")
+    r.add_argument("--run", default="run", help="run name printed in the report header")
+    r.add_argument("--gap-sec", type=float, default=5.0, help="engagement gap for TTK (default 5 s)")
+    _add_gate_flags(r)
+    r.set_defaults(func=cmd_report)
+
+    c = sub.add_parser("compare", help="compare two cfgKeys: A, B, delta and n per group")
+    c.add_argument("paths", nargs="+", help="files or folders holding both configs")
+    c.add_argument("--out", required=True, help="output folder for compare.md and compare.csv")
+    c.add_argument("--a", help="cfgKey A (or unique prefix)")
+    c.add_argument("--b", help="cfgKey B (or unique prefix)")
+    c.add_argument("--gap-sec", type=float, default=5.0)
+    _add_gate_flags(c)
+    c.set_defaults(func=cmd_compare)
+
+    pl = sub.add_parser("perflog", help="convert GameServer [metrics] log lines to perf_server JSONL")
+    pl.add_argument("log", help="server log file (stdout capture)")
+    pl.add_argument("--out", required=True, help="output folder")
+    pl.add_argument("--interval", type=float, default=10.0, help="windowSec of the first line (default 10)")
+    pl.add_argument("--build", default="dev", help="server build label (default dev)")
+    pl.add_argument("--cfg", help="ConfigVersion to stamp (optional)")
+    pl.add_argument("--cfg-hash", help="ConfigHash to stamp (optional, 64 hex)")
+    pl.set_defaults(func=cmd_perflog)
     return p
 
 

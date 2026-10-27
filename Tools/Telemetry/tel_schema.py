@@ -20,15 +20,6 @@ DEFAULT_SCHEMA = REPO_ROOT / "Docs" / "Telemetry" / "telemetry.schema.v1.json"
 AUX_TYPES = ("_header", "_trailer")
 OUTPUT_NAMES = frozenset({"events.jsonl", "conflicts.jsonl"})
 
-# Cheap tests on a raw JSONL line that must pass before the costly PII regex runs. In compact JSON a key
-# is always followed by '":', so a hex digit right before ':' can only come from inside a string value.
-_HEX_COLON = re.compile(r"[0-9A-Fa-f]:")
-_PII_PREFILTER = {
-    "jwt": lambda raw: "eyJ" in raw,
-    "ipv4": lambda raw: raw.count(".") >= 3,
-    "ipv6": lambda raw: _HEX_COLON.search(raw) is not None,
-}
-
 _HEX = {
     "guid": re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"),
     "hex8": re.compile(r"^[0-9a-f]{8}$"),
@@ -57,9 +48,19 @@ class Schema:
         self.pii_patterns = {k: re.compile(v) for k, v in pii["patterns"].items()}
         self.all_ids = frozenset().union(*id_sets.values()) if id_sets else frozenset()
         self.rules_by_type = {t: [r for r in self.rules if "types" not in r or t in r["types"]] for t in self.types}
+        self.pii_clean: set[str] = set()     # string values that passed the PII patterns (cache)
         self.fast = {t: _compile_type(self, t) for t in list(self.types) + list(self.aux)}
 
     # -- helpers -----------------------------------------------------------------------------
+    def pii_ok(self, value: str) -> bool:
+        """True when no PII pattern matches; clean values are cached (bounded)."""
+        if any(p.search(value) for p in self.pii_patterns.values()):
+            return False
+        if len(self.pii_clean) > 200_000:
+            self.pii_clean.clear()
+        self.pii_clean.add(value)
+        return True
+
     def type_names(self) -> list[str]:
         """The 18 record types in schema order (by 'n')."""
         return sorted(self.types, key=lambda t: self.types[t]["n"])
@@ -139,9 +140,13 @@ def _reject_constant(name):
     raise ValueError(f"non-finite number {name}")
 
 
+_DECODER = json.JSONDecoder(parse_constant=_reject_constant)
+_MISSING = object()
+
+
 def parse_line(text: str):
     """json.loads that rejects NaN/Infinity. Raises ValueError on bad JSON."""
-    return json.loads(text, parse_constant=_reject_constant)
+    return _DECODER.decode(text)
 
 
 # -- file helpers ----------------------------------------------------------------------------
@@ -297,59 +302,70 @@ def _check_rules(schema: Schema, rec: dict, rtype: str, bad: set, errors: list, 
             _err(errors, line, "rule_violation", "*", f"unknown named rule {rid!r}")
 
 
-def _compile_pred(schema: Schema, spec: dict, rtype: str):
-    """Fast predicate for one field spec, or None when only the full check can decide (arrays, objects)."""
-    t = spec["type"]
-    nullable = bool(spec.get("null")) or rtype in spec.get("nullFor", ())
-    has_const, const = "const" in spec, spec.get("const")
+def _gen_value_check(t, spec, var, ns, schema) -> list[str] | None:
+    """Source lines that `return False` when `var` (not None) breaks the spec; None for array/object."""
     lo, hi = spec.get("min"), spec.get("max")
     if t == "uint" and (lo is None or lo < 0):
         lo = 0
-    max_len = spec.get("maxLen")
+    out = []
     if t in ("int", "uint", "int64"):
-        def base(v):
-            return type(v) is int and (lo is None or v >= lo) and (hi is None or v <= hi)
+        out.append(f"if type({var}) is not int: return False")
     elif t == "num":
-        def base(v):
-            tv = type(v)
-            if tv is float:
-                if not math.isfinite(v):
-                    return False
-            elif tv is not int:
-                return False
-            return (lo is None or v >= lo) and (hi is None or v <= hi)
+        out.append(f"if type({var}) is float:")
+        out.append(f"    if not _isfinite({var}): return False")
+        out.append(f"elif type({var}) is not int: return False")
     elif t == "bool":
-        def base(v):
-            return type(v) is bool
+        out.append(f"if type({var}) is not bool: return False")
     elif t == "str":
-        def base(v):
-            return type(v) is str and (max_len is None or len(v) <= max_len)
+        out.append(f"if type({var}) is not str: return False")
+        if "maxLen" in spec:
+            out.append(f"if len({var}) > {int(spec['maxLen'])}: return False")
     elif t in _HEX:
-        pat = _HEX[t]
-        def base(v):
-            return type(v) is str and pat.match(v) is not None
-    elif t == "enum":
-        values = frozenset(schema.enums[spec["enum"]])
-        def base(v):
-            return type(v) is str and v in values
-    elif t == "id":
-        values = frozenset().union(*(schema.id_sets[x] for x in spec["ids"]))
-        def base(v):
-            return type(v) is str and v in values
+        name = f"_P{len(ns)}"
+        ns[name] = _HEX[t].match
+        out.append(f"if type({var}) is not str or {name}({var}) is None: return False")
+    elif t in ("enum", "id"):
+        name = f"_S{len(ns)}"
+        ns[name] = (frozenset(schema.enums[spec["enum"]]) if t == "enum"
+                    else frozenset().union(*(schema.id_sets[x] for x in spec["ids"])))
+        out.append(f"if type({var}) is not str or {var} not in {name}: return False")
     else:
         return None
-    if has_const:
-        inner = base
-        def base(v):
-            return inner(v) and v == const
-    if nullable:
-        inner2 = base
-        def base(v):
-            return v is None or inner2(v)
-    return base
+    if t in ("int", "uint", "int64", "num"):
+        if lo is not None:
+            out.append(f"if {var} < {lo!r}: return False")
+        if hi is not None:
+            out.append(f"if {var} > {hi!r}: return False")
+    if "const" in spec:
+        out.append(f"if {var} != {spec['const']!r}: return False")
+    return out
+
+
+def _gen_rule(rule, tspec) -> list[str]:
+    rid = rule["id"]
+    if "if" in rule:
+        cond = " and ".join(f"r[{f!r}] in {tuple(v)!r}" for f, v in rule["if"].items())
+        out = [f"if {cond}:"]
+        for f, c in rule["then"].items():
+            if c.get("null"):
+                out.append(f"    if r[{f!r}] is not None: return False")
+            if "in" in c:
+                out.append(f"    if r[{f!r}] not in {tuple(c['in'])!r}: return False")
+        return out
+    if rid == "src-matches-type":
+        return [f"if r['src'] != {tspec['src']!r}: return False"]
+    if rid == "span-order":
+        return ["if r['endTick'] < r['startTick']: return False"]
+    if rid == "applied-le-raw":
+        return ["if r['applied'] > r['raw']: return False"]
+    return ["return False"]          # unknown named rule: let the full check report it
 
 
 def _compile_type(schema: Schema, rtype: str):
+    """(required keys, allowed keys, generated check(record) -> bool). The check assumes required keys exist.
+
+    The generated function only answers "certainly valid"; any False sends the record to the full check,
+    which produces the exact error list. Arrays and objects always take the full check."""
     if rtype in schema.aux:
         specs = dict(schema.aux[rtype]["fields"])
     else:
@@ -357,12 +373,41 @@ def _compile_type(schema: Schema, rtype: str):
         specs.update(schema.types[rtype]["fields"])
     required = frozenset(k for k, s in specs.items() if not s.get("optional"))
     allowed = frozenset(specs)
-    preds = []
-    for k, spec in specs.items():
+    ns: dict = {"_isfinite": math.isfinite, "_MISSING": _MISSING, "_CLEAN": schema.pii_clean,
+                "_pii_ok": schema.pii_ok}
+    body = [f"n = {len(required)}"]
+    if {k.lower() for k in allowed} & schema.pii_keys or not _ids_pii_clean(schema, specs):
+        body.append("return False")
+    for i, (k, spec) in enumerate(specs.items()):
         if k == "type":
             continue
-        preds.append((k, _compile_pred(schema, spec, rtype)))
-    return required, allowed, tuple(preds)
+        lines = _gen_value_check(spec["type"], spec, f"x{i}", ns, schema)
+        if lines is None:
+            body.append("return False")
+            break
+        if spec["type"] == "str" or spec["type"] in _HEX:      # free text: PII patterns (cached per value)
+            lines.append(f"if x{i} not in _CLEAN and not _pii_ok(x{i}): return False")
+        nullable = bool(spec.get("null")) or rtype in spec.get("nullFor", ())
+        if spec.get("optional"):
+            body.append(f"x{i} = r.get({k!r}, _MISSING)")
+            body.append(f"if x{i} is not _MISSING: n += 1")
+            guard = f"if x{i} is not _MISSING" + (f" and x{i} is not None:" if nullable else ":")
+        else:
+            body.append(f"x{i} = r[{k!r}]")
+            guard = f"if x{i} is not None:" if nullable else None
+        if guard:
+            body.append(guard)
+            body += ["    " + ln for ln in lines]
+        else:
+            body += lines
+    body.append("if len(r) != n: return False")
+    if rtype in schema.types:
+        for rule in schema.rules_by_type[rtype]:
+            body += _gen_rule(rule, schema.types[rtype])
+    body.append("return True")
+    src = "def check(r):\n" + "\n".join("    " + ln for ln in body) + "\n"
+    exec(compile(src, f"<telemetry check {rtype}>", "exec"), ns)
+    return required, allowed, ns["check"]
 
 
 def _scan_pii(schema: Schema, value, path: str, errors: list, line, samples):
@@ -384,46 +429,43 @@ def _scan_pii(schema: Schema, value, path: str, errors: list, line, samples):
                 _err(errors, line, "pii", path, "contains a sample secret/name")
 
 
-def _fast_ok(schema: Schema, rec: dict, raw, samples) -> bool:
+def _ids_pii_clean(schema: Schema, specs: dict) -> bool:
+    """Enum and Code ID values come from fixed sets; checked once here instead of on every record."""
+    for spec in specs.values():
+        if spec["type"] == "enum":
+            values = schema.enums[spec["enum"]]
+        elif spec["type"] == "id":
+            values = [v for x in spec["ids"] for v in schema.id_sets[x]]
+        else:
+            continue
+        if not all(schema.pii_ok(v) for v in values):
+            return False
+    return True
+
+
+def _fast_ok(schema: Schema, rec: dict, samples) -> bool:
     """True when the record is certainly valid. Any doubt returns False and the full check runs."""
     rtype = rec.get("type")
     fast = schema.fast.get(rtype) if type(rtype) is str else None
     if fast is None:
         return False
-    required, allowed, preds = fast
-    keys = rec.keys()
-    if not (keys >= required and keys <= allowed):
+    try:
+        if not fast[2](rec):
+            return False
+    except KeyError:          # a required key is missing
         return False
-    for k, pred in preds:
-        if k in rec and (pred is None or not pred(rec[k])):
-            return False
-    if raw is not None:
-        for name, pat in schema.pii_patterns.items():
-            pre = _PII_PREFILTER.get(name)
-            if (pre is None or pre(raw)) and pat.search(raw):
+    if samples:
+        for v in rec.values():
+            if type(v) is str and any(smp and smp in v for smp in samples):
                 return False
-    strings = [v for v in rec.values() if type(v) is str] if (raw is None or samples) else ()
-    if raw is None:
-        for v in strings:
-            for pat in schema.pii_patterns.values():
-                if pat.search(v):
-                    return False
-    for smp in samples:
-        if smp and any(smp in v for v in strings):
-            return False
-    if rtype in schema.types:
-        errs: list = []
-        _check_rules(schema, rec, rtype, set(), errs, None)
-        if errs:
-            return False
     return True
 
 
-def validate_record(schema: Schema, rec, line=None, pii_samples=(), raw=None) -> list[dict]:
-    """Validate one parsed record. Never raises. `raw` (the source line) only speeds up the PII scan."""
+def validate_record(schema: Schema, rec, line=None, pii_samples=(), *, fast=True) -> list[dict]:
+    """Validate one parsed record. Never raises. fast=False skips the generated fast path (tests)."""
     errors: list[dict] = []
     try:
-        if isinstance(rec, dict) and _fast_ok(schema, rec, raw, pii_samples):
+        if fast and isinstance(rec, dict) and _fast_ok(schema, rec, pii_samples):
             return errors
         if not isinstance(rec, dict):
             _err(errors, line, "bad_json", "*", "line is not a JSON object")
@@ -468,7 +510,7 @@ def validate_line(schema: Schema, text: str, line=None, pii_samples=()):
         rec = parse_line(text)
     except (ValueError, RecursionError) as exc:
         return None, [{"line": line, "code": "bad_json", "field": "*", "detail": str(exc)[:120]}]
-    return rec, validate_record(schema, rec, line, pii_samples, raw=text)
+    return rec, validate_record(schema, rec, line, pii_samples)
 
 
 def validate_files(schema: Schema, paths, pii_samples=()) -> dict:

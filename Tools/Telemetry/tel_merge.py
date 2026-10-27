@@ -28,9 +28,10 @@ def _group(rec):
 
 
 def sort_key(rec):
-    tick = rec.get("tick")
-    return (tick is None, tick if tick is not None else rec.get("utc", 0), rec.get("src") or "",
-            rec.get("seq") or 0, rec.get("wid") or "", rec.get("matchId") or "", rec.get("type") or "")
+    """(tick, src, seq, wid); records without tick (perf_server) go last, by utc. Records are validated."""
+    tick = rec["tick"]
+    return (tick is None, tick if tick is not None else rec["utc"], rec["src"], rec["seq"], rec["wid"],
+            rec["matchId"] or "", rec["type"])
 
 
 def _ranges(missing: list[int], limit=10) -> list[str]:
@@ -86,7 +87,7 @@ def merge(paths, schema: tel_schema.Schema, pii_samples=()) -> dict:
                 trailers[_group(rec)].append(rec)
                 continue
             has_records = True
-            key = _group(rec) + (rec["seq"],)
+            key = (rec["matchId"], rec["src"], rec["wid"], rec["seq"])
             slot = occurrences.get(key)
             if slot is None:
                 occurrences[key] = [text, rec, 1, None]

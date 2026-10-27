@@ -1,0 +1,10 @@
+GameServer listening udp=7777 ws=7778
+[metrics] peers=10 active=10 pending=0 ticks=300 ticksPerSecond=30.00 tickP95Ms=1.234 tickP99Ms=2.345 loopP95Ms=0.120 loopP99Ms=0.800 cpuOneCorePercent=4.50 tickOverruns=0 droppedTicks=0 pings=20 invalidPackets=0 historyUnavailable=0 rejected=0 rooms=1 workingSetMiB=88.25 roomSlots=room-1:10/10 utc=2026-10-27T08:15:30.1234567Z
+[metrics] peers=10 active=10 pending=0 ticks=600 ticksPerSecond=29.97 tickP95Ms=1.502 tickP99Ms=3.010 loopP95Ms=0.131 loopP99Ms=0.912 cpuOneCorePercent=5.25 tickOverruns=0 droppedTicks=0 pings=20 invalidPackets=1 historyUnavailable=0 rejected=0 rooms=1 workingSetMiB=88.50 roomSlots=room-1:10/10 utc=2026-10-27T08:15:40.1239999Z
+[metrics] peers=10 active=9 pending=1 ticks=900 ticksPerSecond=29.90 tickP95Ms=34.100
+room-1 match 3f2a6c1e ended LastAlive
+2026-10-27 08:15:50 info: [metrics] peers=9 active=9 pending=0 ticks=900 ticksPerSecond=29.80 tickP95Ms=2.000 tickP99Ms=40.125 loopP95Ms=0.140 loopP99Ms=1.020 cpuOneCorePercent=6.00 tickOverruns=2 droppedTicks=1 pings=18 invalidPackets=0 historyUnavailable=0 rejected=0 rooms=2 workingSetMiB=90.75 roomSlots= utc=2026-10-27T08:15:50.6250000Z
+[metrics] peers=9 active=9 pending=0 ticks=1200 ticksPerSecond=30.00 tickP95Ms=1.100 tickP99Ms=abc loopP95Ms=0.100 loopP99Ms=0.700 cpuOneCorePercent=4.00 tickOverruns=0 droppedTicks=0 pings=18 invalidPackets=0 historyUnavailable=0 rejected=0 rooms=1 workingSetMiB=90.00 roomSlots=room-1:9/10 utc=2026-10-27T08:16:00.0000000Z
+[metrics] peers=9 active=9 pending=0 ticks=1500 ticksPerSecond=30.00 tickP95Ms=1.100 tickP99Ms=1.900 loopP95Ms=0.100 loopP99Ms=0.700 cpuOneCorePercent=4.00 tickOverruns=0 droppedTicks=0 pings=18 invalidPackets=0 historyUnavailable=0 rejected=0 rooms=1 workingSetMiB=90.00 roomSlots=room-1:9/10 utc=yesterday
+[metrics] peers=9 active=9 pending=0 ticks=1800 ticksPerSecond=30.00 tickP99Ms=1.900 loopP95Ms=0.100 loopP99Ms=0.700 cpuOneCorePercent=4.00 tickOverruns=0 droppedTicks=0 pings=18 invalidPackets=0 historyUnavailable=0 rejected=0 rooms=1 workingSetMiB=90.00 roomSlots=room-1:9/10 utc=2026-10-27T08:16:20.0000000Z
+shutdown requested

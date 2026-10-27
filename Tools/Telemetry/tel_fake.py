@@ -66,6 +66,11 @@ def bal_hash_for(cfg: str) -> str:
     return sha256_hex(f"tel-fake-bal-{cfg}")
 
 
+def cfg_offset_ms(cfg: str) -> int:
+    """Config B runs one day after A, so A and B never share a utc window (perf_server joins by utc)."""
+    return 0 if cfg == "A" else 86_400_000
+
+
 def utc_of(tick: int, skew_ms: int = 0) -> int:
     return BASE_UTC + tick * MS_PER_TICK + skew_ms
 
@@ -736,10 +741,10 @@ def _write_group(schema, recs, *, match_id, room_id, src, wid, t0, cfg_hash, bal
     return lines
 
 
-def _perf_server_lines(schema, rng, wid, first_tick, last_tick):
+def _perf_server_lines(schema, rng, wid, first_tick, last_tick, offset):
     recs = []
-    utc = utc_of(first_tick) - 5000
-    stop = utc_of(last_tick) + 10000
+    utc = utc_of(first_tick, offset) - 5000
+    stop = utc_of(last_tick, offset) + 10000
     seq = 0
     while utc <= stop:
         seq += 1
@@ -811,6 +816,7 @@ def generate(out_dir, seed=1, cfg="A", matches=6, players=10, sample_hz=1.0, sch
     perf_rng = random.Random(f"tel-fake:{seed}:{cfg}:perf")
     inj_rng = random.Random(f"tel-fake:{seed}:{cfg}:inject")
     cfg_hash, bal_hash = cfg_hash_for(cfg), bal_hash_for(cfg)
+    offset = cfg_offset_ms(cfg)
 
     sims = [MatchSim(seed, cfg, k, players, sample_hz, weapons, equips, zone_sched).run() for k in range(matches)]
     recon = _inject_reconnect(sims[0], inj_rng) if reconnect else None
@@ -820,13 +826,13 @@ def generate(out_dir, seed=1, cfg="A", matches=6, players=10, sample_hz=1.0, sch
     for s in sims:
         files[f"{s.match_id}.server.{server_wid}.jsonl"] = _write_group(
             schema, s.server, match_id=s.match_id, room_id=ROOM_ID, src="server", wid=server_wid, t0=s.t0,
-            cfg_hash=cfg_hash, bal_hash=None)
+            cfg_hash=cfg_hash, bal_hash=None, skew=offset)
         for nid in sorted(s.client):
             files[f"{s.match_id}.client.{nid}.jsonl"] = _write_group(
                 schema, s.client[nid], match_id=s.match_id, room_id=None, src="client", wid=client_wids[nid],
-                t0=s.t0, cfg_hash=cfg_hash, bal_hash=bal_hash, skew=client_skew[nid])
+                t0=s.t0, cfg_hash=cfg_hash, bal_hash=bal_hash, skew=offset + client_skew[nid])
     files[f"perf_server.{perf_wid}.jsonl"] = _perf_server_lines(schema, perf_rng, perf_wid, sims[0].t_lobby,
-                                                                sims[-1].end_tick + ENDING_TICKS)
+                                                                sims[-1].end_tick + ENDING_TICKS, offset)
     names = sorted(files)
     records = sum(len(files[n]) - 2 for n in names)
 
