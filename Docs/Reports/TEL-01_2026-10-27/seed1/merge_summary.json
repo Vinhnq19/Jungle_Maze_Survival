@@ -1,0 +1,105 @@
+{
+  "files": 67,
+  "lines": 19120,
+  "invalid": 0,
+  "invalidByCode": {},
+  "invalidExamples": [],
+  "unique": 18986,
+  "dup": 0,
+  "conflicts": 0,
+  "semanticDup": 0,
+  "semanticDupExamples": [],
+  "gaps": 0,
+  "gapGroups": [],
+  "trailerMismatch": [],
+  "unterminatedFiles": [],
+  "unterminatedGroups": [],
+  "truncated": [],
+  "droppedQueue": 0,
+  "droppedIo": 0,
+  "events": 18986,
+  "fake": 18986,
+  "real": 0,
+  "byType": {
+    "match_start": {
+      "real": 0,
+      "fake": 6
+    },
+    "match_end": {
+      "real": 0,
+      "fake": 6
+    },
+    "player_spawn": {
+      "real": 0,
+      "fake": 60
+    },
+    "attack": {
+      "real": 0,
+      "fake": 496
+    },
+    "damage": {
+      "real": 0,
+      "fake": 661
+    },
+    "elimination": {
+      "real": 0,
+      "fake": 54
+    },
+    "cc_span": {
+      "real": 0,
+      "fake": 33
+    },
+    "zone_phase": {
+      "real": 0,
+      "fake": 70
+    },
+    "loot_drop": {
+      "real": 0,
+      "fake": 199
+    },
+    "item_pickup": {
+      "real": 0,
+      "fake": 240
+    },
+    "item_use": {
+      "real": 0,
+      "fake": 65
+    },
+    "equip_change": {
+      "real": 0,
+      "fake": 93
+    },
+    "hide_span": {
+      "real": 0,
+      "fake": 78
+    },
+    "position_sample": {
+      "real": 0,
+      "fake": 12789
+    },
+    "session_state": {
+      "real": 0,
+      "fake": 9
+    },
+    "replay_choice": {
+      "real": 0,
+      "fake": 60
+    },
+    "perf_server": {
+      "real": 0,
+      "fake": 308
+    },
+    "perf_client": {
+      "real": 0,
+      "fake": 3759
+    }
+  },
+  "matches": [
+    "02539081-8d2d-4290-b859-96451894d1db",
+    "10a7154e-a947-4a8e-90a3-c0a59cdb9850",
+    "1eb31819-881f-445c-b049-18a463d2670c",
+    "3a244a7f-66c6-48c4-8f2c-4fdb6b8193fe",
+    "af631517-e643-43db-a876-6053172950b8",
+    "b1af74d7-cfd0-4a3c-9a28-3a35ba301e0e"
+  ]
+}

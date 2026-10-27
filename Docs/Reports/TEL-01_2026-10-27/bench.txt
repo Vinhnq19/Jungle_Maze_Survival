@@ -1,0 +1,6 @@
+[bench] cpus=16 os=Microsoft Windows NT 10.0.26300.0 runtime=8.0.33 clockResolutionUs=0.100
+[bench] mode=sink-draining n=1000000 p50Us=0.100 p99Us=0.200 maxUs=158.700 allocatedBytes=0 accepted=1000000
+[bench] mode=sink-full n=1000000 p50Us=0.100 p99Us=0.100 maxUs=40.200 allocatedBytes=0 accepted=0
+[PASS] TryWrite p99 <= 10 us (draining 0.200, full 0.100)
+[PASS] Zero bytes allocated after warm-up (draining 0, full 0)
+[PASS] Draining mode accepts >= 99% of writes (1000000); full mode drops every write (0 accepted)

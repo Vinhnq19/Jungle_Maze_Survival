@@ -277,6 +277,18 @@ class SchemaTests(unittest.TestCase):
         self.assertEqual(SCHEMA.field_order("damage"), list(tel_schema.ordered(SCHEMA, dict(shuffled, fake=True))))
 
 
+class CrossLanguageTests(unittest.TestCase):
+    def test_csharp_samples_pass_strict_validate(self):
+        """Files written by the real C# server (TelemetryChecks --emit-sample) and client sink (AC1, AC2, TR6)."""
+        d = FIXTURES / "from_csharp"
+        names = sorted(p.name for p in d.glob("*.jsonl"))
+        self.assertTrue(any(n.startswith("server_") for n in names) and any(n.startswith("client_") for n in names), names)
+        r = run_cli("validate", "--strict", d)
+        self.assertEqual(0, r.returncode, r.stdout + r.stderr)
+        self.assertIn("errors=0", r.stdout)
+        self.assertIn("fake=0", r.stdout)
+
+
 class ValidateCliTests(unittest.TestCase):
     def test_valid_fixtures_exit_zero_with_strict(self):
         r = run_cli("validate", "--strict", FIXTURES / "valid")
