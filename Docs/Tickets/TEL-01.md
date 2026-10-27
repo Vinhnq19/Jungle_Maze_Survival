@@ -931,6 +931,83 @@ Commit `8565a4df` (commit 1, schema và tài liệu), `a38773f0` (commit 5), `27
 - **AC31:** chờ Vinh ký `GameServer_Hook_Proposal.vi.md`.
 - **Commit 9** (QA guide, chép fixture C#, báo cáo mẫu): chưa giao cho phiên này.
 
+### Luồng P (công cụ Python), commit 2–4 · 27/10/2026 · backend-dev
+
+Commit `ccb58d48` (commit 2), `e3d746a8` (commit 3), `970695e1` (commit 4). Cả ba chỉ chạm `Tools/Telemetry/**` (AC29). Python 3.12.10 stdlib, chạy `python -I`.
+
+**File:**
+
+| File | Vai trò |
+| --- | --- |
+| `telemetry.py` | CLI một cửa: `validate`, `fake`, `merge`, `report`, `compare`, `perflog`. Mã thoát đúng bảng 4.2: 0, 1 (dùng sai lệnh, kể cả lỗi của argparse), 2, 3, 4 |
+| `tel_schema.py` | Nạp schema; Code ID đọc lúc chạy từ `idSets` (`--balance-dir` để thay); `validate_record()` trả `{line, code, field, detail}`, không ném lỗi; quét PII; `ordered()`, `dumps()`, `canonical()` |
+| `tel_fake.py` | Bộ phát giả xác định theo `seed`: 6 trận × 10 người, đủ 18 loại mỗi trận, hai config A/B, các cờ tiêm lỗi, `inject_manifest.json` |
+| `tel_merge.py` | Gộp: trùng kỹ thuật, xung đột, trùng ngữ nghĩa (loại `once`), hở `seq`, đối chiếu `_trailer`, `unterminated` |
+| `tel_metrics.py` | Số đo 2.5 theo `cfgKey`: TTK, nguyên nhân chết, bo theo phase, loot, trang bị đầu tiên, chết khi chỉ có HAND, CC, thời gian dùng, ẩn nấp, hiệu năng, độ phủ |
+| `tel_report.py` | `report.md` cùng 9 CSV; `compare` cho ra A, B, delta, nA, nB, nhãn mẫu thấp |
+| `tel_perflog.py` | `[metrics]` → `perf_server`; `wid` = 8 hex đầu SHA-256 của log |
+| `fixtures/valid` (18), `fixtures/invalid` (61), `fixtures/make_fixtures.py` | File sai đặt tên `<mã lỗi>__<mô tả>`: 14 file thiếu trường envelope, 19 file trường liệt kê ngoài miền, 4 `invalid_id` (có `BAD_ID`), 6 PII, và mỗi mã lỗi còn lại ≥ 1 file |
+| `fixtures/hand` (7), `fixtures/perflog` | Dữ liệu dựng tay cho AC13–AC15; 3 dòng `[metrics]` đúng chuỗi định dạng của `ServerMetrics.cs` cùng 4 dòng hỏng |
+| `golden/seed1` | `report.md` và 9 CSV của `fake --seed 1 --cfg A` |
+| `README.md`, `.gitattributes`, `.gitignore` | Tóm tắt lệnh. `eol=lf` để golden so từng byte đúng trên máy có `autocrlf`. Bỏ qua `__pycache__` |
+
+**Quyết định trong lúc làm (không đổi schema):**
+
+- **Xung đột:** mọi biến thể vào `conflicts.jsonl`, báo cáo gắn cờ lỗi. `events.jsonl` giữ biến thể có JSON chuẩn hóa nhỏ nhất, để kết quả không phụ thuộc thứ tự đọc (AC11) và số bản ghi không đổi.
+- **cfgKey của trận** lấy từ `match_start` (envelope server), bản ghi client theo `matchId` vào cùng nhóm. Server ghi `balHash = null` nên khóa hiện có dạng `1.0.0/xxxxxxxx/-`; không có file client thì khóa không đổi.
+- **`perf_server` nằm ngoài khoảng mọi trận** chỉ được đếm ở một dòng đầu báo cáo, không thành nhóm cfgKey.
+- **Chênh thời gian dùng vật phẩm** chỉ tính lượt `DONE`. Lượt `CANCELLED`/`INTERRUPTED` vào tỷ lệ riêng.
+- **Bộ phát giả:**
+  - `utc` = mốc cố định + tick × 33 ms. Config B lệch một ngày để `perf_server` của A và B không chồng nhau khi gộp chung.
+  - `replay_choice` `TIMEOUT` ghi `afterMs = null`, vì không có ack.
+  - File client tên `<matchId>.client.<netId>.jsonl`; luồng C ghi thêm `.<wid>`. Gộp không dựa vào tên file.
+- **Tốc độ:** mỗi loại có một hàm kiểm sinh mã một lần lúc nạp schema, gồm kiểu, miền, quy tắc chéo và đếm khóa. Hàm này chỉ trả lời "chắc chắn hợp lệ". Có nghi ngờ thì chạy bộ kiểm đầy đủ để ra danh sách lỗi chính xác. Kết quả PII được nhớ theo từng chuỗi; enum và ID kiểm PII một lần lúc nạp. Có test so hai đường trên hơn 3 000 bản ghi và biến thể (fixture, dữ liệu giả, giá trị đột biến): hai đường cho cùng kết luận.
+- **Mẫu `perflog`** là `.txt`, vì `.gitignore` gốc chặn `*.log`. Các dòng được dựng từ chuỗi định dạng ở `ServerMetrics.cs:45`, không chép từ log chạy thật (phiên này không chạy GameServer).
+
+**Test:** `python -I Tools/Telemetry/test_telemetry.py` → **79 test, 78 chạy, OK, 1 skip** (`PerfTests`, chỉ chạy khi có `--perf`), khoảng 25 s. Chia theo lớp: Schema 17, ValidateCli 4, FakeGenerator 12, Merge 17, HandMetric 8, Report 13, Perflog 5, Tooling 2. Đã chạy suite đầy đủ trước mỗi commit. Lần cuối chạy lại trên bản `git archive HEAD` sạch: OK.
+
+| AC | Bằng chứng (Python) |
+| --- | --- |
+| AC1 | Đúng 18 loại, `n` 1–18; bảng mục 3 của `Schema.vi.md` khớp JSON (số thứ tự, bên ghi, một lần, khóa); 18/18 fixture hợp lệ đạt |
+| AC2 | 14 fixture thiếu một trường envelope đều bị từ chối; toàn bộ dữ liệu giả 0 lỗi |
+| AC3 | `BAD_ID` cho đúng `invalid_id`; dữ liệu giả 0 `invalid_id`; ID đọc từ `weapons.json`/`equipments.json` lúc chạy |
+| AC4 | Fixture tên, RoomCode, JWT, IPv4, IPv6, khóa cấm lồng sâu đều bị bắt. Tên hiển thị và RoomCode mẫu của bộ phát giả không xuất hiện ở byte nào của file giả hay báo cáo |
+| AC5 | Mỗi trường liệt kê (19) có fixture ngoài miền, bị `bad_enum` |
+| AC6 | `--dup` 5%: `dup` = số đã tiêm; `events.jsonl` giống từng byte lần chạy sạch |
+| AC7 | `--conflict 3`: 3 dòng `conflicts.jsonl`; `--strict` thoát 2 |
+| AC8 | `--semantic-dup 6`: `semantic_dup` = 6; số mỗi loại "một lần" bằng lần chạy sạch |
+| AC9 | `--reconnect`: 1 `match_start`, 1 `player_spawn` cho người rớt, đúng `DROPPED` rồi `RESUMED`, `seq` client liên tục, tổng = `expectedMerged` |
+| AC10 | `--gap` k = 1, 7, 40 báo đúng k, cả qua `_trailer.written`; mất dòng cuối file vẫn bắt được; lần chạy sạch `written` = số dòng |
+| AC11 | Xáo dòng (kể cả header/trailer) và thứ tự file 5 lần: `events.jsonl`, `merge_summary.json` và báo cáo giống từng byte |
+| AC12 | `golden/seed1` khớp từng byte; các con số golden (TTK trung vị mỗi vũ khí, % chết vì bo, số loot, số CC) khớp số tính lại |
+| AC13 | Dựng tay: một vũ khí; hai kẻ tấn công; nghỉ > 5 s tách chuỗi; nghỉ đúng 150 tick vẫn giữ; đổi vũ khí giữa chuỗi; kết liễu bằng bo không vào TTK; one-shot = 0 s; `--gap-sec` đổi chuỗi |
+| AC14 | 10 `elimination`, 3 `ZONE`: 30,0%, tổng các phase = 3, người bị damage bo 6/12 |
+| AC15 | Loot, trang bị đầu tiên (trung vị 20 s, 1 người không có), chết khi chỉ có HAND 2/3, CC, thời gian dùng, ẩn nấp: đều so với số viết sẵn |
+| AC16 | Gộp A + B: hai nhóm, mỗi nhóm 6 trận, số bản ghi, số loại và `perf` đúng bằng từng tập; TTK nhóm A giống khi chạy riêng A |
+| AC17 | `compare`: delta = B − A ở mọi dòng; nhãn mẫu thấp đúng nhóm; cặp dựng tay cho KNIFE 4,0 → 3,5 s (delta −0,5); B ít đòn hạ hơn trên 3 vũ khí được tăng damage |
+| AC18 | Bỏ file client, bỏ `perf_server`, chỉ còn client, thư mục rỗng: mã thoát 0, mục tương ứng ghi "không có dữ liệu", đủ 9 CSV |
+| AC19 | `--perf`: 50 trận, 415 695 dòng; merge 6,40 s, metrics + report 0,84 s, **tổng 7,24 s** (≤ 10 s). Máy AMD64 Family 25 Model 80, 16 luồng, Python 3.12.10 |
+| AC20 | Hai lần chạy seed 1 cho hash từng file bằng nhau; mỗi trận đủ 18 loại ở cả A và B |
+| AC21 | Từng cờ ở AC6–AC11, và test gộp mọi cờ cùng lúc |
+| AC22 | 100% dòng giả có `fake: true`; `--require-real` thoát 3 (merge, report); dữ liệu thật thoát 0 |
+| AC28 | 3 dòng khớp từng trường, `windowSec` 10 / 10 / 10,502, 4 dòng hỏng bị bỏ và đếm, nạp lại cùng log thành trùng kỹ thuật |
+| AC30 | Quét `import` của mọi `.py`: chỉ module stdlib hoặc module cục bộ |
+| AC39 | `coverage.csv`: dữ liệu giả cho `fake-only` ở cả 18 loại; trộn dữ liệu thật cho `mixed`/`real`/`none` đúng |
+
+**Lệnh đã chạy (kết quả thật):**
+
+- `python -I Tools/Telemetry/test_telemetry.py` → `Ran 79 tests … OK (skipped=1)`.
+- `python -I Tools/Telemetry/test_telemetry.py --perf PerfTests` → OK, số đo AC19 ở bảng trên.
+- `python -I Tools/Telemetry/telemetry.py validate --strict Tools/Telemetry/fixtures/valid` → `errors=0`, mã thoát 0.
+- `python -I Tools/Telemetry/telemetry.py fake --out <tmp> --dup --gap 7 --conflict --semantic-dup --reorder --reconnect`, sau đó `merge <tmp> --out <tmp2> --strict` → `dup=950 semantic_dup=6 conflicts=3 gaps=7`, mã thoát 2.
+- `python -I Tools/Telemetry/telemetry.py report <fake seed 1> --out <tmp> --run FAKE-seed1` → mã thoát 0, giống `golden/seed1`.
+
+**Còn lại / follow-up:**
+
+- **AC23** (QA chạy từ checkout sạch ≤ 15 phút) và chép `fixtures/from_csharp/` thuộc commit 9. Commit đó nên thêm vào `test_telemetry.py` một test `validate --strict` trên `fixtures/from_csharp/` (0 lỗi, không có `fake`); hiện test chưa quét thư mục này.
+- **Mẫu `perflog` thật:** khi có log GameServer thật (Phase B), chép 3 dòng vào `fixtures/perflog/` để thay dòng dựng.
+- Một lần chạy `--perf` đầu tiên, trước khi tối ưu, dừng với `SystemError` trong bộ mã hóa `_json`. Hai lần chạy sau không lặp lại; chưa rõ nguyên nhân.
+
 ## 6. Review
 
 _Code-reviewer điền._
