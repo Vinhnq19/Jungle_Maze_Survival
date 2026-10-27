@@ -10,6 +10,7 @@ namespace JungleMaze.Presentation.UI
     /// <summary>Overlay số đo mạng (F3), chỉ có trong Editor/Development build. Dùng để ghi RTT thực tế khi nghiệm thu.</summary>
     public sealed class NetworkStatsOverlay : MonoBehaviour
     {
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
         private const float RefreshSeconds = 0.5f;
         private INetworkClient _network;
         private MatchSession _match;
@@ -27,7 +28,6 @@ namespace JungleMaze.Presentation.UI
             _remote = remote;
         }
 
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F3)) _visible = !_visible;
@@ -62,6 +62,9 @@ namespace JungleMaze.Presentation.UI
             GUI.Box(new Rect(Screen.width - 490, 10, 480, 190), GUIContent.none);
             GUI.Label(new Rect(Screen.width - 480, 15, 460, 180), _text);
         }
+#else
+        [Inject]
+        public void Construct(INetworkClient network, MatchSession match, RemotePlayerInterpolator remote) { }
 #endif
     }
 }
