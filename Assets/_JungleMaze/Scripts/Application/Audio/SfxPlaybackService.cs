@@ -14,7 +14,7 @@ namespace JungleMaze.App.Audio
     /// </summary>
     public sealed class SfxPlaybackService : IAudioService, ITickable
     {
-        private const float DefaultVolume = 1f;
+        private const float DefaultVolume = AudioVolume.DefaultVolume;
         /// <summary>Settings are written to disk this long after the last change (slider drags write once).</summary>
         public const float SaveDebounceSeconds = 0.5f;
 

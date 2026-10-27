@@ -6,6 +6,7 @@ namespace JungleMaze.App.Audio
     public static class AudioVolume
     {
         public const float MinDecibels = -80f;
+        public const float DefaultVolume = 1f;
 
         public static float Clamp01(float v) => float.IsNaN(v) ? 0f : v < 0f ? 0f : v > 1f ? 1f : v;
 
