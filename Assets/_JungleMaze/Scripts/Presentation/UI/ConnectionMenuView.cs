@@ -252,7 +252,6 @@ namespace JungleMaze.Presentation.UI
         private static void SetState(GUIStyleState state, Texture2D texture, Color text)
         {
             state.background = texture;
-            state.scaledBackgrounds = null;
             state.textColor = text;
         }
     }
