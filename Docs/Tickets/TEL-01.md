@@ -775,6 +775,19 @@ Phase A có 9 commit. Phase B có 1 commit của TEL-01; commit H1/H5/H6 là c�
 
 Không có câu hỏi nào chặn việc bắt đầu build. Không cần G2: protocol không đổi.
 
+### 4.12. Kết quả G1
+
+**G1 · 27/10/2026 · CPO** (quyền người dùng giao: "Bạn được quyền quyết thay thôi. ko đợi tôi quyết"): **Duyệt** kế hoạch 4.0–4.10 cùng mọi mặc định T-1…T-7. Spec Q1–Q11 cũng theo mặc định.
+
+- **T-1:** cho phép tạo `Backend/Telemetry/**` và `Backend/Tests/TelemetryChecks/**`. `Backend/GameServer/**` vẫn **khóa**: không sửa một dòng nào. CPO ghi vùng mới vào `Agent_Coordination.vi.md`.
+- **T-2:** liên kết nguồn. Phase B chỉ cần Vinh thêm khoảng 5 dòng; TEL-01 không tự thêm.
+- **T-3:** bật client bằng cờ dòng lệnh `-telemetry`, không sửa `ClientConfig`.
+- **T-4:** P và S chạy song song. Phiên Backend Dev làm commit 1 rồi luồng S; một subagent backend-dev của CPO làm luồng P. Unity Dev làm luồng C. Cả ba bắt đầu sau commit 1.
+- **T-5:** harness trong tiến trình được dùng làm bằng chứng AC33 cho Phase A, gắn nhãn "proxy, tải giả". AC33 trên tiến trình thật là điều kiện của H1.
+- **T-6:** dùng giá trị đề xuất.
+- **T-7:** sau commit 1, CPO ghi một dòng vào `Agent_Coordination.vi.md` báo Vinh đọc `Docs/Telemetry/GameServer_Hook_Proposal.vi.md`. Vinh duyệt độc lập, không chặn Phase A.
+- **Không cần G2:** protocol không đổi. Mọi bản ghi không được chứa PII: tên hiển thị, RoomCode, JWT, IP (AC4).
+
 ## 5. Nhật ký build
 
 _Dev điền._
