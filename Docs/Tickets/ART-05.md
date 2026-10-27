@@ -716,7 +716,85 @@ Tổng: **6 commit** trước G3 (5 nếu nhạc lùi), cộng 1 commit dọn sa
 
 ## 5. Nhật ký build
 
-<Dev ghi ngắn: đã làm gì, quyết định phát sinh, lệch kế hoạch và lý do.>
+### Build ART-05 · 27/10/2026 · unity-dev
+
+**Commit** (7, không push):
+
+| # | Commit | Nội dung |
+| --- | --- | --- |
+| 1 | `176be71e` | `Tools/Audio/process_clips.py`, `measure_clips.py`, `build_manifest.py`, `test_art05_audio.py`, `art05_recipe.csv`, `art05_jsurviv_inventory.csv`, README; bỏ `art05_make_sfx.py` (bản đầu, đã thay) |
+| 2 | `04aa1068` | Ghi đè 25 WAV CC0 (giữ `.meta`, GUID không đổi), `volume` 14 mã |
+| 3 | `96f76179` | 15 WAV dẫn xuất từ 12 mã JSurviv, `clips` + `volume` 12 mã |
+| 6 | `8d0b9063` | `Music/` 3 OGG (Streaming, Vorbis 0,7), `AudioRuntimeSet` trỏ 3 bài |
+| 6b | `83c20458` | 40 SFX import **PCM** thay ADPCM (lý do ở dưới) |
+| 4 | `7f6f3f62` | Manifest, `Docs/Licenses/Audio/` (4 tệp), viết lại `ART05_Sources.vi.md` |
+| 5 | `5495418e` | 5 lớp test EditMode `ArtAudio*` (19 test) |
+
+Thứ tự khác 4.5: nhạc (6) trước manifest (4) và test (5), vì manifest có dòng nhạc và `ArtAudioMusicTests` dùng chung `ArtAudioSpec` với test SFX. Thêm commit 6b.
+
+**Quy trình.** `process_clips.py` đọc bản gốc chỉ-đọc (`Tools/Audio/Sources/ART-05/`, `Assets/Imported/JSurviv/Sound/`), ghi ra `%TEMP%/art05_stage`, rồi mới chép vào `Assets/` khi đã giữ Editor. Python có `soundfile` 0.14 (libsndfile 1.2.2) và `numpy` 2.5, không ffmpeg (G1 T-1). WAV ra giống từng byte khi chạy lại (đã kiểm md5 hai lần chạy). Đổi tần số bằng sinc cửa sổ Blackman (`súng bắn`, `countdown` 24 kHz; RPG Audio 48 kHz). Mọi clip: 2 ms im lặng + fade-in 3 ms, fade-out cosine rồi 2 ms im lặng, limiter nhìn trước trần −1,05 dBFS. `.meta` của 15 + 3 file mới chép từ mẫu `.meta` SFX sẵn có (GUID mới) trước khi Unity import, nên không lúc nào có `.meta` mặc định `normalize: 1`.
+
+**Ba khoảng trống P0 của Tech Lead (4.0):**
+- K1 fade-in: cả 40 SFX có 2 ms đầu và 2 ms cuối im hẳn (đo −240 dBFS trên WAV và qua `GetData`).
+- ZoneBell3: đổi sang `impactBell_heavy_002` (0,68 s, không phải cắt), L −17,5, E −17,5 (T1 −16 ± 3). Limiter giảm 6 dB.
+- ShootCrossbow: `pluck_001` (0,09 s) và `pluck_002` (0,13 s) đều < 0,15 s, nên chọn `chop.ogg` của Kenney RPG Audio (tiếng phập gỗ), giữ đuôi tự nhiên: 0,228 s, không đệm im lặng (T-3). **PIC cần nghe có hợp tiếng nỏ không.**
+- Eliminated so với HitMarker: Eliminated E −20,05 (trước −16,9); HitMarker E −16,5, lề so với mã T2–T4 to nhất là 3,5 dB (AC20 ≥ 3), so với bước chân là 14,4 dB (≥ 12).
+
+**Đổi clip so với lượt đầu:** `UseCancel` `back_002` (0,07 s < 0,10) → `close_001` (0,15 s). `Reload` giữ đuôi `metalLatch` tới 0,22 s (≥ 0,20). `EmptyClick` cắt còn 0,12 s (≤ 0,30). `ArmorAbsorb` cắt 0,37 s (≤ 0,40). `UseDrink` lấy 0,6 s đầu (mở lon) thay vì 1,4 s, vì đoạn rót sau đó chỉ −40 dBFS làm L tụt dưới −20.
+
+**Lệch kế hoạch:**
+1. **Limiter quá 6 dB ở 13 clip** (TR1). Clip thưa hoặc hệ số đỉnh cao (tích tắc ngòi bom cách 0,3 s, chốt kim loại, tấm giáp, giáp da, dùng đồ) không lên được L −18 trong 6 dB. Các dòng đó trong công thức có cột `max_reduction_db` tới 16 dB và đích L −19,5 (vẫn trong −20…−15 của AC40). Mức giảm thật của từng clip ghi ở cột `reduction_db` của manifest; lớn nhất 15,4 dB (`bomb_fuse`, `reload`). **PIC nghe xem tiếng va có bị bẹt không** (AC36).
+2. **SFX import PCM, không ADPCM.** Đo bằng `GetData`: ADPCM đẩy đỉnh tiếng va lên tới +1 dB (`hurt_local` 0,0 dBFS, `use_drink` −0,07, `bomb_fuse` −0,24), vi phạm AC16/AC18. 2.7 cho PCM với clip ≤ 0,3 s; ở đây áp cho cả 40 clip (TR2), kể cả clip dài tới 3 s. Bộ nhớ lúc chạy không đổi (Decompress On Load vốn đã giải ra PCM); build tăng khoảng 1,6 MB.
+3. **Vorbis nhạc:** chất lượng nguồn 0,7 làm `waiting_room` (145 s) và `match` (123 s) vượt 3,0 MB. Script chọn chất lượng cao nhất còn ≤ 3,0 MB: `waiting_room` 0,5 (2 695 023 B), `match` 0,5 (2 551 882 B), `loading` 0,7 (569 649 B). Import trong Unity vẫn Vorbis 0,7 theo 2.7. OGG có số serial ngẫu nhiên nên không giống byte giữa hai lần chạy.
+4. **Bằng chứng giấy phép rồng** là bản ghi chữ nội dung trang OpenGameArt (tác giả trazzz123, License(s): CC0, đọc 27/10/2026) kèm md5 file tải về, không phải ảnh chụp/PDF.
+5. `Docs/Art/Audio/ART05_Sources.vi.md` (vùng `Docs/Art/**`) được viết lại theo K7 như 4.3 đã ghi; đã ghi ở mục 4 của `Agent_Coordination`.
+
+**Bảng mức âm** (đầy đủ từng clip: `Docs/Tickets/ART-05_audio_manifest.csv`, dòng `clip`; dưới đây là dòng `sfx`). L là mức hoạt động trung bình các biến thể (G-7), E = L + 20·log10(volume), "Giảm" là mức limiter giảm lớn nhất trong các biến thể:
+
+| SfxId | Tầng | Clip | Dài (s) | L (dBFS) | volume | E (dBFS) | Giảm (dB) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| FootstepGrass | T4 | 5 | 0.12–0.16 | -24.0 | 0.45 | -30.9 | 0.0 |
+| FootstepSwamp | T4 | 5 | 0.12–0.19 | -24.0 | 0.45 | -30.9 | 0.0 |
+| BushEnter | T4 | 2 | 0.47–0.55 | -18.2 | 0.28 | -29.3 | 6.0 |
+| MeleeSwing | T2 | 1 | 0.30 | -18.0 | 0.79 | -20.1 | 0.0 |
+| MeleeHit | T2 | 1 | 0.18 | -18.0 | 0.79 | -20.1 | 3.1 |
+| ShootRanged | T2 | 1 | 0.98 | -18.0 | 0.79 | -20.1 | 0.0 |
+| ShootCrossbow | T2 | 1 | 0.23 | -18.6 | 0.79 | -20.6 | 6.0 |
+| Throw | T2 | 1 | 0.44 | -18.0 | 0.79 | -20.1 | 0.0 |
+| Reload | T3 | 1 | 0.22 | -19.5 | 0.50 | -25.5 | 15.3 |
+| EmptyClick | T3 | 1 | 0.12 | -19.5 | 0.50 | -25.5 | 14.0 |
+| BombFuse | T2 | 1 | 0.95 | -19.5 | 0.79 | -21.6 | 15.4 |
+| Explosion | T2 | 1 | 2.80 | -18.0 | 0.79 | -20.1 | 0.0 |
+| TrapTriggered | T2 | 1 | 0.17 | -19.5 | 0.79 | -21.5 | 12.7 |
+| HitMarker | T1 | 1 | 0.07 | -16.5 | 1.00 | -16.5 | 8.0 |
+| HurtLocal | T1 | 1 | 0.55 | -16.0 | 1.00 | -16.0 | 4.7 |
+| ArmorAbsorb | T2 | 3 | 0.37–0.37 | -19.0 | 0.79 | -21.1 | 10.3 |
+| Eliminated | T2 | 1 | 0.37 | -18.0 | 0.79 | -20.1 | 0.0 |
+| PickupWeapon | T3 | 1 | 0.55 | -18.0 | 0.50 | -24.0 | 0.0 |
+| PickupItem | T3 | 1 | 0.55 | -19.5 | 0.50 | -25.5 | 10.3 |
+| WearArmor | T3 | 4 | 0.79–1.15 | -19.5 | 0.50 | -25.5 | 12.8 |
+| UseHeal | T3 | 1 | 1.40 | -19.5 | 0.50 | -25.5 | 8.5 |
+| UseDrink | T3 | 1 | 0.60 | -19.5 | 0.50 | -25.5 | 7.0 |
+| UseCancel | T3 | 1 | 0.15 | -18.0 | 0.50 | -24.0 | 0.0 |
+| ZoneBell3 | T1 | 1 | 0.68 | -17.5 | 1.00 | -17.5 | 6.0 |
+| DragonRoar | T1 | 1 | 3.00 | -16.0 | 1.00 | -16.0 | 0.0 |
+| MatchEnd | T1 | 1 | 2.79 | -16.0 | 1.00 | -16.0 | 0.9 |
+
+Nhạc (đo trên OGG đã giải mã bằng libsndfile): `waiting_room` L −26,0, đỉnh −10,2, 145,53 s · `loading` L −26,0, đỉnh −18,7, 43,65 s · `match` L −26,0, đỉnh −12,6, 123,43 s. Thấp hơn T1 10 dB (AC30). Tổng file âm thanh mới: 8 022 452 B (≤ 12 MB, AC35).
+
+**Test:**
+- Python `test_art05_audio.py` 7/7.
+- EditMode **475/475** (456 + 19 `ArtAudio*`). Audio 78/78.
+- PlayMode **106/106** (`AudioAcceptanceTests` 15/15).
+- Console 0 Error/Warning. `EditorSettings.asset` đã `git checkout`.
+- `git diff` của toàn đợt không có `Assets/Imported/**` hay `Scripts/**`; `.cs` chỉ là 5 file test.
+
+**Còn mở, không tự đóng được:**
+- AC6, AC34, AC36 (người nghe): cột `heard` = `chưa` ở mọi dòng. PIC nghe qua F6, nhất là ShootCrossbow (`chop`), các clip giảm > 6 dB, BombFuse (0,95 s tích tắc), UseDrink (mở lon), HurtLocal (`bleed`).
+- AC42: 12 clip JSurviv và 3 bài nhạc vẫn `chưa kiểm chứng`; `TimeOver.wav` (MatchEnd) mang thẻ hollywoodedge.com.
+- AC30 đường 1 (đo nhạc bằng `GetData` trong Unity) chưa làm, vì clip Streaming không đọc được; số trên đo bằng libsndfile.
+- AC15 (đảo ngược trên bản sao tạm, P2) chưa làm.
+- Sau G3: dọn `Placeholder/JSurviv/**` và `Placeholder/Beeps/**` (Q7); chạy `copy_jsurviv_placeholders.py --check` trước (manifest đã ghi md5 bản chép khớp gốc cho cả 14 file, AC38).
 
 ## 6. Review
 
