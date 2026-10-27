@@ -701,6 +701,19 @@ Tổng: **6 commit** trước G3 (5 nếu nhạc lùi), cộng 1 commit dọn sa
 | **T-6** | Chuyển `LICENSE_Kenney_CC0.txt` sang `Docs/Licenses/Audio/` đúng spec và đổi tên theo gói? | **Có**; `ART05_Sources.vi.md` trỏ tới đường dẫn mới |
 | **T-7** | Clip không đạt sau xử lý hoặc sau khi nghe: cho tạm trỏ lại bíp và ghi báo cáo (spec 2.13)? | **Có**; kỳ vọng "0 bíp" của `SfxCatalogTests` khi đó tính theo số mã còn dùng bíp, báo CPO trước khi đổi |
 
+### 4.9. Kết quả G1
+
+**G1 · 27/10/2026 · CPO** (quyền người dùng giao: "Bạn được quyền quyết thay thôi. ko đợi tôi quyết"): **Duyệt** kế hoạch 4.0–4.7.
+
+- **T-1 → Không dùng ffmpeg.** Không tải và chạy file thực thi lạ. Dùng Python có `soundfile` (libsndfile 1.2.2, đã kiểm: đọc được MP3, ghi được OGG Vorbis) và `numpy`, cài trong venv ngoài repo. Nhạc nén sang **OGG Vorbis**, chất lượng tương đương 0,7, thay cho MP3/WAV. Vì vậy AC29–AC31 không bị chặn, giữ commit 6.
+- **T-2 → Nguồn gốc đã vào repo** (`31b7aa24`): `Tools/Audio/Sources/ART-05/` (3 zip Kenney còn nguyên `License.txt` + `monster_roar.wav` + `README.vi.md`). Script lần đầu ở `Tools/Audio/art05_make_sfx.py`. Venv dựng sẵn trên máy: `C:\Users\Admin\AppData\Local\Temp\claude\E--Github-Jungle-Maze-Survival\78f61af7-a637-481e-8842-cbdd90ab6cb2\scratchpad\audio_venv\Scripts\python.exe`; nếu mất thì tạo lại bằng `python -m venv` + `pip install soundfile numpy`.
+- **T-3 → Mặc định:** chọn clip Kenney khác dài ≥ 0,15 s, không đệm im lặng.
+- **T-4 → Giữ tên file hiện có.** AC8 hiểu là: tên ASCII, chữ thường, có tiền tố theo SfxId và hậu tố biến thể `_N`. Như vậy 25 file của `3f32e1c4` đã đạt.
+- **T-5, T-6, T-7 → Mặc định** như 4.8.
+- **Test PlayMode:** `72e5e1e3` đã sửa `AudioAcceptanceTests` để chấp nhận mọi biến thể clip. Lỗi này do `3f32e1c4` gây ra; PlayMode hiện 106/106.
+
+**Build:** unity-dev, 6 commit theo 4.5, Giai đoạn A có thể làm ngay. Hạn 30/10.
+
 ## 5. Nhật ký build
 
 <Dev ghi ngắn: đã làm gì, quyết định phát sinh, lệch kế hoạch và lý do.>
