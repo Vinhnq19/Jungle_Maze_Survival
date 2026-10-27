@@ -416,7 +416,364 @@ Tải 10 người **người thật** chưa có (BOT-01, WPN-02); số đo cục
 
 ## 4. Kế hoạch kỹ thuật
 
-_Tech Lead điền._
+Tech Lead, 27/10/2026. Kế hoạch đọc từ code hiện tại: `MatchRuntime.cs`, `HealthService.cs`, `MatchOutbox.cs`, `ServerMetrics.cs`, `Program.cs` (GameServer); `PacketRegistry.cs`, `MatchPackets.cs` (Protocol); `MovementTelemetry.cs`, `MatchSession.cs`, `NetworkStats.cs`, `Bootstrap.cs` (client); `Tests/MatchChecks` (cách test backend tham chiếu GameServer).
+
+### 4.0. Kết luận chính
+
+1. **Phase A chạy được mà không sửa một dòng nào của GameServer.** Mã sink và bộ quan sát phía server nằm ở thư mục mới `Backend/Telemetry/` (của TEL-01). Thư mục này **không phải project riêng**: các file `.cs` được **liên kết mã nguồn** (`<Compile Include=…>`), giống cách GameServer đang nhúng `Shared/Protocol`.
+   - Phase A: project kiểm `Backend/Tests/TelemetryChecks/` tham chiếu `GameServer.csproj` (giống `MatchChecks`) và nhúng nguồn `Backend/Telemetry/**`. Nhờ vậy test chạy trên **`MatchRuntime` thật**, trong cùng tiến trình.
+   - Phase B: Vinh chỉ thêm 1 dòng `<Compile Include="../Telemetry/**/*.cs" …>` vào `GameServer.csproj` và khoảng 5 dòng vào `Program.cs` (H1). Không có tham chiếu vòng giữa hai project.
+   - Lý do không làm project thư viện riêng: thư viện cần kiểu của GameServer (`MatchRuntime`), còn GameServer lại cần gọi thư viện. Hai project tham chiếu nhau thì bị vòng. Liên kết mã nguồn tránh được vòng này mà không đổi gì trong GameServer.
+2. **Không đổi protocol, không cần G2.** Bộ quan sát giải mã frame bằng `PacketRegistry.TryReadAll` có sẵn, ở luồng nền. `Backend/Shared/Protocol/**` chỉ đọc (AC29).
+3. **Phía client chỉ ghi `perf_client`.** Theo bảng 2.4, đây là loại duy nhất có nguồn C; 17 loại còn lại do server hoặc bộ phát giả ghi. Client bật bằng tham số dòng lệnh `-telemetry`, nên **không sửa `ClientConfig`** của người khác.
+4. **Đo ngân sách tick (Q9) có bằng chứng ngay ở Phase A.** Harness trong tiến trình dùng đúng `FixedTickLoop` và `ServerMetrics` thật. `tickP95Ms` lấy từ chính dòng `[metrics]` của server, không tự đo (4.6). Phase B chạy lại trên tiến trình GameServer thật.
+5. **Spec có 4 điểm code thực tế khác giả định** (4.9, X1–X4). Plan xử lý cả 4, không cần sửa spec trước G1:
+   - `ResumeTokenRotated` cũng phát lúc vào trận, không chỉ khi resume.
+   - Roster và kết quả trận chứa `DisplayName`.
+   - Elimination phải ghép từ 4 tín hiệu, vì các tín hiệu này tới ở các bước khác nhau trong cùng tick.
+   - Dòng `[metrics]` không có `windowSec`.
+
+### 4.1. Kiến trúc
+
+```text
+GameServer (của Vinh, KHÔNG sửa ở Phase A)        Backend/Telemetry/** (TEL-01, liên kết nguồn)
+ MatchRuntime ── event public ───────────────►  MatchTelemetryObserver  (luồng tick: chỉ chép tham chiếu + tick)
+   ReliableBroadcast(byte[])                        │ TryWrite(TelemetryEvent)  ← struct, 0 cấp phát, không khóa
+   SnapshotGenerated(byte[])                        ▼
+   MatchCompleted / PlayerDropped / GraceExpired   TelemetryRing ×2 (critical, bulk)  ← MPSC Vyukov, có giới hạn
+   ResumeTokenRotated                               │ (luồng nền, Thread riêng)
+ HealthService.EntityDamaged / EntityDied           ▼
+                                                 MatchTelemetryAssembler → JsonlTelemetryWriter
+ ServerMetrics → stdout "[metrics] …"               (giải mã PacketRegistry, ghép bản ghi, ghi file theo trận)
+        │
+        └── server.log ──► Tools/Telemetry  perflog → perf_server.jsonl
+
+Client (Unity, Clean Architecture)
+ Domain/Telemetry      FrameStats (C# thuần: fpsAvg, 1% low, p95, max trên mảng cấp sẵn)
+ Application/Telemetry ITelemetrySink (port) · PerfClientRecorder : ITickable (đọc MatchSession, INetworkClient.Stats)
+ Infrastructure/Telemetry JsonlTelemetryFileSink (ring SPSC + Thread nền, persistentDataPath/Telemetry/…)
+ Bootstrap/Telemetry   Bootstrap.Telemetry.cs: ComposeTelemetry(...) chỉ khi có -telemetry
+
+Ngoại tuyến: Tools/Telemetry/*.py (stdlib) ── validate · fake · perflog · merge · report · compare
+Hợp đồng chung: Docs/Telemetry/telemetry.schema.v1.json (một nguồn, ba bên cùng đọc)
+```
+
+**Hợp đồng schema dùng chung** là file `Docs/Telemetry/telemetry.schema.v1.json`. Đây là định dạng gọn tự định nghĩa, không phải JSON Schema draft, vì Python stdlib không có bộ kiểm JSON Schema.
+
+- **Nội dung file:**
+  - Phần envelope.
+  - 18 `types`, mỗi loại có: `fields` (kiểu, cho phép null hay không, miền giá trị), `dedupe` (danh sách trường của khóa ngữ nghĩa), `once` (true/false), `source` (`S0`/`S+`/`W`/`C`).
+  - `enums`.
+  - `extraIds`: các ID trong G-6.
+- **Code ID vũ khí và trang bị không chép vào schema.** Bộ kiểm đọc trực tiếp `balance/weapons.json` và `equipments.json` lúc chạy. Như vậy không sinh bảng config thứ hai, đúng mục 2.2.
+- **Cách giữ ba bên khớp schema:**
+  - Python dùng file này làm bộ kiểm chính.
+  - Test C# server và client kiểm tên trường bằng một danh sách hằng.
+  - QA chạy `validate` trên file do C# thật sinh ra (4.5).
+
+### 4.2. Danh sách file theo vùng
+
+**A. Tài liệu và schema — `Docs/Telemetry/**`** (mới)
+
+| File | Nội dung | AC |
+| --- | --- | --- |
+| `telemetry.schema.v1.json` | Schema máy đọc (4.1) | AC1, AC2, AC5 |
+| `Schema.vi.md` | Bảng người đọc của 18 loại, trường, khóa, nguồn. Có test kiểm danh sách loại trong file này trùng với JSON | AC1 |
+| `Hook_Contract.vi.md` | Bảng 18 loại × chủ ticket × điểm gọi × trạng thái (S0/S+/W/C); hợp đồng `ITelemetrySink` cho H7 | AC31 |
+| `GameServer_Hook_Proposal.vi.md` | Đề xuất riêng cho Vinh: H1, H5, H6, mỗi hook có diff mẫu, lý do và ô ký duyệt (4.7) | AC31 |
+| `QA_Guide.vi.md` | Lệnh chép-dán: bật server, bật client, thu file, gộp, báo cáo, so hai config, đo tick | AC23 |
+
+**B. Công cụ ngoại tuyến — `Tools/Telemetry/**`** (mới, Python 3.12 stdlib, chạy `python -I`)
+
+| File | Vai trò |
+| --- | --- |
+| `telemetry.py` | CLI một cửa. Lệnh con: `validate`, `fake`, `perflog`, `merge`, `report`, `compare`. Mã thoát ở cuối bảng |
+| `tel_schema.py` | Nạp schema và Code ID; `validate_record()` trả danh sách lỗi, không ném lỗi; quét PII (AC4) |
+| `tel_fake.py` | Bộ phát giả xác định theo `seed` (4.4); các cờ `--dup --gap --reorder --conflict --reconnect --cfg A\|B` |
+| `tel_perflog.py` | Chuyển dòng `[metrics]` thành `perf_server` (4.3) |
+| `tel_merge.py` | Gộp, chống trùng kỹ thuật/ngữ nghĩa, phát hiện xung đột và hở `seq`, đối chiếu `_trailer` |
+| `tel_metrics.py` | Các số đo ở 2.5: TTK, nguyên nhân chết, loot, CC, trang bị đầu tiên, thời gian dùng vật phẩm, ẩn nấp, hiệu năng |
+| `tel_report.py` | Sinh `report.md` và 9 CSV ở 2.9; lệnh `compare A B` |
+| `test_telemetry.py` | `unittest`, tự thêm thư mục của nó vào `sys.path` (giống `Tools/Audio`) |
+| `fixtures/valid/*.jsonl` | 18 file, mỗi loại một file |
+| `fixtures/invalid/*.jsonl` | Tối thiểu: 12 file thiếu trường, mỗi file thiếu một trường; 1 file mỗi trường liệt kê có giá trị ngoài miền; `BAD_ID`; PII (tên, RoomCode, JWT, IP) |
+| `fixtures/hand/*.jsonl` | Giao tranh dựng tay cho AC13–AC15, kèm kết quả kỳ vọng viết sẵn trong test |
+| `fixtures/from_csharp/*.jsonl` | Mẫu do C# thật sinh (server và client); QA chép vào để test chéo ngôn ngữ |
+| `golden/seed1/` | `report.md` và 9 CSV của bộ giả seed 1 (AC12). Chỉ cập nhật qua `--update-golden`, có diff trong commit |
+| `README.md` | Tóm tắt lệnh, trỏ sang `Docs/Telemetry/QA_Guide.vi.md` |
+
+Mã thoát của CLI:
+
+| Mã | Nghĩa |
+| --- | --- |
+| 0 | OK, kể cả khi thiếu dữ liệu một phần (AC18) |
+| 2 | Có xung đột khi chạy `--strict` (AC7) |
+| 3 | Có dữ liệu giả khi chạy `--require-real` (AC22) |
+| 4 | Lỗi schema khi chạy `validate --strict` |
+| 1 | Lỗi dùng lệnh |
+
+**C. Module server — `Backend/Telemetry/**`** (mới; liên kết nguồn, namespace `JungleMaze.Telemetry.Server`)
+
+| File | Vai trò |
+| --- | --- |
+| `TelemetryEvent.cs` | `struct` không cấp phát, gồm: `Kind` (byte), `Tick`, `MatchTick`, các byte `A`/`B`/`C`, 2 số `int`, 2 số `float` và một tham chiếu `object? Ref`. `Ref` chỉ trỏ tới `byte[]` frame **đã có sẵn**, hoặc chuỗi ID lấy từ config |
+| `TelemetryRing.cs` | Hàng đợi MPSC có giới hạn kiểu Vyukov: mảng cấp sẵn lũy thừa 2, `Interlocked`/`Volatile`, không `lock`. `TryWrite` trả `false` khi đầy và tăng `Dropped`. Có 2 ring: **critical** (vòng đời, damage, chết, session, H7; 16 384 ô) và **bulk** (snapshot, position; 8 192 ô). Bulk đầy không làm mất elimination (R5) |
+| `ITelemetrySink.cs` | `bool TryWrite(in TelemetryEvent e)`, `long Dropped`, `bool Enabled`. Có `NullTelemetrySink.Instance`. Đây là hợp đồng H7 |
+| `MatchTelemetryObserver.cs` | Gắn vào một `MatchRuntime`. Mọi handler chỉ ghi struct vào ring. Handler `ReliableBroadcast` còn so tham chiếu `match.Health` với bản đã lưu: khác thì gỡ đăng ký cũ, đăng ký mới (R3). Delegate được tạo một lần, lưu thành field |
+| `MatchTelemetryAssembler.cs` | Luồng nền: giải mã frame bằng `PacketRegistry` riêng của luồng này; giữ trạng thái theo `MatchId`; dựng bản ghi 1, 2, 3, 5 (thô), 6, 8, 14, 15. Không bao giờ đọc `DisplayName`, `ProfileKey` hay resume token (4.9) |
+| `JsonlTelemetryWriter.cs` | Một `Thread` nền (`IsBackground`), cứ 50 ms gom hàng đợi một lần. Mỗi (trận, nguồn) một file `${TELEMETRY_PATH}/<yyyy-MM-dd>/<matchId>.server.<wid>.jsonl`. Có `_header` và `_trailer`. Trần 8 MiB mỗi file, 256 MiB tổng. Lỗi I/O thì tự tắt và in một dòng `[telemetry-error]`. Có seam `Func<string, Stream>` cho test lỗi đĩa |
+| `TelemetryHost.cs` | `FromEnvironment()` đọc `TELEMETRY_PATH`, `TELEMETRY_SAMPLE_HZ` (mặc định 1, kẹp trong 0,5–2), `TELEMETRY_MAX_FILE_MIB`, `TELEMETRY_MAX_TOTAL_MIB`. Không có `TELEMETRY_PATH` thì trả host tắt: không tạo thư mục, không tạo luồng (AC27). Có `Attach(RoomManager.Room)` và `Dispose()` (flush tối đa 3 s, ghi `_trailer`). Đây là API cho H1 |
+| `TelemetryJson.cs` | Viết JSON bằng tay vào `StringBuilder` dùng lại, `CultureInfo.InvariantCulture`, LF. Chỉ chạy ở luồng nền |
+
+**D. Kiểm server — `Backend/Tests/TelemetryChecks/**`** (mới)
+
+- **Project:** `TelemetryChecks.csproj` tham chiếu `../../GameServer/GameServer.csproj` và nhúng `../../Telemetry/**/*.cs`. Cùng kiểu `MatchChecks`: in `[PASS]`/`[FAIL]`, mã thoát ≠ 0 khi có FAIL.
+- **Các chế độ của `Program.cs`:**
+
+  | Chế độ | Kiểm gì | Thời gian |
+  | --- | --- | --- |
+  | Mặc định | Chức năng | < 60 s |
+  | `--bench` | Vi đo AC32 | |
+  | `--tick-budget [--runs 3 --seconds 60 --load 70,1000]` | AC33/AC34 trong tiến trình | |
+  | `--emit-sample <dir>` | Sinh `fixtures/from_csharp/server_*.jsonl` | |
+- **Không thêm vào `JungleBackend.sln`, không sửa `run_all.cmd`.** Hai file đó là dùng chung. Chạy bằng `dotnet run --project Tests/TelemetryChecks`. Phase B đề xuất Vinh thêm vào sln.
+
+**E. Client — `Assets/_JungleMaze/Scripts/**/Telemetry/**`** (mới) **và test**
+
+| File | Lớp | Vai trò |
+| --- | --- | --- |
+| `Domain/Telemetry/FrameStats.cs` | Domain | Ring `float[2048]` cấp sẵn. Tính `fpsAvg` (= số khung / tổng thời gian), `fps1Low` theo G-7, `frameMsP95`, `frameMsMax`. Sắp xếp tại chỗ trên một mảng nháp cấp sẵn. 0 cấp phát |
+| `Domain/Telemetry/PerfClientSample.cs` | Domain | `struct` giữ đủ trường của `perf_client` |
+| `Application/Telemetry/ITelemetrySink.cs` | App (port) | `bool TryWrite(in PerfClientSample s)`; `TelemetryContext` (matchId, netId, cfg, cfgHash, balHash, build, wid) |
+| `Application/Telemetry/PerfClientRecorder.cs` | App | `ITickable`. Chỉ đếm khi `MatchSession.Phase == InGame`; cứ 5 s đóng cửa sổ và gửi 1 mẫu. Số liệu lấy từ: `rttP50`/`rttP95`/`transport` ← `INetworkClient.Stats`; `jitterMs` ← `RemotePlayerInterpolator.Stats.JitterMs`; `lossPct` ← chênh `PongsLost` / chênh `PingsSent` trong cửa sổ (null nếu không có ping); `entities` ← `Players` |
+| `Infrastructure/Telemetry/JsonlTelemetryFileSink.cs` | Infra | Ring SPSC (main thread là nơi ghi duy nhất) cùng một `Thread` nền ghi file `persistentDataPath/Telemetry/<matchId>.client.<netId>.jsonl` (chế độ nối thêm), có `_header`/`_trailer`, trần 8 MiB, tự tắt khi lỗi I/O |
+| `Infrastructure/Telemetry/ClientTelemetryIdentity.cs` | Infra | `wid` (8 hex ngẫu nhiên mỗi tiến trình); `build` = `Application.version` hoặc `dev`; `balHash` = SHA-256 của `weapons.json` + `equipments.json` + `match.json`, tính **một lần lúc compose** |
+| `Bootstrap/Telemetry/Bootstrap.Telemetry.cs` | Bootstrap | `partial void`/`ComposeTelemetry(tickRunner, match, network, remote)`. Chỉ đăng ký khi dòng lệnh có `-telemetry` (`-telemetryDir <path>` tùy chọn) |
+| `Bootstrap/Bootstrap.cs` | file dùng chung | **Thêm đúng 1 dòng** `ComposeTelemetry(...)` sau `ComposeMatchOverlay(...)`; ghi một dòng vào `Agent_Coordination.vi.md` |
+| `Tests/EditMode/Telemetry/FrameStatsTests.cs` | test | AC38: `fpsAvg` lệch ≤ 2% so với số khung/thời gian; đúng định nghĩa 1% low; khung đứng yên và khung rất dài |
+| `Tests/EditMode/Telemetry/PerfClientRecorderTests.cs` | test | 60 s giả lập cho ≥ 12 mẫu; ngoài InGame không có mẫu; `seq` liên tục qua mô phỏng rớt rồi nối lại; không có tên hay RoomCode; 0 cấp phát ở trạng thái ổn định (`Is.Not.AllocatingGCMemory()`, AC35) |
+| `Tests/EditMode/Telemetry/JsonlTelemetryFileSinkTests.cs` | test | Header và trailer; `written` = số dòng; vượt trần thì `truncated`; thư mục hỏng thì tắt, không ném lỗi; mặc định không tạo file (AC27) |
+
+`MovementTelemetry` giữ nguyên. Client không ghi `session_state` (bảng 2.4 không có nguồn C).
+
+**Không đụng:** `Backend/GameServer/**`, `Backend/Shared/**`, `JungleBackend.sln`, `run_all.cmd`, `balance/*.json`, `ClientConfig`, `MovementTelemetry.cs`, GDD xlsx, `ProjectSettings/*`. Chỉ đọc: `Backend/Shared/Protocol/**`, `balance/**`.
+
+### 4.3. Định dạng, sink và các quy tắc ghép bản ghi
+
+- **Dòng JSONL:** UTF-8 không BOM, LF. Khóa ghi theo thứ tự cố định: envelope trước, trường riêng sau. Số thực ghi tối đa 3 chữ số thập phân. Không có `NaN`/`Infinity`; giá trị không hợp lệ ghi `null`.
+- **`_header`** gồm `v`, `type: "_header"`, `src`, `wid`, `build`, `opened` (utc), `schema: "telemetry.v1"`. Chưa có `cfgKey` vì lúc mở file có thể chưa biết. `cfg`/`cfgHash` nằm trong envelope của từng dòng.
+- **`_trailer`** gồm `written`, `droppedQueue`, `droppedIo`, `truncated`, `closed`. File thiếu `_trailer` (tiến trình bị kill) thì `merge` báo `unterminated`, nhưng vẫn gộp.
+- **`seq`:** đếm theo (`matchId`, `src`, `wid`) ở luồng nền, nên luồng tick không phải đếm gì.
+  - Bản ghi bị bỏ vì hàng đợi đầy **không chiếm** `seq`. Số lượng của chúng nằm ở `droppedQueue`, không thành hở `seq`.
+  - Vì vậy hở `seq` chỉ xuất hiện khi mất dòng sau khi đã ghi, đúng nghĩa AC10.
+- **Server ghép bản ghi từ tín hiệu thô** (luồng nền):
+
+  | Bản ghi | Ghép từ |
+  | --- | --- |
+  | `match_start` | Frame phase có `Phase == InGame`. `profile` ← `match.Profile.Name`, chép lúc Attach. `seedHash` = 16 hex đầu của SHA-256(`MatchId`) |
+  | `player_spawn` | `MatchEntityEvent.Spawn` ghép với roster ngay sau đó (`netId`, `sess`), tọa độ từ snapshot đầu. `loadout = []` |
+  | `damage` (thô) | `EntityDamaged(victim, dmg, src)` ở tick T. `src == 255` → `ZONE`; `src == victim` → chờ ghép `DISCONNECT`; còn lại → `WEAPON`, `attacker = src`. Các trường W để `null` |
+  | `elimination` | Ghép 4 tín hiệu: `EntityDied` (T) + `GraceExpired` (cùng T) + `MatchEntityEvent.Eliminated` + roster ngay sau (`rank`, `SurvivalTicks`). Chỉ phát khi đã thấy roster; `zonePhase` lấy từ trạng thái bo gần nhất; `x`/`y` từ snapshot gần nhất; `hidden = null` |
+  | `zone_phase` | So `ZoneStatePacket` (PhaseIndex, InWarning, tick shrink) của **mọi** snapshot với trạng thái trước; phát khi đổi. Dùng mọi snapshot nên chính xác từng tick, không lệch ±1 s |
+  | `position_sample` | Lấy 1 trong `30 / sampleHz` snapshot. Lọc ở luồng nền, không phải ở luồng tick |
+  | `session_state` | `PlayerDropped` khi Phase = Loading → `LOAD_TIMEOUT`. `GraceExpired` → `GRACE_EXPIRED`. `ResumeTokenRotated` → `RESUMED`, **chỉ khi** trận đó đã có frame InGame (X1). `DROPPED`/`LEFT` cần H5 |
+  | `match_end` | `MatchResultPacket` trong `ReliableBroadcast`: `Reason`, `WinnerNetId` (255 → null). `durTicks` = tick − tick InGame. `alive` = số người còn sống. Không đọc `MatchResult` vì nó có `DisplayName` và `ProfileKey` |
+- **`perf_server`** (Python `perflog`):
+  - Tách `key=value`. Lấy `peers`, `active`, `rooms` và các trường hiệu năng.
+  - `windowSec` = hiệu `utc` với dòng trước; dòng đầu dùng `--interval`, mặc định 10 (X4).
+  - Dòng hỏng thì bỏ qua và đếm `malformed`.
+  - Gắn vào trận khi `utc` nằm trong [`match_start.utc`, `match_end.utc` + `windowSec`].
+- **Gộp (`merge`):**
+  1. Đọc mọi file, kiểm từng dòng.
+  2. Khóa kỹ thuật → `dup` hoặc `conflict`. So nội dung bằng JSON chuẩn hóa (`sort_keys`).
+  3. Khóa ngữ nghĩa của loại `once` → `semantic_dup`.
+  4. Tìm hở `seq` theo (`matchId`, `src`, `wid`).
+  5. Đối chiếu `_trailer.written` với số dòng thật.
+  6. Sắp theo (`tick`, `src`, `seq`, `wid`) và ghi `events.jsonl` cùng `conflicts.jsonl`.
+
+  Kết quả không phụ thuộc thứ tự đọc file (AC11).
+- **Định nghĩa phân vị** (ghi vào `Schema.vi.md` để Python và C# cùng cách tính): trung vị = `statistics.median`; p90/p95 = nearest-rank `ceil(q·n)`.
+
+### 4.4. Bộ phát giả
+
+- **Dữ liệu sinh ra:**
+  - 6 trận mỗi lần chạy, 10 người.
+  - Bo 5 phase theo `zone_schedule.json`.
+  - Vũ khí và trang bị lấy từ Code ID thật cộng G-6.
+  - `utc` = mốc cố định + tick × 33 ms, không đọc đồng hồ máy. Nhờ vậy cùng `seed` cho file giống từng byte (AC20).
+- **Hai config:** `--cfg A|B` khác `cfgHash`. B tăng damage của 3 vũ khí lên 1,5 lần để TTK khác có chủ ý (AC17).
+- **Tiêm lỗi:** mỗi cờ ghi số đã tiêm ra `inject_manifest.json`, để test so đúng con số.
+
+  | Cờ | Tiêm gì |
+  | --- | --- |
+  | `--dup` | 5% dòng trùng |
+  | `--gap k` | Mất k dòng |
+  | `--reorder` | Đảo thứ tự dòng |
+  | `--conflict 3` | 3 xung đột |
+  | `--semantic-dup 6` | 6 lần báo lặp loại "một lần" |
+  | `--reconnect` | Client rớt ở T, nối lại ở T+Δ < 15 s |
+- **Đánh dấu giả:** mọi dòng giả có `"fake": true` (AC22). Dữ liệu từ C# thật **không bao giờ** có trường `fake`.
+
+### 4.5. Kiểm thử, theo AC
+
+| AC | Kiểm ở đâu | Loại |
+| --- | --- | --- |
+| AC1, AC2, AC3, AC5 | `test_telemetry.py` (18 fixture hợp lệ; ≥ 12 thiếu trường; ngoài miền; `BAD_ID`); test kiểm `Schema.vi.md` khớp JSON | Python unit |
+| AC4 | Python: cấy tên/RoomCode/JWT/IP vào fixture thì bị bắt; quét toàn bộ output giả. Server: `TelemetryChecks` đặt `DisplayName` mẫu khi đăng ký người chơi rồi quét file kết quả. Client: test recorder | Python + .NET + EditMode |
+| AC6–AC11, AC21 | Python: bộ giả có tiêm lỗi; so với `inject_manifest.json`; AC11 xáo trộn 5 lần, báo cáo giống từng byte | Python unit |
+| AC12, AC16, AC17 | So `golden/seed1`; hai tập A/B | Python, golden |
+| AC13, AC14, AC15 | `fixtures/hand`, kết quả kỳ vọng viết sẵn trong test | Python unit |
+| AC18 | Bỏ lần lượt từng nguồn: mã thoát 0, mục tương ứng ghi "không có dữ liệu" | Python unit |
+| AC19 | `test_telemetry.py --perf`: 50 trận giả, khoảng 400 000 dòng; ghi thời gian và cấu hình máy | Python, QA ghi số |
+| AC20, AC22 | So hash hai lần chạy; `--require-real` cho mã 3 | Python unit |
+| AC23 | Người không phải tác giả (QA) chạy `QA_Guide` từ checkout sạch, bấm giờ | QA |
+| AC24, AC25, AC26 | `TelemetryChecks` mặc định: ring đầy; 10 000 lần `TryWrite` khi luồng ghi bị chặn; lỗi đĩa ba kiểu (thư mục là file, chỉ đọc, `Stream` ném lỗi hết chỗ); vượt trần; hai trận liên tiếp cho hai file | .NET check |
+| AC27 | Server: `TelemetryHost.FromEnvironment()` không có biến thì không tạo thư mục. **`run_all.cmd` chạy lại, vẫn xanh.** Client: không có `-telemetry` thì không có file, không đăng ký `ITickable` | .NET + EditMode + QA |
+| AC28 | Python: 3 dòng `[metrics]` thật chép từ log `ServerMetrics`, 4 dòng hỏng | Python unit |
+| AC29 | `git diff --stat main… -- Backend/GameServer Backend/Shared balance` rỗng | Review |
+| AC30 | Test quét `import` của `Tools/Telemetry/*.py`, chỉ cho phép module stdlib | Python unit |
+| AC31 | Review tài liệu; Vinh ký ở `GameServer_Hook_Proposal.vi.md` | Review, người |
+| AC32 | `TelemetryChecks --bench` | .NET, QA ghi số |
+| AC33, AC34 | `--tick-budget` ở Phase A (proxy); chạy lại trên tiến trình thật ở Phase B | .NET, QA |
+| AC35, AC38 | EditMode (cấp phát, `fpsAvg`) cùng đo FPS bật/tắt trên máy QA (`NetworkStatsOverlay`); không đo được thì ghi "chưa kiểm chứng" | EditMode + QA |
+| AC36 | **Phase A:** `TelemetryChecks` chạy một trận `MatchRuntime` thật profile `test` với 4 người: đi ra ngoài bo đến chết (`ZONE`), một người rớt quá 15 s (`DISCONNECT`), chạy 2 trận liên tiếp để kiểm gắn lại `Health` (R3); so số bản ghi với trạng thái `MatchRuntime`. **Phase B:** trận thật qua GameServer | .NET (proxy) + QA |
+| AC37 | Phase A chỉ kiểm được `RESUMED` và `GRACE_EXPIRED` qua `MatchRuntime.TryResume`. `DROPPED`, `LEFT`, `replay_choice` chờ H5/H6 | .NET + QA (điều kiện) |
+| AC39 | `coverage.csv` ghi loại W là `fake-only` | Python unit |
+
+**Kiểm chéo ngôn ngữ:** QA chạy `TelemetryChecks --emit-sample` và một trận client với `-telemetry`, rồi chạy `python -I Tools/Telemetry/telemetry.py validate --strict <file>` trên **file do C# thật sinh ra**. Mẫu được chép vào `fixtures/from_csharp/` để từ đó Python test luôn chạy cả mẫu này.
+
+**Bộ test có sẵn phải giữ xanh:** EditMode/PlayMode của client, `run_all.cmd`, `MatchChecks`.
+
+### 4.6. Ngân sách tick: đo thế nào (Q9)
+
+Ba tầng, rẻ trước:
+
+1. **Vi đo (AC32), `--bench`:**
+   - Gọi 1 000 000 lần `TryWrite` với struct mẫu. Luồng nền vẫn gom như thật, chạy ở hai chế độ: ring rỗng và ring đầy.
+   - Đo từng lần bằng `Stopwatch.GetTimestamp`. In p50/p99/max theo µs, kèm sai số của chính đồng hồ.
+   - Cấp phát đo bằng `GC.GetAllocatedBytesForCurrentThread()` trước/sau, sau khởi động. Phải bằng 0.
+   - Ngưỡng: p99 ≤ 10 µs (dự kiến thực tế < 0,2 µs).
+2. **Harness trong tiến trình (Phase A, không cần H1), `--tick-budget`:**
+   - Dựng `ServerMetrics` và `FixedTickLoop(30, metrics)` thật, một `MatchRuntime` profile `test`. 10 phiên giả: `TryRegisterPlayer`, `SetPlayerReady`, `SetPlayerLoaded`, rồi `ProcessInput` di chuyển ngẫu nhiên có seed.
+   - **Tắt:** không gắn observer. **Bật:** gắn observer qua `TelemetryHost` và ghi ra thư mục tạm.
+   - Thêm bộ tạo tải trong callback tick, gọi `TryWrite` với bản ghi `attack`/`damage` giả để mô phỏng H7. Mức tải ≈ 70 và 1 000 bản ghi/s.
+   - 60 s mỗi lần, 3 lần mỗi cấu hình, chạy xen kẽ theo thứ tự ABBA để triệt trôi nhiệt và nền máy. `MetricsIntervalSeconds` = 10.
+   - `tickP95Ms`, `tickP99Ms`, `tickOverruns`, `droppedTicks` lấy từ **dòng `[metrics]` do `ServerMetrics` in**, không tự đo, nên cùng thước đo với production.
+   - Kết quả là bảng CSV vào `Docs/Reports/TEL-01_<ngày>/tick_budget.csv`.
+   - Đạt khi: trung vị 3 lần (bật − tắt) ≤ 0,5 ms; `tickP95Ms` < 33,3; `droppedTicks` = 0; `tickOverruns` bật ≤ tắt. Với AC34: `droppedQueue` hiện trong `_trailer`.
+   - Ghi rõ "tải giả, trong tiến trình" (G-11). Tổng khoảng 12 phút, QA chạy nền.
+3. **Phase B (sau H1):**
+   - Chạy `GameServer` thật với `TELEMETRY_PATH` đặt và không đặt, cùng `NetSmokeClient --clients 10 --duration 60`.
+   - Đọc `[metrics]` từ stdout và chạy `perflog` để ra số.
+   - Nếu NetSmokeClient không đưa phiên vào InGame được, chỉ giữ số đo của tầng 2 và ghi lý do. Không được tự sửa NetSmokeClient: đó là code của người khác.
+
+Client (AC35): test 0 cấp phát (EditMode) cộng QA đo FPS. Không có I/O ở main thread theo thiết kế: ghi file chỉ ở `Thread` nền. Reviewer kiểm.
+
+### 4.7. Hook đề xuất cho Vinh (Phase B, không tự sửa)
+
+Tất cả nằm trong `Docs/Telemetry/GameServer_Hook_Proposal.vi.md`, kèm diff mẫu. Đây là **đề xuất**, Vinh tự commit.
+
+| Hook | Diff đề xuất | Số dòng | AC mở khóa |
+| --- | --- | --- | --- |
+| H1 | `GameServer.csproj`: `<Compile Include="../Telemetry/**/*.cs" LinkBase="Telemetry" />`. `Program.cs`: `using var telemetry = TelemetryHost.FromEnvironment();`; trong `HookRoomMatch` thêm `telemetry.Attach(room);`; trong `finally` gọi `telemetry.Dispose()` (flush ≤ 3 s) | ~5 | AC33 (tiến trình thật), AC36 |
+| H2, H3 | **Không cần sửa GameServer.** Nằm sẵn trong `MatchTelemetryObserver` (TEL-01). H1 chỉ gọi `Attach` | 0 | AC36 |
+| H4 | Không cần: đọc log | 0 | AC28 |
+| H5 | `MatchRuntime`: `public event Action<string>? PlayerDisconnected;` gọi trong nhánh InGame của `MarkDisconnected`; `public event Action<string>? PlayerLeft;` gọi khi `ProcessLeave` trả true | ~4 | AC37 (`DROPPED`, `LEFT`) |
+| H6 | `public event Action<string>? ReplayAcked;` gọi khi `ProcessReplayAck` trả true | ~2 | AC37 (`replay_choice`) |
+| H7 | Mỗi chủ ticket (WPN-02, ITM-01, WPN-03, hệ thống bụi) gọi `sink.TryWrite(...)` tại điểm quyết định, theo `Hook_Contract.vi.md` | 1 dòng/điểm | AC39 |
+| Tùy chọn | Thêm `Tests/TelemetryChecks` vào `JungleBackend.sln`; truyền `cause` rõ ràng vào `ApplyDamage` (giảm R7) | | |
+
+Sau H1, TEL-01 có **một commit nhỏ của mình**: xóa dòng nhúng nguồn trong `TelemetryChecks.csproj`, vì lúc đó các kiểu đã nằm sẵn trong GameServer. Nếu giữ dòng này, cùng một kiểu sẽ bị định nghĩa hai lần.
+
+**Phụ thuộc hook của từng AC:**
+
+| Phụ thuộc | AC |
+| --- | --- |
+| Không phụ thuộc hook nào | AC1–AC32, AC34, AC35, AC38 |
+| H1 (đã có bằng chứng proxy ở Phase A) | AC33, AC36 |
+| H5, H6 | AC37 |
+| Chữ ký của Vinh | AC31 |
+| H7 | AC39 |
+
+### 4.8. Chia commit và người làm
+
+Không push. Mỗi commit chỉ chứa đường dẫn của nó.
+
+| # | Commit (tiếng Anh) | File | Agent | Phụ thuộc |
+| --- | --- | --- | --- | --- |
+| 1 | `docs(tel-01): telemetry schema v1, hook contract and GameServer hook proposal` | `Docs/Telemetry/telemetry.schema.v1.json`, `Schema.vi.md`, `Hook_Contract.vi.md`, `GameServer_Hook_Proposal.vi.md` | backend-dev | Không; **là cổng cho cả ba luồng** |
+| 2 | `tools(tel-01): schema validator and deterministic fake event generator` | `Tools/Telemetry/telemetry.py`, `tel_schema.py`, `tel_fake.py`, `fixtures/valid`, `fixtures/invalid`, test phần 1 | backend-dev (luồng P) | 1 |
+| 3 | `tools(tel-01): merge with dedupe, conflict and gap detection` | `tel_merge.py`, test | backend-dev (P) | 2 |
+| 4 | `tools(tel-01): balance report, config compare and metrics log ingest` | `tel_metrics.py`, `tel_report.py`, `tel_perflog.py`, `fixtures/hand`, `golden/seed1`, `README.md`, test | backend-dev (P) | 3 |
+| 5 | `server(tel-01): bounded telemetry ring and jsonl writer outside GameServer` | `Backend/Telemetry/TelemetryEvent.cs`, `TelemetryRing.cs`, `ITelemetrySink.cs`, `JsonlTelemetryWriter.cs`, `TelemetryJson.cs`, `TelemetryHost.cs`, `Backend/Tests/TelemetryChecks/**` (chức năng, `--bench`) | backend-dev (luồng S) | 1 |
+| 6 | `server(tel-01): match observer and assembler from public MatchRuntime events` | `MatchTelemetryObserver.cs`, `MatchTelemetryAssembler.cs`, kiểm trận thật trong tiến trình, `--tick-budget`, `--emit-sample` | backend-dev (S) | 5 |
+| 7 | `client(tel-01): perf_client recorder and background jsonl sink` | Domain, App, Infra `Telemetry/**`, `Tests/EditMode/Telemetry/**` | unity-dev | 1 |
+| 8 | `client(tel-01): compose telemetry behind -telemetry flag` | `Bootstrap/Telemetry/Bootstrap.Telemetry.cs`, **1 dòng** `Bootstrap.cs`, 1 dòng `Agent_Coordination.vi.md` | unity-dev | 7 |
+| 9 | `docs(tel-01): QA guide, C# sample fixtures and sample report` | `Docs/Telemetry/QA_Guide.vi.md`, `Tools/Telemetry/fixtures/from_csharp/*`, `Docs/Reports/TEL-01_<ngày>/` (báo cáo seed 1, `tick_budget.csv`, `bench.txt`) | backend-dev | 4, 6, 8 |
+| B1 | `server(tel-01): drop source include once GameServer links telemetry` | `Backend/Tests/TelemetryChecks/TelemetryChecks.csproj` | backend-dev | Vinh xong H1 |
+
+Phase A có 9 commit. Phase B có 1 commit của TEL-01; commit H1/H5/H6 là của Vinh.
+
+**Chạy song song:** sau commit 1, có ba luồng với file tách rời hẳn nhau.
+
+| Luồng | Phạm vi | Dùng Unity Editor | Ghi chú |
+| --- | --- | --- | --- |
+| P | Python, `Tools/Telemetry/**` | Không | |
+| S | .NET, `Backend/Telemetry/**` và `Backend/Tests/TelemetryChecks/**` | Không | |
+| C | Unity, `**/Telemetry/**` của client cùng 1 dòng `Bootstrap.cs` | Có | Có thể chạy ngay sau khi unity-dev trả Editor từ UI-03 |
+
+- **Số phiên:** P và S cùng do backend-dev làm. Để nhanh, mở **hai phiên backend-dev**, một cho P và một cho S; nếu CPO muốn ít phiên thì làm tuần tự P rồi S.
+- **Gom kết quả:** commit 9 gom kết quả của cả ba luồng.
+
+**Ước lượng:**
+
+| Phần | Thời gian |
+| --- | --- |
+| Commit 1 | 0,5 ngày |
+| P | 1,5 ngày |
+| S | 1,5 ngày |
+| C | 1 ngày |
+| Commit 9 cùng QA đo tick | 0,5 ngày |
+
+Đường găng là commit 1 → S → 9, khoảng **2,5 ngày** nếu chạy song song, xong ngày 30/10, kịp hạn 31/10. Làm tuần tự P rồi S thì khoảng 4 ngày, **trễ hạn**. Vì vậy cần hai phiên backend-dev.
+
+### 4.9. Code thực tế khác giả định của spec (đã xử lý trong plan)
+
+| # | Phát hiện | Xử lý |
+| --- | --- | --- |
+| X1 | `ResumeTokenRotated` **phát cho mọi người lúc vào trận** (`StartInGame`), không chỉ khi resume. Nếu đếm thẳng, AC9/AC37 sai | Chỉ ghi `RESUMED` khi trận đã có frame InGame. Thứ tự trong code: `ResumeTokenRotated` phát trong `StartInGame`, **trước** frame phase InGame. Test ở commit 6 |
+| X2 | Roster và `MatchResult` mang `DisplayName`, `ProfileKey`; resume token có trong event | Assembler không đọc các trường đó; token không bao giờ vào struct. Có test AC4 phía server |
+| X3 | Bước 1 (`GraceExpired`) và bước 4 (`Eliminated`, roster) của `TickInGame` tới ở các bước khác nhau trong cùng tick, nên một tín hiệu không đủ để ra elimination | Ghép elimination từ 4 tín hiệu, chỉ phát khi đã thấy roster sau `Eliminated` (4.3) |
+| X4 | Dòng `[metrics]` **không có** `windowSec`; có thêm `pending`, `ticks`, `pings`, `invalidPackets`, `historyUnavailable`, `rejected`, `roomSlots` | `windowSec` tính từ hiệu `utc`; các trường thừa bỏ qua (không thuộc schema) |
+| X5 | `EntityDamaged` không mang tick | Observer đọc `match.CurrentTick` trong handler (luồng tick, không cấp phát) |
+| X6 | `HealthService` thay mới trong `TickCleanup` mà không phát event; frame phase Waiting phát **sau** khi thay | Handler `ReliableBroadcast` so tham chiếu `match.Health` để gắn lại (R3); kiểm bằng 2 trận liên tiếp |
+
+### 4.10. Rủi ro kỹ thuật
+
+| # | Rủi ro | Giảm thiểu |
+| --- | --- | --- |
+| TR1 | `ReliableBroadcast`/`PlayerDropped` có thể được gọi ngoài luồng tick (poll mạng, RoomControl) | Ring là MPSC (Vyukov), an toàn nhiều luồng ghi mà không khóa. Reviewer kiểm |
+| TR2 | Giữ tham chiếu `byte[]` của snapshot (30/s mỗi phòng) làm GC giữ bộ nhớ lâu hơn | Bulk ring 8 192 ô ≈ 27 s mỗi phòng × khoảng 1 KB ≈ 8 MB trần; luồng nền gom mỗi 50 ms nên thực tế < 100 KB. Đo `workingSetMiB` trong AC33 |
+| TR3 | Liên kết nguồn: khi Vinh làm H1, `TelemetryChecks` có thể bị trùng kiểu | Commit B1, ghi rõ trong đề xuất |
+| TR4 | Đo tick ở tầng 2 nhiễu hơn 0,5 ms trên máy dev (Windows, 16 luồng) | Chạy ABBA, trung vị 3 lần. Nếu nền tắt/tắt đã chênh > 0,25 ms thì báo và đề xuất CPO nới ngưỡng (Q9 đã cho phép) |
+| TR5 | Bộ ghép trên luồng nền giải mã sai vì frame có nhiều packet | Dùng `PacketRegistry.TryReadAll` như client; test với frame thật từ `MatchRuntime` |
+| TR6 | Trường hợp dữ liệu giả che lỗi schema thật | Kiểm chéo bằng `fixtures/from_csharp` (4.5) |
+| TR7 | `Is.Not.AllocatingGCMemory()` báo nhầm khi Unity Editor bật Deep Profile | Chạy test ở Editor thường; test có sẵn (`EventBusTests`, `ObjectPoolTests`) đã dùng cách này |
+| TR8 | NetSmokeClient có thể không đưa được 10 phiên vào InGame cho Phase B | Giữ bằng chứng tầng 2; không sửa NetSmokeClient |
+
+### 4.11. Câu hỏi kỹ thuật cho G1 (đều có mặc định)
+
+| # | Câu hỏi | Mặc định khuyến nghị |
+| --- | --- | --- |
+| T-1 | Cho phép thư mục mới `Backend/Telemetry/**` và `Backend/Tests/TelemetryChecks/**`? Spec chỉ khóa `Backend/GameServer/**`, nhưng đây vẫn là cây `Backend` | Cho phép; thêm vào dòng Q11 ở `Agent_Coordination.vi.md` cùng `Tools/Telemetry/**`, `Docs/Telemetry/**`, `Docs/Reports/TEL-01_*`, `Assets/_JungleMaze/**/Telemetry/**` |
+| T-2 | Liên kết nguồn (4.0) hay chờ Vinh tạo project/assembly riêng? | Liên kết nguồn: Vinh chỉ thêm ~5 dòng, không có tham chiếu vòng |
+| T-3 | Bật client bằng `-telemetry` trên dòng lệnh thay vì thêm trường vào `ClientConfig`? | Dòng lệnh; không sửa config của người khác (G-9) |
+| T-4 | Hai phiên backend-dev song song (P, S)? | Có; nếu không thì trễ hạn khoảng 1 ngày |
+| T-5 | Harness trong tiến trình (4.6 tầng 2) có được coi là bằng chứng AC33 cho Phase A không, với nhãn "proxy, tải giả"? | Có, cho Phase A; AC33 trên tiến trình thật để điều kiện H1 |
+| T-6 | Kích thước ring: critical 16 384, bulk 8 192? | Dùng; chỉnh sau AC34 |
+| T-7 | Gửi `GameServer_Hook_Proposal.vi.md` cho Vinh ngay sau commit 1 (trước khi build xong)? | Có, để Vinh có thời gian duyệt song song |
+
+Không có câu hỏi nào chặn việc bắt đầu build. Không cần G2: protocol không đổi.
 
 ## 5. Nhật ký build
 
