@@ -17,8 +17,8 @@ MonoBehaviour:
   alertGroup: {fileID: -94964144878482549, guid: 5a160c5fbfe7b5e478f7c9f18d9a91f2, type: 2}
   musicTrackGroup: {fileID: -1811987371079673553, guid: 5a160c5fbfe7b5e478f7c9f18d9a91f2, type: 2}
   catalog: {fileID: 11400000, guid: e357dabb2dc8bcc4c98029e7e3d0a8b6, type: 2}
-  waitingRoomMusic: {fileID: 8300000, guid: b3bdb119d8604f241b6b18c21818e140, type: 3}
-  loadingMusic: {fileID: 8300000, guid: b3bdb119d8604f241b6b18c21818e140, type: 3}
-  matchMusic: {fileID: 8300000, guid: 374b5efc1c62e1f4696baf7295566813, type: 3}
+  waitingRoomMusic: {fileID: 8300000, guid: e131098447c449478880310094f8d4a7, type: 3}
+  loadingMusic: {fileID: 8300000, guid: 656083e40c9f49b2a570bbf9a08c9986, type: 3}
+  matchMusic: {fileID: 8300000, guid: d4417f115bd44009b3464891391ca838, type: 3}
   poolSize: 16
   settleSeconds: 0.5
