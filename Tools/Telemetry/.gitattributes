@@ -1,0 +1,2 @@
+# Keep tool output and golden files byte-identical on every OS (golden tests compare bytes).
+* text=auto eol=lf

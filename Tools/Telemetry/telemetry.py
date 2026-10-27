@@ -2,6 +2,7 @@
 
     python -I Tools/Telemetry/telemetry.py validate [--strict] <file|dir>...
     python -I Tools/Telemetry/telemetry.py fake --out DIR [--seed 1] [--cfg A|B] [fault flags]
+    python -I Tools/Telemetry/telemetry.py merge <file|dir>... --out DIR [--strict] [--require-real]
 
 Exit codes (TEL-01 plan 4.2): 0 OK (also with partial data), 1 usage error, 2 conflicts with
 --strict, 3 fake data with --require-real, 4 schema errors with validate --strict.
@@ -63,8 +64,27 @@ def cmd_fake(args) -> int:
     return EXIT_OK
 
 
+def _merge_exit(summary, args) -> int:
+    if getattr(args, "strict", False) and summary["conflicts"]:
+        print(f"conflicts={summary['conflicts']} (--strict)", file=sys.stderr)
+        return EXIT_CONFLICT
+    if getattr(args, "require_real", False) and summary["fake"]:
+        print(f"fake={summary['fake']} records are fake (--require-real)", file=sys.stderr)
+        return EXIT_FAKE
+    return EXIT_OK
+
+
+def cmd_merge(args) -> int:
+    import tel_merge
+    schema = _schema(args)
+    result = tel_merge.merge(args.paths, schema, pii_samples=args.pii_sample or ())
+    tel_merge.write_outputs(result, args.out)
+    print(tel_merge.summary_line(result["summary"]))
+    return _merge_exit(result["summary"], args)
+
+
 def build_parser() -> argparse.ArgumentParser:
-    p = _Parser(prog="telemetry.py", description="TEL-01 telemetry tools (validate, fake).")
+    p = _Parser(prog="telemetry.py", description="TEL-01 telemetry tools.")
     p.add_argument("--schema", help="schema JSON (default Docs/Telemetry/telemetry.schema.v1.json)")
     p.add_argument("--balance-dir", help="folder with weapons.json/equipments.json (default from schema idSets)")
     sub = p.add_subparsers(dest="cmd", required=True, parser_class=_Parser)
@@ -92,7 +112,19 @@ def build_parser() -> argparse.ArgumentParser:
                    help="N 'once' records reported twice (6)")
     f.add_argument("--reconnect", action="store_true", help="client drops and resumes within grace in match 0")
     f.set_defaults(func=cmd_fake)
+
+    m = sub.add_parser("merge", help="merge files: dedupe, conflicts, seq gaps -> events.jsonl")
+    m.add_argument("paths", nargs="+", help="files or folders (*.jsonl, recursive)")
+    m.add_argument("--out", required=True, help="output folder for events.jsonl, conflicts.jsonl, merge_summary.json")
+    _add_gate_flags(m)
+    m.set_defaults(func=cmd_merge)
     return p
+
+
+def _add_gate_flags(p):
+    p.add_argument("--strict", action="store_true", help="exit 2 when there is any conflict")
+    p.add_argument("--require-real", action="store_true", help="exit 3 when any record is fake")
+    p.add_argument("--pii-sample", action="append", metavar="TEXT", help="string that must never appear")
 
 
 def main(argv=None) -> int:

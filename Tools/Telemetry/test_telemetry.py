@@ -22,6 +22,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import tel_fake  # noqa: E402
+import tel_merge  # noqa: E402
 import tel_schema  # noqa: E402
 
 FIXTURES = HERE / "fixtures"
@@ -29,6 +30,7 @@ CLI = HERE / "telemetry.py"
 SCHEMA = tel_schema.load_schema()
 _TMP = tempfile.mkdtemp(prefix="tel01_test_")
 _CACHE: dict = {}
+M2 = {"matches": 2}     # fault scenarios use 2 matches; coverage, determinism and golden use 6
 
 
 def tearDownModule():
@@ -365,20 +367,20 @@ class FakeGeneratorTests(unittest.TestCase):
                             {r["cfgHash"] for r in records_of(b) if r["cfgHash"]})
 
     def test_injection_counts_are_recorded(self):
-        _, m = fake_run("dup", dup=5.0)
+        _, m = fake_run("dup", dup=5.0, **M2)
         self.assertEqual(int(round(m["records"] * 0.05)), m["inject"]["dup"])
-        _, m = fake_run("conflict", conflict=3)
+        _, m = fake_run("conflict", conflict=3, **M2)
         self.assertEqual(3, m["inject"]["conflict"])
-        _, m = fake_run("sem", semantic_dup=6)
+        _, m = fake_run("sem", semantic_dup=6, **M2)
         self.assertEqual(6, m["inject"]["semanticDup"])
         self.assertEqual(m["records"] - 6, m["expectedMerged"])
-        _, m = fake_run("gap7", gap=7)
+        _, m = fake_run("gap7", gap=7, **M2)
         self.assertEqual(7, m["inject"]["gap"])
 
     def test_dup_and_reorder_keep_line_set(self):
-        clean, _ = fake_run()
-        dup, m = fake_run("dup", dup=5.0)
-        reo, _ = fake_run("reorder", reorder=True)
+        clean, _ = fake_run("clean2", **M2)
+        dup, m = fake_run("dup", dup=5.0, **M2)
+        reo, _ = fake_run("reorder", reorder=True, **M2)
         def lines(folder):
             return Counter(ln for f in tel_schema.expand_inputs([folder]) for ln in tel_schema.read_lines(f))
         self.assertEqual(lines(clean), lines(reo))
@@ -387,7 +389,7 @@ class FakeGeneratorTests(unittest.TestCase):
         self.assertFalse(lines(clean) - lines(dup))
 
     def test_reconnect_scenario_shape(self):
-        folder, m = fake_run("reconnect", reconnect=True)
+        folder, m = fake_run("reconnect", reconnect=True, **M2)
         rc = m["inject"]["reconnect"]
         self.assertIsNotNone(rc)
         recs = [r for r in records_of(folder) if r["matchId"] == rc["matchId"]]
@@ -400,7 +402,7 @@ class FakeGeneratorTests(unittest.TestCase):
         client = sorted(r["seq"] for r in recs if r["src"] == "client" and r["netId"] == rc["netId"])
         self.assertEqual(list(range(1, len(client) + 1)), client)
         self.assertGreater(rc["removedClient"], 0)
-        _, clean = fake_run()
+        _, clean = fake_run("clean2", **M2)
         self.assertEqual(clean["records"] + 2 - rc["removedClient"], m["expectedMerged"])
 
     def test_fake_cli(self):
@@ -410,6 +412,207 @@ class FakeGeneratorTests(unittest.TestCase):
         self.assertIn("conflict=3", r.stdout)
         manifest = json.loads((d / "inject_manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(1, manifest["matches"])
+
+
+# ----------------------------------------------------------------------------------------------
+# Merge: duplicates, conflicts, semantic duplicates, reconnect, gaps, order (AC6-AC11, AC21, AC22)
+# ----------------------------------------------------------------------------------------------
+
+def merged(name="clean", **kw) -> tuple[dict, dict, Path]:
+    """(merge result, inject manifest, output folder) for a cached fake run."""
+    key = ("merged", name, tuple(sorted(kw.items())))
+    if key not in _CACHE:
+        folder, manifest = fake_run(name, **kw)
+        out = tmpdir(f"merge_{len(_CACHE)}_{name}")
+        result = tel_merge.merge([folder], SCHEMA)
+        tel_merge.write_outputs(result, out)
+        _CACHE[key] = (result, manifest, out)
+    return _CACHE[key]
+
+
+def copy_lines(src: Path, dst: Path, transform) -> Path:
+    """Copy every *.jsonl of src into dst, passing each file's line list through transform(name, lines)."""
+    dst.mkdir(parents=True, exist_ok=True)
+    for f in tel_schema.expand_inputs([src]):
+        lines = transform(f.name, tel_schema.read_lines(f))
+        if lines is not None:
+            (dst / f.name).write_bytes(("\n".join(lines) + "\n").encode("utf-8"))
+    return dst
+
+
+class MergeTests(unittest.TestCase):
+    def test_clean_run_has_no_findings(self):
+        r, m, _ = merged("clean2", **M2)
+        s = r["summary"]
+        self.assertEqual(m["records"], s["events"])
+        for k in ("invalid", "dup", "conflicts", "semanticDup", "gaps", "droppedQueue", "droppedIo"):
+            self.assertEqual(0, s[k], k)
+        for k in ("trailerMismatch", "unterminatedFiles", "unterminatedGroups", "truncated", "gapGroups"):
+            self.assertEqual([], s[k], k)
+        self.assertEqual(len(m["matchIds"]), len(s["matches"]))
+
+    def test_technical_duplicates_keep_one(self):
+        clean, _, clean_out = merged("clean2", **M2)
+        r, m, out = merged("dup", dup=5.0, **M2)
+        self.assertGreater(m["inject"]["dup"], 0)
+        self.assertEqual(m["inject"]["dup"], r["summary"]["dup"])
+        self.assertEqual(clean["summary"]["events"], r["summary"]["events"])
+        self.assertEqual((clean_out / "events.jsonl").read_bytes(), (out / "events.jsonl").read_bytes())
+        self.assertEqual(0, r["summary"]["gaps"])
+        self.assertEqual([], r["summary"]["trailerMismatch"])
+
+    def test_conflicts_are_listed_not_merged_silently(self):
+        r, m, out = merged("conflict", conflict=3, **M2)
+        self.assertEqual(3, r["summary"]["conflicts"])
+        rows = [json.loads(x) for x in tel_schema.read_lines(out / "conflicts.jsonl")]
+        self.assertEqual(3, len(rows))
+        for row in rows:
+            self.assertEqual(2, len(row["variants"]))
+            self.assertEqual(1, len({(v["matchId"], v["src"], v["wid"], v["seq"]) for v in row["variants"]}))
+        self.assertEqual(m["records"], r["summary"]["events"])
+        folder, _ = fake_run("conflict", conflict=3, **M2)
+        self.assertEqual(2, run_cli("merge", folder, "--out", Path(_TMP) / "cli_conflict", "--strict").returncode)
+        self.assertEqual(0, run_cli("merge", folder, "--out", Path(_TMP) / "cli_conflict2").returncode)
+
+    def test_semantic_duplicates_count_and_drop(self):
+        clean, _, _ = merged("clean2", **M2)
+        r, m, _ = merged("sem", semantic_dup=6, **M2)
+        self.assertEqual(6, r["summary"]["semanticDup"])
+        self.assertEqual(m["expectedMerged"], r["summary"]["events"])
+        self.assertEqual(0, r["summary"]["gaps"])
+        for t in SCHEMA.once_types():
+            self.assertEqual(clean["summary"]["byType"][t], r["summary"]["byType"][t], t)
+        elim = Counter((e["matchId"], e["victim"]) for e in r["events"] if e["type"] == "elimination")
+        self.assertEqual({1}, set(elim.values()))
+
+    def test_reconnect_keeps_one_spawn_one_resume_and_contiguous_seq(self):
+        r, m, _ = merged("reconnect", reconnect=True, **M2)
+        rc = m["inject"]["reconnect"]
+        s = r["summary"]
+        self.assertEqual(m["expectedMerged"], s["events"])
+        self.assertEqual(0, s["gaps"])
+        self.assertEqual(0, s["semanticDup"])
+        ev = [e for e in r["events"] if e["matchId"] == rc["matchId"]]
+        self.assertEqual(1, sum(e["type"] == "match_start" for e in ev))
+        self.assertEqual(1, sum(e["type"] == "player_spawn" and e["netId"] == rc["netId"] for e in ev))
+        kinds = [e["kind"] for e in ev if e["type"] == "session_state" and e["netId"] == rc["netId"]]
+        self.assertEqual(["DROPPED", "RESUMED"], kinds)
+        seqs = sorted(e["seq"] for e in ev if e["src"] == "client" and e["netId"] == rc["netId"])
+        self.assertEqual(list(range(1, len(seqs) + 1)), seqs)
+
+    def test_gaps_report_exact_missing_count(self):
+        for k in (1, 7, 40):
+            r, m, _ = merged(f"gap{k}", gap=k, **M2)
+            s = r["summary"]
+            self.assertEqual(k, m["inject"]["gap"])
+            self.assertEqual(k, s["gaps"], k)
+            self.assertEqual(k, sum(g["missing"] for g in s["gapGroups"]))
+            self.assertEqual(k, sum(t["written"] - t["distinct"] for t in s["trailerMismatch"]))
+            self.assertEqual(m["expectedMerged"], s["events"])
+
+    def test_gap_at_the_end_of_a_file_is_found_through_the_trailer(self):
+        folder, _ = fake_run("clean2", **M2)
+
+        def drop_last(name, lines):
+            return lines[:-2] + lines[-1:] if name.startswith("perf_server") else lines
+        r = tel_merge.merge([copy_lines(folder, tmpdir("gap_tail"), drop_last)], SCHEMA)
+        self.assertEqual(1, r["summary"]["gaps"])
+
+    def test_trailer_written_equals_lines_on_clean_run(self):
+        folder, _ = fake_run("clean2", **M2)
+        for f in tel_schema.expand_inputs([folder]):
+            lines = tel_schema.read_lines(f)
+            self.assertEqual(len(lines) - 2, json.loads(lines[-1])["written"], f.name)
+
+    def test_missing_trailer_is_unterminated_but_merged(self):
+        folder, m = fake_run("clean2", **M2)
+        victim = sorted(f.name for f in folder.glob("*.server.*.jsonl"))[0]
+
+        def cut(name, lines):
+            return lines[:-1] if name == victim else lines
+        r = tel_merge.merge([copy_lines(folder, tmpdir("unterminated"), cut)], SCHEMA)
+        self.assertEqual([victim], r["summary"]["unterminatedFiles"])
+        self.assertEqual(1, len(r["summary"]["unterminatedGroups"]))
+        self.assertEqual(m["records"], r["summary"]["events"])
+
+    def test_order_of_lines_and_files_does_not_change_output(self):
+        clean, _, clean_out = merged("clean2", **M2)
+        _, _, reo_out = merged("reorder", reorder=True, **M2)
+        expect_events = (clean_out / "events.jsonl").read_bytes()
+        expect_summary = (clean_out / "merge_summary.json").read_bytes()
+        self.assertEqual(expect_events, (reo_out / "events.jsonl").read_bytes())
+        folder, _ = fake_run("clean2", **M2)
+        for i in range(5):
+            rng = random.Random(100 + i)
+
+            def shuffle(name, lines):
+                lines = list(lines)
+                rng.shuffle(lines)          # header and trailer move too
+                return lines
+            src = copy_lines(folder, tmpdir(f"shuffle_{i}"), shuffle)
+            paths = sorted(src.iterdir())
+            rng.shuffle(paths)
+            out = tmpdir(f"shuffle_out_{i}")
+            tel_merge.write_outputs(tel_merge.merge(paths, SCHEMA), out)
+            self.assertEqual(expect_events, (out / "events.jsonl").read_bytes(), i)
+            self.assertEqual(expect_summary, (out / "merge_summary.json").read_bytes(), i)
+
+    def test_output_sorted_by_tick_src_seq(self):
+        r, _, _ = merged("clean2", **M2)
+        ticked = [e for e in r["events"] if e["tick"] is not None]
+        keys = [(e["tick"], e["src"], e["seq"], e["wid"]) for e in ticked]
+        self.assertEqual(sorted(keys), keys)
+        tail = r["events"][len(ticked):]
+        self.assertTrue(tail and all(e["type"] == "perf_server" for e in tail))
+        self.assertEqual(sorted(e["utc"] for e in tail), [e["utc"] for e in tail])
+
+    def test_all_faults_together(self):
+        kw = dict(dup=5.0, gap=7, conflict=3, semantic_dup=6, reorder=True, reconnect=True)
+        r, m, _ = merged("all", **kw, **M2)
+        s = r["summary"]
+        inj = m["inject"]
+        self.assertEqual((inj["dup"], inj["conflict"], inj["semanticDup"], inj["gap"]),
+                         (s["dup"], s["conflicts"], s["semanticDup"], s["gaps"]))
+        self.assertEqual(m["expectedMerged"], s["events"])
+
+    def test_invalid_lines_are_counted_and_skipped(self):
+        d = tmpdir("merge_invalid")
+        shutil.copy(FIXTURES / "valid" / "damage.jsonl", d / "a.jsonl")
+        shutil.copy(FIXTURES / "invalid" / "invalid_id__attack.weapon.jsonl", d / "b.jsonl")
+        (d / "c.jsonl").write_text("not json\n", encoding="utf-8")
+        s = tel_merge.merge([d], SCHEMA)["summary"]
+        self.assertEqual(2, s["invalid"])
+        self.assertEqual({"bad_json": 1, "invalid_id": 1}, s["invalidByCode"])
+        self.assertEqual(2, s["events"])
+        self.assertEqual(0, s["fake"])
+
+    def test_same_file_read_twice_is_all_duplicates(self):
+        d = tmpdir("twice")
+        shutil.copy(FIXTURES / "valid" / "perf_server.jsonl", d / "a.jsonl")
+        shutil.copy(FIXTURES / "valid" / "perf_server.jsonl", d / "b.jsonl")
+        s = tel_merge.merge([d], SCHEMA)["summary"]
+        self.assertEqual((1, 1, 0, 0), (s["events"], s["dup"], s["conflicts"], s["gaps"]))
+
+    def test_key_order_difference_is_a_duplicate_not_a_conflict(self):
+        d = tmpdir("keyorder")
+        lines = tel_schema.read_lines(FIXTURES / "valid" / "attack.jsonl")
+        rec = json.loads(lines[1])
+        (d / "a.jsonl").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        (d / "b.jsonl").write_text(json.dumps(dict(reversed(list(rec.items())))) + "\n", encoding="utf-8")
+        s = tel_merge.merge([d], SCHEMA)["summary"]
+        self.assertEqual((1, 0), (s["dup"], s["conflicts"]))
+
+    def test_require_real_exit_codes(self):
+        folder, _ = fake_run("clean2", **M2)
+        self.assertEqual(3, run_cli("merge", folder, "--out", Path(_TMP) / "rr1", "--require-real").returncode)
+        self.assertEqual(0, run_cli("merge", FIXTURES / "valid" / "damage.jsonl", "--out", Path(_TMP) / "rr2",
+                                    "--require-real", "--strict").returncode)
+
+    def test_merge_outputs_are_lf_utf8(self):
+        _, _, out = merged("clean2", **M2)
+        for name in ("events.jsonl", "conflicts.jsonl", "merge_summary.json"):
+            data = (out / name).read_bytes()
+            self.assertNotIn(b"\r", data, name)
 
 
 # ----------------------------------------------------------------------------------------------
