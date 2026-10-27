@@ -179,8 +179,14 @@ def main():
                    used_by=inv['used_by'], licence='chưa kiểm chứng', notes=inv['notes'], **facts)
         if inv['placeholder_copy']:
             copy = COPIES / inv['placeholder_copy']
-            row['copy_md5_match'] = ('có' if copy.is_file() and md5(copy.read_bytes()) == facts['md5'] else 'không') \
-                + ': Placeholder/JSurviv/' + inv['placeholder_copy']
+            old = previous.get(row_key(row), {}).get('copy_md5_match', '')
+            if copy.is_file():
+                row['copy_md5_match'] = ('có' if md5(copy.read_bytes()) == facts['md5'] else 'không') \
+                    + ': Placeholder/JSurviv/' + inv['placeholder_copy']
+            elif old:  # the copies were removed after G3 (F4); keep the AC38 result measured before that
+                row['copy_md5_match'] = old if old.endswith('(đã xóa sau G3)') else old + ' (đã xóa sau G3)'
+            else:
+                row['copy_md5_match'] = 'không còn bản chép'
         jsurviv_rows.append(row)
 
     OUT.parent.mkdir(parents=True, exist_ok=True)

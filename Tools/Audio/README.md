@@ -31,3 +31,7 @@ python -m venv %TEMP%\audio_venv; %TEMP%\audio_venv\Scripts\pip install soundfil
 - `art05_recipe.csv` là nguồn duy nhất: một dòng cho mỗi file cuối (nguồn, đoạn cắt, fade, L đích, giới hạn limiter, giấy phép). Đổi clip hay điểm cắt thì sửa dòng này rồi chạy lại; WAV ra giống từng byte. OGG có số serial ngẫu nhiên nên không giống byte giữa hai lần chạy.
 - `art05_jsurviv_inventory.csv`: 30 nguồn JSurviv (21 file + 9 thành viên zip), phân loại và dấu vết metadata.
 - Thay cho `art05_make_sfx.py` (bản đầu của CPO, đã bỏ).
+
+## Sau G3 của ART-05 (F4)
+
+`Assets/_JungleMaze/Art/Audio/Placeholder/` đã bị xóa: không clip, catalog hay scene nào còn trỏ tới (kiểm GUID trước khi xóa; `copy_jsurviv_placeholders.py --check` đạt 14/14 ngay trước đó, kết quả giữ trong cột `copy_md5_match` của manifest). Vì vậy `copy_jsurviv_placeholders.py --check` giờ báo thiếu bản chép, và `make_placeholder_sfx.py` sẽ tạo lại thư mục nếu chạy: đó là hệ quả mong đợi, không cần chạy hai script này nữa.

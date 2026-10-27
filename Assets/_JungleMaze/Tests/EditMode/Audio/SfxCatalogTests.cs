@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Text.RegularExpressions;
 using JungleMaze.Domain.Audio;
 using JungleMaze.Presentation.Audio;
 using NUnit.Framework;
@@ -53,23 +51,20 @@ namespace JungleMaze.Tests.Audio
             foreach (var id in ids) Assert.IsTrue(clips.Add(_catalog.GetClip(id, 0)), $"{id} shares a clip");
         }
 
+        // ART-05 replaced every generated beep and JSurviv copy, and F4 removed Art/Audio/Placeholder: nothing may
+        // point back into it (formerly BeepsHaveDistinctFrequencies, which counted 0 beeps once ART-05 landed).
         [Test]
-        public void BeepsHaveDistinctFrequencies()
+        public void NoClipPointsIntoPlaceholder()
         {
-            var seen = new Dictionary<int, string>();
-            var beeps = 0;
             foreach (var row in AudioSpec.Table)
+                foreach (var clip in _catalog.Find(row.Id).clips)
+                    StringAssert.DoesNotContain("/Placeholder/", AssetDatabase.GetAssetPath(clip), row.Id.ToString());
+            var set = Resources.Load<AudioRuntimeSet>(AudioRuntimeSet.ResourcePath);
+            foreach (JungleMaze.App.Audio.MusicTrack track in System.Enum.GetValues(typeof(JungleMaze.App.Audio.MusicTrack)))
             {
-                var path = AssetDatabase.GetAssetPath(_catalog.GetClip(row.Id, 0));
-                if (!path.Contains("/Placeholder/Beeps/")) continue;
-                beeps++;
-                var match = Regex.Match(Path.GetFileNameWithoutExtension(path), @"_(\d+)hz$");
-                Assert.IsTrue(match.Success, path);
-                var hz = int.Parse(match.Groups[1].Value);
-                Assert.IsFalse(seen.ContainsKey(hz), $"{path} and {(seen.TryGetValue(hz, out var other) ? other : "")} share {hz} Hz");
-                seen[hz] = path;
+                var clip = set.MusicFor(track);
+                if (clip != null) StringAssert.DoesNotContain("/Placeholder/", AssetDatabase.GetAssetPath(clip), track.ToString());
             }
-            Assert.AreEqual(0, beeps, "ART-05 replaced every generated placeholder with a CC0 clip");
         }
 
         [Test]
