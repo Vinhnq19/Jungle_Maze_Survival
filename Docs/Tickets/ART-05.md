@@ -492,7 +492,214 @@ Kết luận và quyết định (Q7):
 
 ## 4. Kế hoạch kỹ thuật
 
-<tech-lead điền sau G1.>
+*Tech Lead, 27/10/2026, đọc repo tại `2d9d2fa3`. Số đo ở mục này do tôi đo lại bằng script thư viện chuẩn Python trên WAV trong repo, theo định nghĩa G-7 (trộn mono, L bỏ im lặng dưới −50 dBFS hai đầu). Chưa chạy Unity. ART-05 chỉ đổi dữ liệu, asset, script `Tools/Audio` và test dữ liệu: **không đổi protocol, `match.json`, `Scripts/**`**.*
+
+### 4.0. Kiểm phần CPO đã làm (`3f32e1c4`) so với AC
+
+**Đã đạt:**
+
+- 25 WAV mono, 16-bit, 44,1 kHz trong `Sfx/`; 14 mã bíp trỏ sang; còn 0 bíp (AC12, chỉ đổi đúng dòng được phép trong `SfxCatalogTests.cs`).
+- Diff catalog chỉ đổi GUID trong `clips` (AC11); không chạm `Assets/Imported` (AC9, phần diff).
+- Import của cả 25 clip: Decompress On Load, ADPCM, `forceToMono: 0`, `normalize: 0` (AC16, phần cài đặt).
+- Đỉnh ≤ −1,0 dBFS, không chạm trần (AC18, phần đỉnh). Bước chân L −23,1…−23,7 dBFS (AC40).
+- `HitMarker` 0,064 s, `ZoneBell3` 0,75 s, `DragonRoar` 3,0 s nằm trong khoảng đích (AC17).
+
+**Khoảng trống** (sửa được hoàn toàn bằng dữ liệu):
+
+| # | Khoảng trống | Clip | AC · mức |
+| --- | --- | --- | --- |
+| K1 | **Không fade đầu**: \|x\| trong 2 ms đầu > −40 dBFS (cắt đúng điểm bắt đầu tiếng) | 20/25 clip. Tệ nhất ≈ −1 dBFS: `hit_marker`, `shoot_crossbow`, `zone_bell`, `armor_absorb_0/1/2`, `trap_triggered`; còn lại: 10 bước chân, `use_cancel`, `throw`, `empty_click` | AC18 · **P0** cho 3 mã ★ (HitMarker, ShootCrossbow, ZoneBell3) |
+| K2 | Fade cuối chưa đủ | `eliminated` −38,7 dBFS | AC18 · P1 |
+| K3 | Độ dài ngoài khoảng 2.3 | `shoot_crossbow` **0,082 s** (< 0,15) ★; `reload` 0,177 (< 0,20); `use_cancel` 0,059 (< 0,10); `empty_click` 0,358 (> 0,30); `armor_absorb_0/1/2` 0,49–0,59 (> 0,40) | AC17, AC22 · **P0** cho ShootCrossbow, P1 còn lại |
+| K4 | Mức L ngoài −20…−15 dBFS | `zone_bell` **−23,2** ★; `shoot_crossbow` −20,5 ★; `armor_absorb` −23,7…−24,1; `empty_click` −26,5; `bush_enter` −21,9/−22,6; `reload` −20,9; `trap_triggered` −20,4. Nguyên nhân: tiếng va/chuông có hệ số đỉnh cao (chuông 22 dB), giữ đỉnh −1 dBFS thì RMS không lên được −20 nếu không có limiter | AC40 · **P0** |
+| K5 | Mức hiệu dụng E sai tầng (`volume` chưa chỉnh theo clip mới) | `ZoneBell3` −23,2 (T1 cần ≥ −19); `Eliminated` −16,9 (T2 cần ≤ −17: to quá, làm `HitMarker` −16,7 hụt lề +3 dB của AC20); `Throw` −24,2, `TrapTriggered` −23,5, `ArmorAbsorb` −25,8 (T2 cần ≥ −23); `EmptyClick` −32,5 (T3 cần ≥ −27) | AC19, AC20 · **P0** |
+| K6 | Bằng chứng giấy phép thiếu và sai chỗ | `LICENSE_Kenney_CC0.txt` là license của **riêng gói Impact Sounds** (15 clip). Thiếu tệp của Interface Sounds (4 clip), RPG Audio (5 clip) và bản chụp trang OpenGameArt (rồng). Tệp nằm ở `Docs/Art/Audio/`, spec quy định `Docs/Licenses/Audio/` | AC4, AC41 · **P0** |
+| K7 | `ART05_Sources.vi.md` thiếu cột tác giả, ngày tải, đoạn cắt, độ lợi, trạng thái giấy phép theo G-11; câu "Tất cả file … là CC0 1.0" khẳng định khi 10/25 clip chưa có tệp bằng chứng | AC41, G-11 · **P0** |
+| K8 | Chưa có manifest `Docs/Tickets/ART-05_audio_manifest.csv` | AC1–AC4, AC6, AC38, AC40 · **P0** |
+| K9 | Tên `<sfx_snake>.wav` / `<sfx_snake>_<n>.wav` đánh số từ 0, khác dạng `<sfx_snake>_<NN>.wav` của AC8 | AC8 · P1, xem T-4 |
+| K10 | "EditMode 456/456" chưa phủ AC16–AC20, AC40: chưa có test đo mức bằng `GetData` | — · đưa vào 4.4 |
+
+Bảng E hiện tại (E = L + 20·log10(`volume`)): BushEnter −28,3 · ShootCrossbow −23,0 · Throw −24,2 · Reload −26,9 · EmptyClick −32,5 · TrapTriggered −23,5 · HitMarker −16,7 · ArmorAbsorb −25,8 · Eliminated −16,9 · UseCancel −24,1 · ZoneBell3 −23,2 · DragonRoar −15,0 · FootstepGrass −31,5 · FootstepSwamp −30,4.
+
+**Kết luận:** CPO làm đúng hướng và đúng ranh giới, nhưng **3 mã ★ chưa qua AC P0** (HitMarker và ZoneBell3 thiếu fade, ZoneBell3 nhỏ quá tầng, ShootCrossbow ngắn quá). Sửa bằng cách xử lý lại và **ghi đè đúng tên file**: `.meta` giữ nguyên nên GUID giữ nguyên, `clips` trong catalog không đổi, chỉ đổi `volume`.
+
+### 4.1. Hướng làm: hai giai đoạn
+
+**Giai đoạn A (Python, không cần Unity Editor).** Mọi file gốc chỉ đọc. Kết quả ghi ra thư mục tạm **ngoài `Assets/`** (`%TEMP%/art05_stage/`, không commit). Không thả file vào `Assets/` khi phiên khác đang giữ Editor: Unity sẽ tự sinh `.meta` mặc định (`normalize: 1`) mà không ai sở hữu (TR7).
+
+1. **Giải mã** MP3/OGG/zip ra WAV trong thư mục làm việc tạm. Zip bằng `zipfile`. MP3/OGG bằng ffmpeg nếu được duyệt (T-1). Nếu không có ffmpeg: unity-dev chạy một đoạn C# một lần qua Unity MCP (`AudioClip.GetData` trên bản chép `Placeholder/JSurviv/*.mp3`, ghi WAV ra thư mục tạm, **không commit mã**). Lưu ý: bản chép đang `normalize: 1`, nên số "trước xử lý" ghi trong manifest là số sau import; ghi rõ.
+2. **Công thức** `Tools/Audio/art05_recipe.csv`, một dòng cho mỗi file cuối: `out_file, sfx_id|music, source_kind (jsurviv|download), source_path_or_url, zip_member, author, download_date, licence, trim_start_s, trim_end_s, fade_in_ms, fade_out_ms, target_L_dbfs, heard, notes`. Đây là nguồn duy nhất cho xử lý và manifest.
+3. **`Tools/Audio/process_clips.py`** (thư viện chuẩn), chạy lại ra file giống từng byte:
+   - Trộn mono, rồi đổi về 44,1 kHz bằng sinc có cửa sổ nếu nguồn khác (`súng bắn`, `countdown` là 24 kHz). Không "làm sáng" âm (M8).
+   - Cắt theo công thức.
+   - **Thêm 2 ms im lặng ở đầu và fade-in cosine ≥ 2 ms.** Quy tắc "\|x\| ≤ −40 dBFS trong 2 ms đầu" của AC18 chỉ đạt được theo cách này: fade-in 2 ms thôi thì mẫu cuối của 2 ms đầu đã gần đỉnh. Trễ thêm 2 ms, dưới 1/8 khung hình, không nghe thấy.
+   - Fade-out cosine ≥ 5 ms (bom, nổ, dùng đồ: 50–300 ms).
+   - Đưa L về đích (bảng dưới) rồi qua **limiter nhìn trước**: trần −1,0 dBFS, attack 1 ms, release 50 ms, giảm tối đa 6 dB. Lặp tối đa 3 lần cho tới khi L đúng đích ± 0,3 dB và đỉnh ≤ −1,0 dBFS.
+   - Ghi WAV 16-bit 44,1 kHz mono.
+4. **`Tools/Audio/measure_clips.py`** (tên theo spec 2.6): đo đỉnh, L, \|x\| tối đa trong 2 ms đầu/cuối, chuỗi chạm trần, độ dài, tần số, kênh, kích thước; có `--csv`.
+5. **`Tools/Audio/build_manifest.py`**: sinh `Docs/Tickets/ART-05_audio_manifest.csv` từ công thức, số đo trước/sau và `Tools/Audio/art05_jsurviv_inventory.csv`. Bảng kiểm kê này có 30 dòng (21 file + 9 thành viên zip), điền tay từ số đã đo ở 2.2/2.12, kèm md5 và dấu vết metadata. Manifest có cột `row_type` ∈ {`sfx` (26 dòng theo thứ tự enum), `jsurviv` (30), `clip` (một dòng cho mỗi file trong `Sfx/` và `Music/`)}.
+
+**Giai đoạn B (Unity Editor, unity-dev giữ Editor và ghi một dòng ở `Agent_Coordination.vi.md` mục 4).**
+
+1. Chép WAV từ thư mục tạm vào `Sfx/`: ghi đè 25 file cũ, thêm 15 file mới.
+2. Đặt importer bằng API `AudioImporter` qua MCP theo 2.7, rồi `SaveAndReimport`.
+3. Sửa `clips` và `volume` trong catalog bằng `SerializedObject`. Không chạm cột khác.
+4. Nhạc: chép vào `Music/` (Streaming, Vorbis 0,7, `loadInBackground` bật, `normalize` tắt) và trỏ `AudioRuntimeSet`.
+5. Chạy test.
+
+**Đích mức âm** (đáp ứng G-6, AC19, AC20, AC40 và test A19 sẵn có `HitMarker.volume ≥ 2 × FootstepGrass.volume`):
+
+| Tầng (E đích) | Mã | L nướng trong file | `volume` = 10^((E − L)/20) |
+| --- | --- | --- | --- |
+| T1 (−16) | HitMarker, HurtLocal, ZoneBell3, DragonRoar, MatchEnd | −16 (riêng ZoneBell3 cho phép tới −18 nếu limiter phải giảm > 6 dB) | 1,00 |
+| T2 (−20) | MeleeSwing, MeleeHit, ShootRanged, ShootCrossbow, Throw, BombFuse, Explosion, TrapTriggered, ArmorAbsorb, Eliminated | −18 | 0,79 |
+| T3 (−24) | Reload, EmptyClick, PickupWeapon, PickupItem, WearArmor, UseHeal, UseDrink, UseCancel | −18 | 0,50 |
+| T4 (−29) | BushEnter | −18 | 0,28 |
+| T4 (−29) | FootstepGrass, FootstepSwamp | −24 | 0,45 (E −30,9; ≤ 0,5 để A19 còn xanh) |
+
+Kiểm nhanh: E(HitMarker) −16 so với T2 cao nhất −20 → lề 4 dB (AC20 cần ≥ 3); so với bước chân −30,9 → lề 14,9 dB (cần ≥ 12). Các biến thể của cùng một mã có cùng L ± 0,5 dB vì `volume` là một số cho cả mã. `volume` cuối tính từ L đo thật sau xử lý và ghi trong manifest.
+
+### 4.2. Công thức từng clip
+
+**(a) Làm lại 25 clip CC0** (ghi đè, giữ `.meta`): mọi clip thêm 2 ms đầu + fade (K1) và đưa về L đích (K4). Riêng:
+
+| Clip | Việc thêm |
+| --- | --- |
+| `shoot_crossbow.wav` | Cắt lại từ file gốc, giữ đuôi tự nhiên tới ≥ 0,15 s. Nếu `pluck_001` gốc ngắn hơn 0,15 s: chọn clip khác trong 3 gói Kenney (T-3). **Không** đệm im lặng để qua test |
+| `reload.wav`, `use_cancel.wav` | Cắt lại từ gốc, giữ đuôi tới ≥ 0,20 / ≥ 0,10 s (T-2) |
+| `empty_click.wav` | Cắt ≤ 0,30 s, fade-out 20 ms |
+| `armor_absorb_0/1/2.wav` | Cắt ≤ 0,40 s, fade-out 40 ms |
+| `eliminated.wav` | Fade-out 15 ms |
+
+**(b) 12 mã JSurviv → 15 file mới trong `Sfx/`** (theo quyết định 2.11a; điểm cắt chọn theo đường bao năng lượng, tính từ tiếng đầu tiên; PIC nghe ở AC36 rồi chỉnh số trong công thức nếu cần, chỉ là dữ liệu):
+
+| SfxId | File mới | Nguồn (chỉ đọc) | Cắt / fade-out | Ghi chú |
+| --- | --- | --- | --- | --- |
+| MeleeSwing | `melee_swing.wav` | `melee chém.mp3` | nguyên 0,37 s / 10 ms | |
+| MeleeHit | `melee_hit.wav` | `Đập.wav` | nguyên 0,32 s / 10 ms | Đỉnh gốc −7,2: tăng độ lợi |
+| ShootRanged | `shoot_ranged.wav` | `súng bắn.mp3` (24 kHz) | ≤ 1,20 s / 30 ms | Đổi về 44,1 kHz |
+| BombFuse | `bomb_fuse.wav` | `countdown.mp3` (24 kHz, 11,78 s) | 1,20 s / 50 ms | Không lặp (Q10) |
+| Explosion | `explosion.wav` | `bomb nổ.mp3` (5,41 s) | ≤ 2,80 s / 300 ms | |
+| HurtLocal | `hurt_local.wav` | `bleed.mp3` | ≤ 0,55 s / 40 ms | Rủi ro nội dung (TR6) |
+| PickupWeapon | `pickup_weapon.wav` | `nhặt súng.mp3` | nguyên 0,60 s / 20 ms | |
+| PickupItem | `pickup_item.wav` | `Nhặt đồ/Gun Put On.mp3` | ≤ 0,75 s / 40 ms | |
+| WearArmor | `wear_armor_0…3.wav` | `bot di chuyển.zip` → `Leather Armor Put On 01–04` | ≤ 1,15 s / 60 ms | Gốc nhỏ (−10…−15): đưa về L đích. Bỏ `Helmet Put On` |
+| UseHeal | `use_heal.wav` | `gauze.mp3` | ≤ 1,40 s / 100 ms | |
+| UseDrink | `use_drink.wav` | `cola.mp3` | ≤ 1,40 s / 100 ms | |
+| MatchEnd | `match_end.wav` | `TimeOver.wav` | nguyên 2,82 s / 50 ms | Mono (Q2). Ghi thẻ hollywoodedge.com |
+
+`ZoneBell3` giữ một tiếng và `repeatCount = 3` (AC28 không đổi cột nào).
+
+**(c) Nhạc** (cần bộ nén, T-1). Ba file vào `Music/`, đo L trên WAV trước khi nén:
+
+| Track | File | Nguồn | Đích |
+| --- | --- | --- | --- |
+| WaitingRoom | `waiting_room.ogg` | `Waiting Room Music.wav` (25,7 MB) | Stereo, L −26 ± 2, đỉnh ≤ −1; Vorbis ≈ 128 kbps → ≈ 2,3 MB |
+| Loading | `loading.ogg` | `Loading Music.mp3` (mono) | Giữ mono, L −26; ≈ 0,7 MB |
+| Match | `match.ogg` | `ParkingMapMusic.mp3` (4,9 MB) | Stereo, L −26; ≈ 160 kbps → ≈ 2,5 MB |
+
+`AudioRuntimeSet`: `waitingRoomMusic` → `waiting_room`, `loadingMusic` → `loading`, `matchMusic` → `match`. `MusicEnabled` mặc định vẫn tắt (code AUD-01, không chạm). Điểm lặp không xử lý (AC34, PIC nghe).
+
+Dung lượng dự kiến: SFX ≈ 2 MB, nhạc ≈ 5,5 MB; tổng < 12 MB (AC35).
+
+### 4.3. Danh sách file
+
+**Tạo mới:**
+
+| Đường dẫn | Nội dung |
+| --- | --- |
+| `Tools/Audio/process_clips.py`, `measure_clips.py`, `build_manifest.py`, `test_art05_audio.py` | Xử lý, đo, sinh manifest, unittest (thư viện chuẩn) |
+| `Tools/Audio/art05_recipe.csv`, `art05_jsurviv_inventory.csv` | Công thức 43 file cuối (25 + 15 + 3), kiểm kê 30 nguồn JSurviv |
+| `Assets/_JungleMaze/Art/Audio/Sfx/` 15 WAV + `.meta` | 12 mã JSurviv (4.2b) |
+| `Assets/_JungleMaze/Art/Audio/Music.meta`, `Music/` 3 OGG + `.meta` | Nhạc (4.2c) |
+| `Assets/_JungleMaze/Tests/EditMode/Audio/ArtAudioSpec.cs`, `ArtAudioCatalogTests.cs`, `ArtAudioLevelTests.cs`, `ArtAudioManifestTests.cs`, `ArtAudioMusicTests.cs` + `.meta` | Test dữ liệu (4.4) |
+| `Docs/Tickets/ART-05_audio_manifest.csv` | Manifest (sinh bằng script) |
+| `Docs/Licenses/Audio/Kenney_ImpactSounds_License.txt` (chuyển từ `Docs/Art/Audio/LICENSE_Kenney_CC0.txt`), `Kenney_InterfaceSounds_License.txt`, `Kenney_RPGAudio_License.txt`, `OpenGameArt_cc0-deep-monster-roar.pdf` | Bằng chứng giấy phép (K6) |
+
+**Sửa:**
+
+- `Sfx/*.wav`: ghi đè 25 file, `.meta` không đổi.
+- `SfxCatalog.asset`: `clips` của 12 mã JSurviv; `volume` của 26 mã. `pitchJitter`, `priority`, `bus`, `rangeCells`, `maxInstances`, `cooldownSeconds`, `repeatCount`, `repeatIntervalSeconds` không đổi.
+- `Resources/AudioRuntimeSet.asset`: 3 tham chiếu nhạc.
+- `Docs/Art/Audio/ART05_Sources.vi.md`: thêm cột tác giả, ngày tải, đoạn cắt, độ lợi, giấy phép theo G-11; sửa câu khẳng định CC0 (K7).
+- `Tools/Audio/README.md`: cách chạy pipeline.
+- `Docs/Agent_Coordination.vi.md`: dòng bắt đầu/kết thúc giữ Editor.
+
+**Không sửa:** `Scripts/**`, `Bootstrap*`, scene, prefab, `ProjectSettings/**`, `Backend/**`, `Assets/Imported/**`, test của AUD-01 (đã đổi đúng dòng ở `3f32e1c4`), `Placeholder/**` (tới bước dọn sau G3).
+
+**Sau G3** (Q7, commit riêng): xóa `Placeholder/JSurviv/**` và `Placeholder/Beeps/**` không còn được tham chiếu, ghi chú vào `Tools/Audio/README.md`. `BeepsHaveDistinctFrequencies` vẫn xanh (0 bíp). `copy_jsurviv_placeholders.py --check` sẽ báo thiếu bản chép: hệ quả mong đợi. Cần chạy AC38 (`--check`) **trước** bước này.
+
+### 4.4. Test theo AC
+
+**EditMode mới** (chỉ đọc dữ liệu; namespace `JungleMaze.Tests.Audio`, asmdef `JungleMaze.Tests.EditMode` sẵn có):
+
+| Lớp | Kiểm | AC |
+| --- | --- | --- |
+| `ArtAudioSpec` | Bảng tĩnh của test: SfxId → tầng E, khoảng độ dài (2.3), khoảng L (2.6). Không phải mã runtime | — |
+| `ArtAudioCatalogTests` | Tên `^[a-z0-9_]+\.wav$`, ≤ 5 clip/mã · không clip nào nằm dưới `Assets/Imported/`, GUID trong `Sfx/`/`Music/` không trùng `.meta` trong `Imported` · 26 mã, mọi clip dưới `Art/Audio/Sfx/`, 0 dưới `Placeholder/` · các cặp phải khác clip · độ dài từng mã trong khoảng · BombFuse ≤ 1,5, Explosion ≤ 3,0 | AC8, AC9, AC10, AC13, AC17, AC21–AC24, AC26, AC27 (phần dữ liệu) |
+| `ArtAudioLevelTests` | `LoadAudioData` + `GetData` từng clip: mono · đỉnh ≤ −1,0 dBFS (dung sai ADPCM 0,2 dB), 0 chuỗi ≥ 3 mẫu chạm trần · 2 ms đầu/cuối ≤ −40 dBFS · L trong khoảng · E trong tầng ± 3 · lề của HitMarker · đỉnh sau import khớp số đo nguồn trong manifest ± 0,5 dB · importer: Decompress On Load, ADPCM/PCM, `forceToMono` tắt; `normalize` đọc từ dòng `normalize:` trong `.meta` (API công khai không lộ cờ này) | AC16, AC18, AC19, AC20, AC40 |
+| `ArtAudioManifestTests` | 26 dòng `sfx` đúng thứ tự `Enum.GetNames(typeof(SfxId))`, trạng thái ∈ {Có, Cần chỉnh, Thiếu} · số file trong `Assets/Imported/JSurviv/Sound` = 21 và dòng `jsurviv` = 30 · giấy phép theo từ vựng G-11, `có bằng chứng:` trỏ tệp có thật, không có "CC0/miễn phí/royalty-free/được phép" nếu thiếu đường dẫn · dòng `clip` khớp một-một với file trong `Sfx/` + `Music/`, dòng tải về có URL/tác giả/ngày · cột `heard` ∈ {`có: <tên>, <ngày>`, `chưa`} | AC1, AC3, AC4, AC6, AC41 |
+| `ArtAudioMusicTests` | Mỗi file ≤ 3,0 MB, độ dài lệch ≤ 0,1 s so với gốc · `waitingRoomMusic` ≠ `loadingMusic`, cả ba không rỗng và nằm dưới `Music/` · importer Streaming + Vorbis | AC29, AC31, AC16 (nhạc) |
+
+**Python** `Tools/Audio/test_art05_audio.py` (unittest): fade đạt −40 dBFS ở 2 ms đầu/cuối; limiter không vượt trần; độ lợi đạt L ± 0,1 dB; chạy hai lần ra cùng byte; đổi tần số giữ độ dài ± 1 mẫu.
+
+**Chạy lại, không sửa:** EditMode `JungleMaze.Tests.Audio.*` và PlayMode `AudioAcceptanceTests` (15/15). Bộ này phủ AC12, AC14 (A3, A5, A13), AC20 (A19), AC21 (A14), AC22, AC25 (A20), AC27 (dừng fuse), AC32 (A23), AC33 (A22, A24). Console 0 error/warning.
+
+**Kiểm một lần, ghi vào báo cáo QA:**
+
+- AC2: đo lại kiểm kê; MP3 qua `AudioClip.length` của bản chép trước khi dọn.
+- AC5, AC7, AC11 (`git diff --stat`), AC35 (script cộng dung lượng), AC37, AC42.
+- AC15: đảo một mã trên bản sao tạm.
+- AC30: `GetData` không đọc được clip Streaming, nên đo nhạc sau nén bằng cách tạm đặt Decompress On Load trong lúc kiểm rồi trả lại, không commit.
+- AC38: `copy_jsurviv_placeholders.py --check`, phải chạy trước khi dọn `Placeholder`.
+
+**Người dùng (PIC):** AC6 (cột `heard`), AC34 (điểm lặp nhạc), AC36 = AC-A28 của AUD-01: nghe 11 mã ★ qua F6 ("Dồn 10 s", "Gửi lặp ×5"), bật nhạc qua F6 để nghe ba bài.
+
+### 4.5. Chia commit
+
+Mỗi commit dùng `git commit -m "…" -- <đường dẫn>`, message tiếng Anh, không attribution, không push. Test xanh sau mỗi commit có asset.
+
+| # | Commit | File | Cần Editor |
+| --- | --- | --- | --- |
+| 1 | `tools(art-05): add clip processing, measuring and manifest scripts` | `Tools/Audio/*.py`, 2 CSV, README | Không |
+| 2 | `audio(art-05): refade, retrim and level the 25 CC0 clips` | 25 `Sfx/*.wav` (giữ `.meta`), `SfxCatalog.asset` (`volume` 14 mã) | Có |
+| 3 | `audio(art-05): derive the 12 JSurviv clips into Sfx` | 15 WAV + `.meta`, `SfxCatalog.asset` (`clips` + `volume` 12 mã) | Có |
+| 4 | `docs(art-05): add audio manifest and licence evidence` | manifest, `Docs/Licenses/Audio/**`, `ART05_Sources.vi.md` (kể cả xóa bản cũ ở `Docs/Art/Audio/`) | Không |
+| 5 | `test(art-05): add audio data and loudness tests` | 4 file test SFX + `.meta` | Có (chạy test) |
+| 6 | `audio(art-05): compress and level the three music tracks` | `Music/**`, `AudioRuntimeSet.asset`, `ArtAudioMusicTests.cs`, dòng nhạc trong manifest | Có · **cần T-1** |
+| — | Sau G3: `chore(art-05): remove unreferenced placeholder clips` | `Placeholder/**`, README | Có |
+
+Tổng: **6 commit** trước G3 (5 nếu nhạc lùi), cộng 1 commit dọn sau G3.
+
+### 4.6. Agent build, song song, ước lượng
+
+- **Agent build: unity-dev.** Không cần backend-dev: không đổi server, protocol hay `match.json`.
+- **Song song:** Giai đoạn A (commit 1, xuất file vào thư mục tạm, bản nháp manifest) không cần Editor, nên chạy được **ngay bây giờ** trong lúc unity-dev gắn sprite UI-03. Người chạy là một phiên thứ hai chỉ dùng Python, vùng file là `Tools/Audio/**` và thư mục tạm ngoài repo, không ghi gì vào `Assets/`. Giai đoạn B (commit 2–6) chờ unity-dev trả Editor.
+- **Ước lượng:** Giai đoạn A 0,5 ngày; Giai đoạn B 0,5 ngày; nhạc thêm 0,25 ngày nếu có bộ nén. Tổng **khoảng 1–1,25 ngày**, kịp 30/10. PIC nghe khoảng 30 phút.
+
+### 4.7. Rủi ro kỹ thuật
+
+- **TR1 · Limiter làm bẹt tiếng va.** Chuông và tấm giáp có hệ số đỉnh cao; kéo L lên −16/−18 cần giảm đỉnh tới 6 dB. Giới hạn 6 dB, cho ZoneBell3 tới −18, PIC nghe (AC36). Không đạt thì chọn clip khác cùng gói hoặc tạm trỏ lại bíp (T-7).
+- **TR2 · `GetData` trên clip ADPCM** trả dữ liệu đã giải nén, có sai số. Đỉnh và \|x\| 2 ms đầu/cuối có thể lệch 0,2–0,5 dB. Test dùng dung sai; clip ≤ 0,3 s fail vì ADPCM thì chuyển sang PCM (2.7 cho phép).
+- **TR3 · Không đọc được clip Streaming bằng `GetData`.** Mức nhạc kiểm một lần (4.4), không thành test cố định.
+- **TR4 · Chưa có bộ giải mã/nén** (`ffmpeg`, `sox` không có trên máy). SFX vẫn làm được qua đường Unity. Nhạc (AC29–AC31, P1) không làm được nếu không có bộ nén.
+- **TR5 · File gốc CC0 không nằm trong repo.** Cắt lại `shoot_crossbow`, `reload`, `use_cancel` và lấy license của 2 gói Kenney cần các gói CPO đã tải (T-2).
+- **TR6 · Chọn đoạn cắt khi chưa nghe** (BombFuse từ đoạn đếm ngược 11,8 s, HurtLocal từ `bleed`, PickupItem từ "đặt súng"). Chọn theo đường bao năng lượng; AC36 có thể đổi số trong công thức, chỉ là dữ liệu.
+- **TR7 · Hai phiên cùng dùng Editor.** File thả vào `Assets/` khi người khác giữ Editor sẽ sinh `.meta` mặc định (`normalize: 1`) lẫn vào diff của họ. Giai đoạn A chỉ ghi ra thư mục tạm; Giai đoạn B chỉ chép vào khi đã ghi giữ Editor.
+- **TR8 · Đổi `volume` cả 26 mã đổi cảm giác âm thanh của AUD-01.** Có test A19 chặn bước chân > 0,5. Các số đều nằm trong asset, sửa lại không cần mã.
+- **TR9 · Giấy phép JSurviv không giải quyết được trong ticket.** 12 clip và 2 bài nhạc vẫn `chưa kiểm chứng`; `TimeOver.wav` mang thẻ thư viện thương mại (AC42, Q5).
+
+### 4.8. Câu hỏi kỹ thuật cho G1
+
+| # | Câu hỏi | Mặc định khuyến nghị |
+| --- | --- | --- |
+| **T-1** | Cho dùng **ffmpeg** bản portable (ngoài repo, không commit) để giải mã MP3/OGG và nén nhạc? Cài hay tải phần mềm lên máy cần **người dùng** đồng ý | **Có** (spec Q12 đã khuyến nghị). Không có thì: SFX giải mã qua Unity; nhạc giữ như AUD-01, AC29–AC31 ghi "chưa đạt", commit 6 lùi. **Chỉ chặn phần nhạc (P1)** |
+| **T-2** | Gói Kenney (Impact, Interface, RPG Audio) và file rồng CPO đã tải còn ở đâu? Cần để cắt lại 3 clip ngắn và lấy `License.txt` của 2 gói còn thiếu | CPO đưa đường dẫn thư mục cho người build. Nếu đã xóa: tải lại cần người dùng đồng ý. Thiếu thì K3 (P0 ShootCrossbow) và K6 không đóng được |
+| **T-3** | ShootCrossbow: nếu `pluck_001` gốc < 0,15 s? | Chọn clip khác trong 3 gói Kenney đã có giấy phép, PIC nghe. Không đệm im lặng để qua test |
+| **T-4** | Tên file: đổi 25 file sang `<sfx_snake>_<NN>.wav` như AC8, hay giữ tên CPO đặt? | **Giữ** tên hiện có; 15 file mới đặt cùng kiểu (`melee_swing.wav`, `wear_armor_0.wav`). CPO ghi cách hiểu AC8 ở G1. Đổi tên không lợi gì mà làm lệch `ART05_Sources.vi.md` |
+| **T-5** | Đích L và `volume` theo bảng 4.1 (T1 −16, T2/T3/BushEnter −18, bước chân −24; `volume` 1,00/0,79/0,50/0,28/0,45)? | **Có** |
+| **T-6** | Chuyển `LICENSE_Kenney_CC0.txt` sang `Docs/Licenses/Audio/` đúng spec và đổi tên theo gói? | **Có**; `ART05_Sources.vi.md` trỏ tới đường dẫn mới |
+| **T-7** | Clip không đạt sau xử lý hoặc sau khi nghe: cho tạm trỏ lại bíp và ghi báo cáo (spec 2.13)? | **Có**; kỳ vọng "0 bíp" của `SfxCatalogTests` khi đó tính theo số mã còn dùng bíp, báo CPO trước khi đổi |
 
 ## 5. Nhật ký build
 
