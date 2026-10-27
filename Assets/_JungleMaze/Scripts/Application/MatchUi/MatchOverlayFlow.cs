@@ -7,7 +7,7 @@ using JungleMaze.Domain.MatchUi;
 namespace JungleMaze.App.MatchUi
 {
     /// <summary>
-    /// UI-03 sub-states of a match (G-13): Playing → Eliminated → Spectating → HandedOff. Leaving
+    /// UI-03 sub-states of a match (G-13): Playing → (Killcam) → Eliminated → Spectating → HandedOff. Leaving
     /// <see cref="AppScreen.InMatch"/> resets everything (AC5, AC42); the match ending or nobody left alive hands off
     /// at once to the results flow, which stays GameFlow/UI-02's (AC28, T-10). Every switch happens inside the call
     /// that caused it, so the "≤ 500 ms" budgets of G-6/G-8 are met on the same frame. The ESC menu is separate and
@@ -24,13 +24,15 @@ namespace JungleMaze.App.MatchUi
         private readonly Action _onSpectatorChanged;
         private IEliminationSource _elimination;
         private ISpectatorSource _spectator;
+        private readonly KillcamSession _killcam;
 
         public MatchOverlayFlow(IEventBus bus, Func<double> clock, IEliminationSource elimination, ISpectatorSource spectator,
-            AppScreen initialScreen, MatchOverlayTuning tuning = null)
+            AppScreen initialScreen, MatchOverlayTuning tuning = null, KillcamSession killcam = null)
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
             _tuning = tuning ?? MatchOverlayTuning.Default;
+            _killcam = killcam;
             _onScreen = OnScreenChanged;
             _onEliminated = OnLocalEliminated;
             _onPlayerOut = OnPlayerOut;
@@ -49,6 +51,9 @@ namespace JungleMaze.App.MatchUi
         public IEliminationSource Elimination => _elimination;
         public ISpectatorSource Spectator => _spectator;
         public EliminationInfo Info { get; private set; }
+
+        /// <summary>Null when the killcam path is not composed (always skipped silently).</summary>
+        public KillcamSession Killcam => _killcam;
 
         /// <summary>Short status line ("&lt;name&gt; đã bị loại", "Killcam không khả dụng: …"); null when none.</summary>
         public string Notice { get; private set; }
@@ -91,10 +96,20 @@ namespace JungleMaze.App.MatchUi
             return true;
         }
 
+        /// <summary>Space/click "Bỏ qua" during the killcam (Q3); the eliminated screen follows in the same call.</summary>
+        public bool SkipKillcam()
+        {
+            if (Phase != MatchOverlayPhase.Killcam) return false;
+            _killcam.Skip();
+            SetPhase(MatchOverlayPhase.Eliminated);
+            return true;
+        }
+
         public void Tick(float deltaTime)
         {
             var now = _clock();
             if (Notice != null && now >= NoticeUntil) { Notice = null; NoticeRaised?.Invoke(null); }
+            if (Phase == MatchOverlayPhase.Killcam) TickKillcam();
             CheckEnd();
         }
 
@@ -123,7 +138,17 @@ namespace JungleMaze.App.MatchUi
         {
             if (Phase != MatchOverlayPhase.Playing) return;
             Info = info;
-            SetPhase(MatchOverlayPhase.Eliminated);
+            if (_killcam != null && _killcam.Begin(info, _spectator != null ? _spectator.LocalNetId : EliminationInfo.NoNetId))
+            {
+                SetPhase(MatchOverlayPhase.Killcam);
+                TickKillcam();
+            }
+            else
+            {
+                // Disabled is the normal case and stays silent (AC31); every other reason gets a notice (AC35).
+                if (_killcam != null) NoticeKillcam(_killcam.Reason);
+                SetPhase(MatchOverlayPhase.Eliminated);
+            }
             CheckEnd();
         }
 
@@ -148,6 +173,24 @@ namespace JungleMaze.App.MatchUi
             if (Phase == MatchOverlayPhase.Spectating) Camera.Retarget(_clock());
         }
 
+        private void TickKillcam()
+        {
+            _killcam.Tick();
+            if (_killcam.State == KillcamSession.SessionState.Failed)
+            {
+                NoticeKillcam(_killcam.Reason);
+                SetPhase(MatchOverlayPhase.Eliminated);
+            }
+            else if (_killcam.State == KillcamSession.SessionState.Finished) SetPhase(MatchOverlayPhase.Eliminated);
+        }
+
+        private void NoticeKillcam(KillcamUnavailableReason reason)
+        {
+            if (reason == KillcamUnavailableReason.None || reason == KillcamUnavailableReason.Disabled) return;
+            ShowNotice("Killcam không khả dụng: " + KillcamSession.ReasonText(reason, _killcam.Options.DurationSeconds),
+                _tuning.KillcamNoticeSeconds);
+        }
+
         private void CheckEnd()
         {
             if (Phase != MatchOverlayPhase.Eliminated && Phase != MatchOverlayPhase.Spectating && Phase != MatchOverlayPhase.Killcam) return;
@@ -166,6 +209,7 @@ namespace JungleMaze.App.MatchUi
         /// <summary>Frees everything that belongs to one match (G-14, AC42).</summary>
         private void Release()
         {
+            _killcam?.Stop();
             Targets.Clear();
             Camera.Clear();
             if (Phase == MatchOverlayPhase.Inactive || Phase == MatchOverlayPhase.Playing) Info = default;
