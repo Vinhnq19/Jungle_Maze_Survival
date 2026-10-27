@@ -179,6 +179,7 @@ public static class MatchFlowChecks
             CheckFlow(c, schema, RunFlow(Path.Combine(root, "flow")));
             CheckH7(c, schema, RunH7(Path.Combine(root, "h7")));
             CheckLifecycle(c, root);
+            CheckDropsAtCleanup(c, Path.Combine(root, "drops"));
         }
         finally
         {
@@ -340,6 +341,41 @@ public static class MatchFlowChecks
         c.Check(cc.GetProperty("endTick").GetUInt32() >= cc.GetProperty("startTick").GetUInt32() && cc.GetProperty("ccKind").GetString() == "ROOT"
                 && cc.GetProperty("end").GetString() == "EXPIRED" && cc.GetProperty("by").GetString() == "ROPE",
             "cc_span carries ROOT/EXPIRED, by=ROPE, endTick >= startTick");
+    }
+
+    /// <summary>Ring đầy trong trận A: _trailer của file đóng ở Cleanup phải mang đúng droppedQueue của A.</summary>
+    private static void CheckDropsAtCleanup(Checker c, string root)
+    {
+        c.Section("Queue drops are charged to the match that is closing");
+        var (map, zone, profile) = LoadData();
+        var writer = new JsonlTelemetryWriter(new TelemetryWriterOptions { RootPath = root, Log = TextWriter.Null }); // không Start: gom tay
+        var match = new MatchRuntime("R3", map, zone, profile, "room-drops");
+        var observer = new MatchTelemetryObserver(match, writer, new TelemetryRing(256, 128));
+        writer.Register(new MatchTelemetryAssembler(observer, writer, 1));
+        observer.Subscribe();
+        match.TryRegisterPlayer("d0", "D0", out _);
+        match.TryRegisterPlayer("d1", "D1", out _);
+        match.SetPlayerReady("d0");
+        match.SetPlayerReady("d1");
+        TickUntil(match, () => match.Phase == MatchPhase.Loading, 200);
+        var matchA = match.MatchId;
+        match.SetPlayerLoaded("d0", matchA);
+        match.SetPlayerLoaded("d1", matchA);
+        TickUntil(match, () => match.Phase == MatchPhase.InGame, 10);
+        writer.PumpOnce();
+
+        // Ring trên ngưỡng bulk: snapshot của trận A bị bỏ, frame critical (kết thúc, Cleanup) vẫn vào.
+        for (var i = 0; i < 200; i++) observer.TryWrite(TelemetryEvent.Attack(0, "KNIFE", TelemetryAttackKind.Melee, 0, 0));
+        match.ProcessLeave("d1", matchA);
+        TickUntil(match, () => match.Phase == MatchPhase.Cleanup, 60);
+        var droppedInA = observer.Ring.Dropped;
+        writer.PumpOnce();
+        writer.Stop(TimeSpan.FromSeconds(1));
+
+        var trailer = ReadLines(FileFor(root, matchA))[^1];
+        c.Check(droppedInA > 0 && trailer.GetProperty("droppedQueue").GetInt64() == droppedInA,
+            "Trailer of the match closed at Cleanup carries that match's queue drops",
+            $"dropped={droppedInA} trailer={trailer.GetProperty("droppedQueue").GetInt64()}");
     }
 
     private static void CheckLifecycle(Checker c, string root)

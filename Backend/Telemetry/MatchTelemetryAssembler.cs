@@ -269,6 +269,7 @@ public sealed class MatchTelemetryAssembler : ITelemetryPump
 
     private void CloseFile()
     {
+        AttributeDrops(); // bản ghi bị bỏ tới lúc này thuộc trận đang đóng, không dồn sang trận sau
         if (_file != null) _writer.Close(_file);
         _file = null;
         _matchClosed = true;

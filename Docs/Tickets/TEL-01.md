@@ -939,6 +939,8 @@ Commit `8565a4df` (commit 1, schema và tài liệu), `a38773f0` (commit 5), `27
 - **`Docs/Reports/TEL-01_2026-10-27/`:** `seed1/` (`report.md` và 9 CSV, giống từng byte `golden/seed1`), `tick_budget.csv`, `bench.txt`, `README.md`.
 - **Đã chạy thử** lệnh `fake` A/B rồi `compare` trong QA guide: mã thoát 0.
 
+**Sửa review Nên sửa 1 · 27/10/2026 · backend-dev:** `CloseFile()` gọi `AttributeDrops()` trước khi đóng, nên bản ghi bị bỏ được tính vào đúng trận đang đóng ở Cleanup, không dồn sang trận sau. Thêm check ring đầy rồi Cleanup: `_trailer.droppedQueue` = số bị bỏ. Check này FAIL khi bỏ dòng sửa. `TelemetryChecks` 71/71 PASS.
+
 ### Luồng P (công cụ Python), commit 2–4 · 27/10/2026 · backend-dev
 
 Commit `ccb58d48` (commit 2), `e3d746a8` (commit 3), `970695e1` (commit 4). Cả ba chỉ chạm `Tools/Telemetry/**` (AC29). Python 3.12.10 stdlib, chạy `python -I`.
