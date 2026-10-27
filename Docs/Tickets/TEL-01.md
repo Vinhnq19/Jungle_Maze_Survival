@@ -1018,7 +1018,48 @@ Commit `ccb58d48` (commit 2), `e3d746a8` (commit 3), `970695e1` (commit 4). Cả
 
 ## 6. Review
 
-_Code-reviewer điền._
+### Review TEL-01 Phase A · 27/10/2026 · code-reviewer
+
+**Phạm vi review:** `git diff f77c031e..00cdb6db` (8565a4df, ccb58d48, e3d746a8, 970695e1, a38773f0, 27ada614, cf78b3c9, 8c12cdc1, 00cdb6db và nhật ký), bỏ qua f374fd49, 4d53acf1, 9387e0b3 (ART-05, UI-01). Một lượt tập trung theo lệnh CPO, không chạy lại bộ test dài.
+
+**Kết quả: Qua.** Chặn 0 · Nên sửa 1 · Gợi ý 4.
+
+**Đã kiểm và đạt**
+1. **Không đụng vùng khóa.** Không có file nào dưới `Backend/GameServer/**` hay `Backend/Shared/**`; protocol không đổi. Phần backend mới nằm trong `Backend/Telemetry/**` và `Backend/Tests/TelemetryChecks/**`; `TelemetryChecks.csproj` biên dịch nguồn bằng `Compile Include="../../Telemetry/**"`. Mọi hook vào GameServer vẫn là đề xuất Phase B (`MatchRuntime` chưa có `PlayerDisconnected`/`PlayerLeft`/`ReplayAcked`, observer tìm theo tên và tắt khi không thấy).
+2. **Đường tick không khóa, không cấp phát, đầy thì bỏ và đếm.**
+   - `TelemetryRing.TryWrite` là hàng đợi Vyukov: chỉ `Volatile`/`Interlocked`, không `lock`, không chờ; đầy (`diff < 0`) thì tăng `_droppedCritical`/`_droppedBulk` và trả false. Bulk (snapshot) bị chặn ở nửa ring nên chừa chỗ cho bản ghi critical.
+   - `MatchTelemetryObserver`: delegate tạo một lần trong constructor, bản ghi là struct, `DateTime.UtcNow.Ticks` không cấp phát, frame `byte[]` là bản sao mới của `MatchRuntime` (`writer.CopyData()`), nên ring giữ tham chiếu không bị ghi đè. Mọi I/O, JSON và `lock` nằm ở luồng nền (`JsonlTelemetryWriter`, `_pumpGate` chỉ ở `Register`/`Unregister`).
+   - Lỗi I/O tự tắt writer và observer thôi đẩy; đã đối chiếu số trong nhật ký (p99 0,2 µs, 0 byte cả khi ring đầy).
+3. **Không có PII trong bản ghi.**
+   - Assembler không đọc `DisplayName`, `ProfileKey`, `RoomCode` hay resume token (`_onResume` bỏ token ngay). `roomId` là `Guid` riêng (`RoomManager.cs:46,115`), không phải mã phòng.
+   - `sess` là 8 byte đầu SHA-256 của `"tel1:" + sessionId`, không ghi session id thô. Client chỉ ghi id, tick, số liệu khung hình/RTT.
+   - `tel_schema.py` còn chặn khóa và giá trị PII (có fixture `pii__*` và `--pii-sample`).
+4. **Client tắt hẳn khi không có `-telemetry`.** `ClientTelemetryOptions.FromArgs` mặc định tắt; `ComposeTelemetry` thoát trước khi tạo sink, luồng, file hay tickable. `Bootstrap.cs` chỉ thêm đúng 1 dòng (`ComposeTelemetry(...)`, `Bootstrap.cs:168`); phần còn lại ở `Bootstrap.Telemetry.cs`. `ClientConfig` không đổi. Sink client là SPSC ring 256 ô: đầy hoặc tắt thì `TryWrite` trả false và đếm; luồng chính không chờ.
+5. **Ranh giới Clean Architecture của client đúng.** `Domain/Telemetry` chỉ dùng `System` (asmdef `noEngineReferences`); `Application/Telemetry` (cổng `ITelemetrySink`, `PerfClientRecorder`) chỉ dùng Core, Domain, Protocol và không có `UnityEngine`; `Infrastructure/Telemetry` (file sink, options, identity) tham chiếu Application; composition ở Bootstrap. Không có asmdef nào bị đổi.
+6. **Dedupe và xung đột (`tel_merge.py`).**
+   - Đọc logic: khóa kỹ thuật `(matchId, src, wid, seq)`; cùng nội dung chỉ đếm `dup`, khác nội dung thì vào `conflicts.jsonl`. Biến thể giữ lại là biến thể có JSON chuẩn tắc nhỏ nhất nên kết quả không phụ thuộc thứ tự file/dòng. Việc tách khe `slot[3]` và đếm lại bản trùng sau khi tách đúng.
+   - Khe seq tính trên khóa kỹ thuật trước khi bỏ trùng ngữ nghĩa nên bản trùng ngữ nghĩa vẫn chiếm một seq; trailer mỗi file chỉ tính một lần.
+   - `once` chỉ áp cho loại có `once: true`; xung đột được báo ở `report.md` và với `--strict` thì thoát mã 2.
+   - Đã chạy `python -I test_telemetry.py -k Merge`: 17 test OK.
+   - Phía server, `match_start`, `match_end`, `player_spawn`, `elimination` có cờ một lần (`_startEmitted`, `_endEmitted`, `_spawned`, `_eliminated`); `OnReplayAcked` có `_replayDone`; resume do `StartInGame` gây ra bị loại bằng `_startEmitted`.
+
+**Nên sửa**
+1. **Drop của trận A bị tính nhầm sang trận B** — `MatchTelemetryAssembler.cs:122-142` (`Pump`/`AttributeDrops`) và `:297-301` (`OnPhase` `Cleanup`).
+   - Mô tả: `Pump` rút hết ring, và trong lúc đó `OnPhase(Cleanup)` gọi `CloseFile()` (ghi `_trailer`) rồi mới đến `AttributeDrops()` ở cuối `Pump`. Lúc đó `_file == null` nên phần drop phát sinh từ lần `AttributeDrops` trước tới Cleanup đi vào `_carryDrops`, và `EnsureFile` cộng nó vào file của trận kế tiếp. (Hai đường Stale và `Complete` gọi `AttributeDrops` trước `CloseFile`, nên không bị.)
+   - Kịch bản lỗi: ring đầy ở cuối trận A (đúng lúc cần số đếm nhất) thì `_trailer.droppedQueue` của A thấp hơn thực tế còn trận B bị cộng thừa; `merge` cộng đúng tổng nhưng báo cáo theo trận và AC "không mất mà không đếm" theo từng file sai.
+   - Hướng sửa: gọi `AttributeDrops()` ngay trước `CloseFile()` trong `OnPhase(Cleanup)` (hoặc đưa vào chính `CloseFile`), thêm một test kiểm trailer của file đóng bằng Cleanup khi ring đầy.
+
+**Gợi ý**
+1. **Race nhỏ khi gỡ observer** — `MatchTelemetryObserver.cs:84,112,126-129`: `OnFrame` qua được `IsDetached` rồi `Detach()` (luồng nền) chạy xong, sau đó `RebindHealth()` gắn handler vào `HealthService` mới. `Push` vẫn chặn bằng `IsDetached` nên không ghi sai, chỉ rò một vài handler đến khi phòng bị thu. Có thể kiểm lại `IsDetached` sau `RebindHealth()` rồi gỡ ngay.
+2. **Bằng chứng 0 byte (AC32) chỉ đo `TryWrite`** — `Bench.cs:64-79`. Các handler thật trên luồng tick (`OnFrame`, `Push`, `_onDamaged` gọi `_match.Health.GetHp`, `RebindHealth`) không nằm trong phép đo; đọc code thì không cấp phát, nhưng một test `GC.GetAllocatedBytesForCurrentThread` quanh vài tick `MatchRuntime` thật có observer sẽ khóa điều đó. Với H7, `TelemetryEvent.LootDrop` buộc người gọi cấp một `TelemetryLootItem[]`: hợp đồng Phase B nên nêu "dùng mảng dựng sẵn, không `new` trên đường tick".
+3. **Chưa có chốt chống bản ghi session đôi** — `MatchTelemetryAssembler.cs:595-620` (`OnResume`, `OnDisconnected`, `OnLeft`, `OnGraceExpired`). Hiện H5/H6 chưa tồn tại trong GameServer nên chưa xảy ra; khi Vinh thêm sự kiện mà phát hai lần thì mỗi lần ra một `session_state` seq khác nhau và `merge` không bỏ được (`session_state` có `once: false`). Thêm `if (_disconnected[n]) return;` ở `OnDisconnected` và chốt tương tự cho `Left`/`GraceExpired`.
+4. **`tel_merge.py` giữ nguyên văn mọi dòng đã nhận** (`text_key`, `:60,68,94`). Với trần 256 MiB ở server thì Python có thể tốn vài trăm MB RAM; không vấn đề ở quy mô QA, ghi chú nếu sau này gộp cả tháng log.
+
+**Chưa kiểm chứng**
+- Không chạy Unity, nên EditMode (client) và việc `-telemetry` tắt thật trong player là theo đọc code và số của dev. `Bootstrap.Telemetry.cs` không có test composition (chỉ `FromArgs` được test); QA nên chạy player không cờ và xác nhận không có thư mục `Telemetry`, không luồng `TelemetrySink`.
+- Không chạy lại `TelemetryChecks` (`--bench`, `--tick-budget`); số p99, 0 byte và `Δ tickP95` lấy từ nhật ký mục 5. Đó là proxy tải giả trong tiến trình (G1 T-5), không phải GameServer thật.
+- Không đọc hết 782 dòng assembler: đã đọc kỹ `Pump`, vòng đời trận, session/replay, elimination, damage; không soi từng bản ghi H7 (4, 7, 9–13) và `OnSnapshotFrame`/zone ngoài phần đã nêu.
+- Chưa mở được log GameServer thật để so `perflog`; mẫu `perflog` vẫn là dòng dựng (đã ghi ở mục 5).
 
 ## 7. QA
 
