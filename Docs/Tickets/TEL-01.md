@@ -792,6 +792,54 @@ Không có câu hỏi nào chặn việc bắt đầu build. Không cần G2: pr
 
 _Dev điền._
 
+### Luồng C (client), commit 7–8 · 27/10/2026 · unity-dev
+
+Commit `cf78b3c9` (commit 7) và `8c12cdc1` (commit 8).
+
+**File** (đúng vùng 4.2 E):
+
+| Lớp | File | Vai trò |
+| --- | --- | --- |
+| Domain | `Telemetry/FrameStats.cs` | Hai mảng `float[2048]` cấp sẵn; `fpsAvg` = số khung / tổng thời gian; `fps1Low` = k / tổng k khung chậm nhất, k = max(1, ceil(0,01·n)); p95 nearest-rank; max. Sắp xếp tại chỗ bằng quicksort tự viết, vì `Array.Sort` cấp phát dưới Mono (test bắt được) |
+| Domain | `Telemetry/PerfClientSample.cs` | Struct đủ trường `perf_client`; null = `NaN` (số) hoặc `-1` (`mt`) |
+| App | `Telemetry/ITelemetrySink.cs` | Port `TryWrite(in PerfClientSample)` không chặn; `TelemetryContext` (build, wid, balHash) |
+| App | `Telemetry/PerfClientRecorder.cs` | `ITickable`, cửa sổ 5 s chỉ khi đã nối và `Phase == InGame`; đứt kết nối thì bỏ cửa sổ dở. RTT/transport từ `INetworkClient.Stats` (null khi chưa có pong); `jitterMs` từ `RemotePlayerInterpolator.Stats` (null trước khi đồng hồ chạy); `lossPct` = chênh `PongsLost` / chênh `PingsSent` trong cửa sổ (null khi không có ping); `entities` = `Players.Count` |
+| Infra | `Telemetry/JsonlTelemetryFileSink.cs` | Ring SPSC 256 ô + `Thread` nền, cứ 50 ms gom một lần; JSON viết tay theo đúng thứ tự khóa của schema; `_header`/`_trailer`; trần 8 MiB → `truncated`; lỗi I/O → tự tắt, một cảnh báo, đếm `droppedIo` |
+| Infra | `Telemetry/ClientTelemetryIdentity.cs` | `wid` 8 hex ngẫu nhiên; `balHash` theo đúng cách của `GameDataLoader.DataHash` (tên file UTF-8, rồi nội dung CRLF→LF) trên `weapons.json`, `equipments.json`, `match.json` |
+| Infra | `Telemetry/ClientTelemetryOptions.cs` | Đọc `-telemetry` và `-telemetryDir <path>` (mặc định `persistentDataPath/Telemetry`) |
+| Bootstrap | `Telemetry/Bootstrap.Telemetry.cs` + 1 dòng `Bootstrap.cs` | Không có `-telemetry` thì không tạo gì. Có cờ: sink đăng ký vào registry (dispose thì gom nốt hàng đợi và ghi `_trailer`), recorder vào `TickRunner` |
+
+**Lệch kế hoạch, quyết định:**
+- **Tên file client** `<matchId>.client.<netId>.<wid>.jsonl` (plan 4.2 E ghi `<matchId>.client.<netId>.jsonl`). Thêm `wid` để đúng "mỗi (trận, nguồn, wid) một file" (spec 2.9), và để lần khởi động lại tiến trình không ghi `_header` thứ hai vào giữa file cũ. Rớt rồi nối lại trong cùng tiến trình vẫn ghi tiếp cùng file, `seq` liên tục.
+- **`seq`** đếm theo `matchId` ở luồng nền. Bản ghi bị bỏ vì hàng đầy không chiếm `seq` (4.3).
+- **`roomId = null`** (client không biết `RoomId`), không có trường `fake`.
+- **Recorder bỏ cửa sổ** khi chưa biết `OwnNetId` hoặc `ConfigHash`, hoặc khi sink từ chối; đếm ở `Skipped`.
+- Cửa sổ đóng khi tổng thời gian khung ≥ 5 s − 1 ms. Cộng dồn 300 × (1/60) bằng float có thể hụt 5 s một chút, làm mỗi cửa sổ trễ một khung.
+
+**Test EditMode `Tests/EditMode/Telemetry/` (28):**
+- `FrameStatsTests` (10): 60 fps; 1% low với 1 khung chậm và với k làm tròn lên; `fpsAvg` lệch ≤ 2% so với đếm độc lập (AC38); bỏ giá trị 0/âm/NaN; khung đứng yên; quá dung lượng; so p95/max/1% low với sắp xếp tham chiếu (3 bộ ngẫu nhiên); 0 cấp phát (AC35).
+- `PerfClientRecorderTests` (7), chạy trên `MatchSession` và `RemotePlayerInterpolator` thật: 60 s InGame cho 12 bản ghi (AC38); ngoài InGame 0 bản; đứt kết nối thì bỏ cửa sổ dở; `lossPct` theo cửa sổ và null khi không ping; RTT/transport null; sink tắt hoặc từ chối; 0 cấp phát mỗi khung kể cả khi đóng cửa sổ (AC35).
+- `JsonlTelemetryFileSinkTests` (11):
+  - Thứ tự khóa header, bản ghi, trailer so với danh sách hằng; so trọn một dòng mẫu: tối đa 3 chữ số thập phân, `NaN` → `null`, không BOM, LF.
+  - Trận mới thì file mới và `seq` theo trận (AC26); vượt trần thì `truncated` (AC26).
+  - Thư mục là file, và stream ném lỗi hết chỗ: tự tắt, một cảnh báo, không ném (AC25).
+  - Luồng ghi bị chặn: 10 000 lần `TryWrite` xong < 200 ms, `Dropped` đúng (AC24).
+  - Không có bản ghi thì không tạo thư mục; cờ tắt mặc định (AC27).
+  - `TryWrite` không cấp phát.
+  - `balHash`: CRLF và LF cho cùng hash, thiếu file thì null, file balance thật cho 64 hex.
+  - Đầu cuối recorder → sink: 12 bản ghi, `seq` 1..12; không có tên hiển thị, khóa PII hay IPv4 (AC4).
+
+**Kiểm chéo:** sinh một file mẫu bằng chính sink và `FrameStats` (12 cửa sổ). `Tools/Telemetry/tel_schema.py` (luồng P) báo `validate_files`: 12 bản ghi, **0 lỗi**, thứ tự khóa khớp `ordered()`. `balHash` C# = `015655ea…4d19`, bằng đúng giá trị Python tính độc lập. File mẫu nằm trong thư mục ghi chú chung (ngoài repo) để commit 9 chép vào `fixtures/from_csharp/`.
+
+**Toàn bộ suite:**
+- EditMode **507/507** (479 + 28). Lần chạy đầu có 1 lỗi: `ArtAudioCatalogTests.NothingFromImported` vượt timeout 180 s. Lúc đó Unity MCP mất kết nối và Editor bị đứng; chạy riêng lại thì đạt trong 3,4 s.
+- PlayMode **106/106**. Lần chạy đầu có 1 lỗi: `HudAcceptanceTests.Hud_HoldsValues10sWithoutUpdates` so float bằng 0 tuyệt đối và nhận 5,6e−7; chạy riêng lại thì đạt. Telemetry không chạy trong test (không có `-telemetry`), nên lỗi này không do TEL-01. Follow-up cho UI-01: dùng dung sai trong test đó.
+- Console 0 Error. `EditorSettings.asset` đã `git checkout`.
+
+**Còn lại / follow-up:**
+- AC35 phần đo FPS bật/tắt trên máy QA và AC38 chạy thật 60 s: QA làm khi chạy build có `-telemetry` (commit 9).
+- Commit 8 lỡ gồm cả một dòng nhật ký của phiên luồng P trong `Agent_Coordination.vi.md`. Đó là dòng của họ, nội dung không đổi; tôi không sửa lịch sử.
+
 ## 6. Review
 
 _Code-reviewer điền._
