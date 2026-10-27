@@ -157,9 +157,11 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             foreach (var r in watched) before.Add(Measure(r));
 
             var knob = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/Knob.psd");
-            var otherFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudNumber SDF.asset");
+            // Swap to the other HUD font that covers every glyph the overlay prints (AllText_IsInTheHudFonts), so the
+            // test never makes TMP write glyphs into the JSurviv fallback asset.
+            var otherFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudText SDF.asset");
             foreach (var image in All<Image>(_root)) { image.sprite = knob; image.color = Color.magenta; }
-            foreach (var text in All<TMP_Text>(_root)) { text.font = otherFont; text.color = Color.cyan; }
+            foreach (var text in All<TMP_Text>(_root)) { if (text.font != otherFont) text.font = otherFont; text.fontSize += 2; text.color = Color.cyan; }
             Canvas.ForceUpdateCanvases();
 
             for (var i = 0; i < watched.Count; i++)
