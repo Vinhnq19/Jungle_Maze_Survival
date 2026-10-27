@@ -255,6 +255,85 @@ GDD chưa chốt phạm vi (Assets STT 14: "Chưa chốt phạm vi"; dòng ticke
 | M8 | `súng bắn.mp3` và `countdown.mp3` là 24 kHz (băng thông ≤ 12 kHz), phần còn lại 44,1 kHz | Không nội suy lên 44,1 kHz để "sửa" chất lượng; ghi nhận, mono và chuẩn hóa mức |
 | M9 | AUD-01 chép `Loading Music.mp3` làm cả nhạc Waiting Room (T-5, vì không chép 25,7 MB) | ART-05 nén bản Waiting Room thật và thay tham chiếu (2.8) |
 
+### 2.11. Quyết định từng mã: bản chép JSurviv hay bíp (bổ sung theo CPO 27/10)
+
+Hiện trạng catalog (đối chiếu `SfxCatalog.asset` và `Tools/Audio/copy_jsurviv_placeholders.py`): **12 mã dùng bản chép JSurviv** (4, 5, 6, 11, 12, 15, 18, 19, 20, 21, 22, 26) và **14 mã dùng bíp tự sinh** (1, 2, 3, 7, 8, 9, 10, 13, 14, 16, 17, 23, 24, 25). Cả 12 bản chép đã kiểm **giống từng byte** với file gốc (md5 trùng, đo 27/10). Không chép `.meta` nên GUID khác bản gốc.
+
+**(a) 12 mã đang dùng clip JSurviv:** quyết định là *giữ / cắt-chuẩn hóa / thay*.
+
+| # | SfxId | Quyết định | Việc |
+| --- | --- | --- | --- |
+| 4 | `MeleeSwing` | **Giữ + chuẩn hóa** | Mono, đỉnh −2 dBFS, volume theo T2 |
+| 5 | `MeleeHit` | **Chuẩn hóa** (đỉnh −7,2 → −2 dBFS) | Có thể thêm 1–3 biến thể cắt từ `Pick_Impacts_…wav` sau khi nghe |
+| 6 | `ShootRanged` | **Giữ + chuẩn hóa** | Băng thông thấp (24 kHz); chỉ thay nếu PIC nghe thấy dở và có nguồn tốt hơn |
+| 11 | `BombFuse` | **Cắt** 11,78 → 0,8–1,5 s | Fade cuối |
+| 12 | `Explosion` | **Cắt** 5,41 → ≤ 3,0 s | Fade cuối |
+| 15 | `HurtLocal` | **Cắt ≤ 0,6 s sau khi nghe; thay nếu đó là tiếng trạng thái chảy máu** | Nếu phải thay: không còn ứng viên JSurviv nào, thành khoảng trống thật (2.11 b) |
+| 18 | `PickupWeapon` | **Giữ + chuẩn hóa** | |
+| 19 | `PickupItem` | **Cắt** 2,06 → ≤ 0,8 s; thay nếu nghe không hợp "nhặt đồ chung" | |
+| 20 | `WearArmor` | **Thay** bằng 2–4 biến thể `Leather Armor Put On` (trong `bot di chuyển.zip`), cắt ≤ 1,2 s, nâng ~ +10 dB | `Helmet Put On.mp3` có thể giữ làm biến thể thứ năm; bản chép hiện tại dài 2,06 s |
+| 21 | `UseHeal` | **Cắt** 3,06 → ≤ 1,5 s | |
+| 22 | `UseDrink` | **Cắt** 3,24 → ≤ 1,5 s | |
+| 26 | `MatchEnd` | **Giữ + chuẩn hóa**; **thay trước phát hành** | Thẻ hollywoodedge.com (2.12); chưa có clip thay thế nào được xác định |
+
+**(b) 14 mã còn là bíp:** với từng mã, có file JSurviv **chưa dùng** nào khớp không? File JSurviv chưa được catalog dùng: `button.mp3`, `Bo co.mp3`, `revive.mp3`, `bot di chuyển.mp3`, `bot di chuyển.zip` (8 tệp Leather Armor), `pick-impacts-….zip` (1 tệp 58 s). `countdown.mp3`, `Đập.wav` và hai file `Nhặt đồ/*` **đã được dùng** (bản chép của 11, 5, 19, 20), không phải file chưa dùng.
+
+| # | SfxId | File JSurviv chưa dùng có khớp? | Kết luận | Cách lấp (không bịa nguồn) |
+| --- | --- | --- | --- | --- |
+| 1 | `FootstepGrass` | `bot di chuyển.mp3` (0,57 s): chỉ khớp **theo tên**, chưa nghe | **Thử ứng viên** | Nghe; nếu đúng thì cắt ≤ 0,40 s. Không đúng: giữ bíp |
+| 2 | `FootstepSwamp` | Không | **Khoảng trống thật** | Giữ bíp |
+| 3 | `BushEnter` | Không | **Khoảng trống thật** | Giữ bíp |
+| 7 ★ | `ShootCrossbow` | Không (`súng bắn.mp3` hạ cao độ đã bị loại, trùng `ShootRanged` vi phạm AC13) | **Khoảng trống thật** | Tự tổng hợp bằng script (Q3) hoặc giữ bíp |
+| 8 | `Throw` | Không | **Khoảng trống thật** | Giữ bíp |
+| 9 | `Reload` | Không rõ: `Gun Put On.mp3` có thể là tiếng thao tác súng nhưng đã dùng cho `PickupItem` | **Khoảng trống thật** | Giữ bíp |
+| 10 | `EmptyClick` | `button.mp3` (0,16 s) là tiếng nút UI, để dành cho UI-02/UI-03; dùng chung sẽ làm bấm nút và hết đạn trùng tiếng | **Khoảng trống thật** | Thử ứng viên ngoài (bên dưới) hoặc giữ bíp |
+| 13 | `TrapTriggered` | `Pick_Impacts_…wav` (58 s, mono, đỉnh 0,0 dBFS): chỉ có thể cắt đoạn, **chưa nghe**. `Đập.wav` đã dùng cho `MeleeHit` | **Thử ứng viên** | Nghe; cắt một tiếng khác hẳn các biến thể `MeleeHit`. Không hợp: giữ bíp |
+| 14 ★ | `HitMarker` | `button.mp3` bị AUD-01 loại (UI) | **Khoảng trống thật, ưu tiên cao nhất** | Thử ứng viên ngoài (bên dưới); nếu không hợp: tự tổng hợp lại tiếng gọn sắc ≤ 0,15 s bằng script |
+| 16 | `ArmorAbsorb` | `Pick_Impacts_…wav`: chỉ có thể cắt đoạn, **chưa nghe** | **Thử ứng viên** | Như mã 13; không hợp: giữ bíp |
+| 17 | `Eliminated` | `revive.mp3` (1,57 s): nghĩa ngược (hồi sinh), loại | **Khoảng trống thật** | Giữ bíp |
+| 23 | `UseCancel` | Không | **Khoảng trống thật** | Thử ứng viên ngoài hoặc giữ bíp |
+| 24 ★ | `ZoneBell3` | `Bo co.mp3` (15,05 s): là âm bo co/thu hẹp, **không** phải chuông; cắt một đoạn ngắn từ nội dung chưa nghe là đoán | **Khoảng trống thật, ưu tiên** | Tự tổng hợp chuông tốt hơn bằng script (Q3); `Bo co.mp3` ghi cho ZON-01 (Q8) |
+| 25 ★ | `DragonRoar` | Không | **Khoảng trống thật, ưu tiên** | Không xác định được nguồn tự do. Giữ tiếng gầm tổng hợp hiện có (có thể làm tốt hơn bằng script) tới khi PIC cung cấp nguồn |
+
+**Tổng:** trong 14 bíp, **3 mã thử ứng viên JSurviv** (1, 13, 16) và **11 mã là khoảng trống thật** (2, 3, 7, 8, 9, 10, 14, 17, 23, 24, 25), trong đó 4 mã ưu tiên (7, 14, 24, 25). Khớp với bảng 2.2: 13 mã "Thiếu" = 11 khoảng trống thật + 2 mã thử ứng viên (13, 16); mã 1 nằm ở "Cần chỉnh" vì có ứng viên theo tên.
+
+**Cách lấp khoảng trống, theo thứ tự ưu tiên, mỗi bước phải ghi nguồn:**
+
+1. **Tự tạo bằng script của repo** (`Tools/Audio/*`): giấy phép sạch (`tự tạo`), lặp lại được. Phù hợp `ZoneBell3`, `HitMarker`, `ShootCrossbow`, `DragonRoar`; chất lượng thô hơn bản thu thật.
+2. **Nguồn tự do có giấy phép ghi trên trang nguồn.** Đã kiểm trang của Kenney ngày 27/10/2026: **Impact Sounds** (130 file, thẻ "impact", "foley") và **Interface Sounds** (100 file, thẻ "interface", "click", "button") ghi giấy phép **Creative Commons CC0**, và trang hỗ trợ ghi tài sản "public domain licensed (CC0)", dùng được trong dự án thương mại, không bắt buộc ghi công. **Chưa tải, chưa nghe, chưa biết tên file bên trong** nên chưa biết có clip nào khớp (không khẳng định mã nào lấp được). Ứng viên: Interface Sounds cho `HitMarker`, `EmptyClick`, `UseCancel`; Impact Sounds cho `TrapTriggered`, `ArmorAbsorb`, biến thể `MeleeHit`, có thể bước chân. **Tải file cần người dùng đồng ý** (Q3). Khi dùng: lưu bản chụp trang giấy phép và tệp license đi kèm gói vào `Docs/Licenses/Audio/`, ghi URL, tên file gốc, ngày tải vào manifest, giấy phép `có bằng chứng: <đường dẫn>`.
+3. **Giữ bíp tạm** (giấy phép `tự tạo`), chấp nhận khoảng trống. Với mã không ưu tiên đây là mặc định.
+
+Không có nguồn nào ở trên được coi là "đã có" cho tới khi tải về, nghe và ghi bằng chứng.
+
+### 2.12. Giấy phép của 12 clip đang dùng (và 2 bài nhạc)
+
+**Kết luận: cả 12 clip SFX và 2 bài nhạc AUD-01 chép đều `chưa kiểm chứng`.** Bản chép giống từng byte file gốc nên mang nguyên tình trạng của file gốc. Bằng chứng văn bản về quyền sử dụng: **không có** (không license/readme/credit trong `Sound`, hai tài liệu JSurviv không nhắc, cột "Link / License" của sheet Assets trống). Dữ kiện từ metadata, **không phải bằng chứng quyền dùng**:
+
+| Clip chép (SfxId) | File gốc | Dấu vết trong file |
+| --- | --- | --- |
+| `match_end_time_over.wav` (26) | `TimeOver.wav` | Thẻ `bext`: "Clock, Alarm Loop, Wind Up, Ringing", **www.hollywoodedge.com**: dấu hiệu thư viện thương mại. **Rủi ro cao nhất** |
+| `hurt_bleed.mp3` (15), `melee_slash.mp3` (4), `gun_shot.mp3` (6), `pickup_weapon.mp3` (18) | `bleed`, `melee chém`, `súng bắn`, `nhặt súng` | ID3 năm 2022; `bleed`, `súng bắn`, `nhặt súng` ghi "Pro Audio Converter 1.8.1" (công cụ chuyển đổi, không nói về tác giả) |
+| `bomb_fuse_countdown.mp3` (11) | `countdown.mp3` | ID3 năm 2022 |
+| `pickup_item_gun_put_on.mp3` (19), `wear_armor_helmet_put_on.mp3` (20) | `Nhặt đồ/Gun Put On`, `Helmet Put On` | Năm 2020, "LAME in FL Studio 10", BPM 80: xuất từ phần mềm sản xuất nhạc |
+| `parking_map_music.mp3` | `ParkingMapMusic.mp3` | Năm 2023, "Studio One 6.2.1" |
+| `hit_thud.wav` (5), `bomb_explosion.mp3` (12), `use_heal_gauze.mp3` (21), `use_drink_cola.mp3` (22), `loading_music.mp3` | `Đập.wav`, `bomb nổ.mp3`, `gauze.mp3`, `cola.mp3`, `Loading Music.mp3` | Không có thẻ nào |
+
+Hệ quả: (1) manifest ghi `chưa kiểm chứng` cho cả 14 dòng; (2) danh sách ở AC7 gồm 14 clip này và mọi clip dẫn xuất; (3) `TimeOver.wav` nên được thay trước phát hành công khai (Q5), chưa có clip thay thế; (4) bản chép trong `Placeholder/JSurviv/` và bản dẫn xuất trong `Final/` đều mang cùng trạng thái cho tới khi có bằng chứng.
+
+### 2.13. Thư mục `Placeholder` và việc đưa lên `Final`: có cần đổi catalog không
+
+Đã kiểm code và dữ liệu (27/10):
+
+- **Catalog tham chiếu clip bằng GUID** (`clips: {fileID: 8300000, guid: …}`), không bằng đường dẫn. Tên thư mục `Placeholder` **không** xuất hiện trong `SfxCatalog.asset` hay `AudioRuntimeSet.asset`. Không có mã runtime nào (`Scripts/**`) dùng chuỗi `Placeholder` cho âm thanh.
+- **Hai nơi phụ thuộc đường dẫn:** `Tests/EditMode/Audio/SfxCatalogTests.cs:64` lọc bíp theo `"/Placeholder/Beeps/"` (test `BeepsHaveDistinctFrequencies`), và hai script `Tools/Audio/copy_jsurviv_placeholders.py` (`TARGET`) và `make_placeholder_sfx.py` (`DEFAULT_OUT`) ghi/kiểm ở `Placeholder/…`.
+
+Kết luận và quyết định (Q7):
+
+1. **Không đổi tên thư mục `Placeholder`, không "chuyển" file.** Clip cuối là **file dẫn xuất mới** (mono, cắt, chuẩn hóa) trong `Final/Sfx/`, nên không có phép "thăng cấp" nguyên file. Đổi tên/di chuyển trong Unity giữ GUID nên catalog không đổi, nhưng sẽ làm test ở dòng 64 và hai script sai đường dẫn.
+2. **Catalog có thay đổi, nhưng chỉ là dữ liệu cho phép:** `clips` của mã đó trỏ sang GUID file mới trong `Final/` (đúng thao tác 2.5, bước 4). Không thêm cột, không đổi mã.
+3. **Bíp còn lại** (mã khoảng trống thật vẫn dùng bíp) **giữ nguyên trong `Placeholder/Beeps/`**, catalog vẫn trỏ tới đó. Đây là clip hợp lệ, giấy phép `tự tạo`. Nên AC10 chỉ đòi `Final/` cho 11 mã ★.
+4. Sau G3: xóa các clip `Placeholder/JSurviv/*` không còn được tham chiếu (commit riêng). Khi đó bước này **không** đụng `SfxCatalogTests.cs:64` vì chỉ lọc `Beeps`; nhưng nếu xóa `copy_jsurviv_placeholders.py` hay `--check` thì ghi vào `Tools/Audio/README.md`.
+
 ## 3. Tiêu chí nghiệm thu
 
 Ưu tiên: **P0** phải đạt để qua G3; **P1** nên đạt, bỏ phải có PIC đồng ý; **P2** không chặn. Số đánh dấu giả định (G-1…G-12) có thể đổi ở G1. "Ưu tiên ★" là 11 mã ở bảng 2.2. Mọi AC kiểm bằng dữ liệu, test dữ liệu và panel F6 của AUD-01, không cần gameplay thật. Mọi chỗ ghi "người nghe" là PIC nghe, không máy kiểm được.
@@ -320,15 +399,17 @@ GDD chưa chốt phạm vi (Assets STT 14: "Chưa chốt phạm vi"; dòng ticke
 | AC35 | **Tổng dung lượng** file âm thanh mới thêm (SFX + nhạc + `.meta` không tính) ≤ **12 MB**; mỗi clip SFX ≤ 0,5 MB; không file nào mới ≥ 3,0 MB ngoài nhạc. Số liệu ghi vào báo cáo cuối | Script đếm | P1 |
 | AC36 | **Người nghe** (PIC) nghe 11 mã ★ bằng F6 (từng mã, "Dồn 10 s", "Gửi lặp ×5") và ghi: hitmarker nghe rõ giữa nhiều âm; chuông bo nhận ra là cảnh báo; tiếng rồng phân biệt được; mức giữa các nhóm cân bằng (A28 của AUD-01, cùng đợt). Điều chưa ổn ghi thành việc chọn lại clip (đổi dữ liệu), không sửa mã | Người nghe | P1 |
 | AC37 | **Hai việc AUD-01 bàn giao** được xử lý và ghi trong báo cáo cuối: (a) `countdown.mp3` 11,78 s và `bomb nổ.mp3` 5,41 s đã cắt (AC17, AC27); (b) kiểm lại AC-A28 sau khi thay clip. Việc còn dở ghi rõ lý do | Review báo cáo | P1 |
+| AC38 | **Giấy phép của clip đang dùng:** manifest có dòng cho cả **12 clip SFX và 2 bài nhạc** AUD-01 đã chép, mỗi dòng ghi tên file gốc, md5 của bản chép **bằng** md5 của file gốc (kiểm bằng `copy_jsurviv_placeholders.py --check` hoặc đo lại), giấy phép `chưa kiểm chứng`, và dấu vết metadata (2.12). `TimeOver.wav` ghi rõ thẻ hollywoodedge.com | Test CSV + `--check` | P0 |
+| AC39 | **Đưa lên `Final` không đổi mã và không làm hỏng công cụ cũ:** (a) `SfxCatalog.asset` đổi chỉ ở `clips` (GUID mới trong `Final/`), không đổi đường dẫn thư mục `Placeholder`; (b) `SfxCatalogTests.BeepsHaveDistinctFrequencies` và `copy_jsurviv_placeholders.py --check` vẫn chạy đúng (bíp còn lại vẫn ở `Placeholder/Beeps/`, bản chép còn tới khi dọn); (c) mỗi mã ở bảng 2.11(b) có đúng một kết luận trong manifest: `thử ứng viên` / `khoảng trống thật`, kèm nguồn đã chọn (`tự tạo`, nguồn tự do có bằng chứng, hay `giữ bíp`); không mã nào ghi nguồn "tự do" mà thiếu tệp bằng chứng | Test + review diff | P1 |
 
 **Ánh xạ tiêu chí GDD:**
 
 | Tiêu chí GDD | AC |
 | --- | --- |
-| 1. Bảng 26 SFX đối chiếu file thật, trạng thái dùng được/thiếu, nguồn và tình trạng quyền sử dụng; không khẳng định license khi chưa kiểm chứng | AC1–AC7 |
+| 1. Bảng 26 SFX đối chiếu file thật, trạng thái dùng được/thiếu, nguồn và tình trạng quyền sử dụng; không khẳng định license khi chưa kiểm chứng | AC1–AC7, AC38 |
 | 2. Event ưu tiên phát đúng clip, Master/SFX (và Music nếu bật) có hiệu lực, không lặp audio khi event gửi lại | AC8–AC15, AC16–AC28 (đặc biệt AC14, AC20–AC26) |
 | 3. BGM chỉ tích hợp khi được duyệt; không nhạc chồng nhau/che cảnh báo; không missing AudioClip | AC29–AC34 |
-| Ranh giới, dung lượng, nghe thử (bảo vệ ba tiêu chí trên) | AC11, AC12, AC35–AC37 |
+| Ranh giới, dung lượng, nghe thử (bảo vệ ba tiêu chí trên) | AC11, AC12, AC35–AC39 |
 
 ## Câu hỏi và giả định chờ G1
 
@@ -345,17 +426,17 @@ GDD chưa chốt phạm vi (Assets STT 14: "Chưa chốt phạm vi"; dòng ticke
 - **G-9** Ngân sách dung lượng: ≤ 3,0 MB mỗi file nhạc, ≤ 0,5 MB mỗi clip SFX, ≤ 12 MB tổng file mới.
 - **G-10** Import settings theo 2.7 (SFX Decompress On Load/ADPCM, `forceToMono` và `normalize` tắt; nhạc Streaming + Vorbis 0,7).
 - **G-11** Từ vựng giấy phép: `chưa kiểm chứng` / `tự tạo (…)` / `có bằng chứng: <đường dẫn>`. Không bằng chứng thì không viết gì khác.
-- **G-12** Với 13 mã Thiếu: mã nào không ưu tiên giữ bíp tự sinh của AUD-01 (đã có clip nên AUD-01 chạy bình thường); 4 mã ưu tiên (7, 14, 24, 25) cần clip riêng với nguồn theo Q3.
+- **G-12** Với 14 mã đang là bíp (2.11): 3 mã thử ứng viên JSurviv (1, 13, 16), 11 mã là khoảng trống thật. Mã không ưu tiên giữ bíp tự sinh của AUD-01 (AUD-01 chạy bình thường); 4 mã ưu tiên (7, 14, 24, 25) cần clip riêng với nguồn theo Q3.
 
 | # | Câu hỏi | Mặc định / khuyến nghị |
 | --- | --- | --- |
 | **Q1** | **Clip cuối nằm đâu**: sao chép/chuyển đổi vào `Art/Audio/Final/` hay tham chiếu thẳng `Assets/Imported/JSurviv/Sound`? | **Khuyến nghị: sao chép/chuyển đổi vào `Final/`** (2.4): import settings nằm trong `.meta`, phải cắt/chuẩn hóa, giấy phép chưa rõ có thể phải bỏ từng file, vùng nhập không sửa được |
 | **Q2** | **Định dạng SFX cuối**: WAV 16-bit mono đã bake (đo được bằng thư viện chuẩn, không mất chất lượng) hay giữ MP3? `MatchEnd` giữ stereo hay mono? | **Khuyến nghị: WAV 16-bit 44,1 kHz mono** cho mọi SFX, kể cả `MatchEnd` (AUD-01 đã ép mono, `spatialBlend = 0`). Nhạc giữ stereo |
-| **Q3** | **Nguồn cho 13 mã Thiếu** (4 ưu tiên: `HitMarker`, `ShootCrossbow`, `ZoneBell3`, `DragonRoar`). Lựa chọn: (a) giữ bíp tự sinh; (b) tự tổng hợp tốt hơn bằng script của repo (giấy phép sạch: `tự tạo`); (c) lấy từ thư viện có giấy phép (cần bằng chứng và có thể tốn tiền); (d) công cụ sinh âm thanh AI | **Khuyến nghị: (b) cho 4 mã ưu tiên (clip gọn sắc cho hitmarker, một tiếng chuông, tiếng gầm trầm riêng, một tiếng nỏ), (a) cho 9 mã còn lại**; (c) để sau khi PIC có nguồn/ngân sách. Không dùng (d) khi chưa rõ điều khoản |
+| **Q3** | **Nguồn cho 13 mã Thiếu** (4 ưu tiên: `HitMarker`, `ShootCrossbow`, `ZoneBell3`, `DragonRoar`). Lựa chọn: (a) giữ bíp tự sinh; (b) tự tổng hợp tốt hơn bằng script của repo (giấy phép sạch: `tự tạo`); (c) lấy từ nguồn có giấy phép ghi rõ: đã kiểm trang Kenney Impact Sounds và Interface Sounds (CC0, 27/10/2026), **chưa tải, chưa nghe** (2.11); (d) công cụ sinh âm thanh AI | **Khuyến nghị: (b) cho 4 mã ưu tiên (clip gọn sắc cho hitmarker, một tiếng chuông, tiếng gầm trầm riêng, một tiếng nỏ), (a) cho mã còn lại; thêm (c) thử hai gói Kenney cho `HitMarker`, `EmptyClick`, `UseCancel`, `TrapTriggered`, `ArmorAbsorb` nếu người dùng đồng ý cho tải** (lưu bằng chứng vào `Docs/Licenses/Audio/`, nghe rồi mới nhận). Không dùng (d) khi chưa rõ điều khoản |
 | **Q4** | **BGM có thuộc MVP không?** GDD chưa chốt (Assets STT 14) | **Khuyến nghị: giữ mặc định tắt**, vẫn nén và ánh xạ ba bài (2.8) để bật bằng một công tắc khi PIC chốt; không làm UI mới |
 | **Q5** | **Giấy phép**: cho phép phát hành bản mẫu LAN lớp học với clip `chưa kiểm chứng` hay chặn tới khi có bằng chứng? Ai kiểm bằng chứng? | **Khuyến nghị: được dùng trong bản mẫu nội bộ/LAN lớp học, chặn phát hành công khai** cho tới khi người dùng cung cấp bằng chứng bằng văn bản vào `Docs/Licenses/Audio/`; ART-05 xuất danh sách clip chưa kiểm chứng (AC7). Riêng `TimeOver.wav` (thẻ hollywoodedge.com) nên thay trước mọi phát hành |
 | **Q6** | **Mục tiêu mức âm**: T1 −16 / T2 −20 / T3 −24 / T4 −29 dBFS và BGM −26 dBFS có hợp lý không? | **Khuyến nghị: dùng như G-6**, PIC chỉnh sau khi nghe (AC36). Các số này nằm trong asset (`volume`), đổi được không cần mã |
-| **Q7** | **Xử lý `Art/Audio/Placeholder/`** sau khi thay | **Khuyến nghị: giữ nguyên tới G3**; sau G3 xóa các clip JSurviv/bíp không còn được catalog tham chiếu, giữ bíp của mã Thiếu. Việc xóa là commit riêng |
+| **Q7** | **Xử lý `Art/Audio/Placeholder/`** sau khi thay | **Khuyến nghị: không đổi tên thư mục `Placeholder`, không di chuyển file** (2.13); giữ nguyên tới G3, sau G3 xóa các clip `Placeholder/JSurviv/*` không còn được catalog tham chiếu, giữ bíp của mã còn dùng bíp. Việc xóa là commit riêng |
 | **Q8** | **Âm ngoài 26 mã** có trong thư mục nhưng không thuộc ticket này: `button.mp3` (tiếng nút UI), `revive.mp3` (hồi sinh: Tiên dược sự sống), `Bo co.mp3` (bo thu hẹp), Leather armor biến thể, `Pick impacts` biến thể | **Khuyến nghị: chỉ ghi vào manifest với phân loại "ngoài 26" và gợi ý ticket dùng** (UI-02/UI-03, ITM-01, ZON-01). Không thêm `SfxId` |
 | **Q9** | **Ai nghe và khi nào** (AC6, AC36)? Máy và agent không nghe được; mọi trạng thái là tạm | **Khuyến nghị: PIC (V.Huy) nghe qua F6** sau khi có clip cuối, theo hướng dẫn mục 5 của `Docs/Reports/AUD-01_2026-10-27/QA_report.md`; kết quả ghi vào mục 7 |
 | **Q10** | **`BombFuse`**: cắt còn 0,8–1,5 s (không lặp) hay làm clip lặp được dừng khi nổ? | **Khuyến nghị: cắt ngắn, không lặp.** Router AUD-01 đã dừng fuse khi nổ/gỡ cảnh báo; clip ngắn không cần vòng lặp |
@@ -369,7 +450,7 @@ GDD chưa chốt phạm vi (Assets STT 14: "Chưa chốt phạm vi"; dòng ticke
 - **R3 · Import `normalize` + `forceToMono` của AUD-01** (`normalize: 1`, `forceToMono: 1` ở mọi clip tạm) có thể chuẩn hóa mọi clip về đỉnh ~0 dBFS khi import, làm mất tác dụng của việc chuẩn hóa trong file. Chưa đo trong Unity ở ticket này. AC16 bắt buộc đo `GetData` sau import; nếu đúng thì ART-05 tắt `normalize` cho clip Final (dữ liệu).
 - **R4 · Không có bộ giải mã trên máy** (`ffmpeg`, `sox` không có): chưa đo được mức của 14 file MP3. Đo nhạc phải qua bản WAV hoặc `GetData` trong Unity (QA đang giữ Unity Editor). Ảnh hưởng thời gian.
 - **R5 · Không ai nghe được bằng máy.** Mọi trạng thái Có/Cần chỉnh là theo tên và độ dài; có thể sai (ví dụ `bleed.mp3` chưa chắc là tiếng trúng đòn, `bot di chuyển.mp3` chưa chắc là bước chân).
-- **R6 · Test AUD-01 cố định sẵn clip tạm.** Một số test (`BeepsHaveDistinctFrequencies`, kiểm tên bíp) có thể giả định đường dẫn `Placeholder/`; thay clip có thể làm fail. ART-05 không sửa logic test của AUD-01 (AC12), chỉ báo CPO.
+- **R6 · Test AUD-01 cố định sẵn clip tạm.** `SfxCatalogTests.cs:64` lọc bíp theo đường dẫn `/Placeholder/Beeps/` (test `BeepsHaveDistinctFrequencies`), và hai script `Tools/Audio` ghi cố định vào `Placeholder/` (2.13); thay clip có thể làm fail. ART-05 không sửa logic test của AUD-01 (AC12), chỉ báo CPO.
 - **R7 · Clip dùng đồ dài hơn thời gian dùng.** Món dùng 0,5 s mà clip 1,5 s vẫn kêu sau khi dùng xong, và router chưa dừng `UseHeal`/`UseDrink` khi `UseCancel`. Cắt ≤ 1,5 s giảm vấn đề nhưng không xóa; dừng clip khi hủy là việc của AUD-01 (ticket sau), không phải ART-05.
 - **R8 · Một clip chung cho nhiều vũ khí.** `ShootRanged` dùng một file cho Ná cao su, Quyền trượng và Shotgun (nhịp bắn 0,8–3 phát/s); người chơi không phân biệt được vũ khí bằng tai. Biến thể riêng là mở rộng (Q8).
 
