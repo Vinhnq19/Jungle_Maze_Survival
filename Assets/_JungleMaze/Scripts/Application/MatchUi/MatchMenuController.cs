@@ -131,13 +131,16 @@ namespace JungleMaze.App.MatchUi
             ConfirmChanged?.Invoke(open);
         }
 
-        private void OnScreenChanged(AppScreenChanged change)
+        private void OnScreenChanged(AppScreenChanged change) => ApplyScreen(change.Current);
+
+        /// <summary>What an <see cref="AppScreenChanged"/> does; the F7 preview calls it without a server.</summary>
+        public void ApplyScreen(AppScreen screen)
         {
-            _screen = change.Current;
+            _screen = screen;
             var hadLock = IsLeaveLocked || ShowRetryNotice;
             IsLeaveLocked = false;
             ShowRetryNotice = false;
-            if (change.Current != AppScreen.InMatch) Close();
+            if (screen != AppScreen.InMatch) Close();
             if (hadLock) LeaveStateChanged?.Invoke();
         }
     }

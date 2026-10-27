@@ -38,6 +38,15 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             Input = input;
         }
 
+        /// <summary>uGUI needs one EventSystem; no scene has one yet, so the prefab's own is used only then.</summary>
+        public void EnsureEventSystem()
+        {
+            if (eventSystem == null || eventSystem.activeSelf) return;
+            if (UnityEngine.EventSystems.EventSystem.current != null
+                || FindAnyObjectByType<UnityEngine.EventSystems.EventSystem>() != null) return;
+            eventSystem.SetActive(true);
+        }
+
         private void Update() => Input?.Poll();
 
         private void LateUpdate() => Presenter?.Tick(Time.unscaledDeltaTime);

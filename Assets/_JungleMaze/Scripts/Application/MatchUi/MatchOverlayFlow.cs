@@ -128,10 +128,13 @@ namespace JungleMaze.App.MatchUi
             NoticeRaised?.Invoke(text);
         }
 
-        private void OnScreenChanged(AppScreenChanged change)
+        private void OnScreenChanged(AppScreenChanged change) => ApplyScreen(change.Current);
+
+        /// <summary>What an <see cref="AppScreenChanged"/> does; the F7 preview calls it without a server.</summary>
+        public void ApplyScreen(AppScreen screen)
         {
             Release();
-            SetPhase(change.Current == AppScreen.InMatch ? MatchOverlayPhase.Playing : MatchOverlayPhase.Inactive);
+            SetPhase(screen == AppScreen.InMatch ? MatchOverlayPhase.Playing : MatchOverlayPhase.Inactive);
         }
 
         private void OnLocalEliminated(EliminationInfo info)

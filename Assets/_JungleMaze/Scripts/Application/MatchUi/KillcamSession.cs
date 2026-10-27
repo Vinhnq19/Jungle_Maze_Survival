@@ -16,7 +16,7 @@ namespace JungleMaze.App.MatchUi
         public enum SessionState : byte { Idle, Waiting, Playing, Finished, Failed }
 
         private readonly Func<double> _clock;
-        private readonly KillcamOptions _options;
+        private KillcamOptions _options;
         private IKillcamReplaySource _source;
         private KillcamRequest _request;
         private double _waitStart, _playStart;
@@ -44,6 +44,10 @@ namespace JungleMaze.App.MatchUi
 
         /// <summary>Fractional frame inside the clip for the current time (interpolated by the view).</summary>
         public float Frame => Clip == null ? 0f : _frameOffset + Math.Min(Elapsed * KillcamClip.FramesPerSecond, _options.FrameCount - 1);
+
+        /// <summary>N10 switch at runtime (F7 panel, <c>-killcam</c>); takes effect from the next elimination.</summary>
+        public void SetEnabled(bool enabled) =>
+            _options = new KillcamOptions(enabled, _options.DurationSeconds, _options.WaitSeconds);
 
         public void SetSource(IKillcamReplaySource source)
         {
