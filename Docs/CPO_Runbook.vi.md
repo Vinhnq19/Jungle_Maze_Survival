@@ -21,7 +21,7 @@ Người dùng (HuyCV, PIC V.Huy), ngày 27/10/2026, khoảng 02:00, nguyên vă
 | B | **ART-04** icon HUD/Inventory | Phần build nằm trong luồng A | Spec `24eedbf4`, đối chiếu ADHOC `f208314d`, **G1 đã duyệt** (mục 4) | **Done (G3 08:20)**. Follow-up F1–F7 ở mục 8 của ticket. AC20, Q11, Q12, Status GDD là việc của người dùng |
 | C | **Vẽ lại icon theo lưới 32×32** | Codex, chạy không tương tác | Hẹn chạy lúc 05:45 (script nền trong phiên CPO, thử lại mỗi 15 phút), nhiệm vụ trong `Docs/Art/CODEX_TASK_32px_Restyle.md` | Khi xong: kiểm commit, báo cáo `Restyle32_Report.vi.md`, refresh Unity, chạy lại test HUD |
 | D | **AUD-01** AudioManager | Phiên **Game Designer** → **Tech Lead** → **Unity Dev** | Spec `560346dd`, plan `de02fcff`, **G1 đã duyệt** `a5d53cde`. Unity Dev đang làm pha 0 (âm thanh tạm, không Unity) | **Done (G3 03:40)**. Còn việc của người dùng: nghe bằng panel F6 (AC-A28) → (không còn bước build) (vùng `Audio/**`; `Bootstrap.cs` chỉ sửa sau khi luồng A đã commit file này) → review → QA → **G3** |
-| E | **UI-03** ESC/Settings, Spectator, Killcam (người dùng giao 08:30, PIC V.Huy, P2) | Phiên **Game Designer** → **Tech Lead** | UI-01 Done, AUD-01 Done; SRV-03/UI-02/MOV-02 chưa xong → dùng state giả theo GDD. Spec giao Game Designer 08:30, hạn 09:45 | Spec → plan Tech Lead (hạn 11:00) → **G1 trước 12:00**. Không build trong hôm nay nếu chưa có G1 |
+| E | **UI-03** ESC/Settings, Spectator, Killcam (người dùng giao 08:30, PIC V.Huy, P2) | Phiên **Game Designer** → **Tech Lead** | UI-01 Done, AUD-01 Done; SRV-03/UI-02/MOV-02 chưa xong → dùng state giả theo GDD. Spec `8d9082a7`, plan `a73974dd`, **G1 đã duyệt 08:40** (mục 4.10 của ticket) | Build: unity-dev, 11 commit, khoảng 2,5–3 ngày, hạn 30/10. **Chưa giao build**: chờ người dùng bảo bắt đầu |
 
 Phiên vai trò (sidebar): Game Designer `local_3972f73b…`, Tech Lead `local_56f66202…`, Unity Dev `local_d782cbf2…`, Backend Dev `local_e781ffca…`, Code Reviewer `local_9ef9cabc…`, QA Tester `local_4916fe7a…`.
 
@@ -68,6 +68,7 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 
 - **27/10 08:10 · Review test ART-04 R2: Qua**, không lỗi Chặn (2 Nên sửa, 6 Gợi ý). **QA ART-04:** Đạt 19, Một phần 2, Không kiểm 2, Không đạt 0 (`f8ad29df`, `489cbae4`). Giao Unity Dev sửa 2 Nên sửa cùng Gợi ý 1, 5 trước G3. Lý do: chỉ là test thêm, nhỏ, trong vùng ART-04, và giữ AC11/AC17 khi icon được vẽ lại.
 - **27/10 08:20 · G3 ART-04: nghiệm thu.** Unity Dev sửa xong (`e43e7727`, `1712d3ef`; EditMode 338/338, PlayMode 65/65). Mọi AC P0 đo được đều Đạt. AC14 chuyển ITM-01, AC20 cho người dùng. Chấp nhận AC23 không thêm cột nguồn vào manifest dùng chung, vì nguồn đã có ở CSV và `Provenance.csv`. Follow-up F1–F7 ở mục 8 của ticket.
+- **27/10 08:40 · G1 UI-03: duyệt** (người dùng giao 08:30: "spec, kế hoạch, G1"). Nhận toàn bộ mặc định Q1–Q16, G-1…G-14, T-1…T-12; T-1 = (A) không sửa file của Vinh/Vũ. Không đổi protocol/`match.json`, không cần G2. Lý do: mọi mặc định đo được, giữ đúng ranh giới SRV-03/UI-02/MOV-02, chỉ chạm `Bootstrap.cs` 1 dòng và 2 dòng trong file AUD-01. Đã báo Vinh/Vũ trong `Agent_Coordination.vi.md` mục 4.
 
 ## 5. Khởi động lại khi hết token
 
