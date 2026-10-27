@@ -109,10 +109,20 @@ namespace JungleMaze.Tests.PlayMode
 
         private int VoiceOf(SfxId id)
         {
-            var clip = _set.Catalog.GetClip(id, 0);
             for (var i = 0; i < _manager.VoiceCount; i++)
-                if (_manager.IsVoicePlaying(i) && _manager.VoiceSource(i).clip == clip) return i;
+                if (_manager.IsVoicePlaying(i) && IsClipOf(id, _manager.VoiceSource(i).clip)) return i;
             return -1;
+        }
+
+        // ART-05 gives some ids several variants; the picker may play any of them.
+        private bool IsClipOf(SfxId id, AudioClip clip)
+        {
+            for (var k = 0; ; k++)
+            {
+                var variant = _set.Catalog.GetClip(id, k);
+                if (variant == null) return false;
+                if (variant == clip) return true;
+            }
         }
 
         private float MixerDb(string param)
@@ -171,9 +181,13 @@ namespace JungleMaze.Tests.PlayMode
         private int CountLow()
         {
             var n = 0;
-            var low = new HashSet<AudioClip>();
-            foreach (var id in new[] { SfxId.FootstepGrass, SfxId.FootstepSwamp, SfxId.Reload, SfxId.BushEnter }) low.Add(_set.Catalog.GetClip(id, 0));
-            for (var i = 0; i < _manager.VoiceCount; i++) if (_manager.IsVoicePlaying(i) && low.Contains(_manager.VoiceSource(i).clip)) n++;
+            var low = new[] { SfxId.FootstepGrass, SfxId.FootstepSwamp, SfxId.Reload, SfxId.BushEnter };
+            for (var i = 0; i < _manager.VoiceCount; i++)
+            {
+                if (!_manager.IsVoicePlaying(i)) continue;
+                foreach (var id in low)
+                    if (IsClipOf(id, _manager.VoiceSource(i).clip)) { n++; break; }
+            }
             return n;
         }
 

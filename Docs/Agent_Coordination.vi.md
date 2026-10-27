@@ -77,3 +77,5 @@ Người dùng cho **Claude** (phiên CPO, Claude Code) và **Codex** làm song 
 - 2026-10-27 · CPO · Trả Unity Editor. ART-05: 25 clip CC0 cho 14 mã, catalog trỏ sang `Art/Audio/Sfx/`, EditMode 456/456.
 - 2026-10-27 13:46 · Claude (Unity Dev) · **Đang giữ Unity Editor** để gắn 19 sprite overlay UI-03 (import `.meta` ở `Art/UI/MatchOverlay/`, builder `MatchOverlayPrefabBuild.cs`, prefab `Prefabs/UI/MatchOverlay/`, view/test trong vùng UI-03; có chạy PlayMode). Không mở/sửa scene. Xong sẽ ghi trả.
 - 2026-10-27 13:59 · Claude (Unity Dev) · **Trả Unity Editor.** UI-03 đã gắn 19 sprite overlay (`eaf178d4` .meta, `048e75cc` builder/prefab/view/test). EditMode 456/456, PlayMode 104/106: 2 test `AudioAcceptanceTests` hỏng, không thuộc UI-03, nhiều khả năng do ART-05 `3f32e1c4`. Không còn Play Mode, `EditorSettings.asset` đã `git checkout`, không mở scene nào. Lưu ý: chạy lại menu "UI Art/Build And Bind Direction A" sẽ đặt border `ToggleBox` về 0.
+- 2026-10-27 · CPO · **Đang giữ Unity Editor**: sửa 2 test PlayMode audio cho clip nhiều biến thể (ART-05); chạy PlayMode.
+- 2026-10-27 · CPO · Trả Unity Editor. PlayMode 106/106 sau khi sửa test audio cho clip nhiều biến thể.
