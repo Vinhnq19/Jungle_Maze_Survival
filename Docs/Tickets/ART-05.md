@@ -712,6 +712,16 @@ Tổng: **6 commit** trước G3 (5 nếu nhạc lùi), cộng 1 commit dọn sa
 - **T-5, T-6, T-7 → Mặc định** như 4.8.
 - **Test PlayMode:** `72e5e1e3` đã sửa `AudioAcceptanceTests` để chấp nhận mọi biến thể clip. Lỗi này do `3f32e1c4` gây ra; PlayMode hiện 106/106.
 
+**Quyết định sau review (CPO, 27/10, theo mục 6 `fe5d2fba`):**
+- **Nên sửa 1 → đổi nhãn.** `DragonRoar` ghi `chưa kiểm chứng (nguồn tự khai CC0)`, vì bản chép tay trang web của agent không tính là bằng chứng. Nới test cho phép cụm "nguồn tự khai CC0". Khi người dùng lưu ảnh chụp hoặc PDF trang OpenGameArt vào `Docs/Licenses/Audio/` thì mới đổi lại. Kenney giữ `có bằng chứng`, vì `License.txt` nằm trong zip gốc.
+- **Nên sửa 2 → giữ trần limiter 6 dB như TR1, không ngoại lệ.** Clip nào sau 6 dB vẫn hụt đích L quá 2 dB thì:
+  - clip CC0: chọn clip khác cùng gói;
+  - clip JSurviv: chấp nhận nhỏ hơn tầng và ghi ngoại lệ theo từng clip;
+  - nếu cả hai cách đều không được, tạm trỏ lại bíp (T-7).
+  Làm `hit_marker` trước tiên. PIC nghe nhóm `BombFuse`, `Reload`, `EmptyClick`, `HitMarker`: đây là **điều kiện G3**.
+- **Nên sửa 3 → sửa.** `build_manifest.py` giữ cột `heard` (và các cột do người ghi) lấy từ manifest hiện có, không gán cứng `chưa`. Thêm chỗ ghi `heard` theo mã.
+- **Gợi ý làm luôn:** 1 (quality importer bằng quality đã nén, đo kích thước sau import), 3 (thu hẹp dung sai theo câu chữ AC), 4 (bảng cố định các cột catalog không đổi), 5 (test bỏ qua khi thiếu `Assets/Imported`). Gợi ý 2, 6, 7, 8: để sau, ghi follow-up.
+
 **Build:** unity-dev, 6 commit theo 4.5, Giai đoạn A có thể làm ngay. Hạn 30/10.
 
 ## 5. Nhật ký build
