@@ -22,6 +22,7 @@ namespace JungleMaze.Tests.Art04
         private const string Ui = "Assets/_JungleMaze/Prefabs/UI/";
         private const int Canvas = 64;
         private const int VisibleAlpha = 8;
+        private const int MinPadding = 3;
         private static readonly string[] Statuses = { "Đã chuẩn hóa", "Dùng tạm" };
 
         // ---------- AC1: the CSV itself ----------
@@ -52,20 +53,24 @@ namespace JungleMaze.Tests.Art04
         public void Csv_TargetPath_IsTheSpriteTheCatalogServes()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<HudItemIconCatalog>(Ui + "HudItemIconCatalog.asset");
-            foreach (var row in ReadCsv())
+            var rows = ReadCsv();
+            Assert.AreEqual(34, rows.Count, "one row per roster ID");
+            foreach (var row in rows)
                 Assert.AreEqual(row["dich_chuan_hoa"], AssetDatabase.GetAssetPath(catalog.GetIcon(row["id"])), row["id"]);
         }
 
         // ---------- AC3, AC4: pixels of the normalized files ----------
 
         [Test]
-        public void Png_64x64_TransparentCorners_Content44To60_Centered_FewSemiTransparent()
+        public void Png_64x64_TransparentCorners_Content44To60_Padded3_Centered_FewSemiTransparent()
         {
             var problems = new List<string>();
+            var rows = ReadCsv();
+            Assert.AreEqual(34, rows.Count, "one row per roster ID");
             var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
             try
             {
-                foreach (var row in ReadCsv())
+                foreach (var row in rows)
                 {
                     var id = row["id"];
                     Assert.True(texture.LoadImage(File.ReadAllBytes(row["dich_chuan_hoa"])), id + " decodes");
@@ -86,6 +91,11 @@ namespace JungleMaze.Tests.Art04
                     if (maxX < 0) { problems.Add(id + ": no pixel with alpha > 8"); continue; }
                     var longest = Math.Max(maxX - minX + 1, maxY - minY + 1);
                     if (longest < 44 || longest > 60) problems.Add($"{id}: content {longest} px, expected 44–60");
+                    // AC11 only sweeps 8 icons through the slots. At 28 px a source pixel is 0.4375 screen px and the
+                    // UI-01 icon rect overlaps the label row by 1 px, so 3 transparent px per edge keeps every icon clear.
+                    int left = minX, right = Canvas - 1 - maxX, bottom = minY, top = Canvas - 1 - maxY;
+                    if (Math.Min(Math.Min(left, right), Math.Min(bottom, top)) < MinPadding)
+                        problems.Add($"{id}: padding L{left} R{right} T{top} B{bottom}, expected ≥ {MinPadding} each");
                     var dx = (minX + maxX + 1) * 0.5f - Canvas * 0.5f;
                     var dy = (minY + maxY + 1) * 0.5f - Canvas * 0.5f;
                     if (Mathf.Abs(dx) > 2f || Mathf.Abs(dy) > 2f) problems.Add($"{id}: content centre off by ({dx}, {dy})");
@@ -117,6 +127,24 @@ namespace JungleMaze.Tests.Art04
                     offenders.Add(path);
             }
             Assert.IsEmpty(offenders, string.Join("\n", offenders));
+        }
+
+        [Test]
+        public void HudPrefabs_HaveNoMissingScriptOnAnyGameObject()
+        {
+            var problems = new List<string>();
+            foreach (var path in new[] { Ui + "Hud.prefab", Ui + "HudSlot.prefab", Ui + "HudPickupToast.prefab" })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                Assert.NotNull(prefab, path);
+                // The count only covers the GameObject passed in, so every child is checked on its own.
+                foreach (var t in prefab.GetComponentsInChildren<Transform>(true))
+                {
+                    var missing = GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject);
+                    if (missing > 0) problems.Add($"{path} › {t.name}: {missing} missing script(s)");
+                }
+            }
+            Assert.IsEmpty(problems, string.Join("\n", problems));
         }
 
         // ---------- helpers ----------
