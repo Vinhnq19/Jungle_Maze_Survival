@@ -60,8 +60,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 4
     clips:
-    - {fileID: 8300000, guid: 9b19e50de2e8d8641bd51d61999e2550, type: 3}
-    volume: 0.7
+    - {fileID: 8300000, guid: b28a732b6a7a4df9ad6cabc5653e4a3c, type: 3}
+    volume: 0.79
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -72,8 +72,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 5
     clips:
-    - {fileID: 8300000, guid: 4b1981961e810b24d96326169358e4e2, type: 3}
-    volume: 0.8
+    - {fileID: 8300000, guid: a9a0cb61dce64a86abfc23a19d2a3b1c, type: 3}
+    volume: 0.79
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -84,8 +84,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 6
     clips:
-    - {fileID: 8300000, guid: c735ca83a8bcfd14780f35d3edc26234, type: 3}
-    volume: 0.75
+    - {fileID: 8300000, guid: ac8a366222234131a00d42fd72f29b0b, type: 3}
+    volume: 0.79
     pitchJitter: 0.05
     priority: 2
     bus: 1
@@ -144,8 +144,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 11
     clips:
-    - {fileID: 8300000, guid: b5710237e8ad73f4ea8814509de515a3, type: 3}
-    volume: 0.7
+    - {fileID: 8300000, guid: bd6d384002cf45b4b9dfed89490063a6, type: 3}
+    volume: 0.79
     pitchJitter: 0
     priority: 2
     bus: 1
@@ -156,8 +156,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 12
     clips:
-    - {fileID: 8300000, guid: 0387ca7328937f6458c85fc6a866adcb, type: 3}
-    volume: 0.9
+    - {fileID: 8300000, guid: 3df56862e1e94caba7b1f283fd8b1826, type: 3}
+    volume: 0.79
     pitchJitter: 0.05
     priority: 2
     bus: 1
@@ -192,8 +192,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 15
     clips:
-    - {fileID: 8300000, guid: c05d4b265c166034398d9ee288295f0a, type: 3}
-    volume: 0.9
+    - {fileID: 8300000, guid: 13930e28031e432aa12e54c72c49cbe9, type: 3}
+    volume: 1
     pitchJitter: 0.05
     priority: 3
     bus: 1
@@ -230,8 +230,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 18
     clips:
-    - {fileID: 8300000, guid: 5fb1b848b56eac34d8c29410ae275cd7, type: 3}
-    volume: 0.8
+    - {fileID: 8300000, guid: fae3ad87b5be40aba5c7f6d8a9e4cee7, type: 3}
+    volume: 0.5
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -242,8 +242,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 19
     clips:
-    - {fileID: 8300000, guid: f5a2ae6e864795a46b0942defff1edd5, type: 3}
-    volume: 0.7
+    - {fileID: 8300000, guid: ccfd2da173b4479488264bcb3d7d2e46, type: 3}
+    volume: 0.5
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -254,8 +254,11 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 20
     clips:
-    - {fileID: 8300000, guid: 23374d53fd82b9a46bee6850b7ba9ac4, type: 3}
-    volume: 0.7
+    - {fileID: 8300000, guid: 0dff018d9ed341778e642785631021d5, type: 3}
+    - {fileID: 8300000, guid: 319e44be2e6447fa9514dbbf5396ea17, type: 3}
+    - {fileID: 8300000, guid: af89be1d44184f8885bb5948f4859228, type: 3}
+    - {fileID: 8300000, guid: a30b3eddc31d41feb9961f2efb5f9cdb, type: 3}
+    volume: 0.5
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -266,8 +269,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 21
     clips:
-    - {fileID: 8300000, guid: 7bb9a89eb4ebdef4db5f73119ad752a1, type: 3}
-    volume: 0.7
+    - {fileID: 8300000, guid: c8c0d6fbdb924db0a078214974e1b213, type: 3}
+    volume: 0.5
     pitchJitter: 0
     priority: 1
     bus: 1
@@ -278,8 +281,8 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 22
     clips:
-    - {fileID: 8300000, guid: 47502a62a1efb0b49837cd0f66776865, type: 3}
-    volume: 0.7
+    - {fileID: 8300000, guid: 5266da1f02f741b2971fc3743e7f447b, type: 3}
+    volume: 0.5
     pitchJitter: 0
     priority: 1
     bus: 1
@@ -326,7 +329,7 @@ MonoBehaviour:
     repeatIntervalSeconds: 0
   - id: 26
     clips:
-    - {fileID: 8300000, guid: a3a96e71a5edfac4582de76f7ff26c74, type: 3}
+    - {fileID: 8300000, guid: 993283ea802a4bc195bc8a286f25e723, type: 3}
     volume: 1
     pitchJitter: 0
     priority: 3
