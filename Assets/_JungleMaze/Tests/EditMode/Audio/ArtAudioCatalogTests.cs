@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using JungleMaze.Domain.Audio;
 using JungleMaze.Presentation.Audio;
@@ -45,26 +46,29 @@ namespace JungleMaze.Tests.Audio
             }
         }
 
-        // AC9: no clip from Assets/Imported, and no Sfx/Music GUID shared with a file there.
+        // AC9: no clip from Assets/Imported, and no Sfx/Music GUID shared with a file there. The GUID written in each
+        // of our .meta files must be the one Unity holds for that file and must resolve back to it only: a .meta copied
+        // from Imported would either resolve to the Imported asset or be re-GUIDed by Unity (disk ≠ database). This
+        // covers every folder, Imported included, and reads ~43 small files instead of every .meta under Imported
+        // (that scan took minutes on a cold disk and timed out at 180 s once).
         [Test]
         public void NothingFromImported()
         {
-            var imported = new HashSet<string>();
-            foreach (var meta in Directory.GetFiles(ArtAudioSpec.ImportedOrIgnore(ArtAudioSpec.ImportedFolder), "*.meta", SearchOption.AllDirectories))
-            {
-                foreach (var line in File.ReadLines(meta))
-                {
-                    if (!line.StartsWith("guid: ")) continue;
-                    imported.Add(line.Substring(6).Trim());
-                    break;
-                }
-            }
             foreach (var row in ArtAudioSpec.Table)
                 foreach (var clip in Clips(row.Id))
                     StringAssert.DoesNotStartWith("Assets/Imported/", AssetDatabase.GetAssetPath(clip));
+            var files = 0;
             foreach (var folder in new[] { ArtAudioSpec.SfxFolder, ArtAudioSpec.MusicFolder })
-                foreach (var guid in AssetDatabase.FindAssets("t:AudioClip", new[] { folder.TrimEnd('/') }))
-                    Assert.IsFalse(imported.Contains(guid), AssetDatabase.GUIDToAssetPath(guid) + " reuses an Imported GUID");
+                foreach (var meta in Directory.GetFiles(ArtAudioSpec.ProjectPath(folder), "*.meta"))
+                {
+                    var asset = folder + Path.GetFileNameWithoutExtension(meta);
+                    var line = File.ReadLines(meta).First(l => l.StartsWith("guid: "));
+                    var guid = line.Substring(6).Trim();
+                    Assert.AreEqual(AssetDatabase.AssetPathToGUID(asset), guid, asset + ": .meta GUID differs from Unity's (a clash was re-GUIDed)");
+                    Assert.AreEqual(asset, AssetDatabase.GUIDToAssetPath(guid), asset + " shares its GUID with another asset");
+                    files++;
+                }
+            Assert.AreEqual(43, files, "40 SFX + 3 music");
         }
 
         // AC13

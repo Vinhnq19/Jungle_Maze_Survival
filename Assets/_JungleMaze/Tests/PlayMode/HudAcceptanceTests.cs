@@ -226,6 +226,11 @@ namespace JungleMaze.Tests.PlayMode
             Assert.IsFalse(_root.Minimap.Marker.gameObject.activeSelf, "no Hero yet");
         }
 
+        // Bars here are driven by real frame times (timeScale 4, Time.deltaTime), so float sums land within a few
+        // ULPs of the target (5.6e-7 seen on a loaded run). 1e-4 of a full bar is far below one visible pixel and
+        // still fails on any real drift: one frame of adrenaline at 60 fps is ~0.002 of the bar.
+        private const float FillTolerance = 1e-4f;
+
         [UnityTest]
         public IEnumerator Hud_HoldsValues10sWithoutUpdates()
         {
@@ -255,13 +260,13 @@ namespace JungleMaze.Tests.PlayMode
             }
             Time.timeScale = _timeScale;
             Assert.AreEqual(hp, Parsed(_root.Vitals.HpNumber));
-            Assert.AreEqual(fill, _root.Vitals.HpBar.FillValue);
+            Assert.That(_root.Vitals.HpBar.FillValue, Is.EqualTo(fill).Within(FillTolerance), "HP bar holds");
             Assert.AreEqual(armor, Parsed(_root.Vitals.ArmorRow.Value));
             Assert.AreEqual(ammo, Parsed(_root.Quickbar.WeaponStrip.Find("Ammo/Magazine").GetComponent<TMP_Text>()));
             Assert.AreEqual(zone, Parsed(_root.MatchStatus.ZoneValue), "zone clock does not count down on its own (G-15)");
             Assert.AreEqual(alive, Parsed(_root.MatchStatus.AliveValue));
             for (var i = 0; i < 8; i++) Assert.AreEqual(visuals[i], _root.Quickbar.GetSlotView(i).Visual);
-            Assert.AreEqual(0f, _root.Vitals.AdrenalineRow.Bar.FillValue, "adrenaline still counts down (AC12)");
+            Assert.That(_root.Vitals.AdrenalineRow.Bar.FillValue, Is.EqualTo(0f).Within(FillTolerance), "adrenaline still counts down (AC12)");
             Assert.IsFalse(_root.Vitals.AdrenalineRow.Value.enabled);
         }
 
