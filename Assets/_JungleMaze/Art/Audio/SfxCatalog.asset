@@ -145,7 +145,7 @@ MonoBehaviour:
   - id: 11
     clips:
     - {fileID: 8300000, guid: bd6d384002cf45b4b9dfed89490063a6, type: 3}
-    volume: 0.79
+    volume: 1
     pitchJitter: 0
     priority: 2
     bus: 1
@@ -258,7 +258,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 319e44be2e6447fa9514dbbf5396ea17, type: 3}
     - {fileID: 8300000, guid: af89be1d44184f8885bb5948f4859228, type: 3}
     - {fileID: 8300000, guid: a30b3eddc31d41feb9961f2efb5f9cdb, type: 3}
-    volume: 0.5
+    volume: 0.89
     pitchJitter: 0.05
     priority: 1
     bus: 1
