@@ -71,29 +71,40 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             Assert.Greater(fixedSteps, 30, "physics steps continue while the menu is open");
         }
 
-        // AC3: 20 open/close pairs, each well under a 33.4 ms frame, no leaked objects or canvases, no errors.
+        // AC3: 20 open/close pairs, no frame over 33.4 ms, no leaked objects or canvases, no errors. Two numbers: the
+        // code cost of each toggle (Stopwatch) and the real length of the frame the toggle happened in, read as
+        // Time.unscaledDeltaTime on the next frame, so canvas/TMP rebuild and rendering are counted too.
         [UnityTest]
         public IEnumerator Toggle20Times_NoLongFrame_NoLeak()
         {
             _rig = new OverlayRig();
-            yield return null;
+            for (var i = 0; i < 10; i++) yield return null; // first-frame warm-up is not the menu's
             var objects = CountObjects();
             var canvases = CountCanvases();
+            var idleWorst = 0.0;
+            for (var i = 0; i < 40; i++)
+            {
+                yield return null;
+                idleWorst = System.Math.Max(idleWorst, Time.unscaledDeltaTime * 1000.0);
+            }
             var watch = new Stopwatch();
-            var worst = 0.0;
+            var worstCost = 0.0;
+            var worstFrame = 0.0;
             for (var i = 0; i < 40; i++)
             {
                 watch.Restart();
                 _rig.Menu.PressEscape();
                 _rig.Presenter.Tick(1f / 60f);
                 watch.Stop();
-                worst = System.Math.Max(worst, watch.Elapsed.TotalMilliseconds);
+                worstCost = System.Math.Max(worstCost, watch.Elapsed.TotalMilliseconds);
                 yield return null;
+                worstFrame = System.Math.Max(worstFrame, Time.unscaledDeltaTime * 1000.0);
             }
-            Assert.LessOrEqual(worst, 33.4, $"worst toggle cost {worst:0.00} ms");
+            Debug.Log($"[UI-03 AC3] 20 open/close pairs: worst toggle cost {worstCost:0.000} ms, worst toggle frame {worstFrame:0.0} ms (idle frames before: worst {idleWorst:0.0} ms)");
+            Assert.LessOrEqual(worstCost, 33.4, $"worst toggle cost {worstCost:0.00} ms");
+            Assert.LessOrEqual(worstFrame, 33.4, $"worst toggle frame {worstFrame:0.0} ms (idle worst {idleWorst:0.0} ms)");
             Assert.AreEqual(objects, CountObjects());
             Assert.AreEqual(canvases, CountCanvases());
-            Debug.Log($"[UI-03 AC3] worst toggle {worst:0.000} ms over 20 open/close pairs");
         }
 
         // AC18 + AC21: eliminated screen ≤ 500 ms, spectator ≤ 500 ms after the click.
