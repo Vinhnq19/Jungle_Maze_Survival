@@ -806,6 +806,96 @@ Nhạc (đo trên OGG đã giải mã bằng libsndfile): `waiting_room` L −26
 - AC15 (đảo ngược trên bản sao tạm, P2) chưa làm.
 - Sau G3: dọn `Placeholder/JSurviv/**` và `Placeholder/Beeps/**` (Q7); chạy `copy_jsurviv_placeholders.py --check` trước (manifest đã ghi md5 bản chép khớp gốc cho cả 14 file, AC38).
 
+### Sửa theo review · 27/10/2026 · unity-dev
+
+Theo quyết định CPO ở 4.9 (sau review `fe5d2fba`). Có 5 commit: `62895305` (công cụ), `b333b2f3` (clip + catalog), `ef6768a6` (import nhạc), `d3bc77d1` (manifest + nguồn), `84098fa8` (test).
+
+**Nên sửa 1, giấy phép DragonRoar.** Recipe, manifest (dòng `clip` và `sfx`) và `ART05_Sources.vi.md` ghi `chưa kiểm chứng (nguồn tự khai CC0)`. Test cho phép đúng cụm này; các chữ "CC0/miễn phí/…" khác vẫn bị chặn ở dòng không có bằng chứng. Test đã bắt được ghi chú cũ của tôi ("trang OpenGameArt ghi CC0") và tôi đã sửa. `OpenGameArt_cc0-deep-monster-roar.txt` vẫn nằm trong repo nhưng không còn được dòng nào trỏ tới làm bằng chứng. 24 clip Kenney giữ `có bằng chứng`.
+
+**Nên sửa 2, limiter tối đa 6 dB, không ngoại lệ.** Bỏ cột `max_reduction_db`; `process_clips.py` cố định 6 dB. Dựng lại toàn bộ, rồi xử lý theo thang của CPO cho các clip hụt đích L quá 2 dB:
+
+| Clip | Trước (6 dB) | Cách xử lý | Sau |
+| --- | --- | --- | --- |
+| `hit_marker` | `glass_005`, L −16,8 (trước cần 8 dB) | Chọn clip khác cùng gói Interface: `glass_003` (0,13 s) | L −16,0, giảm 0,9 dB |
+| `reload` | `metalLatch`, −21,3 | Clip khác cùng gói RPG: `creak3` (tiếng kẽo kẹt, như lên dây nỏ) | −18,0, giảm 0 dB, 0,32 s |
+| `empty_click` | `metalClick` 0,12 s, −23,8 | Cùng clip, chỉ lấy tiếng tách 0,08 s đầu (đuôi rung làm L thấp) | −18,0, giảm 0 dB |
+| `trap_triggered` | `impactMetal_heavy_000`, −21,3 | Clip khác cùng gói Impact: `impactMetal_heavy_002` | −19,3, giảm 6 dB |
+| `armor_absorb_1` | `impactPlate_medium_001`, −20,5 | `impactPlate_medium_003`; cả 3 biến thể đích −19 cho đều nhau | −19,0 |
+| `use_heal` (JSurviv) | 1,4 s, −21,0 | Cắt 0,6 s (vẫn trong 0,5–1,5 s) | −18,8 |
+| `use_drink` (JSurviv) | 0,6 s, −20,2 | Cắt 0,5 s | −19,4 |
+| `pickup_item` (JSurviv) | 0,55 s, −20,7 | Cắt 0,4 s | −19,4 |
+| `bomb_fuse` (JSurviv) | −24,0 | **Ngoại lệ**: tích tắc cách 0,3 s, cắt ngắn không làm L lên được. `volume` 1,0 | L −24,0, E −24,0 (dưới sàn T2 −23 1 dB) |
+| `wear_armor_0…3` (JSurviv) | −22,9 / −20,8 / −19,5 / −24,1 | **Ngoại lệ**: Leather 01 và 04 chỉ lên −21…−23. Cả 4 đặt −23 cho đều (cắt 0,8 s), `volume` 0,89 | L −23,0, E −24,0 (đúng T3) |
+
+Không clip nào phải trỏ lại bíp (T-7). GUID giữ nguyên vì ghi đè đúng tên file. Ngoại lệ ghi ở cột `exception` của recipe và manifest; test giữ bảng `ArtAudioSpec.LevelExceptions` khớp cột đó.
+
+**Nên sửa 3.** `build_manifest.py` giữ cột `heard` từ manifest đang có (khóa dòng `sfx` theo SfxId, các dòng khác theo file), không gán lại `chưa`. Dòng `sfx` là chỗ ghi `heard` theo mã; nếu để trống thì lấy giá trị chung của các dòng `clip` của mã đó. Script dừng với lỗi nếu đỉnh trong `process_report.csv` lệch file trong repo quá 0,05 dB, tức report và file không cùng một lần dựng.
+
+**Gợi ý đã làm:**
+- G1: `waiting_room` và `match` import Vorbis 0,5, bằng chất lượng đã nén. Đo sau import (`AudioImporter.compSize`): 1 355 520 / 235 488 / 1 180 320 B, cả ba ≤ 3,0 MB. Có test (bỏ qua nếu Unity không còn thuộc tính nội bộ này).
+- G3: đỉnh ≤ −1,0 dBFS đúng như AC18, không cộng thêm sai số. L đúng khoảng của AC40. Biến thể của cùng một mã lệch ≤ 0,5 dB. Đỉnh sau import khớp manifest ± 0,05 dB.
+- G4: test `UnchangedColumns_EqualTheAud01Table` so `priority`, `bus`, `rangeCells`, `maxInstances`, `cooldownSeconds`, `repeatCount`, `repeatIntervalSeconds` của 26 mục với bảng AUD-01 (`AudioSpec.Table`).
+- G5: test đọc `Assets/Imported` dùng `Assert.Ignore` khi thư mục đó không còn.
+
+**Gợi ý để sau (follow-up):**
+- G2: chưa có kiểm tra tự động cho mức nhạc (AC30).
+- G6: test import chưa kiểm override theo nền tảng.
+- G7: cột `status` của dòng `sfx` là trạng thái trước ART-05; nên đổi tên hoặc thêm cột trạng thái hiện tại.
+- G8: README dùng `%TEMP%` trong khối PowerShell; chưa ghi phiên bản thư viện trong README; `Sources/ART-05/README.vi.md` còn trỏ `art05_make_sfx.py`; `--out` chưa chặn đường dẫn trong `Assets/`.
+
+**Bảng mức âm sau khi sửa** (cột "Ngoại lệ" = clip có ghi `exception`):
+
+| SfxId | Tầng | Clip | Dài (s) | L (dBFS) | volume | E (dBFS) | Giảm (dB) | Ngoại lệ |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| FootstepGrass | T4 | 5 | 0.12–0.16 | -24.0 | 0.45 | -30.9 | 0.0 |  |
+| FootstepSwamp | T4 | 5 | 0.12–0.19 | -24.0 | 0.45 | -30.9 | 0.0 |  |
+| BushEnter | T4 | 2 | 0.47–0.55 | -18.2 | 0.28 | -29.3 | 6.0 |  |
+| MeleeSwing | T2 | 1 | 0.30 | -18.0 | 0.79 | -20.1 | 0.0 |  |
+| MeleeHit | T2 | 1 | 0.18 | -18.0 | 0.79 | -20.1 | 3.1 |  |
+| ShootRanged | T2 | 1 | 0.98 | -18.0 | 0.79 | -20.1 | 0.0 |  |
+| ShootCrossbow | T2 | 1 | 0.23 | -18.6 | 0.79 | -20.6 | 6.0 |  |
+| Throw | T2 | 1 | 0.44 | -18.0 | 0.79 | -20.1 | 0.0 |  |
+| Reload | T3 | 1 | 0.32 | -18.0 | 0.50 | -24.0 | 0.0 |  |
+| EmptyClick | T3 | 1 | 0.08 | -18.0 | 0.50 | -24.0 | 0.0 |  |
+| BombFuse | T2 | 1 | 0.95 | -24.0 | 1.00 | -24.0 | 6.0 | có |
+| Explosion | T2 | 1 | 2.80 | -18.0 | 0.79 | -20.1 | 0.0 |  |
+| TrapTriggered | T2 | 1 | 0.12 | -19.3 | 0.79 | -21.4 | 6.0 |  |
+| HitMarker | T1 | 1 | 0.13 | -16.0 | 1.00 | -16.0 | 0.9 |  |
+| HurtLocal | T1 | 1 | 0.55 | -16.0 | 1.00 | -16.0 | 4.7 |  |
+| ArmorAbsorb | T2 | 3 | 0.37–0.37 | -19.0 | 0.79 | -21.1 | 6.0 |  |
+| Eliminated | T2 | 1 | 0.37 | -18.0 | 0.79 | -20.1 | 0.0 |  |
+| PickupWeapon | T3 | 1 | 0.55 | -18.0 | 0.50 | -24.0 | 0.0 |  |
+| PickupItem | T3 | 1 | 0.40 | -19.4 | 0.50 | -25.4 | 6.0 |  |
+| WearArmor | T3 | 4 | 0.79–0.80 | -23.0 | 0.89 | -24.0 | 5.7 | có |
+| UseHeal | T3 | 1 | 0.60 | -18.8 | 0.50 | -24.8 | 6.0 |  |
+| UseDrink | T3 | 1 | 0.50 | -19.4 | 0.50 | -25.4 | 6.0 |  |
+| UseCancel | T3 | 1 | 0.15 | -18.0 | 0.50 | -24.0 | 0.0 |  |
+| ZoneBell3 | T1 | 1 | 0.68 | -17.5 | 1.00 | -17.5 | 6.0 |  |
+| DragonRoar | T1 | 1 | 3.00 | -16.0 | 1.00 | -16.0 | 0.0 |  |
+| MatchEnd | T1 | 1 | 2.79 | -16.0 | 1.00 | -16.0 | 0.9 |  |
+
+HitMarker hơn mã to nhất của T2–T4 4,05 dB (AC20 ≥ 3) và hơn FootstepGrass 14,9 dB (≥ 12). Mọi clip giảm ≤ 6 dB.
+
+**Test:**
+- Python 7/7.
+- EditMode **479/479** (Audio 82/82, thêm 4 test).
+- PlayMode **106/106**.
+- Console 0 Error. `EditorSettings.asset` đã `git checkout`.
+
+**PIC cần nghe (điều kiện G3 theo 4.9):**
+- **BombFuse:** tích tắc 0,95 s, nhỏ hơn tầng.
+- **Reload:** clip mới `creak3`.
+- **EmptyClick:** 0,08 s.
+- **HitMarker:** clip mới `glass_003`.
+
+Nên nghe thêm:
+- TrapTriggered (clip mới).
+- ArmorAbsorb (biến thể 1 là clip mới).
+- ShootCrossbow (`chop`).
+- WearArmor (nhỏ hơn đích, 4 biến thể).
+- UseHeal, UseDrink, PickupItem (cắt ngắn hơn).
+- HurtLocal (`bleed`).
+
 ## 6. Review
 
 ### Review ART-05 · 27/10/2026 · code-reviewer
