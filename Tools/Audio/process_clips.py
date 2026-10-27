@@ -3,7 +3,8 @@
 SFX (one WAV per recipe row): mono mix, resample to 44.1 kHz with a windowed sinc when the source differs, cut
 from the onset, fade-in 3 ms after 2 ms of silence, cosine fade-out followed by 2 ms of silence, then bring the
 active level L (Docs/Tickets/ART-05.md 2.6, G-7) to the row's target through a look-ahead limiter: ceiling
--1.05 dBFS, attack 1 ms, release 50 ms, at most 6 dB of gain reduction unless the row allows more (max_reduction_db). Written as 16-bit PCM, so a rerun gives
+-1.05 dBFS, attack 1 ms, release 50 ms, at most 6 dB of gain reduction (TR1, no exception: a clip that cannot reach its target stays
+quieter and the recipe records why). Written as 16-bit PCM, so a rerun gives
 the same bytes. Music: level only (stereo kept), then OGG Vorbis at the highest quality that stays <= 3.0 MB.
 
 Needs numpy and soundfile (libsndfile >= 1.1 reads MP3 and writes Vorbis); no ffmpeg (ART-05 G1, T-1).
@@ -30,7 +31,7 @@ DOWNLOADS = ROOT / 'Tools/Audio/Sources/ART-05'
 JSURVIV = ROOT / 'Assets/Imported/JSurviv/Sound'
 SR = 44100
 CEILING_DB = -1.05            # 0.05 dB below the -1.0 dBFS rule, room for 16-bit rounding
-MAX_REDUCTION_DB = 6.0        # default; a recipe row may allow more (sparse or decaying clips), never above 16
+MAX_REDUCTION_DB = 6.0        # TR1; CPO 4.9 kept it without exceptions
 ACTIVE_FLOOR = 0.003          # G-7: L runs from the first to the last sample with |x| >= 0.003
 PAD_S = 0.002
 FADE_IN_S = 0.003
@@ -178,7 +179,7 @@ def render_sfx(row):
     seg[len(seg) - fade_out:] *= cosine(fade_out, False)
     pad = np.zeros(int(PAD_S * SR))
     y = np.concatenate([pad, seg, pad])[:, None]
-    y, gain, gr = level_to(y, float(row['target_l_dbfs']), float(row['max_reduction_db'] or MAX_REDUCTION_DB))
+    y, gain, gr = level_to(y, float(row['target_l_dbfs']))
     return y, sr, dict(gain_db=gain, reduction_db=gr, trim_start_s=start / sr, trim_end_s=end / sr,
                        source_peak_dbfs=source_peak, source_level_dbfs=source_level)
 

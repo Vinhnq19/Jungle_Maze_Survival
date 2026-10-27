@@ -44,9 +44,9 @@ class PipelineTests(unittest.TestCase):
 
     def test_limiter_never_passes_the_ceiling(self):
         y = frame(burst(amp=1.0, decay=1.0))
-        out, gain, reduction = pc.level_to(y, -12.0, 12.0)
+        out, gain, reduction = pc.level_to(y, -12.0)
         self.assertLessEqual(np.max(np.abs(out)), 10 ** (pc.CEILING_DB / 20) + 1e-9)
-        self.assertLessEqual(reduction, 12.0 + 1e-6)
+        self.assertLessEqual(reduction, pc.MAX_REDUCTION_DB + 1e-6)
 
     def test_gain_reaches_the_target_level(self):
         y = frame(burst(amp=0.2))
@@ -55,7 +55,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_reduction_is_capped(self):
         y = frame(burst(amp=1.0, decay=40.0))  # crest far too high for -10 dBFS
-        out, _, reduction = pc.level_to(y, -10.0, 6.0)
+        out, _, reduction = pc.level_to(y, -10.0)
         self.assertLessEqual(reduction, 6.0 + 1e-6)
         self.assertLess(pc.active_level(out[:, 0]), -10.0)
 

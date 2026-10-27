@@ -8,6 +8,10 @@ Three kinds of row (column row_type):
   clip     one row per file in Art/Audio/Sfx and Art/Audio/Music: source, licence, cut, gain, levels before
            and after (after = the file in the repo), size and md5.
 
+Columns people fill in (heard) are kept from the existing manifest: a run never resets a listening result.
+The sfx row's heard is per SfxId; when it is empty it takes the clip rows' value if they all agree.
+The run stops if the process report and the files in the repo come from different renders (peak differs).
+
 Needs numpy and soundfile (reads the MP3 sources). Usage:
   python Tools/Audio/build_manifest.py [--report %TEMP%/art05_stage/process_report.csv]
 """
@@ -47,12 +51,14 @@ SFX = [
 ]
 # Catalog volume per tier (plan 4.1, G1 T-5); footsteps 0.45 keeps A19 (HitMarker >= 2 x FootstepGrass).
 TIER_VOLUME = {'T1': 1.00, 'T2': 0.79, 'T3': 0.50, 'T4': 0.28}
-VOLUME_OVERRIDE = {'FootstepGrass': 0.45, 'FootstepSwamp': 0.45}
+# BombFuse and WearArmor stay quieter than their tier (recipe column exception, CPO 4.9): volume makes up what it can.
+VOLUME_OVERRIDE = {'FootstepGrass': 0.45, 'FootstepSwamp': 0.45, 'BombFuse': 1.00, 'WearArmor': 0.89}
+HUMAN_COLUMNS = ('heard',)
 
 FIELDS = ['row_type', 'sfx_id', 'status', 'file', 'source', 'zip_member', 'class', 'used_by', 'author', 'url',
           'download_date', 'licence', 'duration_s', 'codec', 'sample_rate', 'channels', 'size_bytes', 'md5',
           'copy_md5_match', 'tier', 'trim_start_s', 'trim_end_s', 'gain_db', 'reduction_db', 'peak_before_dbfs',
-          'level_before_dbfs', 'peak_after_dbfs', 'level_after_dbfs', 'volume', 'effective_dbfs', 'heard', 'notes']
+          'level_before_dbfs', 'peak_after_dbfs', 'level_after_dbfs', 'volume', 'effective_dbfs', 'heard', 'exception', 'notes']
 
 
 def md5(data):
@@ -81,6 +87,28 @@ def source_facts(path, member=''):
     return facts
 
 
+def row_key(row):
+    """An sfx row is its SfxId (its clip list may change); other rows are their file (and zip member)."""
+    if row['row_type'] == 'sfx':
+        return 'sfx', row['sfx_id']
+    return row['row_type'], row.get('file', ''), row.get('zip_member', '')
+
+
+def previous_rows():
+    """Rows of the current manifest by row_key, so human-entered columns survive a rebuild."""
+    if not OUT.is_file():
+        return {}
+    with open(OUT, encoding='utf-8', newline='') as f:
+        return {row_key(r): r for r in csv.DictReader(f)}
+
+
+def keep_human(row, previous):
+    old = previous.get(row_key(row))
+    for column in HUMAN_COLUMNS:
+        if old and old.get(column):
+            row[column] = old[column]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument('--report', default=os.path.join(tempfile.gettempdir(), 'art05_stage', 'process_report.csv'))
@@ -92,11 +120,12 @@ def main():
     with open(INVENTORY, encoding='utf-8', newline='') as f:
         inventory = list(csv.DictReader(f))
 
+    previous = previous_rows()
     clips, levels = [], {}
     for r in recipe:
         path = AUDIO / r['out_file']
         rep = report[r['out_file']]
-        row = {k: r[k] for k in ('sfx_id', 'source', 'zip_member', 'author', 'url', 'download_date', 'licence', 'heard', 'notes')}
+        row = {k: r[k] for k in ('sfx_id', 'source', 'zip_member', 'author', 'url', 'download_date', 'licence', 'heard', 'exception', 'notes')}
         row.update(row_type='clip', file=r['out_file'], tier=r['tier'], size_bytes=path.stat().st_size,
                    md5=md5(path.read_bytes()), trim_start_s=f"{float(rep['trim_start_s']):.3f}",
                    trim_end_s=f"{float(rep['trim_end_s']):.3f}", gain_db=f"{float(rep['gain_db']):.2f}",
@@ -110,11 +139,15 @@ def main():
                        peak_after_dbfs=f"{float(rep['peak_dbfs']):.2f}", level_after_dbfs=f"{float(rep['level_dbfs']):.2f}")
         else:
             m = measure_clips.measure(path)
+            if abs(m['peak_dbfs'] - float(rep['peak_dbfs'])) > 0.05:
+                raise SystemExit(f"{r['out_file']}: repo peak {m['peak_dbfs']} != report {float(rep['peak_dbfs']):.2f}; "
+                                 'the report is from another render: run process_clips.py and copy its files first')
             volume = volume_of(r['sfx_id'], r['tier'])
             row.update(duration_s=f"{m['duration_s']:.3f}", codec='WAV PCM_16', sample_rate=m['sample_rate'],
                        channels=m['channels'], peak_after_dbfs=f"{m['peak_dbfs']:.2f}", level_after_dbfs=f"{m['level_dbfs']:.2f}",
                        volume=f'{volume:.2f}', effective_dbfs=f"{m['level_dbfs'] + 20 * math.log10(volume):.2f}")
             levels.setdefault(r['sfx_id'], []).append((m['level_dbfs'], r))
+        keep_human(row, previous)
         clips.append(row)
 
     sfx_rows = []
@@ -126,12 +159,17 @@ def main():
         licences = sorted({e['licence'] for _, e in entries})
         row = dict(row_type='sfx', sfx_id=sfx_id, status=status, file=';'.join(e['out_file'] for _, e in entries),
                    source=source, tier=tier, licence=' | '.join(licences), level_after_dbfs=f'{level:.2f}',
-                   volume=f'{volume:.2f}', effective_dbfs=f'{level + 20 * math.log10(volume):.2f}', heard='chưa')
+                   volume=f'{volume:.2f}', effective_dbfs=f'{level + 20 * math.log10(volume):.2f}', heard='',
+                   exception=' | '.join(sorted({e['exception'] for _, e in entries if e['exception']})))
         if source:
             row.update(source_facts(JSURVIV / source))
             row.pop('md5', None)
         jsurviv_used = any(e['source_kind'] == 'jsurviv' for _, e in entries)
         row['notes'] = 'clip cuối từ JSurviv' if jsurviv_used else ('ứng viên JSurviv không dùng; clip cuối tải về' if source else 'clip cuối tải về')
+        keep_human(row, previous)
+        if not row['heard']:
+            heard = {c['heard'] for c in clips if c['sfx_id'] == sfx_id}
+            row['heard'] = heard.pop() if len(heard) == 1 else 'chưa'
         sfx_rows.append(row)
 
     jsurviv_rows = []
