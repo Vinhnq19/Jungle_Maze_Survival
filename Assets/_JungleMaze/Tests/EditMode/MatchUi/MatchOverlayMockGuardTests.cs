@@ -64,7 +64,9 @@ namespace JungleMaze.Tests.MatchUi
             Assert.AreEqual(JungleMaze.Domain.MatchUi.MatchOverlayPhase.Playing, flow.Phase);
             Assert.IsTrue(menu.PressEscape(), "ESC works in the preview");
             menu.PressEscape();
+            Assert.IsFalse(scenarios.KillcamEnabled);
             scenarios.SetKillcam(true);
+            Assert.IsTrue(scenarios.KillcamEnabled, "the F7 box reads the session");
             scenarios.Eliminate(JungleMaze.Domain.MatchUi.EliminationCause.Player);
             Assert.AreEqual(JungleMaze.Domain.MatchUi.MatchOverlayPhase.Killcam, flow.Phase);
             Assert.AreEqual(1, scenarios.Replay.RequestCount);
@@ -76,6 +78,27 @@ namespace JungleMaze.Tests.MatchUi
             Assert.AreEqual(JungleMaze.Domain.MatchUi.MatchOverlayPhase.Inactive, flow.Phase);
             flow.Dispose();
             menu.Dispose();
+        }
+
+        // Gợi ý 6 (review lát 7–11): started with `-killcam`, the F7 box shows "on" before anyone touches it.
+        [Test]
+        public void KillcamSwitch_ShowsTheSessionState()
+        {
+            var bus = new JungleMaze.Core.Events.EventBus();
+            var clock = new FakeClock();
+            var liveElimination = new JungleMaze.App.MatchUi.Mocks.MockEliminationSource();
+            var liveSpectator = new JungleMaze.App.MatchUi.Mocks.MockSpectatorSource();
+            var liveReplay = new JungleMaze.App.MatchUi.UnavailableKillcamReplaySource();
+            var killcam = new JungleMaze.App.MatchUi.KillcamSession(clock.Read, new JungleMaze.App.MatchUi.KillcamOptions(true, 5f, 1f), liveReplay);
+            var flow = new JungleMaze.App.MatchUi.MatchOverlayFlow(bus, clock.Read, liveElimination, liveSpectator,
+                JungleMaze.App.Flow.AppScreen.MainMenu, null, killcam);
+            var scenarios = new JungleMaze.App.MatchUi.Mocks.MatchOverlayScenarios(flow, null, killcam, liveElimination, liveSpectator, liveReplay, clock.Read);
+            Assert.IsTrue(scenarios.KillcamEnabled);
+            scenarios.SetKillcam(false);
+            Assert.IsFalse(killcam.Options.Enabled);
+            Assert.IsFalse(scenarios.KillcamEnabled);
+            Assert.IsFalse(new JungleMaze.App.MatchUi.Mocks.MatchOverlayScenarios(flow, null, null, liveElimination, liveSpectator, liveReplay, clock.Read).KillcamEnabled);
+            flow.Dispose();
         }
     }
 }

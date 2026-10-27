@@ -64,6 +64,9 @@ namespace JungleMaze.App.MatchUi.Mocks
             _flow.ApplyScreen(AppScreen.MainMenu);
         }
 
+        /// <summary>The session's real switch (asset, <c>-killcam</c> or <see cref="SetKillcam"/>).</summary>
+        public bool KillcamEnabled => _killcam != null && _killcam.Options.Enabled;
+
         public void SetKillcam(bool enabled) => _killcam?.SetEnabled(enabled);
         public void SetReplayCase(MockKillcamReplaySource.Case mode) => Replay.Mode = mode;
 

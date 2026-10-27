@@ -16,8 +16,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private static readonly string[] Cases = { "Full", "None", "Short", "Slow", "WrongMatch", "WrongPlayer", "WrongWindow", "Drift" };
 
         private MatchOverlayScenarios _scenarios;
-        private bool _visible, _killcam;
-        private int _case;
+        private bool _visible;
 
         [Inject]
         public void Construct(MatchOverlayScenarios scenarios) => _scenarios = scenarios;
@@ -39,10 +38,12 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             if (GUILayout.Button("Thoát xem thử")) _scenarios.EndPreview();
             GUILayout.EndHorizontal();
 
-            var killcam = GUILayout.Toggle(_killcam, "Killcam bật");
-            if (killcam != _killcam) { _killcam = killcam; _scenarios.SetKillcam(killcam); }
-            var picked = GUILayout.SelectionGrid(_case, Cases, 3);
-            if (picked != _case) { _case = picked; _scenarios.SetReplayCase((MockKillcamReplaySource.Case)picked); }
+            // Both read the live state, so `-killcam` or a change made elsewhere shows as it is.
+            var killcamOn = _scenarios.KillcamEnabled;
+            if (GUILayout.Toggle(killcamOn, "Killcam bật") != killcamOn) _scenarios.SetKillcam(!killcamOn);
+            var current = (int)_scenarios.Replay.Mode;
+            var picked = GUILayout.SelectionGrid(current, Cases, 3);
+            if (picked != current) _scenarios.SetReplayCase((MockKillcamReplaySource.Case)picked);
 
             GUILayout.Label("Bị loại");
             GUILayout.BeginHorizontal();
