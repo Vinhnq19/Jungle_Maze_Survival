@@ -59,6 +59,9 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             Assert.AreEqual(h, m.height, Tolerance, what + " h");
         }
 
+        private static string Codes(uint[] missing) =>
+            missing == null ? "" : string.Join(" ", System.Array.ConvertAll(missing, c => "U+" + c.ToString("X4")));
+
         private static IEnumerable<T> All<T>(Component root) where T : Component => root.GetComponentsInChildren<T>(true);
 
         // AC44
@@ -82,6 +85,32 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
                 Assert.GreaterOrEqual(text.fontSize, 13f, text.name);
             foreach (var text in All<TMP_Text>(_root))
                 StringAssert.Contains("Hud", text.font.name, "HUD fonts (Be Vietnam Pro / Pixelify Sans) on " + text.name);
+        }
+
+        // TR9: every character the overlay prints exists in its own HUD font, so TMP never falls back to (and writes
+        // glyphs into) the JSurviv LiberationSans fallback asset.
+        [Test]
+        public void AllText_IsInTheHudFonts()
+        {
+            var textFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudText SDF.asset");
+            var runtime = new[]
+            {
+                JungleMaze.App.MatchUi.EliminationText.Title, "Bị Hào hạ bằng Nỏ · cách 6 ô", "Bị bo thu hẹp loại", "Bạn đã rời trận",
+                "Mất kết nối quá lâu", "Không rõ nguyên nhân", "Hạ gục: 2", "Sống sót: 05:12", "#4 / 10",
+                "Không còn người chơi nào để theo dõi", "Trận đã kết thúc", "Lan đã bị loại", "Còn sống 9/10",
+                "Killcam không khả dụng: dữ liệu chưa đủ 5 giây, chờ dữ liệu quá lâu, máy chủ chưa có dữ liệu",
+                "dữ liệu không thuộc trận này, dữ liệu không phải của bạn, không rõ kẻ hạ, trận đã kết thúc",
+                "Killcam · góc nhìn của Thảo Ngọc Tùng Khoa Minh Vũ", "Killcam 3,2 s", MatchOverlayPresenter.MusicOffText,
+                MatchOverlayPresenter.RetryText, "Người chơi 10", "100%", "1,5", "80/100"
+            };
+            foreach (var text in All<TMP_Text>(_root))
+            {
+                Assert.IsTrue(text.font.HasCharacters(text.text, out var missing, false, false),
+                    text.name + " misses " + Codes(missing));
+            }
+            foreach (var line in runtime)
+                Assert.IsTrue(textFont.HasCharacters(line, out var missing, false, false),
+                    line + " misses " + Codes(missing));
         }
 
         // AC45

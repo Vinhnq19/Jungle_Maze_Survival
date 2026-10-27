@@ -180,7 +180,7 @@ namespace JungleMaze.EditorTools
 
             var keys = Rect("KeyBar", root, 440, 640, 400, 44);
             Img(keys, P.Surface);
-            Txt("Keys", keys, 12, 0, 376, 44, "←/A  →/D đổi người · E kẻ hạ bạn · ESC menu", 13, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
+            Txt("Keys", keys, 12, 0, 376, 44, "Trái/A  Phải/D đổi người · E kẻ hạ bạn · ESC menu", 13, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
             var killer = Btn("Killer", root, 852, 640, 250, 44, "Kẻ đã hạ bạn (E)", P.Raised, P.Text);
             var home = Btn("Home", root, 1114, 640, 100, 47, "Về sảnh", P.Amber, P.Raised);
 
