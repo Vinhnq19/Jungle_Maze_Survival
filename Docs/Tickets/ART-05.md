@@ -722,6 +722,8 @@ Tổng: **6 commit** trước G3 (5 nếu nhạc lùi), cộng 1 commit dọn sa
 - **Nên sửa 3 → sửa.** `build_manifest.py` giữ cột `heard` (và các cột do người ghi) lấy từ manifest hiện có, không gán cứng `chưa`. Thêm chỗ ghi `heard` theo mã.
 - **Gợi ý làm luôn:** 1 (quality importer bằng quality đã nén, đo kích thước sau import), 3 (thu hẹp dung sai theo câu chữ AC), 4 (bảng cố định các cột catalog không đổi), 5 (test bỏ qua khi thiếu `Assets/Imported`). Gợi ý 2, 6, 7, 8: để sau, ghi follow-up.
 
+**PIC nghe (27/10):** người dùng nghe file ghép 4 clip, nguyên văn: "Tôi đã nghe 4 âm hitmarker, bom đếm ngược, nạp đạn, bóp cò hết đạn: đều ổn." Ghi `heard = có: V.Huy, 2026-10-27` cho `HitMarker`, `BombFuse`, `Reload`, `EmptyClick` trong recipe và manifest. Điều kiện G3 về nghe nhóm này: **đã đạt**. Các mã còn lại vẫn `chưa`.
+
 **Build:** unity-dev, 6 commit theo 4.5, Giai đoạn A có thể làm ngay. Hạn 30/10.
 
 ## 5. Nhật ký build
