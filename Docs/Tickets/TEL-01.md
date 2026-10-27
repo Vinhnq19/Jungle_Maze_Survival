@@ -1065,7 +1065,62 @@ Commit `ccb58d48` (commit 2), `e3d746a8` (commit 3), `970695e1` (commit 4). Cả
 
 ## 7. QA
 
-_QA điền._
+### QA TEL-01 Phase A · 27/10/2026 · QA Tester
+
+**Mã kiểm:** HEAD `edca904c`. Báo cáo đầy đủ: [TEL-01_QA_2026-10-27.vi.md](../Reports/TEL-01_QA_2026-10-27.vi.md). Một lượt, không sửa code.
+
+**Tổng 39 tiêu chí: Đạt 30 · Một phần 5 · Chưa kiểm chứng 4 · Không đạt 0.** Chặn nghiệm thu Phase A: 0. Lỗi nhẹ: 1 (QA-1, `compare` đặt nhãn A/B theo thứ tự cfgKey).
+
+**Chạy mới:** Python `test_telemetry.py` 80 test, 79 OK, 1 bỏ qua (chỉ chạy với `--perf`; chạy riêng: OK). `TelemetryChecks` 71 passed, 0 failed. Unity EditMode 507/507 (28 s); không chạy PlayMode vì không có test telemetry nào ở PlayMode. Backend: build 0 lỗi 0 cảnh báo, NetworkChecks 132 PASS, DualTransportChecks 53 PASS; phần cần Docker/MongoDB của `run_all.cmd` không chạy (Docker tắt).
+
+**Chờ Vinh / chưa có build:** AC33, AC36, AC37 "chưa kiểm chứng – chờ H1 của Vinh" (GameServer thật chưa gắn hook). AC38 "chưa kiểm chứng": cần player build có `-telemetry` trên máy QA.
+
+| # | Kết quả | Bằng chứng |
+| --- | --- | --- |
+| AC1 | Đạt | Test `schema_defines_exactly_18_types_numbered_1_to_18`, `every_type_has_a_valid_fixture_that_passes`, `schema_doc_table_matches_json` OK; bộ giả seed 1 có đủ 18 loại |
+| AC2 | Đạt | `each_missing_envelope_field_is_rejected`, `valid_fixtures_carry_full_envelope` OK; `validate --strict` trên 67 file giả: `errors=0`, 18 986 bản ghi |
+| AC3 | Đạt | `bad_id_is_flagged_invalid_id`, `code_ids_are_read_from_balance_files` OK; bộ giả `invalid=0` |
+| AC4 | Đạt | `pii_scanner_catches_keys_patterns_and_samples`, `no_pii_in_fake_output`, `report_never_contains_pii_samples` OK; quét thô `RoomCode`, `Bearer`, `eyJ`, `ProfileKey`, `displayName` trong file giả và báo cáo: 0 khớp; review mục 6 xác nhận Assembler không đọc các trường đó |
+| AC5 | Đạt | `every_enum_field_has_an_out_of_domain_fixture`, `every_error_code_has_an_invalid_fixture` OK |
+| AC6 | Đạt | `fake --dup` tiêm 949 dòng trùng: gộp `dup=949`, `events=18 986` = lần sạch cùng seed |
+| AC7 | Đạt | `fake --conflict 3`: `conflicts=3`; `report --strict` thoát mã 2; lần sạch `--strict` thoát 0 |
+| AC8 | Đạt | `fake --semantic-dup 6`: `semantic_dup=6`, `events=18 986` = lần sạch |
+| AC9 | Đạt | `fake --reconnect` + test `reconnect_keeps_one_spawn_one_resume_and_contiguous_seq` OK; gộp 18 987 bản ghi, `gaps=0`, đúng 1 `session_state RESUMED` |
+| AC10 | Đạt | `fake --gap 7` → `gaps=7`; `--gap 40` → `gaps=40`; lần sạch `gaps=0`; test `trailer_written_equals_lines_on_clean_run`, `gap_at_the_end_of_a_file_is_found_through_the_trailer` OK |
+| AC11 | Đạt | Chạy `--reorder` rồi so với lần sạch: `report.md`, `ttk_by_weapon.csv`, `death_causes.csv`, `events.jsonl` giống từng byte |
+| AC12 | Đạt | `report_matches_golden_seed1`, `golden_numbers_agree_with_metrics`, `report_has_every_section` OK; báo cáo mẫu: `sample_report_fakeA.md` |
+| AC13 | Đạt | `ttk_follows_definition`, `percentile_is_nearest_rank` OK (giao tranh dựng tay, kỳ vọng ghi trước) |
+| AC14 | Đạt | `zone_death_rate_and_phases` OK |
+| AC15 | Đạt | `loot_first_equipment_and_starved_deaths`, `cc_counts_seconds_and_cleansed_rate`, `item_use_delta_and_rates`, `hide_spans` OK |
+| AC16 | Đạt | `groups_by_cfgkey_without_mixing` OK; chạy tay: A 18 678 + B 17 088 dòng, `compare` thấy 6 trận mỗi nhóm, tổng 36 379 = 18 986 + 17 393 (bản ghi) |
+| AC17 | Đạt | `compare` in A, B, `delta = B − A`, `nA`, `nB`, "mẫu thấp (n<10)" (`sample_compare_A_vs_B.md`). Lưu ý nhãn A/B: QA-1 |
+| AC18 | Đạt | `missing_sources_say_no_data_and_exit_zero` OK; chạy tay bỏ file client: "client: không có dữ liệu", thoát 0 |
+| AC19 | Đạt | `--perf`: 50 trận, 414 593 bản ghi, gộp 7,40 s, gộp + báo cáo 8,33 s (≤ 10 s). Máy: AMD64 Family 25 (16 luồng), Python 3.12.10 |
+| AC20 | Đạt | Hai lần `fake --seed 1`: băm thư mục giống nhau (`5edf21b9059cb08e`); 18/18 loại có bản ghi |
+| AC21 | Đạt | Từng cờ `--dup --gap --conflict --semantic-dup --reorder --reconnect` ra đúng kết quả AC6–AC11; chạy gộp mọi cờ: `dup=950 semantic_dup=6 conflicts=3 gaps=40` khớp số tiêm |
+| AC22 | Đạt | `every_line_is_marked_fake` OK; `coverage.csv` 100% fake; `report --require-real` thoát mã 3 trên dữ liệu giả |
+| AC23 | Một phần | Các lệnh trong QA_Guide chép-dán chạy được (mục 0, 4, 5, 6 và bộ giả); phần chạy máy < 1 phút. Chưa đo "người khác, checkout sạch, ≤ 15 phút" và mục 1–3 (server/client thật) không chạy được. Hướng dẫn ghi `70 passed`, thực tế 71 (QA-2) |
+| AC24 | Đạt | `TelemetryChecks` "TryWrite never waits for the disk (AC24)" PASS; EditMode `BlockedWriter_CallerNeverWaits` OK |
+| AC25 | Đạt | `TelemetryChecks` "Disk errors: self-disable, one warning, no exception" PASS; EditMode `DirectoryIsAFile_DisablesWithOneWarning`, `StreamThrows_DisablesAndCounts` OK |
+| AC26 | Đạt | `TelemetryChecks` "Writer: one file per match, header/trailer, caps" và "two matches in one room" PASS; EditMode `PastCap_Truncated`, `NewMatch_NewFile_SeqPerMatch`; chỗ Nên-sửa của review (`edca904c`) PASS ("Trailer of the match closed at Cleanup carries that match's queue drops") |
+| AC27 | Một phần | Mặc định tắt: `TelemetryChecks` "Host: disabled by default" PASS, EditMode `NoRecord_NoDirectory_FlagOffByDefault` OK, diff không đụng GameServer (AC29). `run_all.cmd` chỉ chạy được phần không cần Docker: build, NetworkChecks 132, DualTransportChecks 53 PASS; `auth_smoke.py`, `room_config_checks.py`, `room_benchmark.py --functional-only` chưa chạy (Docker tắt). Chưa xác nhận player build không cờ không tạo thư mục `Telemetry` |
+| AC28 | Đạt | `PerflogTests` 5 test OK (trường, UTC, gắn vào trận, trùng kỹ thuật). Dòng mẫu khớp từng trường với chuỗi `[metrics] …` ở `ServerMetrics.cs:45`. Chưa đọc log GameServer thật (cùng điều kiện H1) |
+| AC29 | Đạt | `git diff --name-only f77c031e..HEAD` không có file nào trong `Backend/GameServer`, `Backend/Shared`, `balance/`, xlsx; `EventPacket`/`GameEventType` không đổi. `Bootstrap.cs` chỉ thêm 1 dòng được duyệt |
+| AC30 | Đạt | `only_stdlib_imports`, `scripts_use_lf_and_utf8` OK; quét import `Tools/Telemetry/*.py`: chỉ thư viện chuẩn, không socket/urllib/http |
+| AC31 | Một phần | `Hook_Contract.vi.md` liệt kê đủ 18 loại (chủ ticket, điểm gọi, trạng thái); `GameServer_Hook_Proposal.vi.md` có H1–H7, nhưng dòng "Ký duyệt (Vinh)" còn trống: chờ H1 của Vinh |
+| AC32 | Đạt | `--bench` Release: p99 0,2 µs (đầy: 0,1 µs), `allocatedBytes=0` cả hai chế độ, 1 triệu lần; 3 PASS |
+| AC33 | Chưa kiểm chứng – chờ H1 của Vinh | Cần server thật có sink. Tham khảo proxy tải giả trong tiến trình (`--tick-budget` 3×60 s, tải 70 và 1 000/s): Δ `tickP95` trung vị −0,001 ms và +0,006 ms (≤ 0,5), p95 tối đa 0,084 ms (< 33,3), `droppedTicks=0`, `tickOverruns` 0; 10 PASS |
+| AC34 | Một phần | Proxy: bộ đếm `droppedQueue` thấy trong `_trailer`, `droppedTicks=0`, tick không quá hạn ở 1 000/s (PASS ở `--tick-budget`); ring đầy trả false, đếm bỏ (`TelemetryChecks` Ring và `bench sink-full`). Chưa trên server thật |
+| AC35 | Một phần | EditMode `AddAndSummarize_NoAllocation`, `TryWrite_NoAllocation`, `SteadyState_NoAllocationPerFrame` OK (0 byte/khung); luồng chính không I/O theo review. Chênh FPS/frame time bật-tắt trên player chưa đo: chưa kiểm chứng |
+| AC36 | Chưa kiểm chứng – chờ H1 của Vinh | Cần trận thật ≥ 2 client với hook H1–H3 trong GameServer |
+| AC37 | Chưa kiểm chứng – chờ H1 của Vinh | Cần H5/H6 trên GameServer và test rớt mạng thật |
+| AC38 | Chưa kiểm chứng | Cần player build `-telemetry` 60 s trong trận. EditMode `SixtySecondsInGame_TwelveRecords` và `FpsAvg_MatchesIndependentCount` OK nhưng là giả lập, không thay chạy thật |
+| AC39 | Đạt | `coverage_marks_fake_only_and_real` OK; `coverage.csv` bộ giả: mọi loại `fake`, báo cáo ghi nhãn. Mẫu C# (`from_csharp`) hiện W là `real` vì sinh bởi factory H7 chứ chưa từ ticket W; chạy lại sau WPN-02/ITM-01/WPN-03/bụi |
+
+**Lỗi và ghi chú (không chặn):**
+- **QA-1 (nhẹ, dùng sai dễ):** `compare <thư mục A> <thư mục B>` không có `--a/--b` đặt "A" là cfgKey nhỏ hơn theo thứ tự chữ, không phải thư mục đầu. Tái hiện: `fake --out A --seed 1 --cfg A`, `fake --out B --seed 1 --cfg B`, `compare A B`: dữ liệu thư mục A (cfgKey `…/bdd202c5`) hiện ở cột **B**, nên dấu `delta` ngược với cách đặt tên của hướng dẫn. Cách tránh: luôn truyền `--a`/`--b`. Đề xuất sửa: theo thứ tự thư mục hoặc ghi rõ trong hướng dẫn mục 5.
+- **QA-2 (tài liệu):** `QA_Guide.vi.md` mục 0 ghi `70 passed`; sau `edca904c` là 71.
+- **QA-3 (chú ý):** `--tick-budget` ở tải 1 000/s ghi khoảng 20 500 bản ghi mỗi lượt (4 cửa sổ đo), không phải 60 000; chỉ là số bản ghi trong cửa sổ đo, không ảnh hưởng kết luận proxy.
 
 ## 8. Nghiệm thu
 
