@@ -157,6 +157,59 @@ namespace JungleMaze.Tests.MatchUi
             Assert.IsNull(_flow.Notice, "notice gone after 3 s");
         }
 
+        // AC41 with tick drift: the mock's window ends 3 ticks after our (client-estimated) elimination tick and still
+        // plays; the WrongWindow case (90 ticks before) is refused above.
+        [Test]
+        public void Drift3Ticks_StillPlays()
+        {
+            Build(enabled: true, MockKillcamReplaySource.Case.Drift);
+            Eliminate();
+            Assert.AreEqual(MatchOverlayPhase.Killcam, _flow.Phase);
+            Assert.AreEqual(KillcamSession.SessionState.Playing, _killcam.State);
+            Assert.AreEqual(KillcamUnavailableReason.None, _killcam.Reason);
+            Assert.IsNull(_flow.Notice);
+            Assert.AreEqual(5.0, RunUntilEliminated(), 0.1, "the whole killcam played");
+            Assert.AreEqual(MatchOverlayPhase.Eliminated, _flow.Phase);
+            Assert.IsFalse(_killcam.Skipped);
+        }
+
+        // Nên sửa 1 (review lát 7–11): |EndTick − EliminationTick| ≤ tolerance (default 30 = 1 s), both directions.
+        [TestCase(0, true)]
+        [TestCase(3, true)]
+        [TestCase(-3, true)]
+        [TestCase(30, true)]
+        [TestCase(-30, true)]
+        [TestCase(31, false)]
+        [TestCase(-31, false)]
+        [TestCase(90, false)]
+        [TestCase(-90, false)]
+        public void EndTickTolerance_DefaultOneSecond(int offset, bool plays)
+        {
+            Assert.AreEqual(30, KillcamOptions.DefaultEndTickTolerance);
+            Assert.AreEqual(30, MatchOverlayTuning.Default.KillcamEndTickTolerance);
+            var clock = new FakeClock();
+            var source = new FixedClipSource(150) { EndTickOffset = offset };
+            var session = new KillcamSession(clock.Read, new KillcamOptions(true, 5f, 1f), source);
+            Assert.IsTrue(session.Begin(MockEliminationSource.Sample(EliminationCause.Player, Match), 0));
+            session.Tick();
+            Assert.AreEqual(plays ? KillcamSession.SessionState.Playing : KillcamSession.SessionState.Failed, session.State);
+            Assert.AreEqual(plays ? KillcamUnavailableReason.None : KillcamUnavailableReason.WrongWindow, session.Reason);
+        }
+
+        [Test]
+        public void EndTickTolerance_ComesFromOptions_AndSurvivesTheSwitch()
+        {
+            var clock = new FakeClock();
+            var source = new FixedClipSource(150) { EndTickOffset = 5 };
+            var session = new KillcamSession(clock.Read, new KillcamOptions(false, 5f, 1f, endTickTolerance: 4), source);
+            session.SetEnabled(true);
+            Assert.AreEqual(4, session.Options.EndTickTolerance, "SetEnabled keeps the tolerance");
+            Assert.IsTrue(session.Begin(MockEliminationSource.Sample(EliminationCause.Player, Match), 0));
+            session.Tick();
+            Assert.AreEqual(KillcamUnavailableReason.WrongWindow, session.Reason);
+            Assert.AreEqual(30, new KillcamOptions(true, 5f, 1f, -1).EndTickTolerance, "negative falls back to the default");
+        }
+
         [TestCase(EliminationCause.Zone)]
         [TestCase(EliminationCause.LeftMatch)]
         public void Fallback_UnknownKiller_NoRequest(EliminationCause cause)
@@ -306,13 +359,14 @@ namespace JungleMaze.Tests.MatchUi
         {
             private readonly KillcamClip _clip;
             private bool _pending;
+            public int EndTickOffset;
             public FixedClipSource(int frames) => _clip = new KillcamClip(frames) { FrameCount = frames };
             public void Request(in KillcamRequest request)
             {
                 _pending = true;
                 _clip.MatchId = request.MatchId;
                 _clip.VictimNetId = request.VictimNetId;
-                _clip.EndTick = request.EliminationTick;
+                _clip.EndTick = (uint)(request.EliminationTick + EndTickOffset);
                 for (var f = 0; f < _clip.FrameCount; f++) _clip.Set(f, request.KillerNetId, f, 0f, 50);
             }
             public bool TryTake(out KillcamClip clip, out KillcamUnavailableReason reason)

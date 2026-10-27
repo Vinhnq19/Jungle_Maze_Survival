@@ -6,7 +6,7 @@ namespace JungleMaze.App.MatchUi
     /// <summary>
     /// One killcam from request to end. Checks in the order of the plan (AC31, AC35): disabled (no request at all) →
     /// no killer → wait over <see cref="KillcamOptions.WaitSeconds"/> → no data → other match → other victim → window not
-    /// ending at our elimination tick → fewer frames than the duration. The killer drawn is the one of the request
+    /// ending near our elimination tick → fewer frames than the duration. The killer drawn is the one of the request
     /// (the server's elimination data), never one named by the clip. Playback runs on the unscaled clock, not on frame count, so a hitch does not stretch
     /// it (AC32). Data that arrives after the wait or after the killcam ended is dropped and the source released
     /// (AC36). Only the last <c>duration × 30</c> frames of a clip are ever shown (AC41).
@@ -48,7 +48,7 @@ namespace JungleMaze.App.MatchUi
 
         /// <summary>N10 switch at runtime (F7 panel, <c>-killcam</c>); takes effect from the next elimination.</summary>
         public void SetEnabled(bool enabled) =>
-            _options = new KillcamOptions(enabled, _options.DurationSeconds, _options.WaitSeconds);
+            _options = new KillcamOptions(enabled, _options.DurationSeconds, _options.WaitSeconds, _options.EndTickTolerance);
 
         public void SetSource(IKillcamReplaySource source)
         {
@@ -136,8 +136,13 @@ namespace JungleMaze.App.MatchUi
             if (clip == null) { Fail(reason == KillcamUnavailableReason.None ? KillcamUnavailableReason.NoData : reason, true); return; }
             if (clip.MatchId != _request.MatchId) { Fail(KillcamUnavailableReason.WrongMatch, true); return; }
             if (clip.VictimNetId != _request.VictimNetId) { Fail(KillcamUnavailableReason.WrongPlayer, true); return; }
-            // AC41: the window ends at this player's elimination tick; anything else is someone else's moment.
-            if (clip.EndTick != _request.EliminationTick) { Fail(KillcamUnavailableReason.WrongWindow, true); return; }
+            // AC41: the window ends at this player's elimination tick. The request holds the client's tick estimate, so a
+            // few ticks either way is the same moment; further off is someone else's moment.
+            if (Math.Abs((long)clip.EndTick - _request.EliminationTick) > _options.EndTickTolerance)
+            {
+                Fail(KillcamUnavailableReason.WrongWindow, true);
+                return;
+            }
             if (clip.FrameCount < _request.FrameCount) { Fail(KillcamUnavailableReason.TooShort, true); return; }
             Clip = clip;
             _frameOffset = clip.FrameCount - _request.FrameCount;

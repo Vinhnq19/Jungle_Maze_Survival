@@ -5,14 +5,15 @@ using JungleMaze.Domain.MatchUi;
 namespace JungleMaze.App.MatchUi.Mocks
 {
     /// <summary>
-    /// Dev-only replay source with the six cases of 4.4 (AC35) plus a window that ends 3 s before the elimination (AC41):
-    /// full 150 frames with known positions, none, short (90 frames), slow (answer after 1.5 s), other match, other
-    /// victim, wrong window. One clip allocated up front and reused.
+    /// Dev-only replay source with the six cases of 4.4 (AC35) plus two window cases (AC41): full 150 frames with known
+    /// positions, none, short (90 frames), slow (answer after 1.5 s), other match, other victim, a window ending 90 ticks
+    /// (3 s) before the elimination (refused), and one ending 3 ticks after it (client/server tick drift, still played).
+    /// One clip allocated up front and reused.
     /// The killer walks +3 cells/s along X from (10, 20); the victim stands at (16, 20); nobody else is in the clip.
     /// </summary>
     public sealed class MockKillcamReplaySource : IKillcamReplaySource
     {
-        public enum Case : byte { Full, None, Short, Slow, WrongMatch, WrongPlayer, WrongWindow }
+        public enum Case : byte { Full, None, Short, Slow, WrongMatch, WrongPlayer, WrongWindow, Drift }
 
         public const float KillerStartX = 10f;
         public const float KillerY = 20f;
@@ -20,6 +21,8 @@ namespace JungleMaze.App.MatchUi.Mocks
         public const float VictimX = 16f;
         public const int ShortFrames = 90;
         public const float SlowSeconds = 1.5f;
+        public const int WrongWindowTicks = 90;
+        public const int DriftTicks = 3;
 
         private readonly Func<double> _clock;
         private readonly KillcamClip _clip;
@@ -55,7 +58,9 @@ namespace JungleMaze.App.MatchUi.Mocks
             _clip.MatchId = Mode == Case.WrongMatch ? Guid.NewGuid() : request.MatchId;
             _clip.VictimNetId = Mode == Case.WrongPlayer ? (byte)((request.VictimNetId + 1) % KillcamClip.MaxPlayers) : request.VictimNetId;
             _clip.KillerNetId = request.KillerNetId;
-            _clip.EndTick = Mode == Case.WrongWindow ? request.EliminationTick - 90 : request.EliminationTick;
+            _clip.EndTick = Mode == Case.WrongWindow ? request.EliminationTick - WrongWindowTicks
+                : Mode == Case.Drift ? request.EliminationTick + DriftTicks
+                : request.EliminationTick;
             _clip.FrameCount = frames;
             for (var f = 0; f < frames; f++)
             {

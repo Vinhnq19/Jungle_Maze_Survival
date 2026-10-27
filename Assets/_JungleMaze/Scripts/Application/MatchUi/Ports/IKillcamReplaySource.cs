@@ -27,19 +27,25 @@ namespace JungleMaze.App.MatchUi
 
     /// <summary>
     /// N10. <see cref="Enabled"/> is off by default (Q1) and comes from the client asset; the duration is
-    /// <c>MatchConfigData.KillcamDurationSeconds</c> (5.0); the wait is G-3 (1.0 s).
+    /// <c>MatchConfigData.KillcamDurationSeconds</c> (5.0); the wait is G-3 (1.0 s). <see cref="EndTickTolerance"/> is
+    /// how far the clip's end tick may sit from our elimination tick: the request carries the client's own tick count at
+    /// the moment the event arrived, the server stamps the clip with its own, so a few ticks apart is the same moment.
     /// </summary>
     public readonly struct KillcamOptions
     {
         public readonly bool Enabled;
         public readonly float DurationSeconds;
         public readonly float WaitSeconds;
+        public readonly int EndTickTolerance;
 
-        public KillcamOptions(bool enabled, float durationSeconds, float waitSeconds)
+        public const int DefaultEndTickTolerance = 30;
+
+        public KillcamOptions(bool enabled, float durationSeconds, float waitSeconds, int endTickTolerance = DefaultEndTickTolerance)
         {
             Enabled = enabled;
             DurationSeconds = durationSeconds > 0f ? durationSeconds : 5f;
             WaitSeconds = waitSeconds > 0f ? waitSeconds : 1f;
+            EndTickTolerance = endTickTolerance >= 0 ? endTickTolerance : DefaultEndTickTolerance;
         }
 
         public int FrameCount => (int)Math.Round(DurationSeconds * KillcamClip.FramesPerSecond);

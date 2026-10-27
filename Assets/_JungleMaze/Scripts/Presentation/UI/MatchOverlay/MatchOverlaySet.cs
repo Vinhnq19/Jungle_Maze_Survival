@@ -18,6 +18,8 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         [SerializeField] private bool killcamEnabled;
         [SerializeField] private float menuFadeSeconds = 0.12f;
         [SerializeField] private float killcamWaitSeconds = 1f;
+        [Tooltip("AC41: ticks the replay's end may differ from the elimination tick (30 = 1 s).")]
+        [SerializeField] private int killcamEndTickTolerance = KillcamOptions.DefaultEndTickTolerance;
         [SerializeField] private float killcamNoticeSeconds = 3f;
         [SerializeField] private float eliminatedNoticeSeconds = 2f;
         [SerializeField] private float cameraSwitchSeconds = 0.25f;
@@ -30,6 +32,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         {
             MenuFadeSeconds = menuFadeSeconds,
             KillcamWaitSeconds = killcamWaitSeconds,
+            KillcamEndTickTolerance = killcamEndTickTolerance,
             KillcamNoticeSeconds = killcamNoticeSeconds,
             EliminatedNoticeSeconds = eliminatedNoticeSeconds,
             CameraSwitchSeconds = cameraSwitchSeconds,

@@ -50,7 +50,8 @@ namespace JungleMaze.Composition
             killcamOn |= Array.IndexOf(Environment.GetCommandLineArgs(), "-killcam") >= 0;
 #endif
             var killcam = new KillcamSession(clock,
-                new KillcamOptions(killcamOn, balance.Match.KillcamDurationSeconds, tuning.KillcamWaitSeconds), replay);
+                new KillcamOptions(killcamOn, balance.Match.KillcamDurationSeconds, tuning.KillcamWaitSeconds,
+                    tuning.KillcamEndTickTolerance), replay);
             var overlayFlow = new MatchOverlayFlow(bus, clock, elimination, spectator, flow.Screen, tuning, killcam);
 
             _registry.Register<IPlayerSettings>(settings);

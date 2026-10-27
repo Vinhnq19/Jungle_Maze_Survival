@@ -8,7 +8,7 @@ namespace JungleMaze.App.MatchUi.Mocks
     /// <summary>
     /// Dev-only switchboard behind the F7 panel: swaps the overlay between the live sources and the three mocks,
     /// previews a match without a server, eliminates the local player with any cause, toggles the killcam and picks
-    /// one of the six replay cases. Everything goes through the same ports and flow the game uses.
+    /// one of the eight replay cases. Everything goes through the same ports and flow the game uses.
     /// </summary>
     public sealed class MatchOverlayScenarios
     {

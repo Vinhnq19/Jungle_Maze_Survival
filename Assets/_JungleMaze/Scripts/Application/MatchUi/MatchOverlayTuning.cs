@@ -12,6 +12,12 @@ namespace JungleMaze.App.MatchUi
         /// <summary>G-3: longest wait for replay data after the elimination.</summary>
         public float KillcamWaitSeconds = 1f;
 
+        /// <summary>
+        /// AC41: how many ticks the replay's end may sit from our elimination tick (30 = 1 s). The request carries the
+        /// client's tick estimate, not the server's; SRV-03 should send the canonical elimination tick.
+        /// </summary>
+        public int KillcamEndTickTolerance = KillcamOptions.DefaultEndTickTolerance;
+
         /// <summary>AC35: "Killcam unavailable" notice lifetime.</summary>
         public float KillcamNoticeSeconds = 3f;
 
