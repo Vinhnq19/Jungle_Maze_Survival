@@ -1,0 +1,8 @@
+{
+  "unity": "6000.3.15f1",
+  "head": "f61cf4e8",
+  "editmode": {"job_id": "2e4d69ce2dfc40a390ca48bee43aadf1", "total": 337, "passed": 337, "failed": 0, "skipped": 0, "durationSeconds": 11.94},
+  "playmode": {"job_id": "49dc1a959478451ba301125da87b8196", "total": 65, "passed": 65, "failed": 0, "skipped": 0, "durationSeconds": 23.43},
+  "console_after_tests_and_playtest": {"errors": 0, "warnings": 0},
+  "importer_audit_34_icons": {"bad": 0, "ppu": 100, "checks": "Sprite, Single, Point, no mipmap, Uncompressed, alphaIsTransparency, not readable, pivot 0.5 centre"}
+}

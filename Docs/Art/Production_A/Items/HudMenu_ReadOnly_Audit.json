@@ -1,0 +1,707 @@
+[
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/ABevel96.png",
+    "sha256": "a79b59dc6789675a7860a00c42accc91d645a1221268f321e976ebeb94b3f63e",
+    "size": [
+      96,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 531
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/ABevelSlot128.png",
+    "sha256": "91174100766c23c650bb9d577861b210f5be8fa14b1c9c6354699eb4b39c1e98",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 723
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/AFrameEdge96.png",
+    "sha256": "7af5be5dde88ffdad12ea844b7f4cf8b2f1ddaadc91d09018a4251a89bccfbd0",
+    "size": [
+      96,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 736
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/AFrameEdgeSlot128.png",
+    "sha256": "9a32a3246b07857cc823faf8229a7d8046b3d26e806083e12721bc9853164b0c",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 992
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/BarFill.png",
+    "sha256": "4b6193b5748912a154fce57e6eabb63aed68a68eaa59db0f2f6a6678cf87ceb1",
+    "size": [
+      64,
+      16
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 868
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/BarTrack.png",
+    "sha256": "4b6193b5748912a154fce57e6eabb63aed68a68eaa59db0f2f6a6678cf87ceb1",
+    "size": [
+      64,
+      16
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 868
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/Crosshair.png",
+    "sha256": "7731040d9e05b32b60a725909645e5ac03e637181a65c33d896e52a4dd8a71bd",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 1024
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/DangerBanner.png",
+    "sha256": "dc26dce3ed710e9d60b404d7b0fc88709ed7290c2a760cfdca975d791c0128d2",
+    "size": [
+      192,
+      80
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 14820
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/EffectFrame.png",
+    "sha256": "40704994d7792cac71d24a6ba84521db5dd39a488824657c6ae4520c7794808f",
+    "size": [
+      88,
+      88
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 996
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HitMarker.png",
+    "sha256": "7eb91e072ce0397c2578e383e79282f34f16b198691791ecfe53ed9318d95a66",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 1280
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudArcFilled.png",
+    "sha256": "b185f980a817b3fe3f1837eab7227d8598507b7fe3950cabd91f3f44199b6891",
+    "size": [
+      88,
+      232
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 4602
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudArrowOutline.png",
+    "sha256": "4f19c0341438bde53832fdcce245b5b2bbaeb9b039b8eee599e0e26a7d3d0dbf",
+    "size": [
+      120,
+      120
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 2570
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudCircle16.png",
+    "sha256": "840bec6e11a2120a8a597b0f3bade1586ddf1d3136dcb8e457b150a9a596c835",
+    "size": [
+      64,
+      64
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 1424
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound10.png",
+    "sha256": "cf95f4b1f28998d0fdd7aa6988e5f3d5835b5a675290067ba842d8717a96637b",
+    "size": [
+      96,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 8836
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6.png",
+    "sha256": "4855f87c2476f64d3645daf68000f81907c498f951c5a2f1a9dfcab1bedfa64b",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 15876
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6Dashed.png",
+    "sha256": "4069c320721a43ea2afffc49d93a1d10cbb621aaaf5198a5610663a1c8a7cc8d",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 1047
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6Stroke1.png",
+    "sha256": "5693a634bc30d13ae44240a96ffb913aa4ebb187a287d5ed7496b503f183d3ce",
+    "size": [
+      96,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 1092
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/HudRound6Stroke2.png",
+    "sha256": "eb4246605ba1dd623e6aaf2225acf0cfb04f49baadd4761d881177ba21bb1a2a",
+    "size": [
+      128,
+      128
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 1952
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/KeyCap.png",
+    "sha256": "50fcc82283f95daba3e16e083c7b696a54c17431263ee3c9c27f2ec020d76a0f",
+    "size": [
+      48,
+      48
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 2116
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/MinimapFrame.png",
+    "sha256": "b9ddf0dd1e105fdbf9879f5937247caa998ae4fa474e10d464f2dc5c8df29597",
+    "size": [
+      400,
+      400
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 12480
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/Hud/ToastBg.png",
+    "sha256": "e50a30e818599e8ac1aa5d59fe8409c196c8876a5a511123e619fb5bd6c52cc0",
+    "size": [
+      96,
+      64
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": true,
+    "visible_color_count": 1,
+    "outside_direction_a": [
+      {
+        "hex": "#FFFFFF",
+        "pixels": 5828
+      }
+    ],
+    "assessment": "neutral mask; final palette/contrast depends on existing runtime tint",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/Background.png",
+    "sha256": "41e0696a2fc6bb7c96c622180f688184e3db1f9b085ea96e1247da8bd01bebb6",
+    "size": [
+      1920,
+      1080
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "neutral_tint_mask": false,
+    "visible_color_count": 7,
+    "outside_direction_a": [
+      {
+        "hex": "#091519",
+        "pixels": 168228
+      },
+      {
+        "hex": "#0E1C20",
+        "pixels": 595692
+      },
+      {
+        "hex": "#10231F",
+        "pixels": 115488
+      },
+      {
+        "hex": "#152C29",
+        "pixels": 319608
+      },
+      {
+        "hex": "#182C29",
+        "pixels": 289656
+      },
+      {
+        "hex": "#1B352D",
+        "pixels": 570384
+      },
+      {
+        "hex": "#233D31",
+        "pixels": 14544
+      }
+    ],
+    "assessment": "uses colors beyond direction A; illustration/semantic review required",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonGhost.png",
+    "sha256": "d3b2b51edc7d33eb4bfe3d3e618d2c71908d44171f922adbdfc8adea6fbf1e50",
+    "size": [
+      192,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      173
+    ],
+    "neutral_tint_mask": false,
+    "visible_color_count": 3,
+    "outside_direction_a": [],
+    "assessment": "direction A colors",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonPrimary.png",
+    "sha256": "ffa38a4b511853ef41b1ecdbd28d87299f9e6db167097ad23c33d28e64020dc8",
+    "size": [
+      192,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": false,
+    "visible_color_count": 4,
+    "outside_direction_a": [],
+    "assessment": "direction A colors",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonSecondary.png",
+    "sha256": "b7a99c82a6fe4be1461070a60b10653af987315878639466a912ea859932e3db",
+    "size": [
+      192,
+      96
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": false,
+    "visible_color_count": 3,
+    "outside_direction_a": [],
+    "assessment": "direction A colors",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/KeyArt.png",
+    "sha256": "a2b2480e30ac9ab2ab45ff8d3ce971c3e46527b91c0f3a076a47458f82004528",
+    "size": [
+      1040,
+      1040
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      255,
+      255
+    ],
+    "neutral_tint_mask": false,
+    "visible_color_count": 22,
+    "outside_direction_a": [
+      {
+        "hex": "#16272D",
+        "pixels": 12100
+      },
+      {
+        "hex": "#1C3B3D",
+        "pixels": 16125
+      },
+      {
+        "hex": "#203D29",
+        "pixels": 11925
+      },
+      {
+        "hex": "#243B2D",
+        "pixels": 750
+      },
+      {
+        "hex": "#25462C",
+        "pixels": 49075
+      },
+      {
+        "hex": "#273B33",
+        "pixels": 2150
+      },
+      {
+        "hex": "#274D4C",
+        "pixels": 11075
+      },
+      {
+        "hex": "#2A463A",
+        "pixels": 1350
+      },
+      {
+        "hex": "#34532F",
+        "pixels": 118550
+      },
+      {
+        "hex": "#42623B",
+        "pixels": 113275
+      },
+      {
+        "hex": "#486C38",
+        "pixels": 7800
+      },
+      {
+        "hex": "#487364",
+        "pixels": 5125
+      },
+      {
+        "hex": "#5D7D43",
+        "pixels": 6825
+      },
+      {
+        "hex": "#6A8063",
+        "pixels": 750
+      },
+      {
+        "hex": "#718171",
+        "pixels": 2150
+      },
+      {
+        "hex": "#8E9164",
+        "pixels": 11975
+      },
+      {
+        "hex": "#92946C",
+        "pixels": 85400
+      },
+      {
+        "hex": "#98764D",
+        "pixels": 1275
+      },
+      {
+        "hex": "#A6AD85",
+        "pixels": 2250
+      },
+      {
+        "hex": "#B37BFF",
+        "pixels": 24500
+      },
+      {
+        "hex": "#DBC89C",
+        "pixels": 750
+      }
+    ],
+    "assessment": "uses colors beyond direction A; illustration/semantic review required",
+    "modified": false
+  },
+  {
+    "path": "Assets/_JungleMaze/Art/UI/Menu/Logo.png",
+    "sha256": "982b8dd6557a05954326e8789c5cae651a67ee5ea0b61194d513abe4cad8b1a3",
+    "size": [
+      1024,
+      256
+    ],
+    "source_mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "neutral_tint_mask": false,
+    "visible_color_count": 1,
+    "outside_direction_a": [],
+    "assessment": "direction A colors",
+    "modified": false
+  }
+]

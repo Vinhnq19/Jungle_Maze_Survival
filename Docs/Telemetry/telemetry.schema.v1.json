@@ -1,0 +1,455 @@
+{
+  "schema": "telemetry.v1",
+  "v": 1,
+  "doc": "Docs/Telemetry/Schema.vi.md",
+  "notes": [
+    "Self-defined compact format, not JSON Schema draft. Python (Tools/Telemetry/tel_schema.py) is the reference validator; C# tests check field names against constant lists.",
+    "Line = one JSON object, UTF-8 without BOM, LF. Key order on write: envelope fields in 'envelope' order, then type fields in 'fields' order.",
+    "Every field is required (key present) unless 'optional': true. 'null': true means the key is present with value null.",
+    "Unknown keys are errors (unknown_field). Floats are written with at most 3 decimals; NaN/Infinity are never written.",
+    "'dedupe' is the semantic key. Merge drops semantic duplicates only for types with 'once': true; for other types the key is documentation."
+  ],
+  "fieldTypes": {
+    "int": "JSON integer (not bool)",
+    "uint": "JSON integer >= 0",
+    "int64": "JSON integer, epoch milliseconds when used for utc/opened/closed",
+    "num": "JSON number (integer or float), finite",
+    "bool": "true or false",
+    "str": "string; 'maxLen' limits length",
+    "guid": "lowercase 8-4-4-4-12 hex string (C# Guid.ToString(\"D\"))",
+    "hex8": "8 lowercase hex characters",
+    "hex16": "16 lowercase hex characters",
+    "hex64": "64 lowercase hex characters",
+    "enum": "string from enums[<field 'enum'>]",
+    "id": "Code ID from the union of idSets listed in the field's 'ids'",
+    "array": "JSON array; 'items' describes elements, 'maxItems' limits length",
+    "object": "JSON object; 'props' describes keys (all required, no extra keys)"
+  },
+  "errorCodes": [
+    "bad_json",
+    "unknown_type",
+    "missing_field",
+    "unknown_field",
+    "null_not_allowed",
+    "bad_type",
+    "bad_const",
+    "out_of_range",
+    "too_long",
+    "too_many_items",
+    "bad_enum",
+    "invalid_id",
+    "rule_violation",
+    "pii"
+  ],
+  "envelope": {
+    "v": { "type": "int", "const": 1 },
+    "type": { "type": "str", "maxLen": 32 },
+    "matchId": { "type": "guid", "nullFor": ["perf_server"] },
+    "roomId": { "type": "str", "maxLen": 64, "nullFor": ["perf_server", "perf_client"] },
+    "src": { "type": "enum", "enum": "src" },
+    "wid": { "type": "hex8" },
+    "seq": { "type": "uint", "min": 1 },
+    "tick": { "type": "uint", "nullFor": ["perf_server"] },
+    "mt": { "type": "uint", "null": true },
+    "utc": { "type": "int64", "min": 0 },
+    "build": { "type": "str", "maxLen": 32 },
+    "cfg": { "type": "str", "maxLen": 32, "nullFor": ["perf_server"] },
+    "cfgHash": { "type": "hex64", "nullFor": ["perf_server"] },
+    "balHash": { "type": "hex64", "null": true },
+    "fake": { "type": "bool", "const": true, "optional": true }
+  },
+  "enums": {
+    "src": ["server", "client"],
+    "profile": ["main", "test"],
+    "endReason": ["LastAlive", "Tie", "Timeout", "Cancelled"],
+    "cause": ["WEAPON", "ZONE", "HAZARD", "DISCONNECT", "OTHER"],
+    "attackKind": ["MELEE", "SHOT", "THROW", "SPECIAL"],
+    "ccKind": ["STUN", "ROOT", "REVERSE"],
+    "ccEnd": ["EXPIRED", "CLEANSED", "DEATH", "MATCH_END"],
+    "zoneState": ["WARNING", "SHRINK_START", "SHRINK_END", "FINAL"],
+    "pickupFrom": ["CONTAINER", "FLOOR", "CORPSE", "AIRDROP"],
+    "useResult": ["DONE", "CANCELLED", "INTERRUPTED"],
+    "equipAction": ["EQUIP", "UNEQUIP", "DROP", "BREAK", "SWAP"],
+    "slot": ["WEAPON", "HELMET", "ARMOR"],
+    "hideEnd": ["EXIT", "DEATH", "MATCH_END"],
+    "sessionKind": ["DROPPED", "RESUMED", "GRACE_EXPIRED", "LEFT", "LOAD_TIMEOUT"],
+    "transport": ["UDP", "WSS"],
+    "replayChoice": ["REPLAY", "TIMEOUT", "DISCONNECTED"]
+  },
+  "idSets": {
+    "weapon": { "source": "Assets/StreamingAssets/JungleMaze/balance/weapons.json", "key": "id" },
+    "equipment": { "source": "Assets/StreamingAssets/JungleMaze/balance/equipments.json", "key": "id" },
+    "ammo": { "values": ["AMMO"] },
+    "container": { "values": ["CHEST_WOODEN", "POT_CLAY", "AIRDROP_CRATE", "CORPSE"] },
+    "hazard": { "values": ["LAVA", "SPIKE_PATCH", "SWAMP", "ZONE"] },
+    "bush": { "values": ["BUSH"] }
+  },
+  "extraIds": ["AMMO", "CHEST_WOODEN", "POT_CLAY", "AIRDROP_CRATE", "CORPSE", "LAVA", "SPIKE_PATCH", "SWAMP", "BUSH", "ZONE"],
+  "pii": {
+    "forbiddenKeys": ["displayName", "name", "roomCode", "code", "jwt", "token", "ticket", "resumeToken", "profileKey", "ip", "address", "endpoint", "playerSessionId", "playerId"],
+    "patterns": {
+      "jwt": "eyJ[A-Za-z0-9_-]{5,}\\.[A-Za-z0-9_-]{5,}\\.",
+      "ipv4": "(?<![0-9.])(?:[0-9]{1,3}\\.){3}[0-9]{1,3}(?![0-9.])",
+      "ipv6": "(?<![0-9A-Fa-f:])(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}(?![0-9A-Fa-f:])"
+    },
+    "note": "forbiddenKeys are checked case-insensitively at any depth. Patterns are checked against every string value. Scanners may also take sample display names/room codes from the test (AC4)."
+  },
+  "aux": {
+    "_header": {
+      "fields": {
+        "v": { "type": "int", "const": 1 },
+        "type": { "type": "str", "const": "_header" },
+        "schema": { "type": "str", "const": "telemetry.v1" },
+        "src": { "type": "enum", "enum": "src" },
+        "wid": { "type": "hex8" },
+        "matchId": { "type": "guid", "null": true },
+        "build": { "type": "str", "maxLen": 32 },
+        "opened": { "type": "int64", "min": 0 },
+        "fake": { "type": "bool", "const": true, "optional": true }
+      }
+    },
+    "_trailer": {
+      "fields": {
+        "v": { "type": "int", "const": 1 },
+        "type": { "type": "str", "const": "_trailer" },
+        "src": { "type": "enum", "enum": "src" },
+        "wid": { "type": "hex8" },
+        "matchId": { "type": "guid", "null": true },
+        "written": { "type": "uint" },
+        "droppedQueue": { "type": "uint" },
+        "droppedIo": { "type": "uint" },
+        "truncated": { "type": "bool" },
+        "closed": { "type": "int64", "min": 0 },
+        "fake": { "type": "bool", "const": true, "optional": true }
+      }
+    }
+  },
+  "types": {
+    "match_start": {
+      "n": 1,
+      "src": "server",
+      "source": "S0",
+      "once": true,
+      "dedupe": ["matchId"],
+      "fields": {
+        "profile": { "type": "enum", "enum": "profile" },
+        "players": { "type": "uint", "max": 10 },
+        "minPlayers": { "type": "uint", "min": 1, "max": 10 },
+        "seedHash": { "type": "hex16" }
+      }
+    },
+    "match_end": {
+      "n": 2,
+      "src": "server",
+      "source": "S0",
+      "once": true,
+      "dedupe": ["matchId"],
+      "fields": {
+        "reason": { "type": "enum", "enum": "endReason" },
+        "winnerNetId": { "type": "uint", "max": 9, "null": true },
+        "durTicks": { "type": "uint" },
+        "alive": { "type": "uint", "max": 10 }
+      }
+    },
+    "player_spawn": {
+      "n": 3,
+      "src": "server",
+      "source": "S0",
+      "fieldSource": { "loadout": "W" },
+      "once": true,
+      "dedupe": ["matchId", "netId"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "sess": { "type": "hex16" },
+        "x": { "type": "num" },
+        "y": { "type": "num" },
+        "loadout": { "type": "array", "maxItems": 8, "items": { "type": "id", "ids": ["weapon", "equipment", "ammo"] } }
+      }
+    },
+    "attack": {
+      "n": 4,
+      "src": "server",
+      "source": "W",
+      "owner": ["WPN-02", "WPN-03"],
+      "once": false,
+      "dedupe": ["matchId", "netId", "tick", "weapon", "kind"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "weapon": { "type": "id", "ids": ["weapon"] },
+        "kind": { "type": "enum", "enum": "attackKind" },
+        "x": { "type": "num" },
+        "y": { "type": "num" },
+        "ammo": { "type": "uint", "null": true }
+      }
+    },
+    "damage": {
+      "n": 5,
+      "src": "server",
+      "source": "S0",
+      "fieldSource": { "weapon": "W", "hazard": "W", "absorbed": "W", "helmetDur": "W", "armorDur": "W" },
+      "owner": ["WPN-02"],
+      "once": false,
+      "dedupe": ["matchId", "tick", "victim", "attacker", "weapon", "hazard"],
+      "fields": {
+        "victim": { "type": "uint", "max": 9 },
+        "attacker": { "type": "uint", "max": 9, "null": true },
+        "cause": { "type": "enum", "enum": "cause" },
+        "weapon": { "type": "id", "ids": ["weapon"], "null": true },
+        "hazard": { "type": "id", "ids": ["hazard"], "null": true },
+        "raw": { "type": "num", "min": 0 },
+        "applied": { "type": "num", "min": 0 },
+        "absorbed": { "type": "num", "min": 0, "null": true },
+        "hpAfter": { "type": "uint", "max": 255 },
+        "helmetDur": { "type": "uint", "null": true },
+        "armorDur": { "type": "uint", "null": true }
+      }
+    },
+    "elimination": {
+      "n": 6,
+      "src": "server",
+      "source": "S0",
+      "fieldSource": { "killer": "W", "weapon": "W", "hazard": "W", "hidden": "W" },
+      "once": true,
+      "dedupe": ["matchId", "victim"],
+      "fields": {
+        "victim": { "type": "uint", "max": 9 },
+        "killer": { "type": "uint", "max": 9, "null": true },
+        "cause": { "type": "enum", "enum": "cause" },
+        "weapon": { "type": "id", "ids": ["weapon"], "null": true },
+        "hazard": { "type": "id", "ids": ["hazard"], "null": true },
+        "rank": { "type": "uint", "min": 1, "max": 10 },
+        "survTicks": { "type": "uint" },
+        "x": { "type": "num" },
+        "y": { "type": "num" },
+        "zonePhase": { "type": "int", "min": -1, "max": 4 },
+        "hidden": { "type": "bool", "null": true }
+      }
+    },
+    "cc_span": {
+      "n": 7,
+      "src": "server",
+      "source": "W",
+      "owner": ["WPN-02", "WPN-03", "ITM-01"],
+      "once": false,
+      "dedupe": ["matchId", "victim", "startTick", "ccKind"],
+      "fields": {
+        "victim": { "type": "uint", "max": 9 },
+        "source": { "type": "uint", "max": 9, "null": true },
+        "by": { "type": "id", "ids": ["weapon", "equipment", "hazard"] },
+        "ccKind": { "type": "enum", "enum": "ccKind" },
+        "startTick": { "type": "uint" },
+        "endTick": { "type": "uint" },
+        "plannedMs": { "type": "uint" },
+        "end": { "type": "enum", "enum": "ccEnd" }
+      }
+    },
+    "zone_phase": {
+      "n": 8,
+      "src": "server",
+      "source": "S0",
+      "once": true,
+      "dedupe": ["matchId", "phase", "state"],
+      "fields": {
+        "phase": { "type": "int", "min": -1, "max": 4 },
+        "state": { "type": "enum", "enum": "zoneState" },
+        "cx": { "type": "num" },
+        "cy": { "type": "num" },
+        "r": { "type": "num", "min": 0 },
+        "targetR": { "type": "num", "min": 0 }
+      }
+    },
+    "loot_drop": {
+      "n": 9,
+      "src": "server",
+      "source": "W",
+      "owner": ["ITM-01"],
+      "once": false,
+      "dedupe": ["matchId", "container", "x", "y", "tick"],
+      "fields": {
+        "container": { "type": "id", "ids": ["container"] },
+        "by": { "type": "uint", "max": 9, "null": true },
+        "items": {
+          "type": "array",
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "props": {
+              "id": { "type": "id", "ids": ["weapon", "equipment", "ammo"] },
+              "qty": { "type": "uint", "min": 1, "max": 999 }
+            }
+          }
+        },
+        "x": { "type": "num" },
+        "y": { "type": "num" }
+      }
+    },
+    "item_pickup": {
+      "n": 10,
+      "src": "server",
+      "source": "W",
+      "owner": ["ITM-01"],
+      "once": false,
+      "dedupe": ["matchId", "netId", "tick", "item"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "item": { "type": "id", "ids": ["weapon", "equipment", "ammo"] },
+        "qty": { "type": "uint", "min": 1, "max": 999 },
+        "from": { "type": "enum", "enum": "pickupFrom" },
+        "x": { "type": "num" },
+        "y": { "type": "num" }
+      }
+    },
+    "item_use": {
+      "n": 11,
+      "src": "server",
+      "source": "W",
+      "owner": ["ITM-01"],
+      "once": false,
+      "dedupe": ["matchId", "netId", "startTick", "item"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "item": { "type": "id", "ids": ["equipment"] },
+        "startTick": { "type": "uint" },
+        "endTick": { "type": "uint" },
+        "plannedMs": { "type": "uint" },
+        "result": { "type": "enum", "enum": "useResult" },
+        "hpBefore": { "type": "uint", "max": 255 },
+        "hpAfter": { "type": "uint", "max": 255 }
+      }
+    },
+    "equip_change": {
+      "n": 12,
+      "src": "server",
+      "source": "W",
+      "owner": ["ITM-01", "WPN-02"],
+      "once": false,
+      "dedupe": ["matchId", "netId", "tick", "slot", "action"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "action": { "type": "enum", "enum": "equipAction" },
+        "slot": { "type": "enum", "enum": "slot" },
+        "item": { "type": "id", "ids": ["weapon", "equipment"] },
+        "from": { "type": "id", "ids": ["weapon", "equipment"], "null": true }
+      }
+    },
+    "hide_span": {
+      "n": 13,
+      "src": "server",
+      "source": "W",
+      "owner": ["BUSH"],
+      "once": false,
+      "dedupe": ["matchId", "netId", "startTick"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "startTick": { "type": "uint" },
+        "endTick": { "type": "uint" },
+        "bush": { "type": "str", "maxLen": 32 },
+        "x": { "type": "num" },
+        "y": { "type": "num" },
+        "end": { "type": "enum", "enum": "hideEnd" },
+        "attackedWhileHidden": { "type": "bool" }
+      }
+    },
+    "position_sample": {
+      "n": 14,
+      "src": "server",
+      "source": "S0",
+      "fieldSource": { "weapon": "W" },
+      "once": false,
+      "dedupe": ["matchId", "netId", "tick"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "x": { "type": "num" },
+        "y": { "type": "num" },
+        "hp": { "type": "uint", "max": 255 },
+        "weapon": { "type": "id", "ids": ["weapon"], "null": true },
+        "inZone": { "type": "bool" }
+      }
+    },
+    "session_state": {
+      "n": 15,
+      "src": "server",
+      "source": "S0",
+      "kindSource": { "RESUMED": "S0", "GRACE_EXPIRED": "S0", "LOAD_TIMEOUT": "S0", "DROPPED": "S+", "LEFT": "S+" },
+      "fieldSource": { "transport": "S+" },
+      "once": false,
+      "dedupe": ["matchId", "netId", "kind", "tick"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "kind": { "type": "enum", "enum": "sessionKind" },
+        "transport": { "type": "enum", "enum": "transport", "null": true },
+        "graceMs": { "type": "uint", "null": true }
+      }
+    },
+    "replay_choice": {
+      "n": 16,
+      "src": "server",
+      "source": "S+",
+      "once": true,
+      "dedupe": ["matchId", "netId"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "choice": { "type": "enum", "enum": "replayChoice" },
+        "afterMs": { "type": "uint", "null": true }
+      }
+    },
+    "perf_server": {
+      "n": 17,
+      "src": "server",
+      "source": "S0",
+      "writer": "perflog",
+      "once": false,
+      "dedupe": ["utc"],
+      "fields": {
+        "windowSec": { "type": "num", "min": 0 },
+        "ticksPerSecond": { "type": "num", "min": 0 },
+        "tickP95Ms": { "type": "num", "min": 0 },
+        "tickP99Ms": { "type": "num", "min": 0 },
+        "loopP95Ms": { "type": "num", "min": 0 },
+        "loopP99Ms": { "type": "num", "min": 0 },
+        "tickOverruns": { "type": "uint" },
+        "droppedTicks": { "type": "uint" },
+        "cpuOneCorePercent": { "type": "num", "min": 0 },
+        "workingSetMiB": { "type": "num", "min": 0 },
+        "peers": { "type": "uint" },
+        "active": { "type": "uint" },
+        "rooms": { "type": "uint" }
+      }
+    },
+    "perf_client": {
+      "n": 18,
+      "src": "client",
+      "source": "C",
+      "once": false,
+      "dedupe": ["matchId", "netId", "wid", "seq"],
+      "fields": {
+        "netId": { "type": "uint", "max": 9 },
+        "windowSec": { "type": "num", "min": 0 },
+        "frames": { "type": "uint" },
+        "fpsAvg": { "type": "num", "min": 0 },
+        "fps1Low": { "type": "num", "min": 0 },
+        "frameMsP95": { "type": "num", "min": 0 },
+        "frameMsMax": { "type": "num", "min": 0 },
+        "transport": { "type": "enum", "enum": "transport", "null": true },
+        "rttP50": { "type": "num", "min": 0, "null": true },
+        "rttP95": { "type": "num", "min": 0, "null": true },
+        "jitterMs": { "type": "num", "min": 0, "null": true },
+        "lossPct": { "type": "num", "min": 0, "max": 100, "null": true },
+        "entities": { "type": "uint", "max": 10 }
+      }
+    }
+  },
+  "rules": [
+    { "id": "src-matches-type", "desc": "envelope src must equal the type's 'src'", "check": "src == types[type].src" },
+    { "id": "damage-weapon", "types": ["damage"], "if": { "cause": ["WEAPON"] }, "then": { "hazard": { "null": true } } },
+    { "id": "damage-zone", "types": ["damage"], "if": { "cause": ["ZONE"] }, "then": { "attacker": { "null": true }, "weapon": { "null": true }, "hazard": { "in": ["ZONE"] } } },
+    { "id": "damage-hazard", "types": ["damage"], "if": { "cause": ["HAZARD"] }, "then": { "weapon": { "null": true }, "hazard": { "in": ["LAVA", "SPIKE_PATCH", "SWAMP"] } } },
+    { "id": "damage-disconnect", "types": ["damage"], "if": { "cause": ["DISCONNECT"] }, "then": { "attacker": { "null": true }, "weapon": { "null": true }, "hazard": { "null": true } } },
+    { "id": "elim-weapon", "types": ["elimination"], "if": { "cause": ["WEAPON"] }, "then": { "hazard": { "null": true } } },
+    { "id": "elim-zone", "types": ["elimination"], "if": { "cause": ["ZONE"] }, "then": { "killer": { "null": true }, "weapon": { "null": true }, "hazard": { "in": ["ZONE"] } } },
+    { "id": "elim-hazard", "types": ["elimination"], "if": { "cause": ["HAZARD"] }, "then": { "killer": { "null": true }, "weapon": { "null": true }, "hazard": { "in": ["LAVA", "SPIKE_PATCH", "SWAMP"] } } },
+    { "id": "elim-disconnect", "types": ["elimination"], "if": { "cause": ["DISCONNECT"] }, "then": { "killer": { "null": true }, "weapon": { "null": true }, "hazard": { "null": true } } },
+    { "id": "span-order", "desc": "endTick >= startTick", "types": ["cc_span", "item_use", "hide_span"], "check": "endTick >= startTick" },
+    { "id": "applied-le-raw", "desc": "applied <= raw", "types": ["damage"], "check": "applied <= raw" }
+  ]
+}

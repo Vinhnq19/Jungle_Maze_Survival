@@ -1,0 +1,31 @@
+path,zip_member,class,used_by,placeholder_copy,notes
+Bo co.mp3,,ngoài 26,ZON-01 (âm bo thu hẹp),,15.05 s; không phải chuông cảnh báo (Q8)
+Loading Music.mp3,,BGM,Loading,Music/loading_music.mp3,không có thẻ
+Nhặt đồ/Gun Put On.mp3,,mã SFX,PickupItem,pickup_item_gun_put_on.mp3,năm 2020; LAME in FL Studio 10; BPM 80
+Nhặt đồ/Helmet Put On.mp3,,không dùng,,wear_armor_helmet_put_on.mp3,năm 2020; LAME in FL Studio 10; AUD-01 từng dùng cho WearArmor; ART-05 thay bằng Leather Armor
+ParkingMapMusic.mp3,,BGM,Match,Music/parking_map_music.mp3,năm 2023; Studio One 6.2.1
+TimeOver.wav,,không dùng,,match_end_time_over.wav,thẻ bext: Clock/Alarm Loop/Wind Up/Ringing; www.hollywoodedge.com (thư viện thương mại; rủi ro cao); ART-05 F1 thay bằng Kenney jingles_NES00
+Waiting Room Music.wav,,BGM,WaitingRoom,,25.7 MB; không chép vào Assets; bản nén ở Music/waiting_room.ogg
+bleed.mp3,,mã SFX,HurtLocal,hurt_bleed.mp3,ID3 2022; Pro Audio Converter 1.8.1
+bomb nổ.mp3,,mã SFX,Explosion,bomb_explosion.mp3,không có thẻ
+bot di chuyển.mp3,,ngoài 26,,,chưa nghe; tên gợi ý bước chân bot; không dùng cho FootstepGrass (Kenney thay)
+bot di chuyển.zip,,không dùng,,,zip 8 thành viên Leather Armor Put On; tên zip sai nội dung (M5)
+button.mp3,,UI,UI-02/UI-03 (tiếng nút),,0.16 s; để dành cho UI
+cola.mp3,,mã SFX,UseDrink,use_drink_cola.mp3,không có thẻ
+countdown.mp3,,mã SFX,BombFuse,bomb_fuse_countdown.mp3,ID3 2022; 24 kHz
+gauze.mp3,,mã SFX,UseHeal,use_heal_gauze.mp3,không có thẻ
+melee chém.mp3,,mã SFX,MeleeSwing,melee_slash.mp3,ID3 2022
+nhặt súng.mp3,,mã SFX,PickupWeapon,pickup_weapon.mp3,ID3 2022; Pro Audio Converter 1.8.1
+pick-impacts-2023-11-27-05-02-53-utc.zip,,không dùng,,,zip 1 thành viên
+revive.mp3,,ngoài 26,ITM-01 (hồi sinh),,nghĩa ngược với Eliminated
+súng bắn.mp3,,mã SFX,ShootRanged,gun_shot.mp3,ID3 2022; Pro Audio Converter 1.8.1; 24 kHz
+Đập.wav,,mã SFX,MeleeHit,hit_thud.wav,không có thẻ
+bot di chuyển.zip,Leather Armor Put On 01.wav,mã SFX,WearArmor,,tên zip sai nội dung (M5)
+bot di chuyển.zip,Leather Armor Put On 02.wav,mã SFX,WearArmor,,tên zip sai nội dung (M5)
+bot di chuyển.zip,Leather Armor Put On 03.wav,mã SFX,WearArmor,,tên zip sai nội dung (M5)
+bot di chuyển.zip,Leather Armor Put On 04.wav,mã SFX,WearArmor,,tên zip sai nội dung (M5)
+bot di chuyển.zip,Leather Armor Put On 01.mp3,không dùng,,,bản MP3 trùng nội dung bản WAV
+bot di chuyển.zip,Leather Armor Put On 02.mp3,không dùng,,,bản MP3 trùng nội dung bản WAV
+bot di chuyển.zip,Leather Armor Put On 03.mp3,không dùng,,,bản MP3 trùng nội dung bản WAV
+bot di chuyển.zip,Leather Armor Put On 04.mp3,không dùng,,,bản MP3 trùng nội dung bản WAV
+pick-impacts-2023-11-27-05-02-53-utc.zip,Pick_Impacts_ODY-0409-030.wav,ngoài 26,,,58 s mono; đỉnh 0.0 dBFS; chưa nghe

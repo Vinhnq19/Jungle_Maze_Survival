@@ -17,6 +17,8 @@ namespace JungleMaze.EditorTools
         private static TMP_FontAsset TextFont=>AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudText SDF.asset");
         private static TMP_FontAsset NumberFont=>AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudNumber SDF.asset");
         private static Sprite Sprite(string name)=>AssetDatabase.LoadAssetAtPath<Sprite>("Assets/_JungleMaze/Art/Hud/"+name+".png");
+        /// <summary>Raised after a rebuild so art bindings (UiArt editor tool) are re-applied to the regenerated prefabs.</summary>
+        public static event Action AfterBuild;
         [MenuItem("Jungle Maze/HUD/Build Feedback Layer")]
         public static void Build()
         {
@@ -56,6 +58,7 @@ namespace JungleMaze.EditorTools
                 core.ApplyPalette();PrefabUtility.SaveAsPrefabAsset(go,Ui+"Hud.prefab");
             }finally{PrefabUtility.UnloadPrefabContents(go);}
             AssetDatabase.SaveAssets();
+            AfterBuild?.Invoke();
         }
         private static void BuildSlot()
         {

@@ -226,6 +226,11 @@ namespace JungleMaze.Tests.PlayMode
             Assert.IsFalse(_root.Minimap.Marker.gameObject.activeSelf, "no Hero yet");
         }
 
+        // Bars here are driven by real frame times (timeScale 4, Time.deltaTime), so float sums land within a few
+        // ULPs of the target (5.6e-7 seen on a loaded run). 1e-4 of a full bar is far below one visible pixel and
+        // still fails on any real drift: one frame of adrenaline at 60 fps is ~0.002 of the bar.
+        private const float FillTolerance = 1e-4f;
+
         [UnityTest]
         public IEnumerator Hud_HoldsValues10sWithoutUpdates()
         {
@@ -255,13 +260,13 @@ namespace JungleMaze.Tests.PlayMode
             }
             Time.timeScale = _timeScale;
             Assert.AreEqual(hp, Parsed(_root.Vitals.HpNumber));
-            Assert.AreEqual(fill, _root.Vitals.HpBar.FillValue);
+            Assert.That(_root.Vitals.HpBar.FillValue, Is.EqualTo(fill).Within(FillTolerance), "HP bar holds");
             Assert.AreEqual(armor, Parsed(_root.Vitals.ArmorRow.Value));
             Assert.AreEqual(ammo, Parsed(_root.Quickbar.WeaponStrip.Find("Ammo/Magazine").GetComponent<TMP_Text>()));
             Assert.AreEqual(zone, Parsed(_root.MatchStatus.ZoneValue), "zone clock does not count down on its own (G-15)");
             Assert.AreEqual(alive, Parsed(_root.MatchStatus.AliveValue));
             for (var i = 0; i < 8; i++) Assert.AreEqual(visuals[i], _root.Quickbar.GetSlotView(i).Visual);
-            Assert.AreEqual(0f, _root.Vitals.AdrenalineRow.Bar.FillValue, "adrenaline still counts down (AC12)");
+            Assert.That(_root.Vitals.AdrenalineRow.Bar.FillValue, Is.EqualTo(0f).Within(FillTolerance), "adrenaline still counts down (AC12)");
             Assert.IsFalse(_root.Vitals.AdrenalineRow.Value.enabled);
         }
 
@@ -445,10 +450,10 @@ namespace JungleMaze.Tests.PlayMode
             AssertColor(Hex(0xF5, 0xC5, 0x42), _root.Vitals.AdrenalineRow.Bar.FillImage.color, "adrenaline fill");
             AssertColor(Hex(0xF5, 0xC5, 0x42), _root.Vitals.AdrenalineRow.Label.color, "adrenaline label");
             AssertColor(Hex(0xF5, 0xC5, 0x42), _root.Vitals.AdrenalineRow.Value.color, "adrenaline number");
-            AssertColor(Hex(0xF2, 0xA3, 0x3A), _root.Quickbar.GetSlotView(1).Border.color, "selected slot border");
+            AssertColor(Hex(0xC6, 0xAE, 0x78), _root.Quickbar.GetSlotView(1).Border.color, "selected slot border (direction A gold)");
             AssertColor(Hex(0xA2, 0x74, 0xFF), _root.MatchStatus.ZoneValue.color, "zone clock");
-            var surface = Hex(0x15, 0x23, 0x1B);
-            surface.a = 0.72f;
+            var surface = Hex(0x20, 0x2A, 0x2D); // direction A surface (ADHOC-UI-ASSETS-A)
+            surface.a = 0.92f;
             foreach (var block in new Component[] { _root.Vitals, _root.Minimap, _root.MatchStatus })
                 AssertColor(surface, block.GetComponent<Image>().color, block.name + " background");
             AssertColor(surface, _root.Quickbar.WeaponStrip.GetComponent<Image>().color, "weapon strip background");
@@ -460,7 +465,7 @@ namespace JungleMaze.Tests.PlayMode
             _hud.SetHp(25);
             AssertColor(Hex(0xE5, 0x48, 0x4D), _root.Vitals.HpNumber.color, "HP number at 25");
             _hud.SetHp(26);
-            AssertColor(Hex(0xF3, 0xEE, 0xDB), _root.Vitals.HpNumber.color, "HP number at 26");
+            AssertColor(Hex(0xED, 0xF2, 0xEE), _root.Vitals.HpNumber.color, "HP number at 26");
         }
 
         // ---------- helpers ----------

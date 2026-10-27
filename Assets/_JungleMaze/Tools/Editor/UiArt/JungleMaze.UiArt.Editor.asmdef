@@ -1,0 +1,7 @@
+{
+  "name": "JungleMaze.UiArt.Editor",
+  "rootNamespace": "JungleMaze.EditorTools",
+  "references": ["JungleMaze.Core", "JungleMaze.Domain", "JungleMaze.Application", "JungleMaze.Infrastructure", "JungleMaze.Presentation", "JungleMaze.Bootstrap", "JungleMaze.HudFeedback.Editor", "UnityEngine.UI", "Unity.TextMeshPro"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

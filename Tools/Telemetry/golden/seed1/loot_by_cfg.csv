@@ -1,0 +1,2 @@
+cfgKey,matches,players,drops,drops_AIRDROP_CRATE,drops_CHEST_WOODEN,drops_CORPSE,drops_POT_CLAY,itemsDropped,pickups,pickups_CONTAINER,pickups_FLOOR,pickups_CORPSE,pickups_AIRDROP,pickupsPerPlayer,firstEquipMedian_s,firstEquipN,neverEquipped,starvedDeaths,eliminations
+1.0.0/bdd202c5/-,6,60,199,6,81,42,70,915,240,200,18,10,12,4.000,40.450,50,10,15,54

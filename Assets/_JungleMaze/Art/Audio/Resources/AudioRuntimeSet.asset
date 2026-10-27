@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfc89a28d6855a344a61a4d30bc3b90d, type: 3}
+  m_Name: AudioRuntimeSet
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.Audio.AudioRuntimeSet
+  mixer: {fileID: 24100000, guid: 5a160c5fbfe7b5e478f7c9f18d9a91f2, type: 2}
+  sfxGroup: {fileID: -6570996416085619477, guid: 5a160c5fbfe7b5e478f7c9f18d9a91f2, type: 2}
+  alertGroup: {fileID: -94964144878482549, guid: 5a160c5fbfe7b5e478f7c9f18d9a91f2, type: 2}
+  musicTrackGroup: {fileID: -1811987371079673553, guid: 5a160c5fbfe7b5e478f7c9f18d9a91f2, type: 2}
+  catalog: {fileID: 11400000, guid: e357dabb2dc8bcc4c98029e7e3d0a8b6, type: 2}
+  waitingRoomMusic: {fileID: 8300000, guid: e131098447c449478880310094f8d4a7, type: 3}
+  loadingMusic: {fileID: 8300000, guid: 656083e40c9f49b2a570bbf9a08c9986, type: 3}
+  matchMusic: {fileID: 8300000, guid: d4417f115bd44009b3464891391ca838, type: 3}
+  poolSize: 16
+  settleSeconds: 0.5

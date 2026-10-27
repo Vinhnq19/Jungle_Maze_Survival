@@ -234,6 +234,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: JungleMaze.Bootstrap::JungleMaze.Composition.Bootstrap
   menuScene: Boot
   gameScene: Game
+  uiArt: {fileID: 11400000, guid: f6ecdb7f499063d42a6b3f08fe9658db, type: 2}
 --- !u!4 &787257401
 Transform:
   m_ObjectHideFlags: 0

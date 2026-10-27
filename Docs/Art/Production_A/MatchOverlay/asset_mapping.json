@@ -1,0 +1,988 @@
+{
+  "style": "A charcoal / jade / soft gold",
+  "assets": [
+    {
+      "id": "ov_slider_handle",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/SliderHandle.png",
+      "size": [
+        48,
+        48
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#EDF2EE",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MasterRow/Master/HandleArea/Handle",
+        "MenuPanel/SfxRow/Sfx/HandleArea/Handle",
+        "MenuPanel/MusicRow/Music/HandleArea/Handle",
+        "MenuPanel/SensitivityRow/Sensitivity/HandleArea/Handle"
+      ],
+      "on_screen_size": [
+        20,
+        20
+      ],
+      "binding": "imported, not bound",
+      "note": "Vertical fader cap with one horizontal groove; also previewed at 24px."
+    },
+    {
+      "id": "ov_toggle_box",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ToggleBox.png",
+      "size": [
+        48,
+        48
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#526B69",
+      "border_LTRB": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MusicRow/MusicEnabled/Background",
+        "MenuPanel/ShakeRow/ScreenShake/Background"
+      ],
+      "on_screen_size": [
+        24,
+        24
+      ],
+      "binding": "imported, not bound",
+      "note": "Sliced; empty centre."
+    },
+    {
+      "id": "ov_toggle_check",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ToggleCheck.png",
+      "size": [
+        32,
+        32
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#C6AE78",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MusicRow/MusicEnabled/Background/Checkmark",
+        "MenuPanel/ShakeRow/ScreenShake/Background/Checkmark"
+      ],
+      "on_screen_size": [
+        16,
+        16
+      ],
+      "binding": "imported, not bound",
+      "note": ""
+    },
+    {
+      "id": "ov_zone_ring",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/ZoneRing.png",
+      "size": [
+        256,
+        256
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#9572BA",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Killcam/Board/Zone"
+      ],
+      "on_screen_size": [
+        480,
+        480
+      ],
+      "binding": "imported, not bound",
+      "note": "4px ring at source; scales with the existing zone rect. Alpha controlled by Image."
+    },
+    {
+      "id": "ov_grid_cell",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/KillcamGrid.png",
+      "size": [
+        48,
+        48
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#526B69",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Killcam/Board"
+      ],
+      "on_screen_size": [
+        48,
+        48
+      ],
+      "binding": "imported, not bound",
+      "note": "Tiled at 48px/cell, 1px top/left lines. Board has no Image slot yet."
+    },
+    {
+      "id": "ov_player_dot",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/PlayerDot.png",
+      "size": [
+        32,
+        32
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#EDF2EE",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Killcam/Board/Player0..9"
+      ],
+      "on_screen_size": [
+        18,
+        18
+      ],
+      "binding": "imported, not bound",
+      "note": "Filled disc; outline is a separate mask behind this Image."
+    },
+    {
+      "id": "ov_player_dot_outline",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/PlayerDotOutline.png",
+      "size": [
+        32,
+        32
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#0C1417",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Killcam/Board/Player0..9"
+      ],
+      "on_screen_size": [
+        18,
+        18
+      ],
+      "binding": "imported, not bound",
+      "note": "1px native outer rim; same rect/pivot; requires overlay Image."
+    },
+    {
+      "id": "ov_killer_mark",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/KillerMark.png",
+      "size": [
+        32,
+        32
+      ],
+      "kind": "white mask",
+      "suggested_tint": "#C6AE78",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Killcam/Board/Player0..9"
+      ],
+      "on_screen_size": [
+        18,
+        18
+      ],
+      "binding": "imported, not bound",
+      "note": "Ring/crosshair over the killer dot only; requires overlay Image."
+    },
+    {
+      "id": "ov_cause_player",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CausePlayer.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Eliminated/Frame/Cause"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Crossed blades; no gore. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_cause_zone",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseZone.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Eliminated/Frame/Cause"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Purple ring with four inward chevrons around a gold dot. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_cause_left",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseLeft.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Eliminated/Frame/Cause"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Doorway with a figure walking out; no arrow, unlike IconExit. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_cause_disconnect",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseDisconnect.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Eliminated/Frame/Cause"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Signal arcs crossed by a red slash. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_cause_unknown",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/CauseUnknown.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Eliminated/Frame/Cause"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Question mark. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_icon_volume",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconVolume.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MasterRow",
+        "MenuPanel/SfxRow"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Speaker. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_icon_music",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconMusic.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MusicRow"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Music note. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_icon_mouse",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconMouse.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/SensitivityRow"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Light mouse body with jade left button. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_icon_shake",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconShake.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/ShakeRow"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Screen frame between paired shake ticks. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_icon_exit",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconExit.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/Leave",
+        "LeaveConfirm/Box/Confirm"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Leave match. Suggested 28px preview; current prefab has no icon Image slot."
+    },
+    {
+      "id": "ov_icon_eye",
+      "path": "Assets/_JungleMaze/Art/UI/MatchOverlay/IconSpectate.png",
+      "size": [
+        64,
+        64
+      ],
+      "kind": "colored icon, native32 x2 nearest",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/Watching"
+      ],
+      "on_screen_size": [
+        28,
+        28
+      ],
+      "binding": "imported, not bound",
+      "note": "Eye. Suggested 28px preview; current prefab has no icon Image slot."
+    }
+  ],
+  "reuse": [
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/HudRound10.png",
+      "size": [
+        96,
+        96
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel",
+        "Eliminated/Frame",
+        "Spectator/Watching",
+        "Spectator/TargetCard",
+        "LeaveConfirm/Box"
+      ],
+      "sha256": "cf95f4b1f28998d0fdd7aa6988e5f3d5835b5a675290067ba842d8717a96637b",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/HudRound6.png",
+      "size": [
+        128,
+        128
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/List/Row1..9",
+        "Spectator/KeyBar"
+      ],
+      "sha256": "4855f87c2476f64d3645daf68000f81907c498f951c5a2f1a9dfcab1bedfa64b",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/HudRound6Stroke2.png",
+      "size": [
+        128,
+        128
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#C6AE78",
+      "border_LTRB": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/List/Row1..9 (selected overlay)"
+      ],
+      "sha256": "eb4246605ba1dd623e6aaf2225acf0cfb04f49baadd4761d881177ba21bb1a2a",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/HudRound6Dashed.png",
+      "size": [
+        128,
+        128
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/List/Row1..9 (optional empty style)"
+      ],
+      "sha256": "4069c320721a43ea2afffc49d93a1d10cbb621aaaf5198a5610663a1c8a7cc8d",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/HudRound6Stroke1.png",
+      "size": [
+        96,
+        96
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        16,
+        16,
+        16,
+        16
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/List/Row1..9 (outline overlay)"
+      ],
+      "sha256": "5693a634bc30d13ae44240a96ffb913aa4ebb187a287d5ed7496b503f183d3ce",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/BarFill.png",
+      "size": [
+        64,
+        16
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MasterRow/Master/FillArea/Fill",
+        "MenuPanel/SfxRow/Sfx/FillArea/Fill",
+        "MenuPanel/MusicRow/Music/FillArea/Fill",
+        "MenuPanel/SensitivityRow/Sensitivity/FillArea/Fill",
+        "Spectator/TargetCard/Hp/Track/Fill",
+        "Killcam/Board/Player0..9/Hp/Fill"
+      ],
+      "sha256": "4b6193b5748912a154fce57e6eabb63aed68a68eaa59db0f2f6a6678cf87ceb1",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/BarTrack.png",
+      "size": [
+        64,
+        16
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        6,
+        6,
+        6,
+        6
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/MasterRow/Master/Background",
+        "MenuPanel/SfxRow/Sfx/Background",
+        "MenuPanel/MusicRow/Music/Background",
+        "MenuPanel/SensitivityRow/Sensitivity/Background",
+        "Spectator/TargetCard/Hp/Track",
+        "Killcam/Board/Player0..9/Hp"
+      ],
+      "sha256": "4b6193b5748912a154fce57e6eabb63aed68a68eaa59db0f2f6a6678cf87ceb1",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/KeyCap.png",
+      "size": [
+        48,
+        48
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        12,
+        12,
+        12,
+        12
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/KeyBar/Keys (optional keycap Images; currently text)"
+      ],
+      "sha256": "50fcc82283f95daba3e16e083c7b696a54c17431263ee3c9c27f2ec020d76a0f",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/ToastBg.png",
+      "size": [
+        96,
+        64
+      ],
+      "kind": "neutral white RGBA mask; Image tint owns A or semantic color",
+      "suggested_tint": "#202A2D",
+      "border_LTRB": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Notice"
+      ],
+      "sha256": "e50a30e818599e8ac1aa5d59fe8409c196c8876a5a511123e619fb5bd6c52cc0",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/ABevel96.png",
+      "size": [
+        96,
+        96
+      ],
+      "kind": "independent white overlay, transparent center; tint after base",
+      "suggested_tint": "#526B69",
+      "border_LTRB": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel",
+        "Eliminated/Frame",
+        "Spectator/TargetCard",
+        "LeaveConfirm/Box"
+      ],
+      "sha256": "a79b59dc6789675a7860a00c42accc91d645a1221268f321e976ebeb94b3f63e",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/ABevelSlot128.png",
+      "size": [
+        128,
+        128
+      ],
+      "kind": "independent white overlay, transparent center; tint after base",
+      "suggested_tint": "#526B69",
+      "border_LTRB": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/List/Row1..9"
+      ],
+      "sha256": "91174100766c23c650bb9d577861b210f5be8fa14b1c9c6354699eb4b39c1e98",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/AFrameEdge96.png",
+      "size": [
+        96,
+        96
+      ],
+      "kind": "independent white overlay, transparent center; tint after base",
+      "suggested_tint": "#0C1417",
+      "border_LTRB": [
+        24,
+        24,
+        24,
+        24
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel",
+        "Eliminated/Frame",
+        "Spectator/TargetCard",
+        "LeaveConfirm/Box"
+      ],
+      "sha256": "7af5be5dde88ffdad12ea844b7f4cf8b2f1ddaadc91d09018a4251a89bccfbd0",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/Hud/AFrameEdgeSlot128.png",
+      "size": [
+        128,
+        128
+      ],
+      "kind": "independent white overlay, transparent center; tint after base",
+      "suggested_tint": "#0C1417",
+      "border_LTRB": [
+        20,
+        20,
+        20,
+        20
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Spectator/List/Row1..9"
+      ],
+      "sha256": "9a32a3246b07857cc823faf8229a7d8046b3d26e806083e12721bc9853164b0c",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. BarFill uses gold for sliders / red for HP; BarTrack uses panel."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonPrimary.png",
+      "size": [
+        192,
+        96
+      ],
+      "kind": "colored pixel art; Image tint must be white",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/Resume",
+        "Eliminated/Frame/Spectate",
+        "Spectator/Home",
+        "LeaveConfirm/Box/Stay"
+      ],
+      "sha256": "ffa38a4b511853ef41b1ecdbd28d87299f9e6db167097ad23c33d28e64020dc8",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. Colored button: keep white tint; existing baked ghost alpha retained."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonSecondary.png",
+      "size": [
+        192,
+        96
+      ],
+      "kind": "colored pixel art; Image tint must be white",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "MenuPanel/Defaults",
+        "MenuPanel/Leave",
+        "Eliminated/Frame/Home",
+        "Spectator/Killer",
+        "Killcam/Skip",
+        "LeaveConfirm/Box/Confirm"
+      ],
+      "sha256": "b7a99c82a6fe4be1461070a60b10653af987315878639466a912ea859932e3db",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. Colored button: keep white tint; existing baked ghost alpha retained."
+    },
+    {
+      "path": "Assets/_JungleMaze/Art/UI/Menu/ButtonGhost.png",
+      "size": [
+        192,
+        96
+      ],
+      "kind": "colored pixel art; Image tint must be white",
+      "suggested_tint": "#FFFFFF",
+      "border_LTRB": [
+        32,
+        32,
+        32,
+        32
+      ],
+      "ppu": 100,
+      "filter": "Point",
+      "mipmaps": false,
+      "compression": "None",
+      "prefab_elements": [
+        "Killcam/Skip (optional style)"
+      ],
+      "sha256": "d3b2b51edc7d33eb4bfe3d3e618d2c71908d44171f922adbdfc8adea6fbf1e50",
+      "note": "Reuse in place; do not copy. Base -> edge -> bevel -> selection. Colored button: keep white tint; existing baked ghost alpha retained."
+    }
+  ],
+  "import_settings": "Suggested only; Unity import/binding not performed. No .meta writes.",
+  "border_order": "left, top, right, bottom",
+  "integration_notes": [
+    "Prefab element names from MatchOverlayPrefabBuild.cs; root MatchOverlay omitted.",
+    "Icons target existing parent/text/button names; no icon Image slots currently exist.",
+    "Additional Images and cause selection must be handled by integration without changing layout.",
+    "PlayerDotOutline is a WHITE mask tinted ink behind PlayerDot, never baked black RGB.",
+    "KillcamGrid is tiled across Board at 48px/cell; do not stretch a single tile.",
+    "KillerMark uses killer state; ZoneRing follows the existing Zone rect."
+  ]
+}

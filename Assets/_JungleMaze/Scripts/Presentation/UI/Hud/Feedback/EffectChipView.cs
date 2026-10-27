@@ -11,14 +11,16 @@ namespace JungleMaze.Presentation.UI.Hud.Feedback
     {
         [SerializeField] private CanvasGroup group;[SerializeField] private Image border,icon;[SerializeField] private TMP_Text label,seconds;[SerializeField] private RectTransform fill;[SerializeField] private Image background;
         private readonly char[] _buffer=new char[24];private HudPalette _palette;private HudEffectCatalog _catalog;
-        public CanvasGroup Group=>group;public TMP_Text Label=>label;public TMP_Text Seconds=>seconds;public RectTransform Fill=>fill;public Image Border=>border;
+        public CanvasGroup Group=>group;public TMP_Text Label=>label;public TMP_Text Seconds=>seconds;public RectTransform Fill=>fill;public Image Border=>border;public Image Icon=>icon;
         public void Configure(HudPalette palette,HudEffectCatalog catalog){_palette=palette;_catalog=catalog;if(background!=null)background.color=palette.Surface;}
         public void Show(bool visible,EffectKind kind,EffectPolarity polarity,bool timed,float ratio,int left,int overflow,float alpha)
         {
             group.alpha=visible?alpha:0;if(!visible)return;var color=polarity==EffectPolarity.Harmful?_palette.Red:_palette.Green;
             border.color=color;label.color=color;fill.GetComponent<Image>().color=color;
-            if(overflow>0){label.SetCharArray(_buffer,0,HudFeedbackFormat.Overflow(_buffer,overflow,false));icon.enabled=false;}
-            else {var title=_catalog!=null?_catalog.Label(kind):"?";if(label.text!=title)label.text=title;var sprite=_catalog!=null?_catalog.Icon(kind):null;icon.sprite=sprite;icon.enabled=sprite!=null;}
+            // Icon and label share the box centre: an effect with art shows only the icon (label text still set as
+            // metadata); overflow "+n" or a kind without art shows only the label.
+            if(overflow>0){label.SetCharArray(_buffer,0,HudFeedbackFormat.Overflow(_buffer,overflow,false));icon.enabled=false;label.enabled=true;}
+            else {var title=_catalog!=null?_catalog.Label(kind):"?";if(label.text!=title)label.text=title;var sprite=_catalog!=null?_catalog.Icon(kind):null;if(icon.sprite!=sprite)icon.sprite=sprite;icon.color=Color.white;icon.enabled=sprite!=null;label.enabled=sprite==null;}
             seconds.enabled=timed&&overflow==0;fill.gameObject.SetActive(timed&&overflow==0);if(seconds.enabled)seconds.SetCharArray(_buffer,0,HudFeedbackFormat.Seconds(_buffer,left));fill.anchorMax=new Vector2(ratio,1);seconds.color=_palette.Text;
         }
     }

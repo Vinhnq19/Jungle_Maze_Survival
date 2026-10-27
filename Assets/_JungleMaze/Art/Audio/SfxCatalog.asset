@@ -1,0 +1,341 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ff13e872a2fe334b9bf0fa785a0bbb8, type: 3}
+  m_Name: SfxCatalog
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.Audio.SfxCatalog
+  entries:
+  - id: 1
+    clips:
+    - {fileID: 8300000, guid: ed4e67c009d350589ec419dd3fb2cd9c, type: 3}
+    - {fileID: 8300000, guid: 91952c949b915cc0991f41ac485e969e, type: 3}
+    - {fileID: 8300000, guid: 61eb32da8f725e6cb2c88bf2a0ad819f, type: 3}
+    - {fileID: 8300000, guid: 35dd689d59545f879cc2fb1283f50df8, type: 3}
+    - {fileID: 8300000, guid: 44ec4d6a2a54567fad7ccc1c3c21503c, type: 3}
+    volume: 0.45
+    pitchJitter: 0.05
+    priority: 0
+    bus: 1
+    rangeCells: 6
+    maxInstances: 6
+    cooldownSeconds: 0.25
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 2
+    clips:
+    - {fileID: 8300000, guid: c21296372255515a9cff9df425dd0788, type: 3}
+    - {fileID: 8300000, guid: 719554c4f2325c9d8823d7a528cced4c, type: 3}
+    - {fileID: 8300000, guid: 82ac8c3dc46654229a719d5ab6785b15, type: 3}
+    - {fileID: 8300000, guid: 3fa1a27ea4bb53d491001ecf9ad54af4, type: 3}
+    - {fileID: 8300000, guid: 6b02d30bc9845ae38141a8cbdd40c030, type: 3}
+    volume: 0.45
+    pitchJitter: 0.05
+    priority: 0
+    bus: 1
+    rangeCells: 6
+    maxInstances: 6
+    cooldownSeconds: 0.3
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 3
+    clips:
+    - {fileID: 8300000, guid: 8cf1fccd34c551f7a95fce42d4dfb1dc, type: 3}
+    - {fileID: 8300000, guid: 49db103c06cb5804b1bae153ccfd6bd0, type: 3}
+    volume: 0.28
+    pitchJitter: 0.05
+    priority: 0
+    bus: 1
+    rangeCells: 0
+    maxInstances: 2
+    cooldownSeconds: 0.5
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 4
+    clips:
+    - {fileID: 8300000, guid: b28a732b6a7a4df9ad6cabc5653e4a3c, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 8
+    maxInstances: 4
+    cooldownSeconds: 0.15
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 5
+    clips:
+    - {fileID: 8300000, guid: a9a0cb61dce64a86abfc23a19d2a3b1c, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 8
+    maxInstances: 4
+    cooldownSeconds: 0.1
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 6
+    clips:
+    - {fileID: 8300000, guid: ac8a366222234131a00d42fd72f29b0b, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 2
+    bus: 1
+    rangeCells: 12
+    maxInstances: 6
+    cooldownSeconds: 0.08
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 7
+    clips:
+    - {fileID: 8300000, guid: db9898d751f25fd68d9c19fa69ed9294, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 2
+    bus: 1
+    rangeCells: 12
+    maxInstances: 3
+    cooldownSeconds: 0.3
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 8
+    clips:
+    - {fileID: 8300000, guid: b72c136c4b6a5f29af9bff823ab128fa, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 8
+    maxInstances: 3
+    cooldownSeconds: 0.3
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 9
+    clips:
+    - {fileID: 8300000, guid: 6180e5fd39335fdb9f0ec431ed58543c, type: 3}
+    volume: 0.5
+    pitchJitter: 0.05
+    priority: 0
+    bus: 1
+    rangeCells: 6
+    maxInstances: 2
+    cooldownSeconds: 0.5
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 10
+    clips:
+    - {fileID: 8300000, guid: 3f8ac44c1acd5b1a9e63478557e2ae71, type: 3}
+    volume: 0.5
+    pitchJitter: 0.05
+    priority: 0
+    bus: 1
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 0.3
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 11
+    clips:
+    - {fileID: 8300000, guid: bd6d384002cf45b4b9dfed89490063a6, type: 3}
+    volume: 1
+    pitchJitter: 0
+    priority: 2
+    bus: 1
+    rangeCells: 12
+    maxInstances: 3
+    cooldownSeconds: 0.2
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 12
+    clips:
+    - {fileID: 8300000, guid: 3df56862e1e94caba7b1f283fd8b1826, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 2
+    bus: 1
+    rangeCells: 12
+    maxInstances: 3
+    cooldownSeconds: 0.08
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 13
+    clips:
+    - {fileID: 8300000, guid: 565a99b8feb451038ae190ea0ed07219, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 8
+    maxInstances: 3
+    cooldownSeconds: 0.15
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 14
+    clips:
+    - {fileID: 8300000, guid: c85a4724836c59f09bf50ce317e26ead, type: 3}
+    volume: 1
+    pitchJitter: 0.03
+    priority: 3
+    bus: 1
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 0.06
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 15
+    clips:
+    - {fileID: 8300000, guid: 13930e28031e432aa12e54c72c49cbe9, type: 3}
+    volume: 1
+    pitchJitter: 0.05
+    priority: 3
+    bus: 1
+    rangeCells: 0
+    maxInstances: 2
+    cooldownSeconds: 0.1
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 16
+    clips:
+    - {fileID: 8300000, guid: 22f6497cbb365f7aa4fca070a3265394, type: 3}
+    - {fileID: 8300000, guid: dbdb65883c535a0c8f3d89aeb4cc0192, type: 3}
+    - {fileID: 8300000, guid: ade9a71c274751febc716c54d237c375, type: 3}
+    volume: 0.79
+    pitchJitter: 0.05
+    priority: 2
+    bus: 1
+    rangeCells: 0
+    maxInstances: 2
+    cooldownSeconds: 0.1
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 17
+    clips:
+    - {fileID: 8300000, guid: 48e8d6ed10aa5f16b6baf2686db8418f, type: 3}
+    volume: 0.79
+    pitchJitter: 0
+    priority: 2
+    bus: 1
+    rangeCells: 12
+    maxInstances: 2
+    cooldownSeconds: 0.5
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 18
+    clips:
+    - {fileID: 8300000, guid: fae3ad87b5be40aba5c7f6d8a9e4cee7, type: 3}
+    volume: 0.5
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 0
+    maxInstances: 2
+    cooldownSeconds: 0.15
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 19
+    clips:
+    - {fileID: 8300000, guid: ccfd2da173b4479488264bcb3d7d2e46, type: 3}
+    volume: 0.5
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 0
+    maxInstances: 3
+    cooldownSeconds: 0.1
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 20
+    clips:
+    - {fileID: 8300000, guid: 0dff018d9ed341778e642785631021d5, type: 3}
+    - {fileID: 8300000, guid: 319e44be2e6447fa9514dbbf5396ea17, type: 3}
+    - {fileID: 8300000, guid: af89be1d44184f8885bb5948f4859228, type: 3}
+    - {fileID: 8300000, guid: a30b3eddc31d41feb9961f2efb5f9cdb, type: 3}
+    volume: 0.89
+    pitchJitter: 0.05
+    priority: 1
+    bus: 1
+    rangeCells: 0
+    maxInstances: 2
+    cooldownSeconds: 0.2
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 21
+    clips:
+    - {fileID: 8300000, guid: c8c0d6fbdb924db0a078214974e1b213, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    priority: 1
+    bus: 1
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 0.3
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 22
+    clips:
+    - {fileID: 8300000, guid: 5266da1f02f741b2971fc3743e7f447b, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    priority: 1
+    bus: 1
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 0.3
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 23
+    clips:
+    - {fileID: 8300000, guid: 277391faba825378972dbca4e52cc98f, type: 3}
+    volume: 0.5
+    pitchJitter: 0
+    priority: 1
+    bus: 1
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 0.2
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 24
+    clips:
+    - {fileID: 8300000, guid: dd4ef9f9725f58daa5dc44b2842fa9fe, type: 3}
+    volume: 1
+    pitchJitter: 0
+    priority: 3
+    bus: 3
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 0
+    repeatCount: 3
+    repeatIntervalSeconds: 0.8
+  - id: 25
+    clips:
+    - {fileID: 8300000, guid: f9b49467e9245ffeaf53069de61b2d29, type: 3}
+    volume: 1
+    pitchJitter: 0
+    priority: 3
+    bus: 3
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 5
+    repeatCount: 1
+    repeatIntervalSeconds: 0
+  - id: 26
+    clips:
+    - {fileID: 8300000, guid: 993283ea802a4bc195bc8a286f25e723, type: 3}
+    volume: 1
+    pitchJitter: 0
+    priority: 3
+    bus: 1
+    rangeCells: 0
+    maxInstances: 1
+    cooldownSeconds: 5
+    repeatCount: 1
+    repeatIntervalSeconds: 0

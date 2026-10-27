@@ -1,0 +1,7 @@
+{
+  "name": "JungleMaze.MatchOverlay.Editor",
+  "rootNamespace": "JungleMaze.EditorTools",
+  "references": ["JungleMaze.Core", "JungleMaze.Domain", "JungleMaze.Application", "JungleMaze.Presentation", "UnityEngine.UI", "Unity.TextMeshPro"],
+  "includePlatforms": ["Editor"],
+  "autoReferenced": true
+}

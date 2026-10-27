@@ -1,0 +1,8 @@
+Use case: illustration-story. Asset type: original discrete menu key illustration for Lastaway, a 2D jungle survival game, NOT a screenshot or UI mockup.
+Create a premium stylized game illustration, wide 16:9 landscape. A lush mysterious tropical island viewed from slightly above, an ancient small ruined stone arch and a tiny lone explorer with a backpack near a warm amber campfire on a clearing, curved palms, broad leaf silhouettes, turquoise water at lower edge, distant misty jungle hills.
+Main island and explorer concentrated in the RIGHT 65 percent; LEFT 35 percent is very dark deep teal atmospheric foliage with ample quiet space for future live UI.
+Strong elegant designed composition and appealing large shapes, controlled 2D painted shading, polished adventure game key art with moderate detail and layered depth, rim light from warm sunset at upper right.
+Deep emerald and petroleum teal, jade foliage, small golden amber light accents. Leaves and stones should feel crafted, not basic geometric clipart; avoid photorealism, dense microtexture, childish mobile candy style, shiny plastic 3D. Readable at 1280x720.
+No text, no letters, no logo, no interface, no buttons, no borders, no watermark. Opaque full bleed scene.
+
+Generated with built-in image_gen. Draft illustration for demo J; not approved or imported into Unity.

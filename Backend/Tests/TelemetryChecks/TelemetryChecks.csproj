@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GameServer\GameServer.csproj" />
+    <!-- Phase A: telemetry nằm ngoài GameServer nên nhúng nguồn ở đây. Xóa dòng này (commit B1) khi Vinh làm H1. -->
+    <Compile Include="../../Telemetry/**/*.cs" LinkBase="Telemetry" />
+    <Content Include="..\..\Shared\GameData\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <LinkBase>GameData</LinkBase>
+    </Content>
+  </ItemGroup>
+</Project>

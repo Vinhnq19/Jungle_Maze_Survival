@@ -1,0 +1,13 @@
+[budget] load=70 medianDeltaTickP95Ms=-0.001 deltas=[-0.001,-0.001,0.004]
+[PASS] load 70/s: median(on - off) tickP95Ms = -0.001 <= 0.5
+[PASS] load 70/s: every run tickP95Ms < 33.3
+[PASS] load 70/s: droppedTicks = 0 in every run
+[PASS] load 70/s: tickOverruns on (0) <= off (0)
+[PASS] load 70/s: telemetry-on runs wrote records; droppedQueue visible in _trailer (AC34)
+[budget] load=1000 medianDeltaTickP95Ms=0.006 deltas=[0.003,0.006,0.021]
+[PASS] load 1000/s: median(on - off) tickP95Ms = 0.006 <= 0.5
+[PASS] load 1000/s: every run tickP95Ms < 33.3
+[PASS] load 1000/s: droppedTicks = 0 in every run
+[PASS] load 1000/s: tickOverruns on (0) <= off (0)
+[PASS] load 1000/s: telemetry-on runs wrote records; droppedQueue visible in _trailer (AC34)
+exit=0

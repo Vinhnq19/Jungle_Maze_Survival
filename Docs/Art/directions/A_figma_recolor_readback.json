@@ -1,0 +1,254 @@
+{
+  "date": "2026-10-27",
+  "fileKey": "oeZgisxdiR80hRqbikUwPb",
+  "sessionId": "fcfb3cfb-00b1-40d5-9379-ed41a18eca8e",
+  "method": "Figma browser UI with existing FPT Editor session; MCP read-back",
+  "nodes": [
+    {
+      "id": "51:3",
+      "name": "Hướng A · Rừng Pixel",
+      "type": "FRAME",
+      "x": 0,
+      "y": 0,
+      "width": 2728,
+      "height": 980,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.04313725605607033,
+            "g": 0.06666667014360428,
+            "b": 0.0784313753247261
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    },
+    {
+      "id": "51:32",
+      "name": "HUD · A · Rừng Pixel",
+      "type": "FRAME",
+      "x": 64,
+      "y": 236,
+      "width": 1280,
+      "height": 720,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.18039216101169586,
+            "g": 0.29019609093666077,
+            "b": 0.16470588743686676
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    },
+    {
+      "id": "51:427",
+      "name": "Menu chính · A · Rừng Pixel",
+      "type": "FRAME",
+      "x": 1384,
+      "y": 236,
+      "width": 1280,
+      "height": 720,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.05882352963089943,
+            "g": 0.10196078568696976,
+            "b": 0.07058823853731155
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    },
+    {
+      "id": "51:10",
+      "name": "#202A2D",
+      "type": "TEXT",
+      "x": 1480,
+      "y": 148,
+      "width": 60,
+      "height": 15,
+      "text": "#202A2D",
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.6431372761726379,
+            "g": 0.7254902124404907,
+            "b": 0.6941176652908325
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    },
+    {
+      "id": "51:13",
+      "name": "#0C1417",
+      "type": "TEXT",
+      "x": 1630,
+      "y": 148,
+      "width": 53,
+      "height": 15,
+      "text": "#0C1417",
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.6431372761726379,
+            "g": 0.7254902124404907,
+            "b": 0.6941176652908325
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    },
+    {
+      "id": "51:16",
+      "name": "#63BAA5",
+      "type": "TEXT",
+      "x": 1780,
+      "y": 148,
+      "width": 61,
+      "height": 15,
+      "text": "#63BAA5",
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.6431372761726379,
+            "g": 0.7254902124404907,
+            "b": 0.6941176652908325
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    },
+    {
+      "id": "51:380",
+      "name": "Slot 2",
+      "type": "FRAME",
+      "x": 428,
+      "y": 632,
+      "width": 64,
+      "height": 64,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 0.25,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.1568627506494522,
+            "g": 0.32549020648002625,
+            "b": 0.30980393290519714
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.7764706015586853,
+            "g": 0.6823529601097107,
+            "b": 0.47058823704719543
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "51:432",
+      "name": "Button Chơi",
+      "type": "FRAME",
+      "x": 96,
+      "y": 300,
+      "width": 300,
+      "height": 52,
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.23137255012989044,
+            "g": 0.5529412031173706,
+            "b": 0.48235294222831726
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.7764706015586853,
+            "g": 0.6823529601097107,
+            "b": 0.47058823704719543
+          },
+          "boundVariables": {}
+        }
+      ]
+    },
+    {
+      "id": "51:430",
+      "name": "LASTAWAY",
+      "type": "TEXT",
+      "x": 96,
+      "y": 150,
+      "width": 392,
+      "height": 91,
+      "text": "LASTAWAY",
+      "fills": [
+        {
+          "type": "SOLID",
+          "visible": true,
+          "opacity": 1,
+          "blendMode": "NORMAL",
+          "color": {
+            "r": 0.7764706015586853,
+            "g": 0.6823529601097107,
+            "b": 0.47058823704719543
+          },
+          "boundVariables": {}
+        }
+      ],
+      "strokes": []
+    }
+  ]
+}

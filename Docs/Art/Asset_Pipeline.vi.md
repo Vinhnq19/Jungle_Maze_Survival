@@ -1,5 +1,7 @@
 # Thay asset demo bằng asset thật sinh bằng Codex
 
+**Cập nhật yêu cầu bộ UI mới — 27/10/2026:** người dùng quay lại đúng hướng **A trong Figma**, chọn **than chì + xanh ngọc, điểm nhấn vàng dịu**. Đã đổi màu frame A trong file thật; xem [báo cáo và ảnh Figma](A_Recolor_Review.vi.md) và [kế hoạch pack](UI_Asset_Packs.vi.md). Các ghi chú H bên dưới là lịch sử P0 đã gắn cho UI-01; đợt recolor A chưa thay asset Unity hoặc nghiệm thu production. Không tự dùng H/I/J/K/L/M làm hướng cho bộ mới.
+
 **Hướng đã chọn: H · Rừng gọn (24/10/2026).** Người dùng yêu cầu giảm chi tiết, kết nối Figma, rồi xác nhận tiếp tục. Demo: [H_simple_forest.png](directions/H_simple_forest.png), gameplay [1280×720](directions/H_gameplay_1280.png). Dùng art vector có sẵn của hướng H: mảng màu phẳng, bóng cứng nhẹ, giữ khung HUD mỏng và palette/font Figma v2. Nguồn SVG rừng/menu/icon ở `directions/H_*`; rasterize về PNG theo manifest, không thêm texture hay trang trí của bản G đã bị bỏ. Chi tiết nguồn và giới hạn: [H_Demo_Review.vi.md](H_Demo_Review.vi.md).
 
 Đợt triển khai hiện tại: P0 (6 asset đang dùng), sau đó UI-01 phần 2 tới G3. Icon catalog ART-04, code menu UI-02, vật cản và animation thuộc ticket tương ứng; demo không tự mở rộng phạm vi các ticket đó. File Figma đã đọc trực tiếp nhưng chỉ cho đọc; không chặn build Unity theo bản thiết kế đã có.

@@ -15,25 +15,25 @@ MonoBehaviour:
   entries:
   - Kind: 1
     Label: Adrenaline
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: b53ead583a7178e478c356576908e90b, type: 3}
   - Kind: 2
     Label: "\u0110\u1ED9c"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: becfc3499b8717b479e98c5949e2dc0f, type: 3}
   - Kind: 3
     Label: "Ch\u1EADm"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: 83b9b7535fb7605439088dcea6347e99, type: 3}
   - Kind: 4
     Label: "\u1EA8n"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: 5f062dfedfe31e448a59facd75358206, type: 3}
   - Kind: 5
     Label: "Ng\u1EA5t"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: d01af150e83513444b090c06403caf06, type: 3}
   - Kind: 6
     Label: "Tr\xF3i"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: f96e081b08c2ff2499d7f1c93a29f1df, type: 3}
   - Kind: 7
     Label: "\u0110\u1EA3o"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: e253afa8ac0ebd444a65ae41deccb35f, type: 3}
   - Kind: 8
     Label: "Mi\u1EC5n"
-    Icon: {fileID: 0}
+    Icon: {fileID: 21300000, guid: 4828a232d139e1b49a65d4f8950e8c46, type: 3}

@@ -1,0 +1,12 @@
+=== Starting Jungle Maze TelemetryChecks ===
+--- Ring: bounded MPSC ---
+--- JSON: invariant, escaped, finite ---
+--- Writer: one file per match, header/trailer, caps ---
+--- Disk errors: self-disable, one warning, no exception ---
+--- TryWrite never waits for the disk (AC24) ---
+--- Host: disabled by default (AC27) ---
+--- Real MatchRuntime: two matches in one room ---
+--- H7 factories on a real match ---
+--- Attach lifecycle ---
+--- Queue drops are charged to the match that is closing ---
+=== TelemetryChecks: 71 passed, 0 failed ===
