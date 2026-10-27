@@ -20,7 +20,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 61eb32da8f725e6cb2c88bf2a0ad819f, type: 3}
     - {fileID: 8300000, guid: 35dd689d59545f879cc2fb1283f50df8, type: 3}
     - {fileID: 8300000, guid: 44ec4d6a2a54567fad7ccc1c3c21503c, type: 3}
-    volume: 0.4
+    volume: 0.45
     pitchJitter: 0.05
     priority: 0
     bus: 1
@@ -49,7 +49,7 @@ MonoBehaviour:
     clips:
     - {fileID: 8300000, guid: 8cf1fccd34c551f7a95fce42d4dfb1dc, type: 3}
     - {fileID: 8300000, guid: 49db103c06cb5804b1bae153ccfd6bd0, type: 3}
-    volume: 0.5
+    volume: 0.28
     pitchJitter: 0.05
     priority: 0
     bus: 1
@@ -97,7 +97,7 @@ MonoBehaviour:
   - id: 7
     clips:
     - {fileID: 8300000, guid: db9898d751f25fd68d9c19fa69ed9294, type: 3}
-    volume: 0.75
+    volume: 0.79
     pitchJitter: 0.05
     priority: 2
     bus: 1
@@ -109,7 +109,7 @@ MonoBehaviour:
   - id: 8
     clips:
     - {fileID: 8300000, guid: b72c136c4b6a5f29af9bff823ab128fa, type: 3}
-    volume: 0.6
+    volume: 0.79
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -169,7 +169,7 @@ MonoBehaviour:
   - id: 13
     clips:
     - {fileID: 8300000, guid: 565a99b8feb451038ae190ea0ed07219, type: 3}
-    volume: 0.7
+    volume: 0.79
     pitchJitter: 0.05
     priority: 1
     bus: 1
@@ -207,7 +207,7 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 22f6497cbb365f7aa4fca070a3265394, type: 3}
     - {fileID: 8300000, guid: dbdb65883c535a0c8f3d89aeb4cc0192, type: 3}
     - {fileID: 8300000, guid: ade9a71c274751febc716c54d237c375, type: 3}
-    volume: 0.8
+    volume: 0.79
     pitchJitter: 0.05
     priority: 2
     bus: 1
@@ -219,7 +219,7 @@ MonoBehaviour:
   - id: 17
     clips:
     - {fileID: 8300000, guid: 48e8d6ed10aa5f16b6baf2686db8418f, type: 3}
-    volume: 0.9
+    volume: 0.79
     pitchJitter: 0
     priority: 2
     bus: 1
@@ -291,7 +291,7 @@ MonoBehaviour:
   - id: 23
     clips:
     - {fileID: 8300000, guid: 277391faba825378972dbca4e52cc98f, type: 3}
-    volume: 0.6
+    volume: 0.5
     pitchJitter: 0
     priority: 1
     bus: 1
