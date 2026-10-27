@@ -42,6 +42,23 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             return root;
         }
 
+        // The layout tests below switch the canvas to world space, which turns the scaler off; the shipped prefab's
+        // scaler is checked here on the asset itself (review lát 7–11, Gợi ý 3), with the sort order above the HUD.
+        [Test]
+        public void Prefab_CanvasScaler_1280x720_Expand()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(OverlayRig.PrefabPath);
+            var canvas = prefab.GetComponent<MatchOverlayRoot>().Canvas;
+            Assert.NotNull(canvas);
+            var scaler = canvas.GetComponent<CanvasScaler>();
+            Assert.NotNull(scaler);
+            Assert.AreEqual(RenderMode.ScreenSpaceOverlay, canvas.renderMode);
+            Assert.AreEqual(20, canvas.sortingOrder, "above the HUD (10)");
+            Assert.AreEqual(CanvasScaler.ScaleMode.ScaleWithScreenSize, scaler.uiScaleMode);
+            Assert.AreEqual(new Vector2(1280, 720), scaler.referenceResolution);
+            Assert.AreEqual(CanvasScaler.ScreenMatchMode.Expand, scaler.screenMatchMode);
+        }
+
         /// <summary>Rect in canvas pixels, origin top-left, y down.</summary>
         private static Rect Measure(RectTransform r)
         {
