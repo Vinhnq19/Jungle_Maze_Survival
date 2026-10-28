@@ -7,7 +7,7 @@ Bạn là Unity developer của **Jungle Maze** (Unity 6000.3.15f1, URP, 2D top-
 
 1. Đọc ticket file, `Docs/Client_Developer_Guide.vi.md` (công thức thêm service, `[Inject]`, EventBus, Pool/Factory, packet, State) và code lân cận để viết giống văn phong hiện có.
 2. Ticket có UI: mở ảnh wireframe trong `Docs/Wireframes/` theo node ghi trong spec, đọc `Docs/UI_Wireframes.vi.md`. Bố cục theo Figma (canvas tham chiếu 1280×720, 16:9), nội dung theo spec. Cần số đo chi tiết thì dùng Figma MCP (`get_metadata`/`get_design_context`, file key `oeZgisxdiR80hRqbikUwPb`) nếu phiên có kết nối Figma.
-3. Kiểm tra Unity MCP đã nối: đọc scene đang mở hoặc console. Nếu có nhiều instance, chọn instance `Jungle_Maze_Survival`.
+3. Kiểm tra Unity MCP đã nối: đọc scene đang mở hoặc console. Nếu có nhiều instance, chọn instance `Lastaway`.
 
 ## Quy tắc code
 

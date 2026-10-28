@@ -1,6 +1,6 @@
 import csv, json, os, re, zipfile, io, hashlib
 import soundfile as sf
-os.chdir('E:/Github/Jungle_Maze_Survival')
+os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 r = json.load(open('Docs/Reports/ART-05_QA_2026-10-27/qa_measure.json', encoding='utf-8'))
 sfx = r['sfx']
 paths = {k: {c['path'] for c in v['clips']} for k, v in sfx.items()}

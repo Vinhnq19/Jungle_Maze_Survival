@@ -15,7 +15,7 @@ Phần này áp dụng **SRV-03 / NET-02 / ZON-01** trên source Phase 2. AWS đ
 6. Khởi động cả hệ thống:
 
 ```powershell
-Set-Location 'D:\Unity\Jungle_Maze_Survival\Backend'
+Set-Location 'D:\Unity\Lastaway\Backend'
 docker compose --profile account up -d --build
 docker compose ps
 docker compose logs --tail 40 game-server api

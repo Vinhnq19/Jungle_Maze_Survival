@@ -130,8 +130,13 @@ namespace JungleMaze.Composition
             // Domain + Application
             var players = new PlayerRegistry();
             var input = new PlayerInputService(network);
+            var startLocalPreview = false;
+#if UNITY_EDITOR
+            // shortcut: direct Game play tests local movement only; use Boot for an authoritative match.
+            startLocalPreview = SceneManager.GetActiveScene().path == "Assets/_JungleMaze/Scenes/Game.unity";
+#endif
             var flow = new GameFlow(bus, network, network, _registry.Resolve<ISceneLoader>(), input,
-                new GameFlowSettings { MenuScene = menuScene, GameScene = gameScene });
+                new GameFlowSettings { MenuScene = menuScene, GameScene = gameScene, StartLocalPreview = startLocalPreview });
             var connect = new ConnectToServerUseCase(config, network, _registry.Resolve<IAuthApi>(), bus);
             _registry.Register(players);
             _registry.Register(input);
@@ -170,8 +175,11 @@ namespace JungleMaze.Composition
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
             Attach<NetworkManager>();
-            var menuView = Attach<ConnectionMenuView>();
-            menuView.ConfigureArt(uiArt != null ? uiArt.MenuArt : null, menuScene);
+            if (!startLocalPreview)
+            {
+                var menuView = Attach<ConnectionMenuView>();
+                menuView.ConfigureArt(uiArt != null ? uiArt.MenuArt : null, menuScene);
+            }
             Attach<NetworkStatsOverlay>();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             Attach<HudDebugPanel>();

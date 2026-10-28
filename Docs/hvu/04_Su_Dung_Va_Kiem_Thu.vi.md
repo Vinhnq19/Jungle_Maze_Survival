@@ -57,7 +57,7 @@ Hoặc dòng lệnh (đóng Editor đang mở project này trước):
 
 ```powershell
 & "C:\Program Files\Unity\Hub\Editor\6000.3.15f1\Editor\Unity.exe" -batchmode -nographics `
-  -projectPath "D:\Unity\Jungle_Maze_Survival" -runTests -testPlatform EditMode `
+  -projectPath "D:\Unity\Lastaway" -runTests -testPlatform EditMode `
   -testResults "$env:TEMP\editmode.xml" -logFile "$env:TEMP\editmode.log"
 Select-String -Path "$env:TEMP\editmode.log" -Pattern '^\[Mov\]'   # các dòng số đo
 ```
@@ -118,7 +118,7 @@ Detail của mỗi check chứa nguyên dòng `[Mov]`, nên file evidence JSON g
 ```powershell
 $out = "$env:TEMP\jm-gameserver"
 Set-Location $env:TEMP
-dotnet build 'D:\Unity\Jungle_Maze_Survival\Backend\GameServer\GameServer.csproj' -c Release -o $out
+dotnet build 'D:\Unity\Lastaway\Backend\GameServer\GameServer.csproj' -c Release -o $out
 $env:DOTNET_ROLL_FORWARD = 'Major'          # bỏ dòng này nếu máy có runtime .NET 8
 $env:ROOM_CODE = 'MA-PHONG-CUA-BAN'; $env:MATCH_PROFILE = 'test'; $env:PUBLIC_HOSTING = 'false'
 $env:WS_ENABLED = 'true'; $env:GAME_BIND_ADDRESS = '127.0.0.1'; $env:WS_BIND_ADDRESS = '127.0.0.1'
@@ -127,10 +127,10 @@ dotnet "$out\GameServer.dll"                 # đợi dòng [ready] udp=127.0.0.
 
 ```powershell
 # Server Local đang chạy với MATCH_PROFILE=test, WS_ENABLED=true (xem Phase 2 mục 1 hoặc lệnh ở trên)
-Set-Location 'D:\Unity\Jungle_Maze_Survival\Backend'
+Set-Location 'D:\Unity\Lastaway\Backend'
 $env:NET_ROOM_CODE = Read-Host 'Ma phong'
 # Hai client cùng transport (đổi "transport" trong file config: Udp / Wss / Auto)
-.\Deploy\test-unity-online.ps1 -Player '<build>\Jungle_Maze_Survival.exe' `
+.\Deploy\test-unity-online.ps1 -Player '<build>\Lastaway.exe' `
   -Config '..\Assets\StreamingAssets\JungleMaze\client.phase2-local.json' `
   -Scenario '.\Tests\OnlineReadiness\scenarios\local2-movement.json' -Clients 2 -OutputDirectory '.\out\mov-LUOT-MOI'
 # Trộn transport: một client UDP, một client WSS

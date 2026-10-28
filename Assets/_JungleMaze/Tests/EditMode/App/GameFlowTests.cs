@@ -52,6 +52,20 @@ namespace JungleMaze.Tests.App
         }
 
         [Test]
+        public void LocalPreview_StartsInMatchWithoutLoadingScene()
+        {
+            _flow.Dispose();
+            _scenes.ActiveScene = "Game";
+            _flow = new GameFlow(_bus, _network, _network, _scenes, _input,
+                new GameFlowSettings { StartLocalPreview = true });
+            _flow.Initialize();
+
+            Assert.AreEqual(AppScreen.InMatch, _flow.Screen);
+            Assert.IsTrue(_input.Enabled);
+            Assert.IsEmpty(_scenes.Loads);
+        }
+
+        [Test]
         public void Join_GoesToInRoom_AndLoadsGameScene()
         {
             Join();
