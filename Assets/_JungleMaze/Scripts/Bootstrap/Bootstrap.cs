@@ -136,8 +136,26 @@ namespace JungleMaze.Composition
             // shortcut: direct Game play tests local movement only; use Boot for an authoritative match.
             startLocalPreview = SceneManager.GetActiveScene().path == "Assets/_JungleMaze/Scenes/Game.unity";
 #endif
+            var args = Environment.GetCommandLineArgs();
+            var hasNetworkArg = Array.IndexOf(args, "-onlineTest") >= 0 ||
+                                Array.IndexOf(args, "-phase2Smoke") >= 0 ||
+                                Array.IndexOf(args, "-profile") >= 0 ||
+                                Array.IndexOf(args, "-clientConfig") >= 0 ||
+                                Array.IndexOf(args, "-networkRunner") >= 0;
+            var directOfflinePlay = startLocalPreview && !hasNetworkArg;
+
             var flow = new GameFlow(bus, network, network, _registry.Resolve<ISceneLoader>(), input,
-                new GameFlowSettings { MenuScene = menuScene, GameScene = gameScene, StartLocalPreview = startLocalPreview });
+                new GameFlowSettings { MenuScene = menuScene, GameScene = gameScene, StartLocalPreview = directOfflinePlay });
+            var offlineSession = new OfflineMatchSession(balance, config, _registry.Resolve<IClientRuntimeData>(),
+                hudState, bus, flow, hudState);
+            _registry.Register(offlineSession);
+
+            if (directOfflinePlay)
+            {
+                flow.IsOffline = true;
+                offlineSession.StartRound();
+            }
+
             var connect = new ConnectToServerUseCase(config, network, _registry.Resolve<IAuthApi>(), bus);
             _registry.Register(players);
             _registry.Register(input);
@@ -157,11 +175,12 @@ namespace JungleMaze.Composition
             _registry.Register(new GuestHistoryCoordinator(config, network, history, match, bus));
 
             // Presentation (presenter đăng ký trước GameFlow để nhận AppScreenChanged ngay từ Boot)
-            _registry.Register(new ConnectionMenuPresenter(config, connect, network, flow, bus, match.Leave));
+            _registry.Register(new ConnectionMenuPresenter(config, connect, network, flow, bus, match.Leave, offlineSession));
             _registry.Register(flow);
 
             tickRunner.Add(pool);
             tickRunner.Add(match); // Match-scoped input replaces the local foundation sender in network demo.
+            tickRunner.Add(offlineSession);
             tickRunner.Add(remote); // Sau match: đồng hồ render tiến sau khi snapshot của frame đã vào buffer.
             tickRunner.Add(movementLog);
             tickRunner.Add(flow);
@@ -179,7 +198,6 @@ namespace JungleMaze.Composition
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
             Attach<NetworkManager>();
-            if (!startLocalPreview)
             {
                 var menuView = Attach<ConnectionMenuView>();
                 menuView.ConfigureArt(uiArt != null ? uiArt.MenuArt : null, menuScene);

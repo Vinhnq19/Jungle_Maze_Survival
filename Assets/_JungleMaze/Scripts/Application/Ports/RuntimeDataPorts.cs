@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using JungleMaze.App.Match;
 
 namespace JungleMaze.App.Ports
 {
@@ -15,6 +16,8 @@ namespace JungleMaze.App.Ports
         /// <summary>Tốc độ/bán kính server dùng cho movement; chỉ hợp lệ sau khi Verify trả null.</summary>
         float PlayerSpeed { get; }
         float PlayerRadius { get; }
+        ZoneSchedule ZoneSchedule { get; }
+        string LoadLocal();
         string Verify(string expectedVersion, string expectedHash);
     }
 }

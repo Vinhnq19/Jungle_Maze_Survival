@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using JungleMaze.App.Config;
 using JungleMaze.App.Flow;
+using JungleMaze.App.Match;
 using JungleMaze.App.Network;
 using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
@@ -22,11 +23,12 @@ namespace JungleMaze.Presentation.UI
         private readonly INetworkClient _network;
         private readonly GameFlow _flow;
         private readonly IEventBus _bus;
+        private readonly OfflineMatchSession _offlineSession;
         private readonly Action<AppScreenChanged> _onScreen;
         private readonly Action<ConnectionError> _onError;
 
         public ConnectionMenuPresenter(IConfigProvider config, ConnectToServerUseCase connect, INetworkClient network,
-            GameFlow flow, IEventBus bus, Action beforeDisconnect = null)
+            GameFlow flow, IEventBus bus, Action beforeDisconnect = null, OfflineMatchSession offlineSession = null)
         {
             _beforeDisconnect = beforeDisconnect;
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -34,6 +36,7 @@ namespace JungleMaze.Presentation.UI
             _network = network ?? throw new ArgumentNullException(nameof(network));
             _flow = flow ?? throw new ArgumentNullException(nameof(flow));
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
+            _offlineSession = offlineSession;
             _onScreen = e => Status = e.Message;
             _onError = e => Status = e.Message;
             RoomCode = config.CommandLineRoomCode ?? "";
@@ -44,6 +47,8 @@ namespace JungleMaze.Presentation.UI
         // Dữ liệu form (view đọc/ghi trực tiếp).
         public string Host, Port, ApiBaseUrl, RoomCode, DisplayName, Username = "", Password = "";
         public ConnectionMode Mode;
+        public bool AdvancedExpanded { get; set; }
+        public string SelectedOnlineTarget { get; set; } = "AWS";
 
         public AppScreen Screen => _flow.Screen;
         public string Status { get; private set; } = "";
@@ -52,6 +57,7 @@ namespace JungleMaze.Presentation.UI
         public string TransportText => _config.Current?.Transport ?? "";
         public bool RequiresLogin => _config.Current != null && _config.Current.AuthMode == JungleBackend.Protocol.JoinAuthMode.Jwt;
         public bool IsBusy => _connect.IsLoggingIn || _network.State == NetworkState.Connecting || _network.State == NetworkState.Authenticating;
+        public bool IsOffline => _offlineSession != null && _offlineSession.IsActive;
         public string PlayerId => _network.PlayerId ?? "";
         public string Endpoint => _network.Endpoint;
         public string[] Profiles
@@ -85,6 +91,68 @@ namespace JungleMaze.Presentation.UI
             Status = $"Đã chọn profile {profile}.";
         }
 
+        public void SelectTarget(string target)
+        {
+            var current = _config.Current;
+            if (current == null) return;
+            var port = int.TryParse(Port, NumberStyles.Integer, CultureInfo.InvariantCulture, out var p) ? p : 7777;
+
+            if (string.Equals(target, "Local", StringComparison.OrdinalIgnoreCase))
+            {
+                Mode = ConnectionMode.Local;
+                Status = "Chế độ Local: Solo Offline hoặc Loopback.";
+            }
+            else if (string.Equals(target, "LAN", StringComparison.OrdinalIgnoreCase))
+            {
+                Mode = ConnectionMode.LAN;
+                var host = (string.IsNullOrWhiteSpace(Host) || Host == "127.0.0.1" || Host == "localhost" || Host == "junglemaze.duckdns.org") ? "192.168.1.10" : Host;
+                var updated = current.WithEndpoint(host, port, ConnectionMode.LAN, "menu")
+                    .WithApiBaseUrl(null, "menu").WithTransport("Udp", null);
+                var error = _config.SaveUserConfig(updated);
+                if (error != null) { Status = error; return; }
+                LoadFromConfig();
+                Status = "Chế độ LAN: UDP.";
+            }
+            else if (string.Equals(target, "Radmin", StringComparison.OrdinalIgnoreCase))
+            {
+                SelectedOnlineTarget = "Radmin";
+                Mode = ConnectionMode.Online;
+                var host = (string.IsNullOrWhiteSpace(Host) || Host == "127.0.0.1" || Host == "junglemaze.duckdns.org") ? "100.80.1.20" : Host;
+                var updated = current.WithEndpoint(host, port, ConnectionMode.Online, "menu")
+                    .WithApiBaseUrl(null, "menu").WithTransport("Udp", null);
+                var error = _config.SaveUserConfig(updated);
+                if (error != null) { Status = error; return; }
+                LoadFromConfig();
+                Status = "Chế độ Online (Radmin/VPN): UDP.";
+            }
+            else if (string.Equals(target, "AWS", StringComparison.OrdinalIgnoreCase))
+            {
+                SelectedOnlineTarget = "AWS";
+                Mode = ConnectionMode.Online;
+                Host = "junglemaze.duckdns.org";
+                ApiBaseUrl = "https://junglemaze.duckdns.org";
+                var updated = current.WithEndpoint("junglemaze.duckdns.org", port, ConnectionMode.Online, "menu")
+                    .WithApiBaseUrl("https://junglemaze.duckdns.org", "menu")
+                    .WithTransport("Auto", "wss://junglemaze.duckdns.org/game");
+                var error = _config.SaveUserConfig(updated);
+                if (error != null) { Status = error; return; }
+                LoadFromConfig();
+                Status = "Chế độ Online (AWS): junglemaze.duckdns.org (Auto UDP->WSS).";
+            }
+        }
+
+        public void StartOffline()
+        {
+            if (_offlineSession == null)
+            {
+                Status = "Không có offline session.";
+                return;
+            }
+            if (_network.State != NetworkState.Disconnected) _network.Disconnect();
+            try { _offlineSession.StartRound(); _flow.StartOfflineMatch(); }
+            catch (InvalidOperationException e) { _offlineSession.Leave(); Status = e.Message; }
+        }
+
         /// <summary>Lưu host/port/mode người dùng sửa vào persistentDataPath/client.json (lần sau tự dùng).</summary>
         public bool SaveEndpoint()
         {
@@ -111,7 +179,17 @@ namespace JungleMaze.Presentation.UI
             if (result == null && RequiresLogin) Status = "Đang đăng nhập...";
         }
 
-        public void Disconnect() { _beforeDisconnect?.Invoke(); _network.Disconnect(); }
+        public void Disconnect()
+        {
+            if (IsOffline)
+            {
+                _offlineSession.Leave();
+                _flow.ReturnToMenu();
+                return;
+            }
+            _beforeDisconnect?.Invoke();
+            _network.Disconnect();
+        }
 
         private void LoadFromConfig()
         {

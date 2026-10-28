@@ -17,12 +17,15 @@ namespace JungleMaze.Presentation.UI
     /// <summary>
     /// Small Phase-2 inspection UI and scene adapter. Gives MOV-02 prediction the verified map (same data the server
     /// simulates) and aims from the predicted Hero; full HUD/FOW remain separate tasks.
+    /// Supports both authoritative online match and solo offline play.
     /// </summary>
     public sealed class MatchDemoView : MonoBehaviour
     {
         /// <summary>Explicit acceptance runner only; ordinary play always reads WASD/mouse.</summary>
         public bool UseExternalIntent { get; set; }
         private MatchSession _session;
+        private OfflineMatchSession _offlineSession;
+        private Guid _offlineRound;
         private INetworkClient _network;
         private IMatchConnection _connection;
         private IPlayerHistory _history;
@@ -45,8 +48,16 @@ namespace JungleMaze.Presentation.UI
 
         [Inject]
         public void Construct(MatchSession session, INetworkClient network, IMatchConnection connection,
-            IPlayerHistory history, IClientRuntimeData data, IPlayerPoseSource poses)
-        { _session = session; _network = network; _connection = connection; _history = history; _data = data; _poses = poses; }
+            IPlayerHistory history, IClientRuntimeData data, IPlayerPoseSource poses, OfflineMatchSession offline = null)
+        {
+            _session = session;
+            _network = network;
+            _connection = connection;
+            _history = history;
+            _data = data;
+            _poses = poses;
+            _offlineSession = offline;
+        }
 
         public void BindOverlay(IMatchMenuState menuState, MatchOverlayFlow overlayFlow)
         {
@@ -68,8 +79,31 @@ namespace JungleMaze.Presentation.UI
 
         private void Update()
         {
-            if (_session == null) return;
             var inScene = SceneManager.GetActiveScene().name == "Game";
+            if (_offlineSession != null && _offlineSession.IsActive && inScene)
+            {
+                if (_hero == null) _hero = FindAnyObjectByType<HeroController>();
+                if (_hero != null)
+                {
+                    if (_offlineRound != _offlineSession.MatchId)
+                    {
+                        _offlineRound = _offlineSession.MatchId;
+                        _hero.transform.position = new Vector3(25f, 25f, 0f);
+                        if (_hero.TryGetComponent<Rigidbody2D>(out var rb)) { rb.simulated = true; rb.position = new Vector2(25f, 25f); rb.linearVelocity = Vector2.zero; }
+                        foreach (var renderer in _hero.GetComponentsInChildren<SpriteRenderer>(true)) renderer.enabled = true;
+                    }
+                    _hero.enabled = !_offlineSession.IsDead && !(_menuState?.BlocksGameplayInput ?? false);
+                }
+                if (_offlineSession.Zone != null)
+                {
+                    DrawRing(ref _currentRing, "Current offline zone", _offlineSession.Zone.CurrentCenter.X, _offlineSession.Zone.CurrentCenter.Y, _offlineSession.Zone.CurrentRadius, Color.red);
+                    DrawRing(ref _nextRing, "Next offline zone", _offlineSession.Zone.NextCenter.X, _offlineSession.Zone.NextCenter.Y, _offlineSession.Zone.NextRadius, Color.yellow);
+                }
+                else HideRings();
+                return;
+            }
+
+            if (_session == null) return;
             if (!_session.Connected || !inScene) { HideRings(); return; }
             PrepareScene();
             if (_session.Phase != MatchPhase.Loading) _loadedAck = Guid.Empty;
@@ -130,6 +164,7 @@ namespace JungleMaze.Presentation.UI
             foreach (var input in FindObjectsByType<PlayerInputReader>(FindObjectsSortMode.None)) input.enabled = false;
             foreach (var probe in FindObjectsByType<LocalWeaponProbe>(FindObjectsSortMode.None)) probe.enabled = false;
         }
+
         /// <summary>Map đã khớp hash server → mô phỏng movement client giống hệt server (MOV-02).</summary>
         private void UsePredictionWorld()
         {
@@ -164,6 +199,7 @@ namespace JungleMaze.Presentation.UI
             }
             return null;
         }
+
         private void DrawRing(ref LineRenderer ring, string title, float x, float y, float radius, Color color)
         {
             if (ring == null)
@@ -189,14 +225,36 @@ namespace JungleMaze.Presentation.UI
             }
             ring.SetPositions(_circle);
         }
+
         private void HideRings()
         { if (_currentRing != null) _currentRing.enabled = false; if (_nextRing != null) _nextRing.enabled = false; }
         private void OnDestroy() { if (_ringMaterial != null) Destroy(_ringMaterial); }
 
         private void OnGUI()
         {
-            if (_session == null) return;
             _label ??= new GUIStyle(GUI.skin.label) { wordWrap = true, richText = false };
+
+            if (_offlineSession != null && _offlineSession.IsActive)
+            {
+                if (_menuState?.IsOpen == true) return;
+                GUILayout.BeginArea(new Rect(10, 52, 370, Mathf.Min(Screen.height - 62, 590)), GUI.skin.box);
+                GUILayout.Label("Lastaway · Solo Offline", _label);
+                GUILayout.Label($"Trận {_offlineSession.MatchId.ToString().Substring(0, 8)} · 1 người chơi", _label);
+                GUILayout.Label($"HP: {_offlineSession.PlayerHp} · Thời gian: {_offlineSession.ElapsedSeconds:F1}s", _label);
+                if (_offlineSession.Zone != null)
+                    GUILayout.Label($"Bo {_offlineSession.Zone.PhaseIndex}: r={_offlineSession.Zone.CurrentRadius:F1}" + (_offlineSession.Zone.InWarning ? " · Sắp co" : ""), _label);
+                GUILayout.Label("WASD di chuyển, chuột chọn hướng. Đi ra ngoài bo sẽ mất máu.", _label);
+                if (_offlineSession.HasResult)
+                {
+                    GUILayout.Label("KẾT QUẢ SINH TỒN (SOLO)", _label);
+                    GUILayout.Label($"#1 {_offlineSession.DisplayName} · Sống sót: {_offlineSession.SurvivalSeconds:F1}s", _label);
+                    if (GUILayout.Button("Sẵn sàng chơi lại")) _offlineSession.Replay();
+                }
+                GUILayout.EndArea();
+                return;
+            }
+
+            if (_session == null) return;
             if (!_session.Connected && !_session.CanResume) return;
             if (_session.Connected && _camera != null && _spawner != null && !ShouldHideWorldLabels)
                 foreach (var id in _session.Players.ActiveIds)
@@ -243,6 +301,7 @@ namespace JungleMaze.Presentation.UI
                     GUILayout.Label($"{row.EndedAt.ToLocalTime():dd/MM HH:mm} · #{row.Rank} · {row.SurvivalSeconds:F1}s · {row.Reason}", _label);
             GUILayout.EndArea();
         }
+
         private async void RefreshHistory()
         {
             _busyHistory = true;
