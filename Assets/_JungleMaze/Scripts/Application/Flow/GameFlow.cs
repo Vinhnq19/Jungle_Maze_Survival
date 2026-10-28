@@ -70,7 +70,7 @@ namespace JungleMaze.App.Flow
         {
             _bus.Subscribe(_onNetwork);
             _packets.Subscribe(_onGameEvent);
-            _machine.ChangeState(Boot);
+            _machine.ChangeState(Settings.StartLocalPreview ? InMatch : (IState)Boot);
         }
 
         public void Tick(float deltaTime) => _machine.Tick(deltaTime);

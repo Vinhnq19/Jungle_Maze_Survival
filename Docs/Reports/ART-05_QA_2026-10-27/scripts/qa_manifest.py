@@ -1,5 +1,5 @@
 import csv, hashlib, os, re, zipfile, collections
-os.chdir('E:/Github/Jungle_Maze_Survival')
+os.chdir(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../..')))
 rows = list(csv.DictReader(open('Docs/Tickets/ART-05_audio_manifest.csv', encoding='utf-8', newline='')))
 print('rows', len(rows), dict(collections.Counter(r['row_type'] for r in rows)))
 names = ['FootstepGrass','FootstepSwamp','BushEnter','MeleeSwing','MeleeHit','ShootRanged','ShootCrossbow','Throw','Reload','EmptyClick','BombFuse','Explosion','TrapTriggered','HitMarker','HurtLocal','ArmorAbsorb','Eliminated','PickupWeapon','PickupItem','WearArmor','UseHeal','UseDrink','UseCancel','ZoneBell3','DragonRoar','MatchEnd']

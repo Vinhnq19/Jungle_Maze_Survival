@@ -1,4 +1,4 @@
-# JSurvivUnity đã nhập vào Jungle Maze Survival
+# JSurvivUnity đã nhập vào Lastaway
 
 Mã nguồn và assets tham khảo hiện nằm tại `Assets/Imported/JSurviv`; thư mục nguồn riêng `JSurvivUnity` không còn trong workspace hiện tại. Dự án gốc tiếp tục dùng Unity **6000.3.15f1** và URP. Phần nhập assets chưa chuyển Socket.IO sang LiteNetLib và chưa cung cấp demo gameplay offline hoàn chỉnh.
 

@@ -39,5 +39,6 @@ namespace JungleMaze.App.Flow
         public string MenuScene = "Boot";
         public string GameScene = "Game";
         public float ResultsSeconds = 5f;
+        public bool StartLocalPreview;
     }
 }
