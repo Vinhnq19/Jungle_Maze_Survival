@@ -1,9 +1,11 @@
 using System;
 using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.Match;
+using JungleMaze.App.MatchUi;
 using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
+using JungleMaze.Domain.MatchUi;
 using JungleMaze.Presentation.Controls;
 using JungleMaze.Presentation.Player;
 using JungleMaze.Presentation.World;
@@ -26,6 +28,8 @@ namespace JungleMaze.Presentation.UI
         private IPlayerHistory _history;
         private IClientRuntimeData _data;
         private IPlayerPoseSource _poses;
+        private IMatchMenuState _menuState;
+        private MatchOverlayFlow _overlayFlow;
         private string _worldHash;
         private HeroController _hero;
         private RemotePlayerSpawner _spawner;
@@ -43,6 +47,24 @@ namespace JungleMaze.Presentation.UI
         public void Construct(MatchSession session, INetworkClient network, IMatchConnection connection,
             IPlayerHistory history, IClientRuntimeData data, IPlayerPoseSource poses)
         { _session = session; _network = network; _connection = connection; _history = history; _data = data; _poses = poses; }
+
+        public void BindOverlay(IMatchMenuState menuState, MatchOverlayFlow overlayFlow)
+        {
+            _menuState = menuState;
+            _overlayFlow = overlayFlow;
+        }
+
+        public bool ShouldHideWorldLabels
+        {
+            get
+            {
+                if (_menuState != null && _menuState.IsOpen) return true;
+                if (_overlayFlow != null && (_overlayFlow.Phase == MatchOverlayPhase.Killcam ||
+                                             _overlayFlow.Phase == MatchOverlayPhase.Spectating ||
+                                             _overlayFlow.Phase == MatchOverlayPhase.Eliminated)) return true;
+                return false;
+            }
+        }
 
         private void Update()
         {
@@ -176,7 +198,7 @@ namespace JungleMaze.Presentation.UI
             if (_session == null) return;
             _label ??= new GUIStyle(GUI.skin.label) { wordWrap = true, richText = false };
             if (!_session.Connected && !_session.CanResume) return;
-            if (_session.Connected && _camera != null && _spawner != null)
+            if (_session.Connected && _camera != null && _spawner != null && !ShouldHideWorldLabels)
                 foreach (var id in _session.Players.ActiveIds)
                 {
                     var view = _spawner.GetView(id);

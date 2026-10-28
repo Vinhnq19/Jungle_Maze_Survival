@@ -6,6 +6,7 @@ using JungleMaze.App.Hud.State;
 using JungleMaze.App.Hud.Mocks;
 #endif
 using JungleMaze.App.Match;
+using JungleMaze.App.MatchUi;
 using JungleMaze.App.Network;
 using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
@@ -147,6 +148,8 @@ namespace JungleMaze.Composition
             match.PhaseUpdated += flow.ApplyAuthoritativePhase;
             _registry.Register(prediction);
             _registry.Register(match);
+            var hudBinding = new MatchHudBinding(match, hudState);
+            _registry.Register(hudBinding);
             var remote = new RemotePlayerInterpolator(bus, players);              // MOV-03
             _registry.Register(remote);
             _registry.Register<IPlayerPoseSource>(new PlayerPoseSource(match, remote));
@@ -163,6 +166,7 @@ namespace JungleMaze.Composition
             tickRunner.Add(movementLog);
             tickRunner.Add(flow);
             tickRunner.Add(hudState);
+            tickRunner.Add(hudBinding);
             tickRunner.Add(inventoryState);
             tickRunner.Add(effectState);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -185,7 +189,11 @@ namespace JungleMaze.Composition
             Attach<HudDebugPanel>();
             Attach<HudFeedbackDebugPanel>();
 #endif
-            Attach<MatchDemoView>();
+            var demoView = Attach<MatchDemoView>();
+            _registry.TryResolve<IMatchMenuState>(out var menuState);
+            _registry.TryResolve<MatchOverlayFlow>(out var overlayFlow);
+            if (menuState != null || overlayFlow != null) demoView.BindOverlay(menuState, overlayFlow);
+
             if (Array.IndexOf(Environment.GetCommandLineArgs(), "-onlineTest") >= 0)
             {
                 JungleMaze.App.Testing.OnlineTestExtensions.Reset();
