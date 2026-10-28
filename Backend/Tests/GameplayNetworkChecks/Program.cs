@@ -36,6 +36,30 @@ Pump(()=>clients.All(c=>c.Phase==MatchPhase.InGame&&c.SnapshotCount>5));
 Check(clients.All(c=>c.Zone.MatchId==c.MatchId&&c.Zone.CurrentRadius>0),"Both transports receive match-scoped zone with snapshots");
 var start=clock.ElapsedMilliseconds;Pump(()=>clock.ElapsedMilliseconds-start>5000,6500);
 Check(clients.All(c=>c.SnapshotCount>=140&&c.InvalidFrames==0&&c.DuplicateSnapshots==0),"30Hz snapshots: no repeated hooks or invalid frames on ten peers");
+// Real combat over the real transport: requests are authoritative on the server and accepted results reach the whole room.
+var combatMatch=host.Hub.Rooms.Find("PHASE2_TEST")!.Match;
+var attacker=clients[0];var witness=clients[1];
+attacker.Attack(1,CombatWeaponId.Hand);
+Pump(()=>attacker.AttackResults.Any(r=>r.RequestSeq==1)&&witness.AttackResults.Any(r=>r.RequestSeq==1));
+var meleeResult=attacker.AttackResults.First(r=>r.RequestSeq==1);
+Check(meleeResult.Outcome==CombatOutcome.Accepted&&meleeResult.NetId==attacker.OwnNetId,"Real UDP/WS melee attack accepted and stamped with attacker NetId");
+Check(witness.AttackResults.First(r=>r.RequestSeq==1) is {Outcome:CombatOutcome.Accepted} w&&w.NetId==attacker.OwnNetId,"Other real client receives the accepted attack broadcast");
+attacker.Attack(1,CombatWeaponId.Hand);
+Pump(()=>attacker.AttackResults.Count(r=>r.RequestSeq==1)==2);
+Check(attacker.AttackResults.Last().Outcome==CombatOutcome.Duplicate&&witness.AttackResults.Count(r=>r.RequestSeq==1)==1,"Repeated RequestSeq is Duplicate, answered only to the sender");
+var cooldownStart=clock.ElapsedMilliseconds;Pump(()=>clock.ElapsedMilliseconds-cooldownStart>600,1000);
+attacker.Reload(2,CombatWeaponId.Hand);
+Pump(()=>attacker.ReloadResults.Any(r=>r.RequestSeq==2));
+Check(attacker.ReloadResults.First(r=>r.RequestSeq==2).Outcome==CombatOutcome.InvalidWeapon&&!witness.ReloadResults.Any(r=>r.RequestSeq==2),"Reload with bare hands is InvalidWeapon and not broadcast");
+Check(combatMatch.TrySetHeldWeapon(attacker.PlayerId!,CombatWeaponId.RubberGun),"Server accepts held RubberGun for the attacker");
+attacker.Attack(3,CombatWeaponId.RubberGun);
+Pump(()=>attacker.AttackResults.Any(r=>r.RequestSeq==3)&&witness.AttackResults.Any(r=>r.RequestSeq==3));
+Check(attacker.AttackResults.First(r=>r.RequestSeq==3) is {Outcome:CombatOutcome.Accepted,Magazine:11}&&witness.AttackResults.Any(r=>r.RequestSeq==3),"Ranged shot accepted over real transport and broadcast to the room");
+attacker.Reload(4,CombatWeaponId.RubberGun);
+Pump(()=>attacker.ReloadResults.Any(r=>r.RequestSeq==4)&&witness.ReloadResults.Any(r=>r.RequestSeq==4));
+var reloadResult=attacker.ReloadResults.First(r=>r.RequestSeq==4);
+Check(reloadResult.Outcome==CombatOutcome.Accepted&&reloadResult.ReloadEndTick-reloadResult.Tick==36&&witness.ReloadResults.First(r=>r.RequestSeq==4).Outcome==CombatOutcome.Accepted,"Reload accepted with 1.2 s end tick and broadcast to the room");
+
 // Test-only authoritative damage, not a weapon/combat implementation.
 var victim=clients[9]; var killer=clients[8];
 host.Hub.Rooms.Find("PHASE2_TEST")!.Match.Health.ApplyDamage(victim.OwnNetId,100,killer.OwnNetId);

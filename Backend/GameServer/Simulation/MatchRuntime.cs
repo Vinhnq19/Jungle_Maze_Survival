@@ -274,6 +274,13 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         return true;
     }
 
+    /// <summary>Sets the weapon a session is holding. ITM-01 will call this when equipment changes.</summary>
+    public bool TrySetHeldWeapon(string sessionId, CombatWeaponId weapon)
+    {
+        if (!_bySession.TryGetValue(sessionId, out var entity)) return false;
+        return _combat.SetHeldWeapon(entity.NetId, weapon);
+    }
+
     /// <summary>Runs a ReloadRequest through CombatService. Accepted results are broadcast to the room; rejected ones are for the sender only.</summary>
     public bool TryProcessReload(string sessionId, in ReloadRequestPacket request, out ReloadResultPacket result)
     {
