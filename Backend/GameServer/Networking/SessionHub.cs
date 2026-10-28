@@ -78,6 +78,8 @@ public sealed class SessionHub
         _frameValidator.Subscribe<SnapshotAckPacket>(_ => { });
         _frameValidator.Subscribe<AttachIdentityPacket>(_ => { });
         _frameValidator.Subscribe<KillcamRequestPacket>(_ => { });
+        _frameValidator.Subscribe<AttackRequestPacket>(_ => { });
+        _frameValidator.Subscribe<ReloadRequestPacket>(_ => { });
         SetupGameplaySubscriptions();
         Rooms.RoomCreated += HookRoom;
         HookRoomMatches();
@@ -235,6 +237,20 @@ public sealed class SessionHub
         });
 
         _gameplayRegistry.Subscribe<SnapshotAckPacket, Session>((_, _) => { });
+
+        _gameplayRegistry.Subscribe<AttackRequestPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            if (!session.Room.Match.TryProcessAttack(session.PlayerId, packet, out var result)) return;
+            if (result.Outcome != CombatOutcome.Accepted) SendCombatResult(session, ref result);
+        });
+
+        _gameplayRegistry.Subscribe<ReloadRequestPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            if (!session.Room.Match.TryProcessReload(session.PlayerId, packet, out var result)) return;
+            if (result.Outcome != CombatOutcome.Accepted) SendCombatResult(session, ref result);
+        });
 
         // Gameplay identity attachment via single-use registered ticket
         _gameplayRegistry.Subscribe<AttachIdentityPacket, Session>((packet, session) =>
@@ -554,6 +570,14 @@ public sealed class SessionHub
     {
         Send(session, NetworkProtocol.StringMessage(NetworkProtocol.JoinAccepted, session.PlayerId!).CopyData(), true);
         Console.WriteLine($"[joined] playerId={session.PlayerId} roomId={session.Room.Id} transport={session.Peer.Transport} serverSlots={ReservedPeers}/{(_options.Rooms ?? new()).MaxTotalPlayers}");
+    }
+
+    private void SendCombatResult<T>(Session session, ref T packet) where T : struct, INetSerializable
+    {
+        var writer = new NetDataWriter();
+        PacketRegistry.BeginFrame(writer);
+        _gameplayRegistry.Write(writer, ref packet);
+        Send(session, writer.CopyData(), true, GameplayProtocol.GameplayChannel);
     }
 
     private void Send(Session session, byte[] packet, bool reliable, byte channel = 0)

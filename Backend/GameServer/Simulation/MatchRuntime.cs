@@ -1,3 +1,4 @@
+using GameServer.Simulation.Combat;
 using JungleBackend.Protocol.Gameplay;
 using LiteNetLib.Utils;
 
@@ -54,6 +55,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
     private readonly Dictionary<byte, Entity> _entities = new();
     private readonly Dictionary<string, Entity> _bySession = new(StringComparer.Ordinal);
     private HealthService _health;
+    private CombatService _combat;
     private readonly PhysicsSimulation _physics;
     private ZoneSimulation? _zone;
 
@@ -63,6 +65,8 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
     private uint _lastRecordedReplayTick = uint.MaxValue;
 
     private readonly PacketRegistry _packets = new();
+    private readonly List<CombatHit> _combatHits = new();
+    private static readonly Lazy<WeaponRules> CombatWeaponRules = new(() => WeaponRules.Load(GameDataLoader.ReadGameDataFile("weapons.json")));
     private readonly NetDataWriter _snapshotWriter = new(true, 1024);
     private uint _inGameStartTick;
     private double _phaseTimer;
@@ -101,6 +105,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         _profile = profile;
         _health = new HealthService(this);
         _health.EntityDied += OnEntityDied;
+        _combat = CreateCombat();
         _physics = new PhysicsSimulation(map, profile.PlayerRadius, profile.PlayerSpeed);
         if (map.Version != profile.Version || zoneSchedule.Version != profile.Version)
             throw new InvalidDataException("Game data versions differ.");
@@ -254,6 +259,32 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
     public bool ProcessInput(string sessionId, in PlayerInputPacket input) =>
         ProcessInput(sessionId, new MatchInputPacket { MatchId = MatchId, Input = input });
 
+    /// <summary>
+    /// Runs an AttackRequest through CombatService. Accepted results are broadcast to the room; rejected ones are for the sender only.
+    /// Returns false when the match is not in play or the session has no entity.
+    /// </summary>
+    public bool TryProcessAttack(string sessionId, in AttackRequestPacket request, out AttackResultPacket result)
+    {
+        result = default;
+        if (Phase != MatchPhase.InGame || !_bySession.TryGetValue(sessionId, out var entity)) return false;
+
+        _combatHits.Clear();
+        result = _combat.TryAttack(entity.NetId, request, CurrentTick, _combatHits);
+        if (result.Outcome == CombatOutcome.Accepted) BroadcastCombatResult(ref result);
+        return true;
+    }
+
+    /// <summary>Runs a ReloadRequest through CombatService. Accepted results are broadcast to the room; rejected ones are for the sender only.</summary>
+    public bool TryProcessReload(string sessionId, in ReloadRequestPacket request, out ReloadResultPacket result)
+    {
+        result = default;
+        if (Phase != MatchPhase.InGame || !_bySession.TryGetValue(sessionId, out var entity)) return false;
+
+        result = _combat.TryReload(entity.NetId, request, CurrentTick);
+        if (result.Outcome == CombatOutcome.Accepted) BroadcastCombatResult(ref result);
+        return true;
+    }
+
     public bool ProcessLeave(string sessionId, Guid matchId)
     {
         if (matchId != MatchId || !_bySession.TryGetValue(sessionId, out var entity) || !entity.IsAlive)
@@ -374,6 +405,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
     {
         DeltaTime = deltaTime;
         CurrentTick++;
+        _combat.Tick(CurrentTick);
 
         switch (Phase)
         {
@@ -617,9 +649,27 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         // Health dedupe resets per match
         _health = new HealthService(this);
         _health.EntityDied += OnEntityDied;
+        _combat = CreateCombat();
 
         TransitionTo(MatchPhase.Waiting);
         BroadcastRoster();
+    }
+
+    private CombatService CreateCombat() => new(
+        this,
+        _health,
+        _map.Obstacles,
+        CombatWeaponRules.Value,
+        CombatDefaults.Effects,
+        CombatDefaults.Passive,
+        CombatDefaults.Breakables);
+
+    private void BroadcastCombatResult<T>(ref T packet) where T : struct, INetSerializable
+    {
+        var writer = new NetDataWriter();
+        PacketRegistry.BeginFrame(writer);
+        _packets.Write(writer, ref packet);
+        ReliableBroadcast?.Invoke(writer.CopyData());
     }
 
     private void TransitionTo(MatchPhase newPhase)
