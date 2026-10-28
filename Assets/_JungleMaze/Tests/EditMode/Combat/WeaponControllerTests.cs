@@ -15,7 +15,7 @@ namespace JungleMaze.Tests.Combat
     {
         private const string TestWeapons = @"[
   { ""id"": ""HAND"", ""displayName"": ""Hand"", ""category"": ""Melee"", ""damage"": 8, ""cooldownSeconds"": 0.5, ""range"": 1, ""arcDegrees"": 90 },
-  { ""id"": ""RUBBER_GUN"", ""displayName"": ""Rubber"", ""category"": ""Ranged"", ""damage"": 15, ""range"": 6, ""fireRatePerSecond"": 3, ""projectileSpeed"": 18, ""magazineSize"": 2, ""reserveAmmo"": 3 },
+  { ""id"": ""RUBBER_GUN"", ""displayName"": ""Rubber"", ""category"": ""Ranged"", ""damage"": 15, ""range"": 6, ""fireRatePerSecond"": 3, ""projectileSpeed"": 18, ""magazineSize"": 2, ""reserveAmmo"": 3, ""reloadSeconds"": 2 },
   { ""id"": ""SHOTGUN"", ""displayName"": ""Shotgun"", ""category"": ""Ranged"", ""damage"": 9, ""pellets"": 5, ""range"": 4, ""fireRatePerSecond"": 0.8, ""projectileSpeed"": 24, ""magazineSize"": 2, ""reserveAmmo"": 4 }
 ]";
 
@@ -62,10 +62,14 @@ namespace JungleMaze.Tests.Combat
 
         private sealed class EventLog
         {
-            public readonly List<CombatEventKind> Kinds = new List<CombatEventKind>();
+            public readonly List<CombatEvent> Events = new List<CombatEvent>();
             public CombatOutcome LastOutcome;
-            public void Record(CombatEvent e) { Kinds.Add(e.Kind); LastOutcome = e.Outcome; }
-            public bool Has(CombatEventKind kind) => Kinds.Contains(kind);
+            public void Record(CombatEvent e) { Events.Add(e); LastOutcome = e.Outcome; }
+            public bool Has(CombatEventKind kind)
+            {
+                foreach (var e in Events) if (e.Kind == kind) return true;
+                return false;
+            }
         }
 
         private sealed class RecordingSink : ICombatRequestSink
@@ -104,7 +108,7 @@ namespace JungleMaze.Tests.Combat
                 Server = new FakeCombatBackend(balance);
                 Peer = Server.AddPeer(netId);
                 Sink = new RecordingSink(Peer);
-                Controller = new WeaponController(balance, Sink, Hud);
+                Controller = new WeaponController(balance, Sink, Hud, netId);
                 Controller.Changed += Events.Record;
                 Peer.AttackResult += Controller.OnAttackResult;
                 Peer.ReloadResult += Controller.OnReloadResult;
@@ -198,27 +202,43 @@ namespace JungleMaze.Tests.Combat
         }
 
         [Test]
-        public void Reload_OnlyStartsAfterServerAccepts()
+        public void Reload_PredictsTimerThenWaitsForServerConfirmation()
         {
             var rig = new Rig(TestWeapons);
             rig.Controller.Select(CombatWeaponId.RubberGun);
-            Assert.IsTrue(rig.Controller.TryAttack(0f));
+            rig.Controller.TryAttack(0f);
             rig.Controller.Tick(1f);
-            Assert.IsTrue(rig.Controller.TryAttack(0f));
+            rig.Controller.TryAttack(0f);
             rig.Server.Flush();
             rig.Controller.Tick(1f);
             Assert.AreEqual(0, rig.Controller.SelectedSlot.Magazine);
 
             Assert.IsTrue(rig.Controller.TryReload());
             Assert.IsTrue(rig.Controller.IsReloadPending);
-            Assert.IsFalse(rig.Controller.IsReloading);
+            Assert.IsTrue(rig.Controller.IsReloading, "the timer is predicted from the config seconds");
+            Assert.IsFalse(rig.Controller.IsReloadConfirmed);
             Assert.IsFalse(rig.Controller.TryAttack(0f));
 
             rig.Server.Flush();
             Assert.IsFalse(rig.Controller.IsReloadPending);
-            Assert.IsTrue(rig.Controller.IsReloading);
+            Assert.IsTrue(rig.Controller.IsReloadConfirmed);
             Assert.AreEqual(2f, rig.Controller.ReloadRemainingSeconds, 0.0001f);
             Assert.IsTrue(rig.Events.Has(CombatEventKind.ReloadStarted));
+        }
+
+        [Test]
+        public void Reload_ReconcilesTimerToServerReloadEndTick()
+        {
+            var rig = new Rig(TestWeapons);
+            rig.Controller.Select(CombatWeaponId.RubberGun);
+            rig.Controller.TryAttack(0f);
+            rig.Controller.TryAttack(0f);
+            rig.Server.Flush();
+            rig.Controller.TryReload();
+            rig.Controller.Tick(0.5f);
+
+            rig.Server.Flush();
+            Assert.AreEqual(1.5f, rig.Controller.ReloadRemainingSeconds, 0.0001f);
         }
 
         [Test]
@@ -263,7 +283,7 @@ namespace JungleMaze.Tests.Combat
         }
 
         [Test]
-        public void Reload_RejectedResultKeepsControllerIdle()
+        public void Reload_RejectedResultCancelsPredictedTimer()
         {
             var rig = new Rig(TestWeapons);
             rig.Controller.Select(CombatWeaponId.RubberGun);
@@ -276,7 +296,7 @@ namespace JungleMaze.Tests.Combat
             Assert.IsTrue(rig.Controller.TryReload());
             rig.Controller.OnReloadResult(new ReloadResultPacket
             {
-                RequestSeq = rig.Sink.Reloads[0].RequestSeq, Weapon = CombatWeaponId.RubberGun,
+                RequestSeq = rig.Sink.Reloads[0].RequestSeq, Weapon = CombatWeaponId.RubberGun, NetId = 1,
                 Outcome = CombatOutcome.NoReserve, Magazine = 0
             });
 
@@ -320,46 +340,48 @@ namespace JungleMaze.Tests.Combat
         }
 
         [Test]
-        public void TwoPeers_SeeAttackAndReloadOnlyAfterServerConfirms()
+        public void TwoPeers_SeeRoomWideAttackAndReloadOnlyAfterServerConfirms()
         {
             var balance = new StaticBalance(TestWeapons);
             var server = new FakeCombatBackend(balance);
             var peerA = server.AddPeer(1);
             var peerB = server.AddPeer(2);
-            var hudA = new RecordingHud();
-            var hudB = new RecordingHud();
-            var a = new WeaponController(balance, peerA, hudA);
-            var b = new WeaponController(balance, peerB, hudB);
+            var a = new WeaponController(balance, peerA, new RecordingHud(), 1);
+            var b = new WeaponController(balance, peerB, new RecordingHud(), 2);
             peerA.AttackResult += a.OnAttackResult;
             peerA.ReloadResult += a.OnReloadResult;
             peerB.AttackResult += b.OnAttackResult;
             peerB.ReloadResult += b.OnReloadResult;
 
-            var seenByB = new List<CombatBroadcast>();
-            peerB.Broadcast += seenByB.Add;
+            var aEvents = new List<CombatEvent>();
+            var bEvents = new List<CombatEvent>();
+            a.Changed += aEvents.Add;
+            b.Changed += bEvents.Add;
 
             a.Select(CombatWeaponId.RubberGun);
             a.TryAttack(45f);
-            Assert.AreEqual(0, seenByB.Count, "B must not see A's attack before the server confirms it");
+            Assert.AreEqual(0, bEvents.Count, "B must not see A's attack before the server answers");
             Assert.AreEqual(1, a.PendingCount);
 
             server.Flush();
             Assert.AreEqual(0, a.PendingCount);
-            Assert.AreEqual(1, seenByB.Count);
-            Assert.AreEqual((byte)1, seenByB[0].NetId);
-            Assert.AreEqual(CombatBroadcastKind.Attack, seenByB[0].Kind);
+            Assert.AreEqual(CombatEventKind.AttackConfirmed, aEvents[aEvents.Count - 1].Kind);
+            Assert.AreEqual(1, bEvents.Count);
+            Assert.AreEqual(CombatEventKind.RemoteAttackConfirmed, bEvents[0].Kind);
+            Assert.AreEqual((byte)1, bEvents[0].NetId);
+            Assert.AreEqual(CombatWeaponId.RubberGun, bEvents[0].Weapon);
 
             a.Tick(1f);
-            a.TryAttack(45f);
             a.TryAttack(45f);
             server.Flush();
             a.Tick(1f);
             a.TryReload();
-            Assert.AreEqual(2, seenByB.Count, "B must not see A's reload request before it is accepted");
+            Assert.AreEqual(2, bEvents.Count, "B must not see A's reload request before the server accepts it");
             server.Flush();
-            Assert.AreEqual(3, seenByB.Count);
-            Assert.AreEqual(CombatBroadcastKind.ReloadStarted, seenByB[2].Kind);
-            Assert.AreEqual(CombatWeaponId.RubberGun, seenByB[2].Weapon);
+            Assert.AreEqual(3, bEvents.Count);
+            Assert.AreEqual(CombatEventKind.RemoteReloadStarted, bEvents[2].Kind);
+            Assert.AreEqual((byte)1, bEvents[2].NetId);
+            Assert.AreEqual(CombatWeaponId.RubberGun, bEvents[2].Weapon);
             Assert.IsTrue(a.IsReloading);
             Assert.IsFalse(b.IsReloading, "B's own state is independent of A's reload");
         }

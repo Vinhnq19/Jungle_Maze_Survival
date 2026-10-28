@@ -9,14 +9,11 @@ namespace JungleMaze.App.Combat.Mocks
     /// <summary>
     /// In-process stand-in for the combat server, used by the WPN-01 demo and tests until the GameServer transport is
     /// connected. It keeps its own ammo per peer, answers requests only when <see cref="Flush"/> runs (so tests control
-    /// latency), and broadcasts a combat event to every peer only after the request was accepted. Not authoritative
-    /// for anything beyond ammo and reload timing; no damage, HP, stun or loot.
+    /// latency), and sends every result to all peers, like the room-wide server broadcast. Not authoritative for
+    /// anything beyond ammo and reload timing; no damage, HP, stun or loot.
     /// </summary>
     public sealed class FakeCombatBackend
     {
-        /// <summary>Server tick rate used to turn reload seconds into ReloadEndTick (Client_Developer_Guide: 30 Hz).</summary>
-        public const float TickRate = 30f;
-
         private readonly IBalanceConfigProvider _balance;
         private readonly List<FakeCombatPeer> _peers = new List<FakeCombatPeer>();
         private readonly Queue<QueuedRequest> _inbox = new Queue<QueuedRequest>();
@@ -47,7 +44,7 @@ namespace JungleMaze.App.Combat.Mocks
         internal void EnqueueReload(FakeCombatPeer peer, ReloadRequestPacket packet) =>
             _inbox.Enqueue(new QueuedRequest { Peer = peer, IsReload = true, Reload = packet });
 
-        /// <summary>Processes queued requests in arrival order, then sends each result and broadcast.</summary>
+        /// <summary>Processes queued requests in arrival order, then sends each result to every peer.</summary>
         public void Flush()
         {
             while (_inbox.Count > 0)
@@ -71,24 +68,22 @@ namespace JungleMaze.App.Combat.Mocks
         private void HandleAttack(FakeCombatPeer peer, AttackRequestPacket packet)
         {
             var outcome = AttackOverride != null ? AttackOverride(peer, packet) : peer.DecideAttack(packet);
-            var magazine = peer.MagazineOf(packet.Weapon);
-            peer.RaiseAttack(new AttackResultPacket
+            var result = new AttackResultPacket
             {
                 RequestSeq = packet.RequestSeq,
                 Weapon = packet.Weapon,
                 Outcome = outcome,
                 Tick = Tick,
-                Magazine = (byte)magazine,
+                Magazine = (byte)peer.MagazineOf(packet.Weapon),
                 NetId = peer.NetId
-            });
-            if (outcome == CombatOutcome.Accepted)
-                Broadcast(peer, new CombatBroadcast(peer.NetId, packet.Weapon, CombatBroadcastKind.Attack, Tick));
+            };
+            for (var i = 0; i < _peers.Count; i++) _peers[i].RaiseAttack(result);
         }
 
         private void HandleReload(FakeCombatPeer peer, ReloadRequestPacket packet)
         {
             var outcome = peer.DecideReload(packet, Tick, out var reloadEndTick);
-            peer.RaiseReload(new ReloadResultPacket
+            var result = new ReloadResultPacket
             {
                 RequestSeq = packet.RequestSeq,
                 Weapon = packet.Weapon,
@@ -97,14 +92,8 @@ namespace JungleMaze.App.Combat.Mocks
                 ReloadEndTick = reloadEndTick,
                 Magazine = (byte)peer.MagazineOf(packet.Weapon),
                 NetId = peer.NetId
-            });
-            if (outcome == CombatOutcome.Accepted)
-                Broadcast(peer, new CombatBroadcast(peer.NetId, packet.Weapon, CombatBroadcastKind.ReloadStarted, Tick));
-        }
-
-        private void Broadcast(FakeCombatPeer source, CombatBroadcast message)
-        {
-            for (var i = 0; i < _peers.Count; i++) _peers[i].RaiseBroadcast(message);
+            };
+            for (var i = 0; i < _peers.Count; i++) _peers[i].RaiseReload(result);
         }
 
         private struct QueuedRequest
@@ -116,8 +105,8 @@ namespace JungleMaze.App.Combat.Mocks
         }
     }
 
-    /// <summary>One player's link to <see cref="FakeCombatBackend"/>: the client sends through it and receives its results.</summary>
-    public sealed class FakeCombatPeer : ICombatRequestSink, ICombatResultSource, ICombatEventSource
+    /// <summary>One player's link to <see cref="FakeCombatBackend"/>: the client sends through it and receives every room result.</summary>
+    public sealed class FakeCombatPeer : ICombatRequestSink, ICombatResultSource
     {
         private readonly FakeCombatBackend _server;
         private readonly int[] _magazine = new int[CombatWeaponIds.Count];
@@ -144,7 +133,6 @@ namespace JungleMaze.App.Combat.Mocks
 
         public event Action<AttackResultPacket> AttackResult;
         public event Action<ReloadResultPacket> ReloadResult;
-        public event Action<CombatBroadcast> Broadcast;
 
         public void SendAttack(AttackRequestPacket packet) => _server.EnqueueAttack(this, packet);
         public void SendReload(ReloadRequestPacket packet) => _server.EnqueueReload(this, packet);
@@ -176,7 +164,7 @@ namespace JungleMaze.App.Combat.Mocks
             if (_reserve[index] <= 0) return CombatOutcome.NoReserve;
 
             var seconds = definition.Stats.ReloadSeconds ?? 0f;
-            reloadEndTick = tick + (uint)Math.Ceiling(seconds * FakeCombatBackend.TickRate);
+            reloadEndTick = tick + (uint)Math.Ceiling(seconds * CombatShotMath.TickRate);
             _reloading[index] = true;
             _reloadEndTick[index] = reloadEndTick;
             return CombatOutcome.Accepted;
@@ -199,6 +187,5 @@ namespace JungleMaze.App.Combat.Mocks
 
         internal void RaiseAttack(AttackResultPacket packet) => AttackResult?.Invoke(packet);
         internal void RaiseReload(ReloadResultPacket packet) => ReloadResult?.Invoke(packet);
-        internal void RaiseBroadcast(CombatBroadcast message) => Broadcast?.Invoke(message);
     }
 }

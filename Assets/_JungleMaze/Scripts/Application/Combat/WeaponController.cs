@@ -6,7 +6,7 @@ using JungleMaze.Domain.Balance;
 
 namespace JungleMaze.App.Combat
 {
-    /// <summary>What a <see cref="WeaponController"/> reports to presentation. Struct payload, no allocation.</summary>
+    /// <summary>What a <see cref="WeaponController"/> reports to presentation.</summary>
     public enum CombatEventKind : byte
     {
         AttackPredicted = 0,
@@ -15,15 +15,20 @@ namespace JungleMaze.App.Combat
         ReloadRequested = 3,
         ReloadStarted = 4,
         ReloadFinished = 5,
-        ReloadRejected = 6
+        ReloadRejected = 6,
+        /// <summary>Another player's accepted attack, from the room-wide result broadcast.</summary>
+        RemoteAttackConfirmed = 7,
+        /// <summary>Another player's accepted reload, from the room-wide result broadcast.</summary>
+        RemoteReloadStarted = 8
     }
 
     public readonly struct CombatEvent
     {
-        public CombatEvent(CombatEventKind kind, CombatWeaponId weapon, ushort requestSeq, float aimDegrees, CombatOutcome outcome)
+        public CombatEvent(CombatEventKind kind, CombatWeaponId weapon, byte netId, ushort requestSeq, float aimDegrees, CombatOutcome outcome)
         {
             Kind = kind;
             Weapon = weapon;
+            NetId = netId;
             RequestSeq = requestSeq;
             AimDegrees = aimDegrees;
             Outcome = outcome;
@@ -31,16 +36,18 @@ namespace JungleMaze.App.Combat
 
         public CombatEventKind Kind { get; }
         public CombatWeaponId Weapon { get; }
+        /// <summary>The player who performed the action.</summary>
+        public byte NetId { get; }
         public ushort RequestSeq { get; }
         public float AimDegrees { get; }
-        /// <summary>Set for rejections and sync results; <see cref="CombatOutcome.Accepted"/> otherwise.</summary>
+        /// <summary>Set for rejections; <see cref="CombatOutcome.Accepted"/> otherwise.</summary>
         public CombatOutcome Outcome { get; }
     }
 
     /// <summary>
     /// Client-side weapon input and state for WPN-01: selection, aim, cadence, magazine and reload timing.
-    /// Attack cadence and the magazine are predicted locally and rolled back if the server rejects the request.
-    /// A reload only starts after the server accepts it. Damage, HP, stun and loot are never decided here.
+    /// Attack cadence, the magazine and the reload timer are predicted locally and rolled back or reconciled when the
+    /// server answers. Reload completion follows the server's ReloadEndTick. Damage, HP, stun and loot are never decided here.
     /// </summary>
     public sealed class WeaponController
     {
@@ -55,6 +62,7 @@ namespace JungleMaze.App.Combat
 
         private readonly ICombatRequestSink _sink;
         private readonly IHudStateWriter _hud;
+        private readonly byte _ownNetId;
         private readonly CombatWeaponSlot[] _slots = new CombatWeaponSlot[CombatWeaponIds.Count];
         private readonly PendingAttack[] _pending = new PendingAttack[MaxPending];
         private int _pendingCount;
@@ -65,13 +73,16 @@ namespace JungleMaze.App.Combat
         private ushort _reloadSeq;
         private CombatWeaponId _reloadWeapon;
         private bool _reloading;
+        private bool _reloadConfirmed;
         private float _reloadRemaining;
+        private float _reloadElapsed;
 
-        public WeaponController(IBalanceConfigProvider balance, ICombatRequestSink sink, IHudStateWriter hud)
+        public WeaponController(IBalanceConfigProvider balance, ICombatRequestSink sink, IHudStateWriter hud, byte ownNetId)
         {
             if (balance == null) throw new ArgumentNullException(nameof(balance));
             _sink = sink ?? throw new ArgumentNullException(nameof(sink));
             _hud = hud ?? throw new ArgumentNullException(nameof(hud));
+            _ownNetId = ownNetId;
             for (var i = 0; i < CombatWeaponIds.Count; i++)
             {
                 var weapon = (CombatWeaponId)i;
@@ -85,8 +96,12 @@ namespace JungleMaze.App.Combat
         public event Action<CombatEvent> Changed;
 
         public CombatWeaponId Selected => _selected;
+        /// <summary>True from the moment a reload is requested until it finishes or is rejected (predicted timer).</summary>
         public bool IsReloading => _reloading;
+        /// <summary>True while the server has not answered the reload request yet.</summary>
         public bool IsReloadPending => _reloadRequested;
+        /// <summary>True once the server accepted the reload and its ReloadEndTick is known.</summary>
+        public bool IsReloadConfirmed => _reloadConfirmed;
         public float ReloadRemainingSeconds => _reloadRemaining;
         public int PendingCount => _pendingCount;
         public CombatWeaponSlot Slot(CombatWeaponId weapon) => _slots[(int)weapon];
@@ -119,11 +134,14 @@ namespace JungleMaze.App.Combat
             if (spent) slot.Magazine--;
             _pending[_pendingCount++] = new PendingAttack { Seq = seq, Weapon = _selected, SpentAmmo = spent };
             PublishAmmoIfSelected(slot);
-            Raise(CombatEventKind.AttackPredicted, _selected, seq, CombatShotMath.DecodeAim(aim), CombatOutcome.Accepted);
+            Raise(CombatEventKind.AttackPredicted, _selected, _ownNetId, seq, CombatShotMath.DecodeAim(aim), CombatOutcome.Accepted);
             return true;
         }
 
-        /// <summary>Sends a reload for the selected ranged weapon. The reload timer starts only after the server accepts it.</summary>
+        /// <summary>
+        /// Sends a reload for the selected ranged weapon. The reload timer starts at once from the config seconds
+        /// (prediction); the server's ReloadEndTick replaces it when the result arrives.
+        /// </summary>
         public bool TryReload()
         {
             var slot = SelectedSlot;
@@ -135,13 +153,27 @@ namespace JungleMaze.App.Combat
             _reloadRequested = true;
             _reloadSeq = seq;
             _reloadWeapon = _selected;
-            Raise(CombatEventKind.ReloadRequested, _selected, seq, 0f, CombatOutcome.Accepted);
+            _reloading = true;
+            _reloadConfirmed = false;
+            _reloadRemaining = slot.ReloadSeconds;
+            _reloadElapsed = 0f;
+            Raise(CombatEventKind.ReloadRequested, _selected, _ownNetId, seq, 0f, CombatOutcome.Accepted);
             return true;
         }
 
-        /// <summary>Applies a server answer to an attack. Unknown or already-handled sequence numbers are ignored.</summary>
+        /// <summary>
+        /// Applies a room-wide attack result. Own requests are matched by sequence number; other players' accepted
+        /// attacks are raised as remote events. Unknown or already-handled own sequences are ignored.
+        /// </summary>
         public void OnAttackResult(AttackResultPacket result)
         {
+            if (result.NetId != _ownNetId)
+            {
+                if (result.Outcome == CombatOutcome.Accepted && CombatWeaponIds.IsKnown(result.Weapon))
+                    Raise(CombatEventKind.RemoteAttackConfirmed, result.Weapon, result.NetId, result.RequestSeq, 0f, CombatOutcome.Accepted);
+                return;
+            }
+
             var index = FindPending(result.RequestSeq);
             if (index < 0) return;
             var pending = _pending[index];
@@ -151,20 +183,30 @@ namespace JungleMaze.App.Combat
             var slot = _slots[(int)pending.Weapon];
             if (result.Outcome == CombatOutcome.Accepted)
             {
-                Raise(CombatEventKind.AttackConfirmed, pending.Weapon, result.RequestSeq, 0f, CombatOutcome.Accepted);
+                Raise(CombatEventKind.AttackConfirmed, pending.Weapon, _ownNetId, result.RequestSeq, 0f, CombatOutcome.Accepted);
             }
             else
             {
                 if (pending.SpentAmmo && slot.MagazineSize > 0 && slot.Magazine < slot.MagazineSize) slot.Magazine++;
-                Raise(CombatEventKind.AttackRejected, pending.Weapon, result.RequestSeq, 0f, result.Outcome);
+                Raise(CombatEventKind.AttackRejected, pending.Weapon, _ownNetId, result.RequestSeq, 0f, result.Outcome);
             }
             if (slot.IsRanged && !HasPendingFor(pending.Weapon)) SyncMagazine(slot, result.Magazine);
             PublishAmmoIfSelected(slot);
         }
 
-        /// <summary>Applies a server answer to the reload request. Stale sequence numbers are ignored.</summary>
+        /// <summary>
+        /// Applies a room-wide reload result. For the own request, the reload timer is reconciled to the server's
+        /// ReloadEndTick; a rejection cancels the predicted timer. Other players' accepted reloads are raised as remote events.
+        /// </summary>
         public void OnReloadResult(ReloadResultPacket result)
         {
+            if (result.NetId != _ownNetId)
+            {
+                if (result.Outcome == CombatOutcome.Accepted && CombatWeaponIds.IsKnown(result.Weapon))
+                    Raise(CombatEventKind.RemoteReloadStarted, result.Weapon, result.NetId, result.RequestSeq, 0f, CombatOutcome.Accepted);
+                return;
+            }
+
             if (!_reloadRequested || result.RequestSeq != _reloadSeq || result.Weapon != _reloadWeapon) return;
             _reloadRequested = false;
             var slot = _slots[(int)_reloadWeapon];
@@ -172,18 +214,29 @@ namespace JungleMaze.App.Combat
 
             if (result.Outcome == CombatOutcome.Accepted)
             {
-                _reloading = true;
-                _reloadRemaining = slot.ReloadSeconds;
-                Raise(CombatEventKind.ReloadStarted, _reloadWeapon, result.RequestSeq, 0f, CombatOutcome.Accepted);
+                var serverRemaining = result.ReloadEndTick > result.Tick
+                    ? CombatShotMath.TicksToSeconds(result.ReloadEndTick - result.Tick)
+                    : 0f;
+                _reloadRemaining = Math.Max(0f, serverRemaining - _reloadElapsed);
+                _reloadConfirmed = true;
+                Raise(CombatEventKind.ReloadStarted, _reloadWeapon, _ownNetId, result.RequestSeq, 0f, CombatOutcome.Accepted);
+                if (_reloadRemaining <= 0f)
+                {
+                    FinishReload();
+                    return;
+                }
             }
             else
             {
-                Raise(CombatEventKind.ReloadRejected, _reloadWeapon, result.RequestSeq, 0f, result.Outcome);
+                CancelReload();
+                Raise(CombatEventKind.ReloadRejected, _reloadWeapon, _ownNetId, result.RequestSeq, 0f, result.Outcome);
             }
             PublishAmmoIfSelected(slot);
         }
 
-        /// <summary>Advances cooldowns and the reload timer. Completing a reload fills the magazine from reserve.</summary>
+        /// <summary>
+        /// Advances cooldowns and the reload timer. The timer only completes after the server confirmed the reload.
+        /// </summary>
         public void Tick(float deltaTime)
         {
             if (deltaTime <= 0f) return;
@@ -194,11 +247,17 @@ namespace JungleMaze.App.Combat
             }
             if (!_reloading) return;
 
-            _reloadRemaining -= deltaTime;
-            if (_reloadRemaining > 0f) return;
+            _reloadElapsed += deltaTime;
+            _reloadRemaining = Math.Max(0f, _reloadRemaining - deltaTime);
+            if (_reloadConfirmed && _reloadRemaining <= 0f) FinishReload();
+        }
 
+        private void FinishReload()
+        {
             _reloading = false;
+            _reloadConfirmed = false;
             _reloadRemaining = 0f;
+            _reloadElapsed = 0f;
             var slot = _slots[(int)_reloadWeapon];
             var take = Math.Min(slot.MagazineSize - slot.Magazine, slot.Reserve);
             if (take > 0)
@@ -206,8 +265,16 @@ namespace JungleMaze.App.Combat
                 slot.Magazine += take;
                 slot.Reserve -= take;
             }
-            Raise(CombatEventKind.ReloadFinished, _reloadWeapon, _reloadSeq, 0f, CombatOutcome.Accepted);
+            Raise(CombatEventKind.ReloadFinished, _reloadWeapon, _ownNetId, _reloadSeq, 0f, CombatOutcome.Accepted);
             PublishAmmoIfSelected(slot);
+        }
+
+        private void CancelReload()
+        {
+            _reloading = false;
+            _reloadConfirmed = false;
+            _reloadRemaining = 0f;
+            _reloadElapsed = 0f;
         }
 
         private void SyncMagazine(CombatWeaponSlot slot, byte serverMagazine)
@@ -257,9 +324,9 @@ namespace JungleMaze.App.Combat
             else _hud.SetAmmo(0, 0);
         }
 
-        private void Raise(CombatEventKind kind, CombatWeaponId weapon, ushort seq, float aimDegrees, CombatOutcome outcome)
+        private void Raise(CombatEventKind kind, CombatWeaponId weapon, byte netId, ushort seq, float aimDegrees, CombatOutcome outcome)
         {
-            Changed?.Invoke(new CombatEvent(kind, weapon, seq, aimDegrees, outcome));
+            Changed?.Invoke(new CombatEvent(kind, weapon, netId, seq, aimDegrees, outcome));
         }
     }
 }

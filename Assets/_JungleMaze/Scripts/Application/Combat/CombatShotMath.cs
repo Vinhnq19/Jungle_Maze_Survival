@@ -10,6 +10,12 @@ namespace JungleMaze.App.Combat
     {
         private const double AimSteps = 65536.0;
 
+        /// <summary>Server tick rate (Client_Developer_Guide: 30 Hz). Used to turn ReloadEndTick into seconds.</summary>
+        public const float TickRate = 30f;
+
+        /// <summary>Converts a server tick span to seconds; negative spans clamp to zero.</summary>
+        public static float TicksToSeconds(uint ticks) => ticks / TickRate;
+
         /// <summary>Wraps any angle into [0, 360) and quantises it to the wire scale.</summary>
         public static ushort EncodeAim(float degrees)
         {
