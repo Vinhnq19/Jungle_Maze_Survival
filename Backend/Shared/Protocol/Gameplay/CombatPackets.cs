@@ -79,7 +79,7 @@ namespace JungleBackend.Protocol.Gameplay
     /// <summary>Server → client, reply to one AttackRequest. The client only confirms or cancels its predicted effects and never computes damage.</summary>
     public struct AttackResultPacket : INetSerializable
     {
-        public const int PayloadBytes = 9;
+        public const int PayloadBytes = 10;
         public ushort RequestSeq;
         public CombatWeaponId Weapon;
         public CombatOutcome Outcome;
@@ -111,7 +111,7 @@ namespace JungleBackend.Protocol.Gameplay
     /// <summary>Server → client, reply to one ReloadRequest. ReloadEndTick is the tick when the server finishes the reload.</summary>
     public struct ReloadResultPacket : INetSerializable
     {
-        public const int PayloadBytes = 12;
+        public const int PayloadBytes = 14;
         public ushort RequestSeq;
         public CombatWeaponId Weapon;
         public CombatOutcome Outcome;
