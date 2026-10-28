@@ -684,6 +684,342 @@ Console.WriteLine("\n--- TEST 16: Slow Consumer Broadcast Failure ---");
     Check(!slowPeer.IsOpen, "Slow peer disconnected");
 }
 
+
+// -------------------------------------------------------------
+// TEST 17: Killcam Authoritative Elimination, Replay Capture & Privacy Isolation
+// -------------------------------------------------------------
+Console.WriteLine("\n--- TEST 17: Killcam Authoritative Elimination, Replay Capture & Privacy Isolation ---");
+{
+    var matchA = new MatchRuntime("ROOM_KILLCAM_A", map, zoneSchedule, testProfile);
+    var matchB = new MatchRuntime("ROOM_KILLCAM_B", map, zoneSchedule, testProfile);
+
+    matchA.TryRegisterPlayer("p1", "Player1", out _);
+    matchA.TryRegisterPlayer("p2", "Player2", out _);
+    matchA.TryRegisterPlayer("p3", "Player3", out _);
+    matchA.SetPlayerReady("p1");
+    matchA.SetPlayerReady("p2");
+    matchA.SetPlayerReady("p3");
+    for (var i = 0; i < 15; i++) matchA.Tick(0.1);
+    matchA.SetPlayerLoaded("p1", matchA.MatchId);
+    matchA.SetPlayerLoaded("p2", matchA.MatchId);
+    matchA.SetPlayerLoaded("p3", matchA.MatchId);
+    for (var i = 0; i < 15; i++) matchA.Tick(0.1);
+    Check(matchA.Phase == MatchPhase.InGame, "Room A in InGame");
+
+    matchB.TryRegisterPlayer("p4", "Player4", out _);
+    matchB.TryRegisterPlayer("p5", "Player5", out _);
+    matchB.SetPlayerReady("p4");
+    matchB.SetPlayerReady("p5");
+    for (var i = 0; i < 15; i++) matchB.Tick(0.1);
+    matchB.SetPlayerLoaded("p4", matchB.MatchId);
+    matchB.SetPlayerLoaded("p5", matchB.MatchId);
+    for (var i = 0; i < 15; i++) matchB.Tick(0.1);
+    Check(matchB.Phase == MatchPhase.InGame, "Room B in InGame");
+
+    // Advance matchA for 160 ticks (so >= 150 frames recorded)
+    for (var i = 0; i < 160; i++) matchA.Tick(1.0 / 30.0);
+
+    MatchEliminationEventPacket? elimPacket = null;
+    EventPacket? eventPacket = null;
+    var broadcastRegistry = new PacketRegistry();
+    broadcastRegistry.Subscribe<MatchEliminationEventPacket>(p => elimPacket = p);
+    broadcastRegistry.Subscribe<EventPacket>(p => eventPacket = p);
+
+    matchA.ReliableBroadcast += bytes =>
+    {
+        var reader = new NetDataReader(bytes);
+        broadcastRegistry.TryReadFrame(reader);
+    };
+
+    matchA.Entities.TryGetBySession("p1", out var e1);
+    matchA.Entities.TryGetBySession("p2", out var e2);
+    var p1NetId = e1!.NetId;
+    var p2NetId = e2!.NetId;
+
+    // Eliminate p1 by p2 damage
+    matchA.Health.ApplyDamage(p1NetId, 100, p2NetId);
+    matchA.Tick(1.0 / 30.0);
+
+    Check(elimPacket.HasValue, "Authoritative MatchEliminationEventPacket was broadcast");
+    Check(elimPacket!.Value.MatchId == matchA.MatchId, "Elimination packet has correct MatchId");
+    Check(elimPacket.Value.VictimNetId == p1NetId, "Elimination packet has correct VictimNetId");
+    Check(elimPacket.Value.KillerNetId == p2NetId, "Elimination packet has correct KillerNetId");
+    Check(elimPacket.Value.Cause == EliminationCauseWire.Player, "Elimination packet has Cause == Player");
+    Check(eventPacket.HasValue && eventPacket.Value.EventType == GameEventType.PlayerDied, "EventPacket PlayerDied broadcast");
+
+    // Privacy & Security Validations
+    // 1. Living player cannot request replay
+    var liveReq = matchA.TryGetKillcamReplay("p2", matchA.MatchId, p2NetId, out _);
+    Check(!liveReq, "Living player request rejected (cannot spy on positions)");
+
+    // 2. Requesting wrong victim NetId (spoofing) rejected
+    var spoofReq = matchA.TryGetKillcamReplay("p1", matchA.MatchId, p2NetId, out _);
+    Check(!spoofReq, "Requesting victim NetId of another player rejected");
+
+    // 3. Requesting wrong MatchId rejected
+    var wrongMatchReq = matchA.TryGetKillcamReplay("p1", matchB.MatchId, p1NetId, out _);
+    Check(!wrongMatchReq, "Requesting with Room B MatchId rejected");
+
+    // 4. Session from Room B requesting in Room A rejected
+    var crossRoomReq = matchA.TryGetKillcamReplay("p4", matchA.MatchId, p1NetId, out _);
+    Check(!crossRoomReq, "Session from Room B requesting in Room A rejected");
+
+    // 5. Valid own request succeeds
+    var ownReq = matchA.TryGetKillcamReplay("p1", matchA.MatchId, p1NetId, out var replayResult);
+    Check(ownReq && replayResult != null, "Dead victim requesting own replay succeeds");
+    Check(replayResult!.Status == 0, "Replay status is Ok (0)");
+    Check(replayResult.Frames.Count == 150, "Replay window has exactly 150 frames (5s @ 30Hz)");
+    Check(replayResult.VictimNetId == p1NetId, "Replay result has correct VictimNetId");
+    Check(replayResult.KillerNetId == p2NetId, "Replay result has correct KillerNetId");
+    Check(replayResult.EndTick == elimPacket.Value.Tick, "Replay EndTick matches authoritative death tick");
+
+    // 6. Least disclosure: frames only contain victim and killer, p3 is not in payload
+    var firstFrame = replayResult.Frames[0];
+    Check(firstFrame.KillerPresent, "Killer present in replay frame");
+}
+
+// -------------------------------------------------------------
+// TEST 18: Killcam Window 150, Zone Fallback & Too Short Window Fallback
+// -------------------------------------------------------------
+Console.WriteLine("\n--- TEST 18: Killcam Window 150, Zone Fallback & Too Short Window Fallback ---");
+{
+    // Part 1: Too short window (< 150 ticks)
+    var matchShort = new MatchRuntime("ROOM_SHORT", map, zoneSchedule, testProfile);
+    matchShort.TryRegisterPlayer("s1", "Short1", out _);
+    matchShort.TryRegisterPlayer("s2", "Short2", out _);
+    matchShort.SetPlayerReady("s1");
+    matchShort.SetPlayerReady("s2");
+    for (var i = 0; i < 15; i++) matchShort.Tick(0.1);
+    matchShort.SetPlayerLoaded("s1", matchShort.MatchId);
+    matchShort.SetPlayerLoaded("s2", matchShort.MatchId);
+    for (var i = 0; i < 15; i++) matchShort.Tick(0.1);
+    Check(matchShort.Phase == MatchPhase.InGame, "Short match InGame");
+
+    // Advance only 40 ticks (< 150)
+    for (var i = 0; i < 40; i++) matchShort.Tick(1.0 / 30.0);
+    matchShort.Entities.TryGetBySession("s1", out var s1);
+    matchShort.Entities.TryGetBySession("s2", out var s2);
+    matchShort.Health.ApplyDamage(s1!.NetId, 100, s2!.NetId);
+    matchShort.Tick(1.0 / 30.0);
+
+    var shortOk = matchShort.TryGetKillcamReplay("s1", matchShort.MatchId, s1.NetId, out var shortReplay);
+    Check(shortOk && shortReplay != null, "Short match request answered");
+    Check(shortReplay!.Status == 7, "Short match replay status is TooShort (7)");
+    Check(shortReplay.Frames.Count == 0, "TooShort replay carries 0 frames");
+
+    // Part 2: Zone kill fallback (NoData)
+    var matchZone = new MatchRuntime("ROOM_ZONE", map, zoneSchedule, testProfile);
+    matchZone.TryRegisterPlayer("z1", "Zone1", out _);
+    matchZone.TryRegisterPlayer("z2", "Zone2", out _);
+    matchZone.SetPlayerReady("z1");
+    matchZone.SetPlayerReady("z2");
+    for (var i = 0; i < 15; i++) matchZone.Tick(0.1);
+    matchZone.SetPlayerLoaded("z1", matchZone.MatchId);
+    matchZone.SetPlayerLoaded("z2", matchZone.MatchId);
+    for (var i = 0; i < 15; i++) matchZone.Tick(0.1);
+
+    for (var i = 0; i < 160; i++) matchZone.Tick(1.0 / 30.0);
+    matchZone.Entities.TryGetBySession("z1", out var z1);
+    matchZone.Health.ApplyDamage(z1!.NetId, 100, 255); // 255 = Zone source
+    matchZone.Tick(1.0 / 30.0);
+
+    var zoneOk = matchZone.TryGetKillcamReplay("z1", matchZone.MatchId, z1.NetId, out var zoneReplay);
+    Check(zoneOk && zoneReplay != null, "Zone kill request answered");
+    Check(zoneReplay!.Status == 4, "Zone kill replay status is NoData (4)");
+    Check(zoneReplay.Frames.Count == 0, "Zone kill replay carries 0 frames");
+}
+
+// -------------------------------------------------------------
+// TEST 19: Killcam Duplicate, Rate Limit, Late & Wrong Match Requests
+// -------------------------------------------------------------
+Console.WriteLine("\n--- TEST 19: Killcam Duplicate, Rate Limit, Late & Wrong Match Requests ---");
+{
+    var match = new MatchRuntime("ROOM_RATE", map, zoneSchedule, testProfile);
+    match.TryRegisterPlayer("r1", "Rate1", out _);
+    match.TryRegisterPlayer("r2", "Rate2", out _);
+    match.SetPlayerReady("r1");
+    match.SetPlayerReady("r2");
+    for (var i = 0; i < 15; i++) match.Tick(0.1);
+    match.SetPlayerLoaded("r1", match.MatchId);
+    match.SetPlayerLoaded("r2", match.MatchId);
+    for (var i = 0; i < 15; i++) match.Tick(0.1);
+
+    for (var i = 0; i < 160; i++) match.Tick(1.0 / 30.0);
+    match.Entities.TryGetBySession("r1", out var r1);
+    match.Entities.TryGetBySession("r2", out var r2);
+    match.Health.ApplyDamage(r1!.NetId, 100, r2!.NetId);
+    match.Tick(1.0 / 30.0);
+
+    // Request 1, 2, 3 succeed
+    Check(match.TryGetKillcamReplay("r1", match.MatchId, r1.NetId, out _), "Request 1 succeeded");
+    Check(match.TryGetKillcamReplay("r1", match.MatchId, r1.NetId, out _), "Request 2 succeeded");
+    Check(match.TryGetKillcamReplay("r1", match.MatchId, r1.NetId, out _), "Request 3 succeeded");
+
+    // Request 4 rejected by rate limit
+    var rateLimited = match.TryGetKillcamReplay("r1", match.MatchId, r1.NetId, out _);
+    Check(!rateLimited, "Request 4 rejected by rate limit (bounded requests per victim/match)");
+
+    // Arbitrary unknown session rejected
+    var unknownSession = match.TryGetKillcamReplay("unknown_player", match.MatchId, 0, out _);
+    Check(!unknownSession, "Unknown session request rejected");
+}
+
+// -------------------------------------------------------------
+// TEST 20: Killcam NewMatch Cleanup & Memory Safety
+// -------------------------------------------------------------
+Console.WriteLine("\n--- TEST 20: Killcam NewMatch Cleanup & Memory Safety ---");
+{
+    var match = new MatchRuntime("ROOM_CLEANUP", map, zoneSchedule, testProfile);
+    match.TryRegisterPlayer("c1", "Clean1", out _);
+    match.TryRegisterPlayer("c2", "Clean2", out _);
+    match.SetPlayerReady("c1");
+    match.SetPlayerReady("c2");
+    for (var i = 0; i < 15; i++) match.Tick(0.1);
+    match.SetPlayerLoaded("c1", match.MatchId);
+    match.SetPlayerLoaded("c2", match.MatchId);
+    for (var i = 0; i < 15; i++) match.Tick(0.1);
+
+    for (var i = 0; i < 160; i++) match.Tick(1.0 / 30.0);
+    var oldMatchId = match.MatchId;
+    match.Entities.TryGetBySession("c1", out var c1);
+    match.Entities.TryGetBySession("c2", out var c2);
+    match.Health.ApplyDamage(c1!.NetId, 100, c2!.NetId);
+    match.Tick(1.0 / 30.0);
+
+    Check(match.Phase == MatchPhase.Ending, "Match transitioned to Ending");
+    match.ProcessReplayAck("c1", oldMatchId);
+    match.ProcessReplayAck("c2", oldMatchId);
+
+    // Step into Cleanup and back to Waiting
+    for (var i = 0; i < 60; i++) match.Tick(0.1);
+    Check(match.Phase == MatchPhase.Waiting, "Match reset back to Waiting");
+    Check(match.MatchId != oldMatchId, "Fresh MatchId generated for next match");
+
+    // Requesting with old MatchId fails
+    var oldReq = match.TryGetKillcamReplay("c1", oldMatchId, c1.NetId, out _);
+    Check(!oldReq, "Requesting replay with old MatchId rejected after cleanup");
+
+    // Requesting in new match while alive in Waiting fails
+    var newReq = match.TryGetKillcamReplay("c1", match.MatchId, c1.NetId, out _);
+    Check(!newReq, "Requesting replay in fresh match while alive rejected");
+}
+
+// -------------------------------------------------------------
+// TEST 21: Killcam Packets Serialization, Framing & Bounds Checks
+// -------------------------------------------------------------
+Console.WriteLine("\n--- TEST 21: Killcam Packets Serialization, Framing & Bounds Checks ---");
+{
+    static void WriteTestGuid(NetDataWriter w, Guid g)
+    {
+        Span<byte> bytes = stackalloc byte[16];
+        g.TryWriteBytes(bytes);
+        for (var i = 0; i < 16; i++) w.Put(bytes[i]);
+    }
+
+    var registry = new PacketRegistry();
+    var writer = new NetDataWriter(true, 4096);
+    var reader = new NetDataReader();
+
+    // 1. KillcamRequestPacket roundtrip & bounds
+    KillcamRequestPacket? receivedReq = null;
+    registry.Subscribe<KillcamRequestPacket>(p => receivedReq = p);
+    var req = new KillcamRequestPacket { Version = 1, MatchId = Guid.NewGuid(), VictimNetId = 3 };
+    registry.WriteFrame(writer, ref req);
+    reader.SetSource(writer.Data, 0, writer.Length);
+    Check(registry.TryReadFrame(reader), "KillcamRequestPacket frame read succeeded");
+    Check(receivedReq.HasValue && receivedReq.Value.VictimNetId == 3 && receivedReq.Value.MatchId == req.MatchId, "KillcamRequestPacket roundtrip values match");
+
+    // Version mismatch rejection
+    var badReq = new KillcamRequestPacket { Version = 99, MatchId = req.MatchId, VictimNetId = 3 };
+    var badWriter = new NetDataWriter();
+    badReq.Serialize(badWriter);
+    var caughtBadVersion = false;
+    try { new KillcamRequestPacket().Deserialize(new NetDataReader(badWriter.CopyData())); }
+    catch (InvalidOperationException) { caughtBadVersion = true; }
+    Check(caughtBadVersion, "KillcamRequestPacket bad version rejected");
+
+    // 2. MatchEliminationEventPacket roundtrip & bounds
+    MatchEliminationEventPacket? receivedElim = null;
+    registry.Subscribe<MatchEliminationEventPacket>(p => receivedElim = p);
+    var elim = new MatchEliminationEventPacket { Version = 1, MatchId = Guid.NewGuid(), Tick = 54321, VictimNetId = 2, KillerNetId = 4, Cause = EliminationCauseWire.Player };
+    registry.WriteFrame(writer, ref elim);
+    reader.SetSource(writer.Data, 0, writer.Length);
+    Check(registry.TryReadFrame(reader), "MatchEliminationEventPacket frame read succeeded");
+    Check(receivedElim.HasValue && receivedElim.Value.Tick == 54321 && receivedElim.Value.KillerNetId == 4 && receivedElim.Value.Cause == EliminationCauseWire.Player, "MatchEliminationEventPacket values match");
+
+    // 3. KillcamDataChunkPacket roundtrip & <= 4KiB limit check
+    KillcamDataChunkPacket? receivedChunk = null;
+    registry.Subscribe<KillcamDataChunkPacket>(p => receivedChunk = p);
+    var chunkFrames = new KillcamFramePayload[75];
+    for (var i = 0; i < 75; i++)
+    {
+        chunkFrames[i] = new KillcamFramePayload
+        {
+            ZoneX = 25f, ZoneY = 25f, ZoneRadius = 15f,
+            VictimX = 10f + i, VictimY = 20f, VictimHp = (byte)(100 - i), VictimFlags = 1,
+            KillerX = 12f + i, KillerY = 22f, KillerHp = 100, KillerFlags = 2, KillerPresent = true
+        };
+    }
+    var chunk = new KillcamDataChunkPacket
+    {
+        Version = 1,
+        MatchId = Guid.NewGuid(),
+        Status = 0,
+        VictimNetId = 2,
+        KillerNetId = 4,
+        EndTick = 9999,
+        TotalFrames = 150,
+        ChunkIndex = 0,
+        TotalChunks = 2,
+        FrameCount = 75,
+        Frames = chunkFrames
+    };
+
+    registry.WriteFrame(writer, ref chunk);
+    Check(writer.Length <= 4096, $"75-frame KillcamDataChunkPacket size {writer.Length} <= 4096 bytes");
+    reader.SetSource(writer.Data, 0, writer.Length);
+    Check(registry.TryReadFrame(reader), "KillcamDataChunkPacket frame read succeeded");
+    Check(receivedChunk.HasValue && receivedChunk.Value.FrameCount == 75, "Chunk frame count is 75");
+    Check(receivedChunk!.Value.Frames != null && receivedChunk.Value.Frames.Length == 75, "Chunk frames array length is 75");
+    Check(receivedChunk.Value.Frames![0].KillerPresent, "Frame 0 KillerPresent == true");
+    Check(receivedChunk.Value.Frames[0].VictimX == 10f, "Frame 0 VictimX == 10");
+
+    // 4. Bounded arrays before allocating
+    var overChunk = new NetDataWriter();
+    overChunk.Put((byte)1); // Version
+    WriteTestGuid(overChunk, Guid.NewGuid()); // MatchId
+    overChunk.Put((byte)0); // Status
+    overChunk.Put((byte)1); // Victim
+    overChunk.Put((byte)2); // Killer
+    overChunk.Put((uint)100); // EndTick
+    overChunk.Put((ushort)150); // TotalFrames
+    overChunk.Put((byte)0); // ChunkIndex
+    overChunk.Put((byte)2); // TotalChunks
+    overChunk.Put((byte)120); // FrameCount > 75 (Oversized!)
+
+    var caughtOversizedFrameCount = false;
+    try { new KillcamDataChunkPacket().Deserialize(new NetDataReader(overChunk.CopyData())); }
+    catch (InvalidOperationException) { caughtOversizedFrameCount = true; }
+    Check(caughtOversizedFrameCount, "Oversized chunk FrameCount > 75 rejected before allocating");
+
+    var overTotalFrames = new NetDataWriter();
+    overTotalFrames.Put((byte)1);
+    WriteTestGuid(overTotalFrames, Guid.NewGuid());
+    overTotalFrames.Put((byte)0);
+    overTotalFrames.Put((byte)1);
+    overTotalFrames.Put((byte)2);
+    overTotalFrames.Put((uint)100);
+    overTotalFrames.Put((ushort)999); // TotalFrames > 150
+    overTotalFrames.Put((byte)0);
+    overTotalFrames.Put((byte)2);
+    overTotalFrames.Put((byte)50);
+
+    var caughtOversizedTotal = false;
+    try { new KillcamDataChunkPacket().Deserialize(new NetDataReader(overTotalFrames.CopyData())); }
+    catch (InvalidOperationException) { caughtOversizedTotal = true; }
+    Check(caughtOversizedTotal, "Oversized TotalFrames > 150 rejected before allocating");
+}
+
 Console.WriteLine($"\n=== Test Results: {passed} passed, {failed} failed ===");
 if (failed > 0)
 {
