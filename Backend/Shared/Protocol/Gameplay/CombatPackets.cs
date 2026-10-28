@@ -2,7 +2,7 @@ using LiteNetLib.Utils;
 
 namespace JungleBackend.Protocol.Gameplay
 {
-    /// <summary>Ten vũ khí trong GDD (6 cận chiến gồm tay không, 4 súng). Thứ tự khớp balance/weapons.json; chỉ thêm ở cuối.</summary>
+    /// <summary>The ten GDD weapons (six melee including bare hands, four ranged). Order matches balance/weapons.json; append new ids only.</summary>
     public enum CombatWeaponId : byte
     {
         Hand = 0,
@@ -17,7 +17,7 @@ namespace JungleBackend.Protocol.Gameplay
         Shotgun = 9
     }
 
-    /// <summary>Kết quả xử lý một request đánh/nạp. Chỉ <see cref="Accepted"/> mới có hiệu lực trên server.</summary>
+    /// <summary>Outcome of one attack or reload request. Only <see cref="Accepted"/> takes effect on the server.</summary>
     public enum CombatOutcome : byte
     {
         Accepted = 0,
@@ -32,13 +32,13 @@ namespace JungleBackend.Protocol.Gameplay
         RateLimited = 9
     }
 
-    /// <summary>Client → server, ReliableOrdered trên GameplayChannel. RequestSeq tăng dần theo từng người chơi để chống xử lý trùng.</summary>
+    /// <summary>Client → server, ReliableOrdered on GameplayChannel. RequestSeq increases per player and guards against duplicate processing.</summary>
     public struct AttackRequestPacket : INetSerializable
     {
         public const int PayloadBytes = 5;
         public ushort RequestSeq;
         public CombatWeaponId Weapon;
-        /// <summary>Góc ngắm 0..65535 ứng với 0..360 độ, cùng scale với PlayerInputPacket.Aim.</summary>
+        /// <summary>Aim angle in 0..65535 for 0..360 degrees, same scale as PlayerInputPacket.Aim.</summary>
         public ushort Aim;
 
         public void Serialize(NetDataWriter writer)
@@ -56,7 +56,7 @@ namespace JungleBackend.Protocol.Gameplay
         }
     }
 
-    /// <summary>Client → server, ReliableOrdered. Nạp đạn cho súng đang cầm; vũ khí cận chiến bỏ qua server.</summary>
+    /// <summary>Client → server, ReliableOrdered. Reloads the ranged weapon being held; the server rejects melee weapons.</summary>
     public struct ReloadRequestPacket : INetSerializable
     {
         public const int PayloadBytes = 3;
@@ -76,7 +76,7 @@ namespace JungleBackend.Protocol.Gameplay
         }
     }
 
-    /// <summary>Server → client, phản hồi cho đúng một AttackRequest. Client chỉ xác nhận hoặc hủy hiệu ứng dự đoán, không tự tính damage.</summary>
+    /// <summary>Server → client, reply to one AttackRequest. The client only confirms or cancels its predicted effects and never computes damage.</summary>
     public struct AttackResultPacket : INetSerializable
     {
         public const int PayloadBytes = 9;
@@ -108,7 +108,7 @@ namespace JungleBackend.Protocol.Gameplay
         }
     }
 
-    /// <summary>Server → client, phản hồi một ReloadRequest. ReloadEndTick là tick server sẽ nạp xong.</summary>
+    /// <summary>Server → client, reply to one ReloadRequest. ReloadEndTick is the tick when the server finishes the reload.</summary>
     public struct ReloadResultPacket : INetSerializable
     {
         public const int PayloadBytes = 12;
