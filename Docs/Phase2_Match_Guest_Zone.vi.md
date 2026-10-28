@@ -1,11 +1,24 @@
 # Phase 2: chạy trận, Guest, Safe Zone và lịch sử
 
-Cập nhật **24/10/2026**. Hướng dẫn setup và kiểm thử **SRV-03, NET-02, ZON-01**. Xem [báo cáo nghiệm thu Phase 2](Reports/Phase2_Local/report.vi.md) để đọc kết quả, giới hạn và bằng chứng. Setup nền và vận hành AWS nằm trong [hướng dẫn Phase 1](Phase1_First4Tasks.vi.md).
+Cập nhật **28/10/2026**. Hướng dẫn setup và kiểm thử **SRV-03, NET-02, ZON-01**. Xem [báo cáo nghiệm thu Phase 2](Reports/Phase2_Local/report.vi.md) để đọc kết quả, giới hạn và bằng chứng. Setup nền và vận hành AWS nằm trong [hướng dẫn Phase 1](Phase1_First4Tasks.vi.md).
 
 
 Phần này áp dụng **SRV-03 / NET-02 / ZON-01** trên source Phase 2. AWS đang chạy bản trước không tự có tính năng mới; đợt này không deploy hoặc bật EC2. Xem [Network Architecture](Network_Architecture.vi.md) để biết contract và quyền truy cập.
 
-## 1. Chuẩn bị Local lần đầu
+## 0. Chọn Local, LAN hoặc Online
+
+- **Local → Chơi Solo (Offline)**: vào Game ngay; không bật Docker/API, không nhập mã phòng. Một người chơi với di chuyển/cover/bo/HP → chết → kết quả luyện tập → chơi lại. Không tự thắng khi chỉ có một người và không ghi lịch sử online. Mở Game rồi Play trong Editor cũng chạy đường này, trừ runner mạng có chủ đích.
+- **LAN**: máy host chạy GameServer; đặt `GAME_PUBLISH_HOST` trong Backend/.env thành IPv4 LAN của host, giữ `GAME_BIND_ADDRESS=0.0.0.0`, bật lại `docker compose up -d --build game-server`. Firewall host cho UDP7777 trên mạng riêng. Client nhập đúng IP, RoomCode và tên. Mongo/control vẫn private. RoomCode không đòi đăng nhập.
+- **Online → Radmin/VPN**: cả hai PC cài Radmin VPN và vào cùng mạng VPN. Máy host publish UDP7777 vào IP Radmin của chính nó qua `GAME_PUBLISH_HOST`; client nhập IP đó, tên và mã phòng. Cho phép UDP7777 ở firewall đúng interface; không mở Mongo/control ra VPN. Từ xa chỉ cấu hình API khi đã có HTTPS hợp lệ; bỏ API vẫn chơi được, không có lịch sử online.
+- **Online → AWS**: hostname `junglemaze.duckdns.org`, Auto UDP rồi WSS qua443; không dùng IP thay hostname cho TLS. Chọn mode không tự bật EC2. Admin bật máy, kiểm DNS/TLS và đặt giờ Stop theo tài liệu Phase1 trước khi mời tester.
+
+**Nâng cao** giữ profile, host/port, RoomCode, API và nút vào backend loopback để test mạng local như trước. `phase2-local` là **backend Docker loopback**, khác nút Local offline. Profile/CLI cũ giữ tương thích. F3 bật thông tin chẩn đoán; ESC chỉnh âm lượng/rời trận. Offline vẫn chạy bo khi ESC mở.
+
+Muốn tạo/list/xóa phòng: Swagger → register/login → Authorize JWT → `/api/rooms`; Guest không được quản lý phòng. Giao diện tài khoản/phòng đầy đủ UI-02 không nằm trong lần khép Done này.
+
+Killcam dùng replay server theo chính phiên/phòng, tối đa5s (150frame), dữ liệu chỉ có nạn nhân và kẻ hạ. Mặc định vẫn tắt theo ticket; bật asset MatchOverlaySet hoặc `-killcam` ở development build để kiểm. Chết do bo/không rõ killer hiển thị fallback, không giả lập combat. Chưa có combat vũ khí authoritative để nghiệm thu killcam người thật.
+
+## 1. Chuẩn bị backend Docker loopback lần đầu
 
 1. Bật Docker Desktop, dùng Linux containers. Mở PowerShell **tại `Backend`**, không chạy compose từ `C:\Users\...`.
 2. Giữ `.env` riêng của máy và Mongo volume hiện có. Tạo từ `.env.example` nếu chưa có, theo [mục 3 của hướng dẫn Phase 1](Phase1_First4Tasks.vi.md). Không chép secret AWS sang Local.
@@ -26,7 +39,7 @@ docker compose logs --tail 40 game-server api
 ## 2. Chạy demo Unity hai client
 
 1. Mở project Unity **6000.3.15f1**, đợi hết compile. Trong menu **Jungle Maze → Phase 2 → Sync Runtime Data** đồng bộ map/luật/bo từ `Backend/Shared/GameData`. Dùng Verify Runtime Data để kiểm; không sửa bản sao StreamingAssets thay nguồn chuẩn.
-2. Trong menu kết nối của scene Boot, chọn profile **phase2-local**, đặt host/port theo compose và nhập `ROOM_CODE` trong `.env`. Protocol v3 dùng resume; RoomCode không bắt đăng nhập. Nếu muốn lưu Guest, `apiBaseUrl` phải trỏ API loopback đang chạy. API từ xa phải HTTPS.
+2. Trong Nâng cao của menu kết nối scene Boot, chọn profile **phase2-local**, đặt host/port theo compose và nhập `ROOM_CODE` trong `.env`. Protocol v3 dùng resume; RoomCode không bắt đăng nhập. Nếu muốn lưu Guest, `apiBaseUrl` phải trỏ API loopback đang chạy. API từ xa phải HTTPS.
 3. Build hai scene `Boot` và `Game` thành Windows player. Chạy một player + Unity Editor, hoặc hai player. Dùng hai tên dễ phân biệt. Cả hai dùng chung endpoint và mã phòng.
 4. Với `MATCH_PROFILE=test`, hai người đủ bắt đầu; lobby 0,5s, loading tối đa 1s, disconnect grace 1s, kết quả 0,5s và lịch bo chạy ở 4% thời gian gốc. Với `main`, cần ít nhất 6 người, lobby 15s, loading tối đa 30s, grace 15s, kết quả 10s và bo đúng lịch GDD. **Không dùng test profile để đo thời lượng GDD hoặc đưa public.**
 5. Quan sát roster/countdown/loading, hai nhân vật có nhãn tên/HP, bo đỏ hiện tại và bo vàng kế tiếp. WASD gửi input thật; server tính va chạm/speed/HP. Góc nhìn toàn map dành cho demo. Local HeroController bị tắt khi chơi mạng, tránh hai mô phỏng ghi vị trí.
@@ -191,3 +204,16 @@ Build/verify release và hoàn thành `main6-preflight` khi EC2 còn tắt. Côn
 Lượt AWS dùng Unity thực từ PC, JWT để tạo phòng, Guest qua HTTPS, config protocol3/Auto. Không dùng generator trong EC2 để thay bằng chứng WAN. Bài main giữ nguyên ngưỡng6 và lịch bo. Nếu còn thời gian, Stop–Start và kiểm account/join lại; nếu không, ghi NOT_TESTED.
 
 Mục tiêu20 phút gồm boot/deploy/test; watchdog30 phút. Thiếu thời gian thì dừng, không rút ngắn bài đo rồi báo PASS. Công cụ đóng client, xóa phòng test và Stop trong finally; vẫn phải xác nhận `stoppedConfirmed=true`. Tắt máy PC hoặc đóng SSH không dừng EC2. EBS còn chi phí lưu trữ sau Stop. Những account/Guest/kết quả test đã lưu vẫn ở DB; không tự xóa lịch sử hoặc volume để dọn dung lượng.
+
+## 11. Kiểm tra lặp lại Windows offline (development build)
+
+Bản build development có runner opt-in, không chạy trong buổi chơi bình thường:
+
+```powershell
+Set-Location 'D:\Unity\Lastaway'
+& '.\.utmp\done-closure-20261028\build\Lastaway.exe' -offlineTest -offlineReport "$PWD\.utmp\offline-player.json" -logFile "$PWD\.utmp\offline-player.log"
+```
+
+Runner dùng scene/physics/UI thật, đặt nhân vật ngoài bo để kiểm damage (không giả lập bắn/combat), hoàn thành hai vòng, kiểm MatchId/HP reset, ESC giữ timer, trở về menu và không mở socket game. Kết quả JSON phải có `passed=true`, `rounds=2`; timeout90s là FAIL. Đóng hết Docker vẫn chạy được. Không dùng kết quả này thay nghiệm thu hai PC, input người thật hoặc gameplay multiplayer.
+
+Không truyền `-offlineTest` khi chơi bình thường. Chạy lại sau khi sửa flow/bo/HUD để kiểm hồi quy; nếu tự build sang thư mục khác thì thay đường dẫn exe ở lệnh trên.

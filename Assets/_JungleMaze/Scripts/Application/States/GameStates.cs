@@ -56,6 +56,7 @@ namespace JungleMaze.App.States
 
         public override void Enter()
         {
+            Flow.IsOffline = false;
             // Chỉ quay về scene menu khi đang ở scene gameplay; lúc boot giữ nguyên scene hiện tại.
             if (_scenes.ActiveScene == Flow.Settings.GameScene) _scenes.Load(Flow.Settings.MenuScene);
             Flow.Show(AppScreen.MainMenu, _message);
@@ -136,7 +137,7 @@ namespace JungleMaze.App.States
 
         public override void Tick(float deltaTime)
         {
-            if (Flow.ServerDriven) return; // Ending/replay duration belongs to the authoritative server.
+            if (Flow.ServerDriven || Flow.IsOffline) return; // Ending/replay duration belongs to authoritative server or player choice.
             _remaining -= deltaTime;
             if (_remaining <= 0f) Flow.Go(Flow.InRoom);
         }

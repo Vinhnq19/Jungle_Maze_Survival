@@ -69,6 +69,15 @@ public sealed record MatchResult(
     IReadOnlyList<MatchParticipant> Participants
 );
 
+public sealed record KillcamReplayResult(
+    Guid MatchId,
+    byte Status,
+    byte VictimNetId,
+    byte KillerNetId,
+    uint EndTick,
+    IReadOnlyList<KillcamFramePayload> Frames
+);
+
 public interface IMatchRuntime
 {
     Guid MatchId { get; }
@@ -92,6 +101,7 @@ public interface IMatchRuntime
     void MarkDisconnected(string sessionId);
     bool TryResume(string sessionId, Guid resumeToken, out byte netId, out Guid newResumeToken);
     bool IsValidResumeToken(Guid resumeToken, out IEntity? entity);
+    bool TryGetKillcamReplay(string sessionId, Guid matchId, byte victimNetId, out KillcamReplayResult? result);
     MatchPhasePacket GetPhasePacket();
     MatchRosterPacket GetRosterPacket();
     event Action<MatchResult>? MatchCompleted;

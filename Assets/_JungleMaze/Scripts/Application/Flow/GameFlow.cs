@@ -19,18 +19,20 @@ namespace JungleMaze.App.Flow
     {
         private readonly IEventBus _bus;
         private readonly IPacketReceiver _packets;
+        private readonly ISceneLoader _scenes;
         private readonly StateMachine _machine = new StateMachine();
         private readonly Action<NetworkStateChanged> _onNetwork;
         private readonly Action<EventPacket> _onGameEvent;
         public bool ServerDriven { get; private set; }
+        public bool IsOffline { get; set; }
 
         public GameFlow(IEventBus bus, INetworkClient network, IPacketReceiver packets, ISceneLoader scenes,
             PlayerInputService input, GameFlowSettings settings = null)
         {
             _bus = bus ?? throw new ArgumentNullException(nameof(bus));
             _packets = packets ?? throw new ArgumentNullException(nameof(packets));
+            _scenes = scenes ?? throw new ArgumentNullException(nameof(scenes));
             if (network == null) throw new ArgumentNullException(nameof(network));
-            if (scenes == null) throw new ArgumentNullException(nameof(scenes));
             Settings = settings ?? new GameFlowSettings();
 
             Boot = new BootState(this);
@@ -42,7 +44,6 @@ namespace JungleMaze.App.Flow
 
             _onNetwork = e => (_machine.Current as GameState)?.OnNetworkStateChanged(e);
             _onGameEvent = e => (_machine.Current as GameState)?.OnGameEvent(e);
-
         }
 
         public GameFlowSettings Settings { get; }
@@ -61,9 +62,25 @@ namespace JungleMaze.App.Flow
         public void ApplyAuthoritativePhase(MatchPhasePacket p)
         {
             ServerDriven = true;
+            IsOffline = false;
             if (p.Phase == MatchPhase.InGame && _machine.Current != InMatch) Go(InMatch);
             else if (p.Phase == MatchPhase.Ending && _machine.Current != Results) Go(Results);
             else if ((p.Phase == MatchPhase.Waiting || p.Phase == MatchPhase.Lobby || p.Phase == MatchPhase.Loading) && _machine.Current != InRoom) Go(InRoom);
+        }
+
+        public void StartOfflineMatch()
+        {
+            ServerDriven = false;
+            IsOffline = true;
+            _scenes.Load(Settings.GameScene);
+            Go(InMatch);
+        }
+
+        public void ReturnToMenu(string message = "")
+        {
+            ServerDriven = false;
+            IsOffline = false;
+            Go(MainMenu.WithMessage(message));
         }
 
         public void Initialize()

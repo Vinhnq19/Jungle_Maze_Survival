@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using JungleMaze.App.Match;
 using JungleMaze.App.Ports;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +17,13 @@ namespace JungleMaze.Infrastructure.Config
         public RuntimeMapBounds Bounds { get; private set; }
         public float PlayerSpeed { get; private set; }
         public float PlayerRadius { get; private set; }
-        public ClientRuntimeData(string streamingAssets) => _directory = Path.Combine(streamingAssets, "JungleMaze", "runtime");
+        public ZoneSchedule ZoneSchedule { get; private set; }
+
+        public ClientRuntimeData(string streamingAssets)
+        {
+            _directory = Path.Combine(streamingAssets, "JungleMaze", "runtime");
+        }
+
         public string Verify(string expectedVersion, string expectedHash)
         {
             try
@@ -54,10 +61,77 @@ namespace JungleMaze.Infrastructure.Config
                 Covers = covers;
                 PlayerSpeed = speed;
                 PlayerRadius = radius;
+                TryLoadZoneSchedule();
                 return null;
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { return "Thiếu hoặc sai dữ liệu trận; chạy công cụ đồng bộ dữ liệu trước khi build."; }
         }
+
+        public string LoadLocal()
+        {
+            try
+            {
+                var manifest = JObject.Parse(File.ReadAllText(Path.Combine(_directory, "manifest.json")));
+                using (var hash = SHA256.Create())
+                using (var stream = new MemoryStream())
+                {
+                    foreach (var name in new[] { "map_demo.json", "match_settings.json", "zone_schedule.json" })
+                    {
+                        var label = Encoding.UTF8.GetBytes(name);
+                        var bytes = Encoding.UTF8.GetBytes(File.ReadAllText(Path.Combine(_directory, name)).Replace("\r\n", "\n"));
+                        stream.Write(label, 0, label.Length); stream.Write(bytes, 0, bytes.Length);
+                    }
+                    return Verify((string)manifest["version"], Hex(hash.ComputeHash(stream.ToArray())));
+                }
+            }
+            catch (Exception e) when (!(e is OutOfMemoryException)) { return "Invalid offline data; Sync Runtime Data before playing."; }
+        }
+
+        private void TryLoadZoneSchedule()
+        {
+            try
+            {
+                var path = Path.Combine(_directory, "zone_schedule.json");
+                if (!File.Exists(path)) throw new FileNotFoundException("Missing zone data.");
+                var root = JObject.Parse(File.ReadAllText(path));
+                var s = new ZoneSchedule
+                {
+                    Version = (string)root["version"] ?? "1.0.0",
+                    InitialRadius = (float)root["initialRadius"],
+                    WarningDurationSeconds = (double)root["warningDurationSeconds"],
+                    ShrinkSpeedCellsPerSecond = (float)root["shrinkSpeedCellsPerSecond"],
+                    DamagePerSecond = (int)root["damagePerSecond"]
+                };
+                if (root["initialCenter"] != null)
+                {
+                    s.InitialCenter = (
+                        (float)root["initialCenter"]["x"],
+                        (float)root["initialCenter"]["y"]
+                    );
+                }
+                if (root["intervals"] is JArray intervals)
+                {
+                    foreach (var elem in intervals)
+                    {
+                        s.Intervals.Add(new ZoneInterval
+                        {
+                            Index = (int)elem["index"],
+                            StartSecond = (double)elem["startSecond"],
+                            EndSecond = (double)elem["endSecond"],
+                            StartRadius = (float)elem["startRadius"],
+                            EndRadius = (float)elem["endRadius"]
+                        });
+                    }
+                }
+                s.Validate();
+                ZoneSchedule = s;
+            }
+            catch (Exception)
+            {
+                throw new InvalidDataException("Invalid zone data.");
+            }
+        }
+
         private static string Hex(byte[] bytes) => BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
     }
 }

@@ -36,6 +36,14 @@ Pump(()=>clients.All(c=>c.Phase==MatchPhase.InGame&&c.SnapshotCount>5));
 Check(clients.All(c=>c.Zone.MatchId==c.MatchId&&c.Zone.CurrentRadius>0),"Both transports receive match-scoped zone with snapshots");
 var start=clock.ElapsedMilliseconds;Pump(()=>clock.ElapsedMilliseconds-start>5000,6500);
 Check(clients.All(c=>c.SnapshotCount>=140&&c.InvalidFrames==0&&c.DuplicateSnapshots==0),"30Hz snapshots: no repeated hooks or invalid frames on ten peers");
+// Test-only authoritative damage, not a weapon/combat implementation.
+var victim=clients[9]; var killer=clients[8];
+host.Hub.Rooms.Find("PHASE2_TEST")!.Match.Health.ApplyDamage(victim.OwnNetId,100,killer.OwnNetId);
+Pump(()=>Enumerable.Range(0,victim.Snapshot.PlayerCount).Any(i=>victim.Snapshot.GetPlayer(i).NetId==victim.OwnNetId && victim.Snapshot.GetPlayer(i).IsDead));
+var replayRequest=new KillcamRequestPacket{Version=1,MatchId=victim.MatchId,VictimNetId=victim.OwnNetId};
+victim.Send(ref replayRequest,true);
+Pump(()=>victim.KillcamChunks.Count==2);
+Check(victim.KillcamChunks.All(p=>p.Status==0&&p.TotalFrames==150&&p.VictimNetId==victim.OwnNetId&&p.KillerNetId==killer.OwnNetId),"Own filtered 150-frame replay arrives over real transport");
 var playerId=clients[0].PlayerId;var token=clients[0].ResumeProof;await clients[0].DisposeAsync();clients.RemoveAt(0);
 Pump(()=>host.Hub.ActivePeers==9,700);
 Check(host.ReservedPeers==10,"Lost transport holds same server slot");

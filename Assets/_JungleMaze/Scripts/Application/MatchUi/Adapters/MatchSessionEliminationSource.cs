@@ -23,7 +23,10 @@ namespace JungleMaze.App.MatchUi
         private readonly MatchStartRoster _start = new MatchStartRoster();
         private readonly Action<MatchEntityEventPacket> _onEntity;
         private readonly Action<EventPacket> _onEvent;
+        private readonly Action<MatchEliminationEventPacket> _onElimination;
         private byte _killer = EliminationInfo.NoNetId;
+        private EliminationCause _cause = EliminationCause.Unknown;
+        private uint _authoritativeTick;
         private bool _subscribed;
 
         public MatchSessionEliminationSource(MatchSession match, IPacketReceiver receiver)
@@ -32,6 +35,7 @@ namespace JungleMaze.App.MatchUi
             _receiver = receiver;
             _onEntity = OnEntity;
             _onEvent = OnEvent;
+            _onElimination = OnElimination;
         }
 
         public bool IsLocalEliminated { get; private set; }
@@ -44,6 +48,7 @@ namespace JungleMaze.App.MatchUi
             if (_subscribed || _receiver == null) return;
             _receiver.Subscribe(_onEntity);
             _receiver.Subscribe(_onEvent);
+            _receiver.Subscribe(_onElimination);
             _subscribed = true;
         }
 
@@ -52,6 +57,7 @@ namespace JungleMaze.App.MatchUi
             if (!_subscribed) return;
             _receiver.Unsubscribe(_onEntity);
             _receiver.Unsubscribe(_onEvent);
+            _receiver.Unsubscribe(_onElimination);
             _subscribed = false;
         }
 
@@ -86,23 +92,44 @@ namespace JungleMaze.App.MatchUi
             if (packet.SourceNetId == EventPacket.NoTarget || packet.SourceNetId == packet.TargetNetId) return;
             _killer = packet.SourceNetId;
             if (!IsLocalEliminated || Current.HasKiller) return;
-            Current = Build(Current.EliminationTick);
+            Current = Build(_authoritativeTick != 0 ? _authoritativeTick : Current.EliminationTick);
             Updated?.Invoke(Current);
         }
 
-        private void Eliminate()
+        public void OnElimination(MatchEliminationEventPacket packet)
+        {
+            if (packet.MatchId != _match.MatchId || packet.VictimNetId != _match.OwnNetId) return;
+            _authoritativeTick = packet.Tick;
+            _cause = (EliminationCause)packet.Cause;
+            if (packet.KillerNetId != EliminationInfo.NoNetId && packet.KillerNetId != packet.VictimNetId)
+            {
+                _killer = packet.KillerNetId;
+            }
+            if (!IsLocalEliminated)
+            {
+                Eliminate(packet.Tick);
+            }
+            else
+            {
+                Current = Build(_authoritativeTick != 0 ? _authoritativeTick : Current.EliminationTick);
+                Updated?.Invoke(Current);
+            }
+        }
+
+        private void Eliminate(uint? tickOverride = null)
         {
             if (IsLocalEliminated || _match.MatchId == Guid.Empty) return;
             _start.Update(_match);
             IsLocalEliminated = true;
-            Current = Build(_match.ServerTick);
+            var tick = tickOverride ?? (_authoritativeTick != 0 ? _authoritativeTick : _match.ServerTick);
+            Current = Build(tick);
             LocalEliminated?.Invoke(Current);
         }
 
         private EliminationInfo Build(uint tick)
         {
             var hasRank = TryRank(out var rank, out var survival);
-            var cause = _killer != EliminationInfo.NoNetId ? EliminationCause.Player : EliminationCause.Unknown;
+            var cause = _cause != EliminationCause.Unknown ? _cause : (_killer != EliminationInfo.NoNetId ? EliminationCause.Player : EliminationCause.Unknown);
             var killerName = _killer != EliminationInfo.NoNetId ? _start.NameOf(_killer) : null;
             return new EliminationInfo(_match.MatchId, tick, hasRank ? rank : (byte)0, hasRank ? (byte)_start.Count : (byte)0,
                 cause, _killer, killerName, null, float.NaN, hasRank ? survival : float.NaN, -1);
@@ -123,6 +150,8 @@ namespace JungleMaze.App.MatchUi
             IsLocalEliminated = false;
             Current = default;
             _killer = EliminationInfo.NoNetId;
+            _cause = EliminationCause.Unknown;
+            _authoritativeTick = 0;
         }
     }
 }

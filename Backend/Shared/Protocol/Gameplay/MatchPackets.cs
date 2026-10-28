@@ -8,6 +8,7 @@ namespace JungleBackend.Protocol.Gameplay
     public enum MatchPhase : byte { Waiting, Lobby, Loading, InGame, Ending, Cleanup }
     public enum MatchEndReason : byte { None, LastAlive, Tie, Timeout, Cancelled }
     public enum MatchEntityEvent : byte { Spawn, Despawn, Eliminated }
+    public enum EliminationCauseWire : byte { Unknown = 0, Player = 1, Zone = 2, LeftMatch = 3, Disconnected = 4 }
 
     // Guid's byte-array helpers allocate. The wire retains Guid byte order without allocating in snapshot/input loops.
     internal static class MatchWire
@@ -183,6 +184,226 @@ namespace JungleBackend.Protocol.Gameplay
             MatchId=MatchWire.ReadGuid(r);Reason=(MatchEndReason)r.GetByte();WinnerNetId=r.GetByte();ParticipantCount=r.GetByte();MatchWire.Count(ParticipantCount);
             if(Reason>MatchEndReason.Cancelled)throw new InvalidOperationException("Invalid match result.");
             Participants=new MatchParticipantState[ParticipantCount];for(var i=0;i<ParticipantCount;i++)Participants[i].Deserialize(r);
+        }
+    }
+
+    public struct MatchEliminationEventPacket : INetSerializable
+    {
+        public const byte CurrentVersion = 1;
+        public byte Version;
+        public Guid MatchId;
+        public uint Tick;
+        public byte VictimNetId;
+        public byte KillerNetId;
+        public EliminationCauseWire Cause;
+
+        public void Serialize(NetDataWriter w)
+        {
+            w.Put(Version);
+            MatchWire.WriteGuid(w, MatchId);
+            w.Put(Tick);
+            w.Put(VictimNetId);
+            w.Put(KillerNetId);
+            w.Put((byte)Cause);
+        }
+
+        public void Deserialize(NetDataReader r)
+        {
+            Version = r.GetByte();
+            if (Version != CurrentVersion) throw new InvalidOperationException("Unsupported elimination schema version.");
+            MatchId = MatchWire.ReadGuid(r);
+            Tick = r.GetUInt();
+            VictimNetId = r.GetByte();
+            KillerNetId = r.GetByte();
+            Cause = (EliminationCauseWire)r.GetByte();
+            if (VictimNetId >= MatchProtocol.MaxPlayers || (KillerNetId >= MatchProtocol.MaxPlayers && KillerNetId != 255) || Cause > EliminationCauseWire.Disconnected)
+                throw new InvalidOperationException("Invalid elimination event.");
+        }
+    }
+
+    public struct KillcamRequestPacket : INetSerializable
+    {
+        public const byte CurrentVersion = 1;
+        public byte Version;
+        public Guid MatchId;
+        public byte VictimNetId;
+
+        public void Serialize(NetDataWriter w)
+        {
+            w.Put(Version);
+            MatchWire.WriteGuid(w, MatchId);
+            w.Put(VictimNetId);
+        }
+
+        public void Deserialize(NetDataReader r)
+        {
+            Version = r.GetByte();
+            if (Version != CurrentVersion) throw new InvalidOperationException("Unsupported killcam request version.");
+            MatchId = MatchWire.ReadGuid(r);
+            VictimNetId = r.GetByte();
+            if (VictimNetId >= MatchProtocol.MaxPlayers) throw new InvalidOperationException("Invalid victim netId.");
+        }
+    }
+
+    public struct KillcamFramePayload
+    {
+        public float ZoneX;
+        public float ZoneY;
+        public float ZoneRadius;
+        public float VictimX;
+        public float VictimY;
+        public byte VictimHp;
+        public byte VictimFlags;
+        public float KillerX;
+        public float KillerY;
+        public byte KillerHp;
+        public byte KillerFlags;
+        public bool KillerPresent;
+
+        public void Serialize(NetDataWriter w)
+        {
+            w.Put(ZoneX);
+            w.Put(ZoneY);
+            w.Put(ZoneRadius);
+            w.Put(VictimX);
+            w.Put(VictimY);
+            w.Put(VictimHp);
+            w.Put(VictimFlags);
+            w.Put(KillerX);
+            w.Put(KillerY);
+            w.Put(KillerHp);
+            w.Put(KillerFlags);
+            w.Put(KillerPresent);
+        }
+
+        public void Deserialize(NetDataReader r)
+        {
+            ZoneX = r.GetFloat();
+            ZoneY = r.GetFloat();
+            ZoneRadius = r.GetFloat();
+            VictimX = r.GetFloat();
+            VictimY = r.GetFloat();
+            VictimHp = r.GetByte();
+            VictimFlags = r.GetByte();
+            KillerX = r.GetFloat();
+            KillerY = r.GetFloat();
+            KillerHp = r.GetByte();
+            KillerFlags = r.GetByte();
+            KillerPresent = r.GetBool();
+            if (!Finite(ZoneX) || !Finite(ZoneY) || !Finite(ZoneRadius) || ZoneRadius < 0f ||
+                !Finite(VictimX) || !Finite(VictimY) ||
+                (KillerPresent && (!Finite(KillerX) || !Finite(KillerY))))
+            {
+                throw new InvalidOperationException("Invalid killcam frame.");
+            }
+        }
+
+        private static bool Finite(float v) => !float.IsNaN(v) && !float.IsInfinity(v);
+    }
+
+    public struct KillcamDataChunkPacket : INetSerializable
+    {
+        public const byte CurrentVersion = 1;
+        public const int MaxFramesPerChunk = 75;
+        public const int MaxTotalFrames = 150;
+        public const int MaxChunks = 5;
+
+        public byte Version;
+        public Guid MatchId;
+        public byte Status;
+        public byte VictimNetId;
+        public byte KillerNetId;
+        public uint EndTick;
+        public ushort TotalFrames;
+        public byte ChunkIndex;
+        public byte TotalChunks;
+        public byte FrameCount;
+        public KillcamFramePayload[]? Frames;
+
+        public void ValidateHeader()
+        {
+            if (Version != CurrentVersion || VictimNetId >= MatchProtocol.MaxPlayers || Status > 9)
+                throw new InvalidOperationException("Invalid killcam header.");
+            if (Status != 0)
+            {
+                if (TotalFrames != 0 || TotalChunks != 1 || ChunkIndex != 0 || FrameCount != 0)
+                    throw new InvalidOperationException("Unavailable replay must have no frames.");
+                return;
+            }
+            if (KillerNetId >= MatchProtocol.MaxPlayers || KillerNetId == VictimNetId || TotalFrames == 0 || TotalFrames > MaxTotalFrames)
+                throw new InvalidOperationException("Invalid replay participants or window.");
+            var chunks = (TotalFrames + MaxFramesPerChunk - 1) / MaxFramesPerChunk;
+            var remaining = TotalFrames - ChunkIndex * MaxFramesPerChunk;
+            if (TotalChunks != chunks || ChunkIndex >= chunks || FrameCount != Math.Min(MaxFramesPerChunk, remaining))
+                throw new InvalidOperationException("Incomplete or overlapping killcam chunks.");
+        }
+
+        public void Serialize(NetDataWriter w)
+        {
+            var length = Frames?.Length ?? 0;
+            if (length > MaxFramesPerChunk) throw new InvalidOperationException("Oversized killcam payload.");
+            FrameCount = (byte)length;
+            ValidateHeader();
+            var count = FrameCount;
+            w.Put(Version);
+            MatchWire.WriteGuid(w, MatchId);
+            w.Put(Status);
+            w.Put(VictimNetId);
+            w.Put(KillerNetId);
+            w.Put(EndTick);
+            w.Put(TotalFrames);
+            w.Put(ChunkIndex);
+            w.Put(TotalChunks);
+            w.Put(count);
+            if (Frames != null)
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    Frames[i].Serialize(w);
+                }
+            }
+        }
+
+        public void Deserialize(NetDataReader r)
+        {
+            Version = r.GetByte();
+            if (Version != CurrentVersion) throw new InvalidOperationException("Unsupported killcam chunk version.");
+            MatchId = MatchWire.ReadGuid(r);
+            Status = r.GetByte();
+            VictimNetId = r.GetByte();
+            KillerNetId = r.GetByte();
+            EndTick = r.GetUInt();
+            TotalFrames = r.GetUShort();
+            ChunkIndex = r.GetByte();
+            TotalChunks = r.GetByte();
+            FrameCount = r.GetByte();
+
+            if (VictimNetId >= MatchProtocol.MaxPlayers || (KillerNetId >= MatchProtocol.MaxPlayers && KillerNetId != 255))
+                throw new InvalidOperationException("Invalid player in killcam chunk.");
+            if (TotalFrames > MaxTotalFrames)
+                throw new InvalidOperationException("Oversized total frame count.");
+            if (TotalChunks > MaxChunks)
+                throw new InvalidOperationException("Oversized chunk count.");
+            if (TotalChunks > 0 && ChunkIndex >= TotalChunks)
+                throw new InvalidOperationException("Invalid chunk index.");
+            if (FrameCount > MaxFramesPerChunk)
+                throw new InvalidOperationException("Oversized chunk frame count.");
+
+            ValidateHeader();
+            if (FrameCount > 0)
+            {
+                Frames = new KillcamFramePayload[FrameCount];
+                for (var i = 0; i < FrameCount; i++)
+                {
+                    var f = new KillcamFramePayload();
+                    f.Deserialize(r);
+                    Frames[i] = f;
+                }
+            }
+            else
+            {
+                Frames = Array.Empty<KillcamFramePayload>();
+            }
         }
     }
 }

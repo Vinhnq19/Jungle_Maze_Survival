@@ -74,6 +74,7 @@ namespace JungleMaze.Presentation.UI
         private void OnGUI()
         {
             if (_presenter == null) return;
+            if (Event.current.type == EventType.Repaint) _buttonRects.Clear();
             _status ??= new GUIStyle(GUI.skin.label) { wordWrap = true, fontStyle = FontStyle.Bold };
             if (!_stylesBuilt || _stylesFor != _art) BuildStyles();
             switch (_presenter.Screen)
@@ -89,38 +90,91 @@ namespace JungleMaze.Presentation.UI
         private void DrawMenu()
         {
             BeginArea(new Rect(20, 20, 380, Screen.height - 40));
-            GUILayout.Label("Jungle Maze — Kết nối", _status);
+            GUILayout.Label("Lastaway — Kết nối", _status);
 
-            GUILayout.Label("Profile (StreamingAssets/JungleMaze)", _label);
-            GUILayout.BeginHorizontal();
-            foreach (var profile in _presenter.Profiles)
-                if (Button(profile, _ghost)) _presenter.SelectProfile(profile);
-            GUILayout.EndHorizontal();
-
-            _presenter.Mode = (ConnectionMode)GUILayout.Toolbar((int)_presenter.Mode, ModeNames);
-            _presenter.Host = Field("Game server host", _presenter.Host);
-            _presenter.Port = Field("Port", _presenter.Port);
-            if (_presenter.RequiresLogin)
+            var oldMode = _presenter.Mode;
+            var newMode = (ConnectionMode)GUILayout.Toolbar((int)_presenter.Mode, ModeNames, GUILayout.Height(28));
+            if (newMode != oldMode)
             {
-                _presenter.ApiBaseUrl = Field("API base URL", _presenter.ApiBaseUrl);
-                _presenter.Username = Field("Tài khoản", _presenter.Username);
-                GUILayout.Label("Mật khẩu", _label);
-                _presenter.Password = GUILayout.PasswordField(_presenter.Password ?? "", '*');
+                if (newMode == ConnectionMode.Local) _presenter.SelectTarget("Local");
+                else if (newMode == ConnectionMode.LAN) _presenter.SelectTarget("LAN");
+                else if (newMode == ConnectionMode.Online) _presenter.SelectTarget(_presenter.SelectedOnlineTarget ?? "AWS");
             }
-            _presenter.RoomCode = Field("Mã phòng", _presenter.RoomCode);
-            _presenter.DisplayName = Field("Tên hiển thị", _presenter.DisplayName);
+
+            if (_presenter.Mode == ConnectionMode.Local)
+            {
+                GUILayout.Label("Chế độ chơi đơn Solo Offline (không cần server)", _label);
+                GUILayout.Space(6);
+                if (Button("Chơi Solo (Offline)", _primary, GUILayout.Height(36))) _presenter.StartOffline();
+                GUILayout.Space(4);
+
+            }
+            else if (_presenter.Mode == ConnectionMode.LAN)
+            {
+                GUILayout.Label("Mạng nội bộ (LAN UDP)", _label);
+                _presenter.Host = Field("IP máy chủ (LAN)", _presenter.Host);
+                _presenter.RoomCode = Field("Mã phòng", _presenter.RoomCode);
+                _presenter.DisplayName = Field("Tên hiển thị", _presenter.DisplayName);
+                GUILayout.Space(6);
+                GUI.enabled = !_presenter.IsBusy;
+                if (Button(JoinLabel, _primary, GUILayout.Height(36))) _presenter.Join();
+                GUI.enabled = true;
+            }
+            else // Online
+            {
+                GUILayout.Label("Mục tiêu Online", _label);
+                GUILayout.BeginHorizontal();
+                var isAws = _presenter.SelectedOnlineTarget == "AWS";
+                if (Button("AWS Cloud", isAws ? _primary : _ghost, GUILayout.Height(26))) _presenter.SelectTarget("AWS");
+                if (Button("Radmin / VPN", !isAws ? _primary : _ghost, GUILayout.Height(26))) _presenter.SelectTarget("Radmin");
+                GUILayout.EndHorizontal();
+
+                if (!isAws)
+                {
+                    _presenter.Host = Field("IP host Radmin/VPN", _presenter.Host);
+                }
+                else
+                {
+                    GUILayout.Label($"Máy chủ: {_presenter.Host} (Auto UDP->WSS)", _label);
+                }
+                _presenter.RoomCode = Field("Mã phòng", _presenter.RoomCode);
+                _presenter.DisplayName = Field("Tên hiển thị", _presenter.DisplayName);
+                if (_presenter.RequiresLogin)
+                {
+                    _presenter.ApiBaseUrl = Field("API base URL", _presenter.ApiBaseUrl);
+                    _presenter.Username = Field("Tài khoản", _presenter.Username);
+                    GUILayout.Label("Mật khẩu", _label);
+                    _presenter.Password = GUILayout.PasswordField(_presenter.Password ?? "", '*');
+                }
+                GUILayout.Space(6);
+                GUI.enabled = !_presenter.IsBusy;
+                if (Button(JoinLabel, _primary, GUILayout.Height(36))) _presenter.Join();
+                GUI.enabled = true;
+            }
 
             GUILayout.Space(6);
-            GUILayout.BeginHorizontal();
-            GUI.enabled = !_presenter.IsBusy;
-            if (Button(JoinLabel, _primary, GUILayout.Height(32))) _presenter.Join();
-            if (Button("Lưu endpoint", _secondary, GUILayout.Height(32))) _presenter.SaveEndpoint();
-            GUI.enabled = true;
-            GUILayout.EndHorizontal();
+            var advText = _presenter.AdvancedExpanded ? "▼ Cấu hình nâng cao" : "▶ Cấu hình nâng cao";
+            if (Button(advText, _ghost, GUILayout.Height(24))) _presenter.AdvancedExpanded = !_presenter.AdvancedExpanded;
+            if (_presenter.AdvancedExpanded)
+            {
+                GUILayout.Label("Profile (StreamingAssets/JungleMaze)", _label);
+                GUILayout.BeginHorizontal();
+                foreach (var profile in _presenter.Profiles)
+                    if (Button(profile, _ghost)) _presenter.SelectProfile(profile);
+                GUILayout.EndHorizontal();
 
-            GUILayout.Label($"Auth: {_presenter.AuthModeText} · Transport: {_presenter.TransportText} · Nguồn: {_presenter.ConfigSource}", _label);
+                _presenter.Host = Field("Host", _presenter.Host);
+                _presenter.RoomCode = Field("RoomCode", _presenter.RoomCode);
+                if (_presenter.Mode == ConnectionMode.Local && Button(JoinLabel, _secondary, GUILayout.Height(30))) _presenter.Join();
+                _presenter.Port = Field("Port", _presenter.Port);
+                if (!_presenter.RequiresLogin) _presenter.ApiBaseUrl = Field("API base URL", _presenter.ApiBaseUrl);
+                if (Button("Lưu endpoint", _secondary, GUILayout.Height(28))) _presenter.SaveEndpoint();
+                GUILayout.Label($"Auth: {_presenter.AuthModeText} · Transport: {_presenter.TransportText}", _label);
+                GUILayout.Label($"Nguồn: {_presenter.ConfigSource}", _label);
+            }
+
             if (!string.IsNullOrEmpty(_presenter.Status)) GUILayout.Label(_presenter.Status, _status);
-            GUILayout.Label("F3: bật/tắt thông số mạng", _label);
+            GUILayout.Label("F3: thông số mạng · ESC: menu trong trận", _label);
             GUILayout.EndArea();
         }
 
@@ -137,7 +191,10 @@ namespace JungleMaze.Presentation.UI
             // Height follows the panel padding (10 + 10 with art), so the 28 px button is never clipped.
             BeginArea(new Rect(10, 10, 520, InGameBarHeight));
             GUILayout.BeginHorizontal();
-            GUILayout.Label($"{_presenter.Screen} · {_presenter.Endpoint} · {_presenter.PlayerId}", _label, GUILayout.Height(BarButtonHeight));
+            var text = _presenter.IsOffline
+                ? $"{_presenter.Screen} · Solo Offline · {_presenter.DisplayName}"
+                : $"{_presenter.Screen}";
+            GUILayout.Label(text, _label, GUILayout.Height(BarButtonHeight));
             if (Button(LeaveLabel, _secondary, GUILayout.Width(90), GUILayout.Height(BarButtonHeight))) _presenter.Disconnect();
             GUILayout.EndHorizontal();
             GUILayout.EndArea();

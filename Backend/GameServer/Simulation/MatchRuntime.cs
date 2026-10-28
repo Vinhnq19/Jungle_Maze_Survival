@@ -34,6 +34,11 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         public bool Ready { get; set; }
         public bool ReplayAcked { get; set; }
         public string? ProfileKey { get; set; }
+        public uint EliminationTick;
+        public byte KillerNetId = 255;
+        public EliminationCauseWire EliminationCause = EliminationCauseWire.Unknown;
+        public KillcamReplayResult? CapturedKillcam;
+        public int ReplayRequestCount;
     }
 
     public sealed class ReplayFrame
@@ -55,6 +60,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
     // Private replay ring buffer >= 5s (150 ticks; 180 ticks = 6 seconds at 30Hz)
     private readonly ReplayFrame[] _replayRing = new ReplayFrame[180];
     private int _replayIndex;
+    private uint _lastRecordedReplayTick = uint.MaxValue;
 
     private readonly PacketRegistry _packets = new();
     private readonly NetDataWriter _snapshotWriter = new(true, 1024);
@@ -94,6 +100,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         _zoneSchedule = zoneSchedule;
         _profile = profile;
         _health = new HealthService(this);
+        _health.EntityDied += OnEntityDied;
         _physics = new PhysicsSimulation(map, profile.PlayerRadius, profile.PlayerSpeed);
         if (map.Version != profile.Version || zoneSchedule.Version != profile.Version)
             throw new InvalidDataException("Game data versions differ.");
@@ -499,12 +506,18 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
 
         if (newlyDied.Length > 0)
         {
+            EnsureReplayFrameRecorded();
             var sharedRank = aliveBeforeTick + 1; // Same-tick elimination shares rank
             foreach (var dead in newlyDied)
             {
                 dead.Rank = sharedRank;
                 dead.SurvivalSeconds = _matchElapsedSeconds;
+                if (dead.EliminationTick == 0) dead.EliminationTick = CurrentTick;
+
+                CaptureReplayForVictim(dead);
+                BroadcastElimination(dead);
                 BroadcastEntityEvent(dead.NetId, MatchEntityEvent.Eliminated);
+                BroadcastPlayerDiedEvent(dead);
             }
             BroadcastRoster();
         }
@@ -526,7 +539,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         }
 
         // 5. Store frame in private Replay Ring Buffer
-        RecordReplayFrame();
+        EnsureReplayFrameRecorded();
 
         // 6. Broadcast 30Hz snapshot (using SetPlayer to avoid heap allocation)
         BroadcastSnapshot();
@@ -584,8 +597,26 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         CurrentTick = 0;
         _matchElapsedSeconds = 0;
 
+        _replayIndex = 0;
+        _lastRecordedReplayTick = uint.MaxValue;
+        for (var i = 0; i < _replayRing.Length; i++)
+        {
+            _replayRing[i].Tick = 0;
+            _replayRing[i].Players = Array.Empty<(byte, float, float, byte, PlayerStateFlags)>();
+        }
+
+        foreach (var entity in _entities.Values)
+        {
+            entity.EliminationTick = 0;
+            entity.KillerNetId = 255;
+            entity.EliminationCause = EliminationCauseWire.Unknown;
+            entity.CapturedKillcam = null;
+            entity.ReplayRequestCount = 0;
+        }
+
         // Health dedupe resets per match
         _health = new HealthService(this);
+        _health.EntityDied += OnEntityDied;
 
         TransitionTo(MatchPhase.Waiting);
         BroadcastRoster();
@@ -820,6 +851,206 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             MatchId = MatchId,
             NetId = netId,
             Kind = kind
+        };
+        var writer = new NetDataWriter();
+        PacketRegistry.BeginFrame(writer);
+        _packets.Write(writer, ref evt);
+        ReliableBroadcast?.Invoke(writer.CopyData());
+    }
+    private void OnEntityDied(byte victimNetId, byte killerNetId)
+    {
+        if (_entities.TryGetValue(victimNetId, out var victim))
+        {
+            victim.EliminationTick = CurrentTick;
+            if (killerNetId == 255)
+            {
+                victim.KillerNetId = 255;
+                victim.EliminationCause = EliminationCauseWire.Zone;
+            }
+            else if (killerNetId == victimNetId)
+            {
+                victim.KillerNetId = 255;
+                victim.EliminationCause = EliminationCauseWire.LeftMatch;
+            }
+            else
+            {
+                victim.KillerNetId = killerNetId;
+                victim.EliminationCause = EliminationCauseWire.Player;
+            }
+        }
+    }
+
+    private void EnsureReplayFrameRecorded()
+    {
+        if (_lastRecordedReplayTick != CurrentTick)
+        {
+            RecordReplayFrame();
+            _lastRecordedReplayTick = CurrentTick;
+        }
+    }
+
+    private void CaptureReplayForVictim(Entity victim)
+    {
+        var endTick = victim.EliminationTick != 0 ? victim.EliminationTick : CurrentTick;
+        var killerNetId = victim.KillerNetId;
+
+        // Zone or unknown killer fallback: NoData
+        if (killerNetId == 255 || killerNetId == victim.NetId || !_entities.ContainsKey(killerNetId))
+        {
+            victim.CapturedKillcam = new KillcamReplayResult(
+                MatchId,
+                (byte)4, // NoData
+                victim.NetId,
+                255,
+                endTick,
+                Array.Empty<KillcamFramePayload>()
+            );
+            return;
+        }
+
+        // Check window duration: must have at least 150 ticks (5 seconds at 30Hz)
+        const int requiredFrames = 150;
+        if (CurrentTick < _inGameStartTick || (CurrentTick - _inGameStartTick + 1) < requiredFrames)
+        {
+            victim.CapturedKillcam = new KillcamReplayResult(
+                MatchId,
+                (byte)7, // TooShort
+                victim.NetId,
+                killerNetId,
+                endTick,
+                Array.Empty<KillcamFramePayload>()
+            );
+            return;
+        }
+
+        var startTick = endTick - requiredFrames + 1;
+        var frames = new KillcamFramePayload[requiredFrames];
+        var ringLen = _replayRing.Length;
+
+        for (var i = 0; i < requiredFrames; i++)
+        {
+            var targetTick = startTick + (uint)i;
+            ReplayFrame? matchedFrame = null;
+
+            for (var r = 0; r < ringLen; r++)
+            {
+                if (_replayRing[r].Tick == targetTick)
+                {
+                    matchedFrame = _replayRing[r];
+                    break;
+                }
+            }
+
+            if (matchedFrame != null)
+            {
+                var payload = new KillcamFramePayload
+                {
+                    ZoneX = matchedFrame.ZoneCenterX,
+                    ZoneY = matchedFrame.ZoneCenterY,
+                    ZoneRadius = matchedFrame.ZoneRadius
+                };
+
+                for (var p = 0; p < matchedFrame.Players.Length; p++)
+                {
+                    var player = matchedFrame.Players[p];
+                    if (player.NetId == victim.NetId)
+                    {
+                        payload.VictimX = player.X;
+                        payload.VictimY = player.Y;
+                        payload.VictimHp = player.Hp;
+                        payload.VictimFlags = (byte)player.Flags;
+                    }
+                    else if (player.NetId == killerNetId)
+                    {
+                        payload.KillerX = player.X;
+                        payload.KillerY = player.Y;
+                        payload.KillerHp = player.Hp;
+                        payload.KillerFlags = (byte)player.Flags;
+                        payload.KillerPresent = true;
+                    }
+                }
+
+                frames[i] = payload;
+            }
+            else
+            {
+                victim.CapturedKillcam = new KillcamReplayResult(
+                    MatchId,
+                    (byte)7, // TooShort
+                    victim.NetId,
+                    killerNetId,
+                    endTick,
+                    Array.Empty<KillcamFramePayload>()
+                );
+                return;
+            }
+        }
+
+        victim.CapturedKillcam = new KillcamReplayResult(
+            MatchId,
+            0, // Ok
+            victim.NetId,
+            killerNetId,
+            endTick,
+            frames
+        );
+    }
+
+    public bool TryGetKillcamReplay(string sessionId, Guid matchId, byte victimNetId, out KillcamReplayResult? result)
+    {
+        result = null;
+        if (matchId != MatchId) return false;
+        if (!_bySession.TryGetValue(sessionId, out var entity) || entity == null) return false;
+        if (entity.NetId != victimNetId) return false;
+        if (entity.IsAlive) return false;
+        if (entity.ReplayRequestCount >= 3) return false;
+
+        entity.ReplayRequestCount++;
+
+        if (entity.CapturedKillcam == null)
+        {
+            result = new KillcamReplayResult(
+                MatchId,
+                (byte)4, // NoData
+                entity.NetId,
+                255,
+                entity.EliminationTick != 0 ? entity.EliminationTick : CurrentTick,
+                Array.Empty<KillcamFramePayload>()
+            );
+            return true;
+        }
+
+        result = entity.CapturedKillcam;
+        return true;
+    }
+
+    private void BroadcastElimination(Entity dead)
+    {
+        var packet = new MatchEliminationEventPacket
+        {
+            Version = MatchEliminationEventPacket.CurrentVersion,
+            MatchId = MatchId,
+            Tick = dead.EliminationTick,
+            VictimNetId = dead.NetId,
+            KillerNetId = dead.KillerNetId,
+            Cause = dead.EliminationCause
+        };
+        var writer = new NetDataWriter();
+        PacketRegistry.BeginFrame(writer);
+        _packets.Write(writer, ref packet);
+        ReliableBroadcast?.Invoke(writer.CopyData());
+    }
+
+    private void BroadcastPlayerDiedEvent(Entity dead)
+    {
+        var evt = new EventPacket
+        {
+            Tick = dead.EliminationTick,
+            EventType = GameEventType.PlayerDied,
+            SourceNetId = dead.KillerNetId != 255 ? dead.KillerNetId : EventPacket.NoTarget,
+            TargetNetId = dead.NetId,
+            Param1 = 0,
+            Param2 = 0
         };
         var writer = new NetDataWriter();
         PacketRegistry.BeginFrame(writer);

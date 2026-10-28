@@ -77,6 +77,7 @@ public sealed class SessionHub
         _frameValidator.Subscribe<ReplayAckPacket>(_ => { });
         _frameValidator.Subscribe<SnapshotAckPacket>(_ => { });
         _frameValidator.Subscribe<AttachIdentityPacket>(_ => { });
+        _frameValidator.Subscribe<KillcamRequestPacket>(_ => { });
         SetupGameplaySubscriptions();
         Rooms.RoomCreated += HookRoom;
         HookRoomMatches();
@@ -249,6 +250,74 @@ public sealed class SessionHub
             _tickets.Remove(packet.Ticket);
             session.ProfileKey = ticket.ProfileKey;
         });
+
+        _gameplayRegistry.Subscribe<KillcamRequestPacket, Session>((packet, session) =>
+        {
+            if (session.PlayerId is null) return;
+            if (packet.Version != KillcamRequestPacket.CurrentVersion) return;
+            if (packet.MatchId != session.Room.Match.MatchId) return;
+
+            if (!session.Room.Match.TryGetKillcamReplay(session.PlayerId, packet.MatchId, packet.VictimNetId, out var replay) || replay == null)
+            {
+                return;
+            }
+
+            SendKillcamChunks(session, replay);
+        });
+    }
+
+    private void SendKillcamChunks(Session session, KillcamReplayResult replay)
+    {
+        if (replay.Status != 0 || replay.Frames.Count == 0)
+        {
+            var chunk = new KillcamDataChunkPacket
+            {
+                Version = KillcamDataChunkPacket.CurrentVersion,
+                MatchId = replay.MatchId,
+                Status = replay.Status,
+                VictimNetId = replay.VictimNetId,
+                KillerNetId = replay.KillerNetId,
+                EndTick = replay.EndTick,
+                TotalFrames = 0,
+                ChunkIndex = 0,
+                TotalChunks = 1,
+                FrameCount = 0,
+                Frames = Array.Empty<KillcamFramePayload>()
+            };
+            var writer = new NetDataWriter();
+            PacketRegistry.BeginFrame(writer);
+            _gameplayRegistry.Write(writer, ref chunk);
+            Send(session, writer.CopyData(), true, GameplayProtocol.GameplayChannel);
+            return;
+        }
+
+        var totalFrames = (ushort)replay.Frames.Count;
+        const int framesPerChunk = KillcamDataChunkPacket.MaxFramesPerChunk;
+        var totalChunks = (byte)Math.Ceiling((double)totalFrames / framesPerChunk);
+
+        for (byte c = 0; c < totalChunks; c++)
+        {
+            var skip = c * framesPerChunk;
+            var chunkFrames = replay.Frames.Skip(skip).Take(framesPerChunk).ToArray();
+            var chunk = new KillcamDataChunkPacket
+            {
+                Version = KillcamDataChunkPacket.CurrentVersion,
+                MatchId = replay.MatchId,
+                Status = 0,
+                VictimNetId = replay.VictimNetId,
+                KillerNetId = replay.KillerNetId,
+                EndTick = replay.EndTick,
+                TotalFrames = totalFrames,
+                ChunkIndex = c,
+                TotalChunks = totalChunks,
+                FrameCount = (byte)chunkFrames.Length,
+                Frames = chunkFrames
+            };
+            var writer = new NetDataWriter();
+            PacketRegistry.BeginFrame(writer);
+            _gameplayRegistry.Write(writer, ref chunk);
+            Send(session, writer.CopyData(), true, GameplayProtocol.GameplayChannel);
+        }
     }
 
     private void SendInitialState(Session session)

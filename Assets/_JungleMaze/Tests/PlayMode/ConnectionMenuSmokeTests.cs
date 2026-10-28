@@ -52,6 +52,7 @@ namespace JungleMaze.Tests.PlayMode
             Assert.IsNotNull(_presenter, "Bootstrap composed the connection menu");
             Assert.AreEqual(AppScreen.MainMenu, _presenter.Screen);
 
+            _presenter.AdvancedExpanded = true; // explicit backend loopback test; normal Local opens offline
             var art = _view.Art;
             Assert.IsNotNull(art, "Boot wires the direction A menu art");
             Assert.AreEqual(6, art.AssignedCount);
