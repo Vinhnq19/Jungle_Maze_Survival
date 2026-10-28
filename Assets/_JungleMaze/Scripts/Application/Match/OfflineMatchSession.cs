@@ -43,6 +43,7 @@ namespace JungleMaze.App.Match
             _hudState = hudState;
         }
 
+        public event Action RoundStarted;
         public bool IsActive { get; private set; }
         public Guid MatchId { get; private set; }
         public float ElapsedSeconds { get; private set; }
@@ -80,8 +81,7 @@ namespace JungleMaze.App.Match
             _hudWriter.SetHp(PlayerHp);
             _hudWriter.SetAliveCount(1, 1);
             UpdateZoneCountdown();
-
-
+            RoundStarted?.Invoke();
         }
 
         public void SetPlayerPosition(float x, float y)

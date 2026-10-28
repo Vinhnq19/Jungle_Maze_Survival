@@ -53,3 +53,12 @@ PC2 dùng tên output riêng. Profile/client config phải đi cùng đúng serv
 Ghi ngày/UTC, tên hai PC, bản build/hash, mạng mỗi bên, host, transport, direct/relay, MatchId, file report của từng máy và kết luận PASS/FAIL/BLOCKED/INVALID. Không chép credential vào biên bản.
 
 Hai report một-PC giữ nguyên NOT_TESTED. Chỉ biên bản có bằng chứng hai thiết bị mới đánh dấu bài hai-PC đã đạt. Xong buổi tự host thì stop đúng stack; AWS phải Stop và xác nhận Stopped, không chỉ đóng SSH hoặc game.
+
+## Radmin VPN và menu mới (28/10)
+
+1. Hai PC cài Radmin VPN và vào cùng VPN; ghi IP VPN của PC host.
+2. Host cấu hình GAME_PUBLISH_HOST=IP_VPN_HOST và GAME_BIND_ADDRESS=0.0.0.0 trong Backend/.env, giữ API/Mongo/control loopback/private. Chạy docker compose up -d --build game-server tại Backend; firewall cho UDP7777 ở interface VPN.
+3. Hai player chọn Online → Radmin/VPN, nhập IP host, tên khác nhau và cùng RoomCode. Test2 riêng cần MATCH_PROFILE=test/PUBLIC_HOSTING=false; main vẫn cần6 phiên, không hạ luật main.
+4. Đối chiếu di chuyển/bo/HP/kết quả/replay; đóng một player rồi kiểm grace/resume; không dùng hai process trên một PC để ký nghiệm thu hai máy. Ghi NOT_TESTED nếu thiếu PC thứ hai.
+5. Tạo phòng qua API vẫn bắt JWT account. Radmin không tự cung cấp HTTPS API; để API trống nếu chưa có HTTPS, không gửi credential qua HTTP remote.
+6. Khi xong, đóng player, stop container host; EC2 không liên quan bài này. AWS có checklist Start/DNS/TLS/Stop riêng.

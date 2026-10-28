@@ -44,7 +44,7 @@ namespace JungleMaze.Composition
             var menu = new MatchMenuController(bus, clock, () => match.MatchId, flow.Screen, settings, tuning);
             var elimination = new MatchSessionEliminationSource(match, receiver);
             var spectator = new MatchSessionSpectatorSource(match, receiver, poses, balance.Match.HeroMaxHp);
-            var replay = new UnavailableKillcamReplaySource();
+            var replay = new NetworkKillcamReplaySource(_registry.Resolve<IPacketSender>(), receiver);
             var killcamOn = set.KillcamEnabled;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             killcamOn |= Array.IndexOf(Environment.GetCommandLineArgs(), "-killcam") >= 0;

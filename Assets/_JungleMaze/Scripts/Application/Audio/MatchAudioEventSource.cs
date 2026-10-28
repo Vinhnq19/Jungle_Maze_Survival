@@ -21,14 +21,18 @@ namespace JungleMaze.App.Audio
     {
         private readonly MatchSession _match;
 
-        public MatchSessionAudioFeed(MatchSession match) => _match = match ?? throw new ArgumentNullException(nameof(match));
+        private readonly OfflineMatchSession _offline;
+        public MatchSessionAudioFeed(MatchSession match, OfflineMatchSession offline = null)
+        { _match = match; _offline = offline; if (match == null && offline == null) throw new ArgumentNullException(nameof(match)); }
 
-        public byte OwnNetId => _match.OwnNetId;
+        public byte OwnNetId => _offline?.IsActive == true ? (byte)0 : _match.OwnNetId;
 
         public bool TryGetZone(out bool inWarning, out byte phaseIndex)
         {
-            var has = _match.HasZone;
-            var zone = _match.Zone;
+            if (_offline?.IsActive == true)
+            { inWarning = _offline.Zone.InWarning; phaseIndex = _offline.Zone.PhaseIndex; return true; }
+            var has = _match != null && _match.HasZone;
+            var zone = _match != null ? _match.Zone : default;
             inWarning = has && zone.InWarning;
             phaseIndex = has ? zone.PhaseIndex : (byte)0;
             return has;
@@ -55,9 +59,12 @@ namespace JungleMaze.App.Audio
         private bool _wasWarning;
         private int _belledPhase = NoPhase;
         private bool _subscribed;
+        private readonly OfflineMatchSession _offline;
+        private bool _wasOfflineDead;
 
-        public MatchAudioEventSource(IPacketReceiver receiver, IMatchAudioFeed feed, IPlayerPoseSource poses)
+        public MatchAudioEventSource(IPacketReceiver receiver, IMatchAudioFeed feed, IPlayerPoseSource poses, OfflineMatchSession offline = null)
         {
+            _offline = offline;
             _receiver = receiver;
             _feed = feed;
             _poses = poses;
@@ -82,6 +89,9 @@ namespace JungleMaze.App.Audio
 
         public void Tick(float deltaTime)
         {
+            var dead = _offline?.IsActive == true && _offline.IsDead;
+            if (dead && !_wasOfflineDead) CueRaised?.Invoke(AudioCue.Global(SfxId.Eliminated));
+            _wasOfflineDead = dead;
             if (_feed == null) return;
             if (!_feed.TryGetZone(out var warning, out var phase))
             {

@@ -74,6 +74,7 @@ namespace JungleMaze.Presentation.UI
         private void OnGUI()
         {
             if (_presenter == null) return;
+            if (Event.current.type == EventType.Repaint) _buttonRects.Clear();
             _status ??= new GUIStyle(GUI.skin.label) { wordWrap = true, fontStyle = FontStyle.Bold };
             if (!_stylesBuilt || _stylesFor != _art) BuildStyles();
             switch (_presenter.Screen)
@@ -89,7 +90,7 @@ namespace JungleMaze.Presentation.UI
         private void DrawMenu()
         {
             BeginArea(new Rect(20, 20, 380, Screen.height - 40));
-            GUILayout.Label("Jungle Maze — Kết nối", _status);
+            GUILayout.Label("Lastaway — Kết nối", _status);
 
             var oldMode = _presenter.Mode;
             var newMode = (ConnectionMode)GUILayout.Toolbar((int)_presenter.Mode, ModeNames, GUILayout.Height(28));

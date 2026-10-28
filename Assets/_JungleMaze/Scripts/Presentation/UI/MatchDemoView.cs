@@ -43,6 +43,7 @@ namespace JungleMaze.Presentation.UI
         private Guid _loadedAck;
         private string _dataError;
         private bool _historyVisible;
+        private bool _showDetails;
         private bool _busyHistory;
         private GUIStyle _label;
 
@@ -57,6 +58,7 @@ namespace JungleMaze.Presentation.UI
             _data = data;
             _poses = poses;
             _offlineSession = offline;
+            if (offline != null) offline.RoundStarted += ResetOfflineHero;
         }
 
         public void BindOverlay(IMatchMenuState menuState, MatchOverlayFlow overlayFlow)
@@ -79,19 +81,14 @@ namespace JungleMaze.Presentation.UI
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.F3)) _showDetails = !_showDetails;
             var inScene = SceneManager.GetActiveScene().name == "Game";
             if (_offlineSession != null && _offlineSession.IsActive && inScene)
             {
                 if (_hero == null) _hero = FindAnyObjectByType<HeroController>();
                 if (_hero != null)
                 {
-                    if (_offlineRound != _offlineSession.MatchId)
-                    {
-                        _offlineRound = _offlineSession.MatchId;
-                        _hero.transform.position = new Vector3(25f, 25f, 0f);
-                        if (_hero.TryGetComponent<Rigidbody2D>(out var rb)) { rb.simulated = true; rb.position = new Vector2(25f, 25f); rb.linearVelocity = Vector2.zero; }
-                        foreach (var renderer in _hero.GetComponentsInChildren<SpriteRenderer>(true)) renderer.enabled = true;
-                    }
+                    if (_offlineRound != _offlineSession.MatchId) ResetOfflineHero();
                     _hero.enabled = !_offlineSession.IsDead && !(_menuState?.BlocksGameplayInput ?? false);
                 }
                 if (_offlineSession.Zone != null)
@@ -208,8 +205,8 @@ namespace JungleMaze.Presentation.UI
                 obj.transform.SetParent(transform, false);
                 if (_ringMaterial == null)
                 {
-                    var shader = Shader.Find("Universal Render Pipeline/Unlit");
-                    if (shader == null) shader = Shader.Find("Sprites/Default");
+                    var shader = Shader.Find("Sprites/Default");
+                    if (shader == null) shader = Shader.Find("Universal Render Pipeline/Unlit");
                     _ringMaterial = new Material(shader);
                 }
                 ring.sharedMaterial = _ringMaterial; ring.useWorldSpace = true; ring.loop = true;
@@ -226,9 +223,21 @@ namespace JungleMaze.Presentation.UI
             ring.SetPositions(_circle);
         }
 
+        private void ResetOfflineHero()
+        {
+            if (_hero == null) _hero = FindAnyObjectByType<HeroController>();
+            if (_hero == null) return;
+            _offlineRound = _offlineSession.MatchId;
+            var c = _offlineSession.Zone.CurrentCenter;
+            _hero.transform.position = new Vector3(c.X, c.Y, 0);
+            if (_hero.TryGetComponent<Rigidbody2D>(out var rb)) { rb.simulated = true; rb.position = new Vector2(c.X, c.Y); rb.linearVelocity = Vector2.zero; }
+            foreach (var renderer in _hero.GetComponentsInChildren<SpriteRenderer>(true)) renderer.enabled = true;
+            if (_hero.TryGetComponent<LocalHeroPoseReporter>(out var reporter)) reporter.Report();
+        }
+
         private void HideRings()
         { if (_currentRing != null) _currentRing.enabled = false; if (_nextRing != null) _nextRing.enabled = false; }
-        private void OnDestroy() { if (_ringMaterial != null) Destroy(_ringMaterial); }
+        private void OnDestroy() { if (_offlineSession != null) _offlineSession.RoundStarted -= ResetOfflineHero; if (_ringMaterial != null) Destroy(_ringMaterial); }
 
         private void OnGUI()
         {
@@ -236,8 +245,8 @@ namespace JungleMaze.Presentation.UI
 
             if (_offlineSession != null && _offlineSession.IsActive)
             {
-                if (_menuState?.IsOpen == true) return;
-                GUILayout.BeginArea(new Rect(10, 52, 370, Mathf.Min(Screen.height - 62, 590)), GUI.skin.box);
+                if (_menuState?.IsOpen == true || (!_showDetails && !_offlineSession.HasResult)) return;
+                GUILayout.BeginArea(new Rect(10, 52, 370, Mathf.Min(Screen.height - 62, 220)), GUI.skin.box);
                 GUILayout.Label("Lastaway · Solo Offline", _label);
                 GUILayout.Label($"Trận {_offlineSession.MatchId.ToString().Substring(0, 8)} · 1 người chơi", _label);
                 GUILayout.Label($"HP: {_offlineSession.PlayerHp} · Thời gian: {_offlineSession.ElapsedSeconds:F1}s", _label);

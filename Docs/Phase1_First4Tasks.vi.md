@@ -1,5 +1,7 @@
 # Hướng dẫn setup, phát triển và kiểm thử Jungle Maze
 
+> Trong menu game mới, **Local** là solo offline, không cần Docker. Các lệnh Docker Local trong tài liệu này là **backend loopback**; xem [hướng dẫn Phase2](Phase2_Match_Guest_Zone.vi.md#0-chọn-local-lan-hoặc-online) để phân biệt Local/LAN/Radmin/AWS.
+
 Cập nhật **16/10/2026**. Đây là hướng dẫn vận hành chung cho dev, tester và người quản lý AWS. Kiến trúc, packet và trách nhiệm từng module nằm trong [Network_Architecture.vi.md](Network_Architecture.vi.md). Tài liệu nhập assets Unity nằm trong [JSurviv_Integration.vi.md](JSurviv_Integration.vi.md). Tạo nhiều phòng và đo sức chứa: xem mục 14. Quy trình đo backend cũ qua SSM nằm ở mục 14.7; kết nối UDP/WSS thực từ PC và vận hành theo lịch ở mục 16; test PC→EC2 trực tiếp/VPN và rà soát Phase 1 ở mục 15; kết quả thực đo nằm trong báo cáo chung.
 
 Hướng dẫn thao tác nhanh trên server đã triển khai: [Đăng nhập EC2, test Swagger và xem MongoDB bằng Compass](AWS_SSH_Swagger_Compass.vi.md).

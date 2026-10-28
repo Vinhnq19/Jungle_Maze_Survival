@@ -118,6 +118,47 @@ namespace JungleMaze.Tests.App
         }
 
         [Test]
+        public void OfflineWarningAndElimination_UseRealAudioFeed_WithoutDuplicates()
+        {
+            _presenter.StartOffline();
+            var cues = new List<JungleMaze.Domain.Audio.SfxId>();
+            var source = new JungleMaze.App.Audio.MatchAudioEventSource(null,
+                new JungleMaze.App.Audio.MatchSessionAudioFeed(null, _offlineSession), null, _offlineSession);
+            source.CueRaised += cue => cues.Add(cue.Id);
+            _offlineSession.SetPlayerPosition(25,25);
+            _offlineSession.Tick(81f);
+            source.Tick(0); source.Tick(0);
+            Assert.AreEqual(1, cues.Count);
+            Assert.AreEqual(JungleMaze.Domain.Audio.SfxId.ZoneBell3, cues[0]);
+            _offlineSession.ApplyDamage(100);
+            source.Tick(0); source.Tick(0);
+            Assert.AreEqual(2, cues.Count);
+            Assert.AreEqual(JungleMaze.Domain.Audio.SfxId.Eliminated, cues[1]);
+        }
+
+        [Test]
+        public void FullFiveStageRound_EndsAfterZeroRadius_AndReplayClearsPosition()
+        {
+            _presenter.StartOffline();
+            var phases = new HashSet<byte>();
+            for (var i = 0; i < 12500 && !_offlineSession.IsDead; i++)
+            {
+                var c = _offlineSession.Zone.CurrentCenter;
+                _offlineSession.SetPlayerPosition(c.X, c.Y);
+                _offlineSession.Tick(1f / 30f);
+                phases.Add(_offlineSession.Zone.PhaseIndex);
+            }
+            Assert.IsTrue(_offlineSession.HasResult);
+            Assert.AreEqual(0f, _offlineSession.Zone.CurrentRadius);
+            Assert.GreaterOrEqual(_offlineSession.ElapsedSeconds, 390f);
+            foreach (byte phase in new byte[] { 1,2,3,4,5 }) Assert.Contains(phase, new List<byte>(phases));
+            Assert.AreEqual(0, _network.Sent);
+            _offlineSession.Replay();
+            Assert.AreEqual(100, _offlineSession.PlayerHp);
+            Assert.AreEqual(0f, _offlineSession.ElapsedSeconds);
+        }
+
+        [Test]
         public void OfflineMatch_NoNetworkRoute_DoesNotCallNetworkOrAuth()
         {
             Assert.AreEqual(AppScreen.MainMenu, _flow.Screen);

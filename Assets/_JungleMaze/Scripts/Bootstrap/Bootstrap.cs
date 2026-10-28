@@ -219,6 +219,10 @@ namespace JungleMaze.Composition
                 Attach<OnlineScenarioRunner>();
             }
             else if (Array.IndexOf(Environment.GetCommandLineArgs(), "-phase2Smoke") >= 0) Attach<Phase2DemoProbe>();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            if (Array.IndexOf(args, "-offlineTest") >= 0)
+                gameObject.AddComponent<OfflineScenarioRunner>().Construct(offlineSession, _registry.Resolve<ConnectionMenuPresenter>(), _registry.Resolve<JungleMaze.App.MatchUi.MatchMenuController>(), network);
+#endif
             _log.Info("[Bootstrap] Đã nối service.");
         }
 
