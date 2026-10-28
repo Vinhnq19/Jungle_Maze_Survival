@@ -8,6 +8,8 @@ using JungleMaze.Domain.Balance;
 using JungleMaze.Domain.Hud;
 using JungleMaze.Infrastructure.Config;
 using NUnit.Framework;
+using UnityEngine.TestTools.Constraints;
+using Is = UnityEngine.TestTools.Constraints.Is;
 
 namespace JungleMaze.Tests.Combat
 {

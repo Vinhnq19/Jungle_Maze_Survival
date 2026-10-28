@@ -67,7 +67,11 @@ namespace JungleMaze.Tests.Config
             string[] expected = { "HAND", "TREE_BRANCH", "KNIFE", "BONE", "AXE", "MACE", "RUBBER_GUN", "SCEPTER", "CROSSBOW", "SHOTGUN" };
             foreach (var id in expected) Assert.IsNotNull(Find(weapons, id), id);
             Assert.AreEqual(5, Find(weapons, "SHOTGUN").Stats.Pellets);
-            Assert.AreEqual(2f, Find(weapons, "CROSSBOW").Stats.ReloadSeconds);
+            Assert.AreEqual(2.4f, Find(weapons, "CROSSBOW").Stats.ReloadSeconds);
+            Assert.AreEqual(1.2f, Find(weapons, "RUBBER_GUN").Stats.ReloadSeconds);
+            Assert.AreEqual(1.6f, Find(weapons, "SCEPTER").Stats.ReloadSeconds);
+            Assert.AreEqual(2.8f, Find(weapons, "SHOTGUN").Stats.ReloadSeconds);
+            Assert.AreEqual(25f, Find(weapons, "SHOTGUN").Stats.SpreadDegrees);
         }
 
         private static WeaponDefinition Find(System.Collections.Generic.List<WeaponDefinition> weapons, string id)
