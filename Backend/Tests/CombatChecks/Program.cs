@@ -29,8 +29,10 @@ Check(rules.TryGet(CombatWeaponId.Shotgun, out var shotgun) && shotgun.Pellets =
     "weapons.json: Shotgun has 5 pellets over 25 degrees");
 Check(rules.TryGet(CombatWeaponId.Axe, out var axe) && axe.IsBreakableAxe && axe.Damage == 42,
     "weapons.json: Axe is the breakable axe with damage 42");
-Check(rules.TryGet(CombatWeaponId.Shotgun, out var shotgunReload) && shotgunReload.ReloadSeconds == WeaponRules.DefaultReloadSeconds,
-    "weapons.json: reload falls back to the default when not in JSON");
+Check(rules.TryGet(CombatWeaponId.Shotgun, out var shotgunReload) && shotgunReload.ReloadSeconds == 2.8,
+    "weapons.json: Shotgun reload is 2.8 s from JSON");
+Check(rules.TryGet(CombatWeaponId.RubberGun, out var slingReload) && slingReload.ReloadSeconds == 1.2,
+    "weapons.json: Rubber Slingshot reload is 1.2 s from JSON");
 
 var noMap = new List<AABB>();
 
@@ -228,8 +230,8 @@ Check(CombatGeometry.RayHitsCircle(Vector2.Zero, Vector2.UnitX, 5f, new Vector2(
     combat.Tick(reloadEnd);
     var refilled = combat.TryAttack(0, Attack(52, CombatWeaponId.Crossbow), reloadEnd + 60, hits);
 
-    Check(reload.Outcome == CombatOutcome.Accepted && reloadEnd == tick + 60 && duringReload.Outcome == CombatOutcome.Reloading,
-        "reload: request is accepted, lasts 2 s, and attacks during it are Reloading");
+    Check(reload.Outcome == CombatOutcome.Accepted && reloadEnd == tick + 72 && duringReload.Outcome == CombatOutcome.Reloading,
+        "reload: Crossbow request is accepted, lasts 2.4 s (72 ticks), and attacks during it are Reloading");
     Check(refilled.Outcome == CombatOutcome.Accepted && combat.GetMagazine(0, CombatWeaponId.Crossbow) == 5 && combat.GetReserve(0, CombatWeaponId.Crossbow) == 24,
         "reload: magazine refills 6 from reserve (30 to 24) when the reload finishes, then one shot is fired");
 }

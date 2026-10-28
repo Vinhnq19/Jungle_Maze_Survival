@@ -13,13 +13,13 @@
     "damage": 60, "cooldownSeconds": 1.2, "range": 2.2, "arcDegrees": 120, "stunSeconds": 1.0 },
 
   { "id": "RUBBER_GUN", "displayName": "Rubber Slingshot", "category": "Ranged",
-    "damage": 15, "range": 6, "fireRatePerSecond": 3, "projectileSpeed": 18, "magazineSize": 12, "reserveAmmo": 60 },
+    "damage": 15, "range": 6, "fireRatePerSecond": 3, "projectileSpeed": 18, "magazineSize": 12, "reserveAmmo": 60, "reloadSeconds": 1.2 },
   { "id": "SCEPTER", "displayName": "Scepter", "category": "Ranged",
-    "damage": 17, "range": 12, "fireRatePerSecond": 2, "projectileSpeed": 20, "magazineSize": 10, "reserveAmmo": 50 },
+    "damage": 17, "range": 12, "fireRatePerSecond": 2, "projectileSpeed": 20, "magazineSize": 10, "reserveAmmo": 50, "reloadSeconds": 1.6 },
   { "id": "CROSSBOW", "displayName": "Crossbow", "category": "Ranged",
-    "damage": 34, "range": 9, "fireRatePerSecond": 1.2, "projectileSpeed": 16, "magazineSize": 6, "reserveAmmo": 30 },
+    "damage": 34, "range": 9, "fireRatePerSecond": 1.2, "projectileSpeed": 16, "magazineSize": 6, "reserveAmmo": 30, "reloadSeconds": 2.4 },
   { "id": "SHOTGUN", "displayName": "Shotgun", "category": "Ranged",
-    "damage": 9, "pellets": 5, "range": 4, "fireRatePerSecond": 0.8, "projectileSpeed": 24, "magazineSize": 4, "reserveAmmo": 20 },
+    "damage": 9, "pellets": 5, "range": 4, "fireRatePerSecond": 0.8, "projectileSpeed": 24, "magazineSize": 4, "reserveAmmo": 20, "reloadSeconds": 2.8 },
 
   { "id": "BANANA", "displayName": "Banana", "category": "Thrown",
     "damage": 30, "cooldownSeconds": 1, "range": 8, "fuseSeconds": 1.5, "areaWidth": 3, "areaHeight": 3, "carry": 3, "stunSeconds": 1.0 },
