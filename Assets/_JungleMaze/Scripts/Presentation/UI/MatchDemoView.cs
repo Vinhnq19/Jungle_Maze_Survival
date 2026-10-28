@@ -6,6 +6,7 @@ using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
 using JungleMaze.Core.DI;
 using JungleMaze.Domain.MatchUi;
+using JungleMaze.Presentation.Combat;
 using JungleMaze.Presentation.Controls;
 using JungleMaze.Presentation.Player;
 using JungleMaze.Presentation.World;
@@ -160,6 +161,7 @@ namespace JungleMaze.Presentation.UI
             foreach (var renderer in _hero.GetComponentsInChildren<SpriteRenderer>()) renderer.enabled = false;
             foreach (var input in FindObjectsByType<PlayerInputReader>(FindObjectsSortMode.None)) input.enabled = false;
             foreach (var probe in FindObjectsByType<LocalWeaponProbe>(FindObjectsSortMode.None)) probe.enabled = false;
+            foreach (var combat in FindObjectsByType<CombatWeaponPresenter>(FindObjectsSortMode.None)) combat.enabled = false;
         }
 
         /// <summary>Map đã khớp hash server → mô phỏng movement client giống hệt server (MOV-02).</summary>

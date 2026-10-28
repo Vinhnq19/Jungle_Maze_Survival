@@ -1,5 +1,6 @@
 using System;
 using JungleBackend.Protocol.Gameplay;
+using JungleMaze.App.Combat.Mocks;
 using JungleMaze.App.Flow;
 using JungleMaze.App.Hud.State;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -126,6 +127,8 @@ namespace JungleMaze.Composition
             _registry.Register(new HudMockScenarios(hudMock, inventoryMock, effectMock));
             var feedbackScenarios = new HudFeedbackScenarios(hudMock, inventoryMock, effectMock, inventoryState);
             _registry.Register(feedbackScenarios);
+            // WPN-01 local demo: stands in for the combat server until the GameServer transport is connected.
+            _registry.Register(new FakeCombatBackend(balance));
 #endif
 
             // Domain + Application
