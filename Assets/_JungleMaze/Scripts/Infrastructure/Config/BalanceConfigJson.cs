@@ -28,7 +28,7 @@ namespace JungleMaze.Infrastructure.Config
         {
             "id", "displayName", "category", "damage", "cooldownSeconds", "range", "arcDegrees", "stunSeconds",
             "fireRatePerSecond", "projectileSpeed", "pellets", "magazineSize", "reserveAmmo", "fuseSeconds",
-            "areaWidth", "areaHeight", "carry", "charges"
+            "areaWidth", "areaHeight", "carry", "charges", "reloadSeconds", "spreadDegrees"
         };
 
         private static readonly HashSet<string> EquipmentKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -107,6 +107,9 @@ namespace JungleMaze.Infrastructure.Config
             return error == null;
         }
 
+        public const float DefaultReloadSeconds = 2f;
+        public const float DefaultSpreadDegrees = 25f;
+
         public static bool TryParseWeapons(string json, string source, out List<WeaponDefinition> weapons, out string error)
         {
             weapons = new List<WeaponDefinition>();
@@ -146,8 +149,15 @@ namespace JungleMaze.Infrastructure.Config
                     AreaWidth = OptionalFloat(values, "areaWidth"),
                     AreaHeight = OptionalFloat(values, "areaHeight"),
                     Carry = OptionalInt(values, "carry"),
-                    Charges = OptionalInt(values, "charges")
+                    Charges = OptionalInt(values, "charges"),
+                    ReloadSeconds = OptionalFloat(values, "reloadSeconds"),
+                    SpreadDegrees = OptionalFloat(values, "spreadDegrees")
                 };
+                // WPN-01 defaults (reload 1.2-2.8 s band, midpoint 2.0; shotgun cone 25 degrees). Override in JSON.
+                if (stats.ReloadSeconds == null && category == WeaponCategory.Ranged && stats.MagazineSize.HasValue)
+                    stats.ReloadSeconds = DefaultReloadSeconds;
+                if (stats.SpreadDegrees == null && stats.Pellets.HasValue)
+                    stats.SpreadDegrees = DefaultSpreadDegrees;
 
                 var weapon = new WeaponDefinition(id, displayName, category, stats);
                 error = weapon.Validate();

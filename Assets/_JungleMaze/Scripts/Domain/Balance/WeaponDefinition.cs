@@ -33,6 +33,10 @@ namespace JungleMaze.Domain.Balance
         public float? AreaHeight;
         public int? Carry;
         public int? Charges;
+        /// <summary>Seconds to finish a reload (R). The loader fills the default for Ranged weapons with a magazine.</summary>
+        public float? ReloadSeconds;
+        /// <summary>Total cone angle in degrees for multi-pellet weapons (e.g. Shotgun). The loader fills the default when Pellets is set.</summary>
+        public float? SpreadDegrees;
     }
 
     /// <summary>
@@ -62,6 +66,8 @@ namespace JungleMaze.Domain.Balance
             if (Stats.Damage < 0f) return $"{Id}: damage must be >= 0.";
             if (Stats.CooldownSeconds.HasValue && Stats.CooldownSeconds <= 0f) return $"{Id}: cooldownSeconds must be > 0 when set.";
             if (Stats.Range < 0f) return $"{Id}: range must be >= 0.";
+            if (Stats.ReloadSeconds.HasValue && Stats.ReloadSeconds <= 0f) return $"{Id}: reloadSeconds must be > 0 when set.";
+            if (Stats.SpreadDegrees.HasValue && (Stats.SpreadDegrees <= 0f || Stats.SpreadDegrees > 360f)) return $"{Id}: spreadDegrees must be in (0, 360].";
             return null;
         }
 
