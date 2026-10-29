@@ -4,7 +4,7 @@ using LiteNetLib.Utils;
 
 namespace GameServer.Simulation;
 
-public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
+public sealed partial class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
 {
     private sealed class Entity : IEntity
     {
@@ -103,12 +103,13 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         _map = map;
         _zoneSchedule = zoneSchedule;
         _profile = profile;
-        _health = new HealthService(this);
+        _health = new HealthService(this, _profile.PlayerHp);
         _health.EntityDied += OnEntityDied;
         _combat = CreateCombat();
         _physics = new PhysicsSimulation(map, profile.PlayerRadius, profile.PlayerSpeed);
         if (map.Version != profile.Version || zoneSchedule.Version != profile.Version)
             throw new InvalidDataException("Game data versions differ.");
+        ConfigureWorld();
 
         for (var i = 0; i < _replayRing.Length; i++)
             _replayRing[i] = new ReplayFrame();
@@ -298,7 +299,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             return false;
 
         // Explicit leave eliminates player immediately without waiting for 15s grace
-        _health.ApplyDamage(entity.NetId, 255, entity.NetId);
+        _health.Eliminate(entity.NetId);
         BroadcastEntityEvent(entity.NetId, MatchEntityEvent.Eliminated);
         BroadcastRoster();
         return true;
@@ -503,7 +504,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         {
             if (_matchElapsedSeconds - (entity.DisconnectedAtSecond ?? 0.0) >= _profile.DisconnectGraceSeconds)
             {
-                _health.ApplyDamage(entity.NetId, 255, entity.NetId);
+                _health.Eliminate(entity.NetId);
                 GraceExpired?.Invoke(entity.PlayerSessionId);
             }
         }
@@ -516,10 +517,15 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             var mx = isStale ? 0f : (entity.MoveX / 127f);
             var my = isStale ? 0f : (entity.MoveY / 127f);
 
-            var (newX, newY) = _physics.Move(entity.X, entity.Y, mx, my, dt);
+            if (World != null && (mx != 0 || my != 0)) World.Inventory.CancelForAction(entity.NetId, JungleMaze.World.Inventory.ItemCancelAction.Move);
+            var speed = World?.SpeedMultiplier(entity.NetId) ?? 1f;
+            if (World?.Using(entity.NetId) == true) speed = 0;
+            var (newX, newY) = (_worldPhysics ?? _physics).Move(entity.X, entity.Y, mx, my, dt * speed);
             entity.X = newX;
             entity.Y = newY;
         }
+
+        TickWorld();
 
         // 3. Zone simulation & zone damage
         if (_zone != null)
@@ -597,6 +603,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
 
     private void TickCleanup()
     {
+        ResetWorld();
         // Clean world and restart in same room
         // Drop disconnected players
         var toRemove = _entities.Values.Where(e => e.IsDisconnected).Select(e => e.PlayerSessionId).ToArray();
@@ -654,7 +661,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
         }
 
         // Health dedupe resets per match
-        _health = new HealthService(this);
+        _health = new HealthService(this, _profile.PlayerHp);
         _health.EntityDied += OnEntityDied;
         _combat = CreateCombat();
 
@@ -748,6 +755,7 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
             netIdCounter++;
         }
 
+        StartWorld();
         BroadcastRoster();
     }
 
@@ -916,6 +924,11 @@ public sealed class MatchRuntime : IMatchRuntime, IServerClock, IEntityRegistry
     }
     private void OnEntityDied(byte victimNetId, byte killerNetId)
     {
+        if (World != null)
+        {
+            World.SyncActors();
+            World.Inventory.DeathDrop(victimNetId, CurrentTick == 0 ? 1 : CurrentTick);
+        }
         if (_entities.TryGetValue(victimNetId, out var victim))
         {
             victim.EliminationTick = CurrentTick;

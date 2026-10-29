@@ -13,7 +13,7 @@ namespace GameServer.Networking;
 
 /// <summary>Single writer: toàn bộ hàm trong lớp này chạy trên vòng PollEvents/tick.
 /// Socket async chỉ enqueue công việc; không khóa hoặc await I/O trong lớp này.</summary>
-public sealed class SessionHub
+public sealed partial class SessionHub
 {
     private sealed class Session(int id, IGamePeer peer, JoinRequest request, RoomManager.Room room, string? playerId)
     {
@@ -25,6 +25,9 @@ public sealed class SessionHub
         public string? ProfileKey;
         public long LastMessage = Stopwatch.GetTimestamp();
         public bool ApplicationSeen;
+        public bool WorldEnabled;
+        public uint LastWorldRequestTick=uint.MaxValue,LastWorldSyncTick,LastWorldRevision,LastWorldResyncTick,LastWorldInventoryTick;
+        public Guid LastWorldMatch;
     }
     private sealed class Attempt(JoinRequest request)
     {
@@ -81,6 +84,7 @@ public sealed class SessionHub
         _frameValidator.Subscribe<AttackRequestPacket>(_ => { });
         _frameValidator.Subscribe<ReloadRequestPacket>(_ => { });
         SetupGameplaySubscriptions();
+        SetupWorldSubscriptions();
         Rooms.RoomCreated += HookRoom;
         HookRoomMatches();
     }
@@ -673,6 +677,7 @@ public sealed class SessionHub
     public void Tick(double dt)
     {
         Rooms.Tick(dt);
+        TickWorldStreams();
     }
 
     public void CloseAll()
