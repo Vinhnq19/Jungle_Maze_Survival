@@ -146,6 +146,28 @@ Check(rollback.DeathDrop(0, 1) == ItemResult.Ok && rollbackWorld.Items.Count == 
 Check(rollback.DeathDrop(0, 1) == ItemResult.Duplicate && rollbackWorld.Items.Count == 2, "repeated successful death-drop cannot duplicate");
 var newService = new InventoryService(Guid.NewGuid(), baseline, game, floor); newService.Register(0);
 Check(newService.GetSnapshot(0).Revision == 0, "fresh round has fresh state and request dedupe");
+// Loaded rounds belong to a physical weapon, including two guns with the same catalog ID.
+ushort gunNext = 0;
+var gunFloor = new MemoryItemWorld(() => ++gunNext);
+var guns = new InventoryService(Guid.NewGuid(), baseline, game, gunFloor);
+guns.Register(0); guns.Register(1);
+gunFloor.TrySpawn(new ItemStack("SHOTGUN", 1, 0, 9, 2), 0, 0, out var firstGun);
+gunFloor.TrySpawn(new ItemStack("SHOTGUN", 1, 0, 6, 1), 0, 0, out var secondGun);
+Check(guns.Pickup(guns.MatchId, 0, 1, firstGun) == ItemResult.Ok && guns.Pickup(guns.MatchId, 0, 2, secondGun) == ItemResult.Ok, "two same-kind guns can have different loaded magazines");
+guns.Select(guns.MatchId, 0, 3, 0);
+Check(guns.TrySetWeaponAmmo(0, "SHOTGUN", 0, 8), "combat updates only the selected physical gun");
+var beforeSwitch = guns.EquipmentGeneration(0);
+guns.Select(guns.MatchId, 0, 4, 1);
+Check(guns.HeldWeapon(0).Magazine == 1 && guns.HeldWeapon(0).Ammo == 6 && guns.EquipmentGeneration(0) != beforeSwitch, "same-kind slot switch keeps separate ammo and changes equipment identity");
+Check(guns.TrySetWeaponAmmo(0, "SHOTGUN", 0, 5) && guns.GetSnapshot(0).Weapons[0].Ammo == 8 && guns.GetSnapshot(0).Weapons[1].Ammo == 5, "firing the second same-kind gun cannot overwrite the first gun");
+guns.Drop(guns.MatchId, 0, 5, 1);
+var droppedGun = gunFloor.Items.Single();
+Check(droppedGun.Stack.MagazineKnown && droppedGun.Stack.Magazine == 0 && droppedGun.Stack.Ammo == 5, "drop preserves loaded and reserve rounds");
+guns.Pickup(guns.MatchId, 1, 1, droppedGun.Id);
+guns.Select(guns.MatchId, 1, 2, 0);
+Check(guns.HeldWeapon(1).Magazine == 0 && guns.HeldWeapon(1).Ammo == 5, "another actor picks up the same remaining ammunition");
+guns.DeathDrop(0, 1);
+Check(gunFloor.Items.Single().Stack.MagazineKnown && gunFloor.Items.Single().Stack.Magazine == 0 && gunFloor.Items.Single().Stack.Ammo == 8, "death-drop preserves an empty magazine without refilling it");
 Console.WriteLine($"InventoryChecks: {passed} passed, 0 failed");
 return 0;
 

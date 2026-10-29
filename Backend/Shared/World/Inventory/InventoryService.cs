@@ -162,7 +162,8 @@ namespace JungleMaze.World.Inventory
                 TakeFloor(floor, 1); Mark(a, actor); return ItemResult.Ok;
             }
             var slots = item.Kind == ItemKind.Weapon ? a.Weapons : a.Consumables;
-            var index = FindStack(slots, item.Id);
+            // Non-stackable weapons are distinct instances, even when their catalog IDs match.
+            var index = item.Kind == ItemKind.Weapon && item.MaxStack == 1 ? FindEmpty(slots) : FindStack(slots, item.Id);
             if (index < 0) index = FindEmpty(slots);
             if (index < 0)
             {
@@ -237,8 +238,8 @@ namespace JungleMaze.World.Inventory
         {
             if (!_actors.TryGetValue(actor, out var a) || !_catalog.TryGet(itemId, out var item) ||
                 magazine < 0 || magazine > item.MagazineSize || reserve < 0 || reserve > item.ReserveCapacity) return false;
-            var index = FindStack(a.Weapons, itemId);
-            if (index < 0) return false;
+            var index = a.ActiveWeapon;
+            if (index < 0 || index >= a.Weapons.Length || a.Weapons[index].ItemId != itemId) return false;
             var stack = a.Weapons[index];
             if (stack.MagazineKnown && stack.Magazine == magazine && stack.Ammo == reserve) return true;
             stack.Magazine = magazine; stack.MagazineKnown = true; stack.Ammo = reserve;
