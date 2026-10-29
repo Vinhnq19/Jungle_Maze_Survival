@@ -4,7 +4,8 @@
     "references": [
         "JungleMaze.Core",
         "JungleMaze.Domain",
-        "JungleMaze.Protocol"
+        "JungleMaze.Protocol",
+        "JungleMaze.World"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

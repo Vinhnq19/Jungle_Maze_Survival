@@ -26,7 +26,7 @@ namespace JungleMaze.Domain.Hud
 
         public InventoryChange SetActiveSlot(int index)
         {
-            if (index < 0 || index >= TotalSlotCount || index == ActiveSlot) return InventoryChange.None;
+            if (index < -1 || index >= TotalSlotCount || index == ActiveSlot) return InventoryChange.None;
             ActiveSlot = index;
             return InventoryChange.ActiveSlot;
         }

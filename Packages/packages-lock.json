@@ -32,6 +32,12 @@
       "source": "local",
       "dependencies": {}
     },
+    "com.junglemaze.world": {
+      "version": "file:../Backend/Shared/World",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.2d.animation": {
       "version": "13.0.4",
       "depth": 0,

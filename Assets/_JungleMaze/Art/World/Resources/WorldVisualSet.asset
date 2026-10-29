@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61bb9cc1cadf248469c0f2a619ea215b, type: 3}
+  m_Name: WorldVisualSet
+  m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.World.Phase2.WorldVisualSet
+  Entries:
+  - Kind: 5
+    Sprite: {fileID: -5801566434257123781, guid: 38d40510924267845aed576e9f4e4e78, type: 3}
+  - Kind: 6
+    Sprite: {fileID: 21300000, guid: 7d5801e42ffb74c4aacde06e42cf1d7c, type: 3}
+  - Kind: 7
+    Sprite: {fileID: 2726743452636938855, guid: d3f0ece6db5fdfd4f847819f573d4a8b, type: 3}
+  - Kind: 8
+    Sprite: {fileID: -309623231551762633, guid: 03bc83c85164b5149b7c40aaf5acd91b, type: 3}
+  - Kind: 9
+    Sprite: {fileID: 6673312695985084743, guid: 2e59f2e6c394ffb45bd008a537eb460e, type: 3}
+  - Kind: 11
+    Sprite: {fileID: -5816642994671486895, guid: d61ec40a68aef5545a335b8e51476e50, type: 3}
+  - Kind: 10
+    Sprite: {fileID: 1966274907916846902, guid: 6829ca3cf4a181f4d9497cdfa590e31b, type: 3}
+  - Kind: 13
+    Sprite: {fileID: -4987371248746193744, guid: 93e6b284fea6b0c4a9a5c4138d6b35af, type: 3}

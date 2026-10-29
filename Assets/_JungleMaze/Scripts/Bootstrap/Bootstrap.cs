@@ -198,6 +198,7 @@ namespace JungleMaze.Composition
             ComposeMatchOverlay(bus, tickRunner, match, network, flow, balance); // UI-03, Bootstrap.MatchOverlay.cs
             ComposeTelemetry(tickRunner, match, network, remote); // TEL-01, Bootstrap.Telemetry.cs (only with -telemetry)
             _registry.InitializeAll();
+            ComposeWorld(tickRunner, match); // MAP-02 / ITM-01 authoritative world stream.
 
             // View/vỏ MonoBehaviour sống cùng Bootstrap (DontDestroyOnLoad).
             Attach<NetworkManager>();

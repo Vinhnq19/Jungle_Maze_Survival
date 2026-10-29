@@ -6,6 +6,7 @@
         "JungleMaze.Domain",
         "JungleMaze.Application",
         "JungleMaze.Protocol",
+        "JungleMaze.World",
         "UnityEngine.UI",
         "Unity.TextMeshPro"
     ],

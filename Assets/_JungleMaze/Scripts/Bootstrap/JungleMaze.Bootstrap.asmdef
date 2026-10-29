@@ -7,7 +7,8 @@
         "JungleMaze.Application",
         "JungleMaze.Infrastructure",
         "JungleMaze.Presentation",
-        "JungleMaze.Protocol"
+        "JungleMaze.Protocol",
+        "JungleMaze.World"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

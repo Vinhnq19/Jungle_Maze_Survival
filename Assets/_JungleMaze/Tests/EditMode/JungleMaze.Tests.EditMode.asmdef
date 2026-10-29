@@ -6,6 +6,7 @@
         "UnityEditor.TestRunner",
         "JungleMaze.Core",
         "JungleMaze.Protocol",
+        "JungleMaze.World",
         "JungleMaze.Domain",
         "JungleMaze.Application",
         "JungleMaze.Infrastructure",

@@ -1,0 +1,1 @@
+{"name":"JungleMaze.World.Editor","rootNamespace":"JungleMaze.EditorTools","references":["JungleMaze.World","JungleMaze.Core","JungleMaze.Application","JungleMaze.Domain","JungleMaze.Presentation","JungleMaze.Bootstrap","UnityEngine.UI"],"includePlatforms":["Editor"],"autoReferenced":false}
