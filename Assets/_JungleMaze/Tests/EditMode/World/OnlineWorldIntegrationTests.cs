@@ -24,6 +24,12 @@ namespace JungleMaze.Tests.World
 {
     public sealed class OnlineWorldIntegrationTests
     {
+        [Test] public void WorldHashMatchesCoreClrGoldenVector()
+        {
+            var map=new MapLayout{Version="hash-vector",Seed=7,Size=50};
+            map.Spawns.Add(new WorldPoint(39.562305f,35.580135f));
+            Assert.AreEqual("a30edc92d586ba3453c936fa654ecc3c0c9b7a6f6688bb92b424fef31e3768fb",MapLayoutGenerator.ComputeHash(map));
+        }
         private sealed class Sender : IPacketSender
         {
             public readonly List<object> Packets=new List<object>();

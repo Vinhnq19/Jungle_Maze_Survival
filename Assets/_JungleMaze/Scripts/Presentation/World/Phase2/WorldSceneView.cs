@@ -15,6 +15,7 @@ namespace JungleMaze.Presentation.World.Phase2
     {
         private WorldClientSession _world;private MatchSession _match;
         private IMatchMenuState _menu;private ItemCatalog _catalog;private float _autoPickupAt;
+        [SerializeField] private WorldVisualSet visuals;
         private Transform _root;private Sprite _square;private Texture2D _texture;private WorldVisualSet _visuals;
         private readonly Dictionary<ushort,WorldObjectView> _views=new Dictionary<ushort,WorldObjectView>();
         private readonly Dictionary<ushort,BoxCollider2D> _colliders=new Dictionary<ushort,BoxCollider2D>();
@@ -23,7 +24,7 @@ namespace JungleMaze.Presentation.World.Phase2
         [Inject] public void Construct(WorldClientSession world,MatchSession match){_world=world;_match=match;}
         [Inject] public void Configure(IMatchMenuState menu,ItemCatalog catalog){_menu=menu;_catalog=catalog;}
         [Inject] public void BindGeometry(IClientRuntimeData runtime) => _runtime=runtime;
-        private void Start(){_world.Changed+=Refresh;_world.Teleported+=Teleport;SceneManager.sceneLoaded+=SceneLoaded;_visuals=Resources.Load<WorldVisualSet>("WorldVisualSet");Refresh();}
+        private void Start(){_world.Changed+=Refresh;_world.Teleported+=Teleport;SceneManager.sceneLoaded+=SceneLoaded;_visuals=visuals!=null?visuals:Resources.Load<WorldVisualSet>("WorldVisualSet");Refresh();}
         private void SceneLoaded(Scene scene,LoadSceneMode mode) => Refresh();
         private void Teleport(ushort source,uint sequence)
         {

@@ -31,7 +31,7 @@ namespace JungleMaze.Composition
             _registry.Register(world);ticks.Add(world);
             var combat=new OnlineCombatSession(match,world,_registry.Resolve<IBalanceConfigProvider>(),_registry.Resolve<IPacketSender>(),_registry.Resolve<IPacketReceiver>(),_registry.Resolve<IHudStateWriter>());
             _registry.Register(combat);ticks.Add(combat);
-            Attach<WorldSceneView>();
+            // The Game scene owns its world views and colliders; services survive scene changes.
         }
     }
 }

@@ -48,6 +48,8 @@ namespace JungleMaze.World
         }
         private static void CheckCount(Dictionary<WorldObjectKind,int> counts,WorldObjectKind kind,int expected){if((counts.ContainsKey(kind)?counts[kind]:0)!=expected)throw new ArgumentException("World object count mismatch: "+kind);}
         public static string ComputeHash(MapLayout m){var b=new StringBuilder().Append(m.Version).Append('|').Append(m.Seed).Append('|').Append(m.Size);foreach(var p in m.Spawns)AppendPoint(b,p);foreach(var o in m.Objects){b.Append('|').Append(o.Id).Append(':').Append((byte)o.Kind).Append(':').Append(o.PairId);AppendPoint(b,new WorldPoint(o.Bounds.MinX,o.Bounds.MinY));AppendPoint(b,new WorldPoint(o.Bounds.MaxX,o.Bounds.MaxY));}using(var sha=SHA256.Create()){var hash=sha.ComputeHash(Encoding.UTF8.GetBytes(b.ToString()));var result=new StringBuilder();foreach(var v in hash)result.Append(v.ToString("x2"));return result.ToString();}}
-        private static void AppendPoint(StringBuilder b,WorldPoint p){b.Append('|').Append(p.X.ToString("R",CultureInfo.InvariantCulture)).Append(',').Append(p.Y.ToString("R",CultureInfo.InvariantCulture));}
+        // Mono and CoreCLR use different round-trip float formatting. Hash fixed-point coordinates
+        // instead, with precision far below the movement/collision tolerance on either runtime.
+        private static void AppendPoint(StringBuilder b,WorldPoint p){b.Append('|').Append(Math.Round((double)p.X*10000,MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture)).Append(',').Append(Math.Round((double)p.Y*10000,MidpointRounding.AwayFromZero).ToString(CultureInfo.InvariantCulture));}
     }
 }

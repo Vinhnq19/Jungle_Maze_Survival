@@ -9,6 +9,9 @@ void Check(bool okay,string name){checks++;if(!okay)throw new Exception("FAIL: "
 void Throws(Action action,string name){try{action();}catch(ArgumentException){Check(true,name);return;}throw new Exception("Expected rejection: "+name);}
 var config=new MapLayoutConfig();
 var map=MapLayoutGenerator.Generate(config,20261028);
+var hashVector = new MapLayout { Version = "hash-vector", Seed = 7, Size = 50 };
+hashVector.Spawns.Add(new WorldPoint(39.562305f, 35.580135f));
+Check(MapLayoutGenerator.ComputeHash(hashVector) == "a30edc92d586ba3453c936fa654ecc3c0c9b7a6f6688bb92b424fef31e3768fb", "fixed-point hash matches shared Mono/CoreCLR golden vector");
 Check(map.Objects.Count(o=>o.Kind==WorldObjectKind.Chest)==60,"60 chests");
 Check(map.Objects.Count(o=>o.Kind==WorldObjectKind.Pot)==90,"90 pots");
 Check(map.Objects.Count(o=>o.Kind==WorldObjectKind.Bush)==45,"45 bushes");
@@ -90,6 +93,14 @@ try
     var pageObjects=serial.Take(WorldWire.PageSize).ToArray();var page=new WorldObjectStatePacket{MatchId=other.MatchId,Revision=second.Revision,PageIndex=0,PageCount=(ushort)((serial.Count+23)/24),TotalObjects=(ushort)serial.Count,Objects=pageObjects};
     var pageReader=new PacketRegistry();WorldObjectStatePacket pageReceived=default;pageReader.Subscribe<WorldObjectStatePacket>(p=>pageReceived=p);writer.Reset();pageReader.WriteFrame(writer,ref page);Check(writer.Length<=4096&&pageReader.TryReadFrame(new NetDataReader(writer.CopyData()))&&pageReceived.Objects.Length==24,"world page is bounded and roundtrips");
     var s=second.SnapshotInventory(0);var inventoryReader=new PacketRegistry();inventoryReader.Subscribe<InventoryStatePacket>(_=>{});writer.Reset();inventoryReader.WriteFrame(writer,ref s);Check(inventoryReader.TryReadFrame(new NetDataReader(writer.CopyData())),"inventory snapshot roundtrip");
+    var saturated = Start("SATURATED").World!;
+    var saturatedChest = saturated.Layout.Objects.First(o => o.Kind == WorldObjectKind.Chest);
+    while (saturated.Floor.TrySpawn(new ItemStack("GOD_LEAF"), 1, 1, out _)) { }
+    Check(!saturated.Destructibles.DamageConfirmed(saturatedChest.Id, 30, 0, 1) && !saturated.Destructibles.IsBroken(saturatedChest.Id), "full floor rejects lethal container hit without losing its loot");
+    foreach (var item in saturated.Floor.Items.ToArray()) saturated.Floor.Remove(item.Id);
+    Check(saturated.Destructibles.DamageConfirmed(saturatedChest.Id, 30, 0, 1) && saturated.Floor.Items.Count is >= 3 and <= 4, "capacity recovery allows the same confirmed hit to spawn one complete loot batch");
+    var batchCount = saturated.Floor.Items.Count;
+    Check(!saturated.Destructibles.DamageConfirmed(saturatedChest.Id, 30, 0, 1) && saturated.Floor.Items.Count == batchCount, "retry after recovered destruction cannot duplicate the loot batch");
 }
 finally{Environment.SetEnvironmentVariable("WORLD_ENABLED",priorWorld);}
 Console.WriteLine($"WorldChecks: {checks} passed, 0 failed");
