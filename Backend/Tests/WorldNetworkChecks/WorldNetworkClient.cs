@@ -46,6 +46,8 @@ public sealed class WorldNetworkClient : IAsyncDisposable
     public InventoryStatePacket? Inventory { get; private set; }
     public readonly Dictionary<ushort, WorldObjectStatePacket> Pages = new();
     public readonly List<WorldActionResultPacket> Results = new();
+    public readonly List<AttackResultPacket> Attacks = new();
+    public readonly List<ReloadResultPacket> Reloads = new();
     public uint CompletedRevision { get; private set; }
     public WorldObjectWire[] WorldObjects { get; private set; } = Array.Empty<WorldObjectWire>();
     private uint _pageRevision;
@@ -73,6 +75,8 @@ public sealed class WorldNetworkClient : IAsyncDisposable
         _registry.Subscribe<MatchEliminationEventPacket>(_ => { });
         _registry.Subscribe<KillcamDataChunkPacket>(p => { if (p.MatchId == MatchId && KillcamChunks.Count < 2) KillcamChunks.Add(p); });
         _registry.Subscribe<EventPacket>(_ => { });
+        _registry.Subscribe<AttackResultPacket>(p=>Attacks.Add(p));
+        _registry.Subscribe<ReloadResultPacket>(p=>Reloads.Add(p));
         _registry.Subscribe<WorldManifestPacket>(p => { WorldPacketsSeen++; if (p.MatchId == MatchId) Manifest = p; });
         _registry.Subscribe<InventoryStatePacket>(p => { if (p.MatchId == MatchId && p.Actor == OwnNetId) Inventory = p; });
         _registry.Subscribe<WorldActionResultPacket>(p => { if (p.MatchId == MatchId) Results.Add(p); });

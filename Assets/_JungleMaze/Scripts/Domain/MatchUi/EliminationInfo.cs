@@ -9,7 +9,8 @@ namespace JungleMaze.Domain.MatchUi
         Player = 1,
         Zone = 2,
         LeftMatch = 3,
-        Disconnected = 4
+        Disconnected = 4,
+        Environment = 5
     }
 
     /// <summary>

@@ -270,6 +270,7 @@ public sealed partial class MatchRuntime : IMatchRuntime, IServerClock, IEntityR
         if (Phase != MatchPhase.InGame || !_bySession.TryGetValue(sessionId, out var entity)) return false;
 
         _combatHits.Clear();
+        World?.SetCombatTick(CurrentTick);
         result = _combat.TryAttack(entity.NetId, request, CurrentTick, _combatHits);
         if (result.Outcome == CombatOutcome.Accepted) BroadcastCombatResult(ref result);
         return true;
@@ -672,11 +673,12 @@ public sealed partial class MatchRuntime : IMatchRuntime, IServerClock, IEntityR
     private CombatService CreateCombat() => new(
         this,
         _health,
-        _map.Obstacles,
+        _worldMap?.Obstacles ?? _map.Obstacles,
         CombatWeaponRules.Value,
-        CombatDefaults.Effects,
-        CombatDefaults.Passive,
-        CombatDefaults.Breakables);
+        (GameServer.Simulation.Combat.IEffectService?)World ?? CombatDefaults.Effects,
+        (GameServer.Simulation.Combat.IItemPassive?)World ?? CombatDefaults.Passive,
+        (GameServer.Simulation.Combat.IBreakableObstacles?)World ?? CombatDefaults.Breakables,
+        World);
 
     private void BroadcastCombatResult<T>(ref T packet) where T : struct, INetSerializable
     {
@@ -932,7 +934,12 @@ public sealed partial class MatchRuntime : IMatchRuntime, IServerClock, IEntityR
         if (_entities.TryGetValue(victimNetId, out var victim))
         {
             victim.EliminationTick = CurrentTick;
-            if (killerNetId == 255)
+            if (World?.EnvironmentDamageInProgress == true)
+            {
+                victim.KillerNetId = 255;
+                victim.EliminationCause = EliminationCauseWire.Environment;
+            }
+            else if (killerNetId == 255)
             {
                 victim.KillerNetId = 255;
                 victim.EliminationCause = EliminationCauseWire.Zone;
@@ -940,7 +947,7 @@ public sealed partial class MatchRuntime : IMatchRuntime, IServerClock, IEntityR
             else if (killerNetId == victimNetId)
             {
                 victim.KillerNetId = 255;
-                victim.EliminationCause = EliminationCauseWire.LeftMatch;
+                victim.EliminationCause = victim.IsDisconnected ? EliminationCauseWire.Disconnected : EliminationCauseWire.LeftMatch;
             }
             else
             {

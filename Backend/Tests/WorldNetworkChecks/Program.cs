@@ -66,10 +66,24 @@ try
     Check(clients.All(c => c.Inventory!.Value.Slots.Length == 8 && c.Inventory.Value.ActiveWeapon == 255), "network inventory has 4+4 slots with unarmed outside slots");
 
     var chest = world.Layout.Objects.First(o => o.Kind == WorldObjectKind.Chest);
-    Check(world.Destructibles.DamageConfirmed(chest.Id, 30, 0, 1), "fixture confirms chest destruction on server only");
-    Check(!world.Destructibles.DamageConfirmed(chest.Id, 30, 0, 1), "duplicate confirmed hit cannot create loot twice");
+    var attacker=serverMatch.Entities.All.First(e=>e.NetId==clients[0].OwnNetId);
+    var approach=new WorldPoint(chest.Bounds.MinX-.45f,chest.Bounds.Center.Y);
+    if(!world.Layout.IsWalkable(approach,.4f,world.Destructibles.IsBroken,world.Hazards.IsDoorClosed))throw new Exception("Fixture chest approach blocked");
+    attacker.X=approach.X;attacker.Y=approach.Y;
+    for(ushort seq=1;seq<=4;seq++)
+    {
+        var attack=new AttackRequestPacket{RequestSeq=seq,Weapon=CombatWeaponId.Hand,Aim=0};
+        clients[0].Send(ref attack,true);
+        Pump(()=>clients[0].Attacks.Any(r=>r.RequestSeq==seq));
+        Check(clients[0].Attacks.Last().Outcome==CombatOutcome.Accepted,"real network bare-hand attack accepted "+seq);
+        if(seq<4)WaitTicks(16);
+    }
+    Check(world.Destructibles.IsBroken(chest.Id),"four real weapon requests break chest through combat adapter");
+    var retry=new AttackRequestPacket{RequestSeq=4,Weapon=CombatWeaponId.Hand,Aim=0};var beforeRetry=world.Floor.Items.Count;
+    clients[0].Send(ref retry,true);WaitTicks(2);
+    Check(world.Floor.Items.Count==beforeRetry,"duplicate attack request cannot create loot twice");
     Pump(() => clients.All(c => c.WorldObjects.Any(o => o.Id == chest.Id && (o.Flags & 1) != 0) && c.WorldObjects.Any(o => o.Kind == 100)));
-    var drop = world.Floor.Items.First();
+    var drop = world.Floor.Items.First(f=>f.Stack.ItemId!="AMMO"&&!f.Stack.ItemId.Contains("ARMOR")&&!f.Stack.ItemId.Contains("HELMET"));
     Check(world.Floor.Items.Count is >= 3 and <= 4, "one chest yields one 3-4 item batch");
     Check(clients[0].WorldObjects.Count(o => o.Kind == 100) == clients[1].WorldObjects.Count(o => o.Kind == 100), "both transports receive same floor loot");
     foreach (var actor in serverMatch.Entities.All) { actor.X = drop.X; actor.Y = drop.Y; }
@@ -91,8 +105,8 @@ try
     WaitTicks(2);
     Check(world.Floor.Items.Count == floorCount, "wrong-match request cannot mutate current room");
 
-    var roomResult = host.Hub.Rooms.Create(new CreateRoomCommand("world-qa", "isolated", 2));
-    Check(roomResult.StatusCode == 201, "isolated second room created");
+    var roomResult = host.Hub.Rooms.Create(new CreateRoomCommand{OwnerId="world-qa",Name="isolated",MaxPlayers=2});
+    Check(roomResult.Status == 201, "isolated second room created");
     var secondRoom = host.Hub.Rooms.AllRooms.First(r => !r.IsDefault);
     var isolated = new WorldNetworkClient("Udp"); clients.Add(isolated);
     await isolated.ConnectAsync("127.0.0.1", udpPort, $"ws://127.0.0.1:{wsPort}/game", secondRoom.Code);

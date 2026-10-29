@@ -38,8 +38,14 @@ public sealed partial class SessionHub
     private void TickWorldStreams()
     {
         foreach(var session in _sessions.Values)
-            if(session.WorldEnabled&&session.PlayerId!=null&&session.Room.Match.World!=null&&session.Room.Match.CurrentTick-session.LastWorldInventoryTick>=15)
-                SendWorldState(session,false);
+            if(session.WorldEnabled&&session.PlayerId!=null&&session.Room.Match.World!=null)
+            {
+                var match=session.Room.Match;
+                if(!match.Entities.TryGetBySession(session.PlayerId,out var actor)||actor==null)continue;
+                var key=match.World.OwnerEffectKey(actor.NetId);
+                if(match.CurrentTick-session.LastWorldInventoryTick>=15||key!=session.LastWorldEffectKey)
+                {SendWorldState(session,false);session.LastWorldEffectKey=key;}
+            }
     }
     private void SendWorldPacket<T>(Session session,ref T packet) where T:struct,INetSerializable
     {

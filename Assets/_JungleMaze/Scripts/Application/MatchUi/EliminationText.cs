@@ -20,6 +20,7 @@ namespace JungleMaze.App.MatchUi
             {
                 case EliminationCause.Player: return KilledBy(info);
                 case EliminationCause.Zone: return "Bị bo thu hẹp loại";
+                case EliminationCause.Environment: return "Bị môi trường loại";
                 case EliminationCause.LeftMatch: return "Bạn đã rời trận";
                 case EliminationCause.Disconnected: return "Mất kết nối quá lâu";
                 default: return "Không rõ nguyên nhân";

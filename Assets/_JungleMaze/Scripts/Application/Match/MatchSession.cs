@@ -71,6 +71,9 @@ namespace JungleMaze.App.Match
         public bool DeferHello { get; set; }
         public bool IdentityTicketSent { get; private set; }
         public bool Connected => _network.State == NetworkState.Joined;
+        /// <summary>Optional feature readiness check, evaluated before any movement input is sent.</summary>
+        public Func<bool> GameplayReady { get; set; }
+        public bool CanSendGameplayInput => GameplayReady == null || GameplayReady();
         public float CountdownSeconds => Math.Max(0, unchecked((int)(PhaseState.PhaseEndTick - ServerTick))) / 30f;
         public byte OwnHp => OwnNetId != 255 && _players.TryGet(OwnNetId, out var p) && p.HasState ? p.Current.Hp : (byte)0;
         public bool CanResume => !Connected && Phase == MatchPhase.InGame && ResumeProof != Guid.Empty;
@@ -99,7 +102,7 @@ namespace JungleMaze.App.Match
             _tickFraction += deltaTime * 30f;
             var ticks = (uint)_tickFraction;
             ServerTick += ticks; _tickFraction -= ticks;
-            if (Phase != MatchPhase.InGame || OwnNetId == 255 || OwnHp == 0) { _sendElapsed = 0; return; }
+            if (Phase != MatchPhase.InGame || OwnNetId == 255 || OwnHp == 0 || !CanSendGameplayInput) { _sendElapsed = 0; return; }
             ActiveInputSeconds += deltaTime;
             _sendElapsed += deltaTime;
             var sent = 0;

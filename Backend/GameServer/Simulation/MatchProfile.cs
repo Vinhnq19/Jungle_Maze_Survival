@@ -20,6 +20,7 @@ public sealed class MatchProfile
     public byte PlayerHp { get; init; } = 100;
     public int InputStaleMs { get; init; } = 250;
     public bool AcceleratedZone { get; init; }
+    public bool WorldEnabled { get; init; }
     public static MatchProfile Current
     {
         get
@@ -46,7 +47,8 @@ public sealed class MatchProfile
             DisconnectGraceSeconds=p.GetProperty("disconnectGraceSeconds").GetDouble(),EndingDurationSeconds=p.GetProperty("endingDurationSeconds").GetDouble(),
             TargetMatchDurationSeconds=r.GetProperty("targetMatchDurationSeconds").GetDouble(),ZoneTimeScale=p.GetProperty("zoneTimeScale").GetDouble(),
             PlayerSpeed=r.GetProperty("playerSpeed").GetSingle(),PlayerRadius=r.GetProperty("playerRadius").GetSingle(),
-            PlayerHp=checked((byte)r.GetProperty("playerHp").GetInt32()),InputStaleMs=r.GetProperty("inputStaleMs").GetInt32(),AcceleratedZone=name=="test"
+            PlayerHp=checked((byte)r.GetProperty("playerHp").GetInt32()),InputStaleMs=r.GetProperty("inputStaleMs").GetInt32(),AcceleratedZone=name=="test",
+            WorldEnabled=p.TryGetProperty("worldEnabled",out var worldEnabled)&&worldEnabled.GetBoolean()
         };
         result.Validate();return result;
     }

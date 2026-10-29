@@ -14,6 +14,7 @@
   "targetMatchDurationSeconds": 420.0,
   "profiles": {
     "main": {
+      "worldEnabled": true,
       "minPlayers": 6,
       "maxPlayers": 10,
       "lobbyDurationSeconds": 15,
@@ -23,6 +24,7 @@
       "zoneTimeScale": 1
     },
     "test": {
+      "worldEnabled": false,
       "minPlayers": 2,
       "maxPlayers": 10,
       "lobbyDurationSeconds": 0.5,

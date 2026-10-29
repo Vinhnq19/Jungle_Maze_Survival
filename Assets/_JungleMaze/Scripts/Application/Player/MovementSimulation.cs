@@ -41,10 +41,10 @@ namespace JungleMaze.App.Player
         public static float Dequantize(sbyte axis) => axis / 127f;
 
         /// <summary>Một bước di chuyển giống server: sweep tối đa 2 lần (đi + trượt), clamp biên, đẩy khỏi vật cản.</summary>
-        public (float X, float Y) Move(float x, float y, float moveX, float moveY, float deltaTime)
+        public (float X, float Y) Move(float x, float y, float moveX, float moveY, float deltaTime, float speedMultiplier = 1f)
         {
             if (deltaTime <= 0f) return (x, y);
-            var (dispX, dispY) = HeroMotion.ComputeMoveDelta(moveX, moveY, Speed, deltaTime);
+            var (dispX, dispY) = HeroMotion.ComputeMoveDelta(moveX, moveY, Speed * Math.Max(0f,speedMultiplier), deltaTime);
             if (Math.Abs(dispX) < Epsilon && Math.Abs(dispY) < Epsilon) return ResolvePenetration(x, y);
 
             for (var iteration = 0; iteration < 2; iteration++)

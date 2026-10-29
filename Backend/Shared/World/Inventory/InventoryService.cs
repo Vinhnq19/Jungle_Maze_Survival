@@ -82,6 +82,7 @@ namespace JungleMaze.World.Inventory
             public bool Alive = true;
             public ItemControlFlags Control;
             public uint Request, Revision;
+            public uint EquipmentGeneration;
             public bool HasRequest, DeathDropped, PassiveConsumed;
             public int UseSlot = -1;
             public double UseEnd, UseDuration;
@@ -122,12 +123,25 @@ namespace JungleMaze.World.Inventory
         public ItemResult Pickup(Guid matchId, byte actor, uint requestId, ushort floorId)
         {
             var check = Check(matchId, actor, requestId, out var a); if (check != ItemResult.Ok) return check;
+            return PickupCore(actor, a, floorId);
+        }
+        /// <summary>Authoritative walk-over pickup, separate from the client request sequence.</summary>
+        public ItemResult AutoPickup(byte actor, ushort floorId)
+        {
+            if (!_actors.TryGetValue(actor, out var a) || !a.Alive) return ItemResult.Dead;
+            if (!_world.TryGet(floorId, out var floor) || !_catalog.TryGet(floor.Stack.ItemId, out var item)) return ItemResult.Missing;
+            if (item.Kind != ItemKind.Ammo && item.Kind != ItemKind.Helmet && item.Kind != ItemKind.Armor) return ItemResult.Invalid;
+            return PickupCore(actor, a, floorId);
+        }
+        private ItemResult PickupCore(byte actor, Actor a, ushort floorId)
+        {
             if (!_world.TryGet(floorId, out var floor)) return ItemResult.Missing;
             if (!Finite(floor.X) || !Finite(floor.Y) || !Finite(a.X) || !Finite(a.Y) ||
                 (floor.X - a.X) * (floor.X - a.X) + (floor.Y - a.Y) * (floor.Y - a.Y) > PickupRadius * PickupRadius) return ItemResult.OutOfRange;
             if (!_catalog.TryGet(floor.Stack.ItemId, out var item) || !item.Enabled || floor.Stack.Count < 1 || item.Kind == ItemKind.Unarmed) return ItemResult.Invalid;
             if (!Finite(floor.Stack.Durability) || floor.Stack.Durability < 0 || floor.Stack.Durability > item.Durability ||
-                floor.Stack.Ammo < 0 || floor.Stack.Ammo > item.ReserveCapacity) return ItemResult.Invalid;
+                floor.Stack.Ammo < 0 || floor.Stack.Ammo > item.ReserveCapacity ||
+                floor.Stack.MagazineKnown && (floor.Stack.Magazine < 0 || floor.Stack.Magazine > item.MagazineSize)) return ItemResult.Invalid;
             if (a.UseSlot >= 0) return ItemResult.Busy;
             if (item.Kind == ItemKind.Ammo)
             {
@@ -159,8 +173,11 @@ namespace JungleMaze.World.Inventory
             }
             var current = slots[index]; var received = Math.Min(floor.Stack.Count, item.MaxStack - (current.IsEmpty ? 0 : current.Count));
             if (received <= 0) return ItemResult.Full;
-            if (current.IsEmpty) current = new ItemStack(item.Id, 0, floor.Stack.Durability, floor.Stack.Ammo);
-            current.Count += received; slots[index] = current; TakeFloor(floor, received); Mark(a, actor); return ItemResult.Ok;
+            if (current.IsEmpty) current = new ItemStack(item.Id, 0, floor.Stack.Durability, floor.Stack.Ammo,
+                item.MagazineSize > 0 ? floor.Stack.MagazineKnown ? floor.Stack.Magazine : item.MagazineSize : -1);
+            current.Count += received; slots[index] = current;
+            if (item.Kind == ItemKind.Weapon && index == a.ActiveWeapon) a.EquipmentGeneration++;
+            TakeFloor(floor, received); Mark(a, actor); return ItemResult.Ok;
         }
         public ItemResult Drop(Guid matchId, byte actor, uint requestId, int slot)
         {
@@ -170,7 +187,7 @@ namespace JungleMaze.World.Inventory
             if (slots[index].IsEmpty) return ItemResult.Missing;
             if (!_world.TrySpawn(slots[index], a.X, a.Y, out _)) return ItemResult.Full;
             Cancel(a, actor); slots[index] = default(ItemStack);
-            if (slot < 4 && a.ActiveWeapon == index) a.ActiveWeapon = -1;
+            if (slot < 4 && a.ActiveWeapon == index) { a.ActiveWeapon = -1; a.EquipmentGeneration++; }
             Mark(a, actor); return ItemResult.Ok;
         }
         public ItemResult Select(Guid matchId, byte actor, uint requestId, int slot)
@@ -178,7 +195,7 @@ namespace JungleMaze.World.Inventory
             var check = Check(matchId, actor, requestId, out var a); if (check != ItemResult.Ok) return check;
             if (slot < -1 || slot > 3 || slot >= 0 && a.Weapons[slot].IsEmpty) return ItemResult.Invalid;
             if ((a.Control & ItemControlFlags.Stun) != 0) return ItemResult.Controlled;
-            Cancel(a, actor); a.ActiveWeapon = a.ActiveWeapon == slot ? -1 : slot; Mark(a, actor); return ItemResult.Ok;
+            Cancel(a, actor); a.ActiveWeapon = a.ActiveWeapon == slot ? -1 : slot; a.EquipmentGeneration++; Mark(a, actor); return ItemResult.Ok;
         }
         public ItemResult BeginUse(Guid matchId, byte actor, uint requestId, int consumableSlot, double now)
         {
@@ -210,6 +227,42 @@ namespace JungleMaze.World.Inventory
         }
         public bool IsMovementLocked(byte actor) => _actors.TryGetValue(actor, out var a) && a.UseSlot >= 0;
         public bool IsUsing(byte actor) => _actors.TryGetValue(actor, out var a) && a.UseSlot >= 0;
+        public ItemStack HeldWeapon(byte actor)
+        {
+            return _actors.TryGetValue(actor, out var a) && a.ActiveWeapon >= 0 ? a.Weapons[a.ActiveWeapon] : default(ItemStack);
+        }
+        public uint EquipmentGeneration(byte actor) => _actors.TryGetValue(actor, out var a) ? a.EquipmentGeneration : 0;
+        public bool CanAttack(byte actor) => _actors.TryGetValue(actor, out var a) && a.Alive && (a.Control & ItemControlFlags.Stun) == 0;
+        public bool TrySetWeaponAmmo(byte actor, string itemId, int magazine, int reserve)
+        {
+            if (!_actors.TryGetValue(actor, out var a) || !_catalog.TryGet(itemId, out var item) ||
+                magazine < 0 || magazine > item.MagazineSize || reserve < 0 || reserve > item.ReserveCapacity) return false;
+            var index = FindStack(a.Weapons, itemId);
+            if (index < 0) return false;
+            var stack = a.Weapons[index];
+            if (stack.MagazineKnown && stack.Magazine == magazine && stack.Ammo == reserve) return true;
+            stack.Magazine = magazine; stack.MagazineKnown = true; stack.Ammo = reserve;
+            a.Weapons[index] = stack; Mark(a, actor); return true;
+        }
+        /// <summary>Only confirmed weapon damage enters armor; environmental damage bypasses this method.</summary>
+        public int AbsorbWeaponDamage(byte actor, int rawDamage, float reductionCap = .7f)
+        {
+            if (rawDamage <= 0 || !_actors.TryGetValue(actor, out var a)) return 0;
+            var helmet = a.Helmet.IsEmpty ? 0 : _catalog.Get(a.Helmet.ItemId).Reduction;
+            var armor = a.Armor.IsEmpty ? 0 : _catalog.Get(a.Armor.ItemId).Reduction;
+            var total = helmet + armor;
+            if (total <= 0) return rawDamage;
+            var blocked = rawDamage * Math.Min(reductionCap, total);
+            if (helmet > 0) Wear(ref a.Helmet, blocked * helmet / total);
+            if (armor > 0) Wear(ref a.Armor, blocked * armor / total);
+            Mark(a, actor);
+            return Math.Max(0, (int)Math.Ceiling(rawDamage - blocked));
+        }
+        private static void Wear(ref ItemStack stack, float amount)
+        {
+            stack.Durability = Math.Max(0, stack.Durability - amount);
+            if (stack.Durability <= 0) stack = default(ItemStack);
+        }
         public void Tick(double now)
         {
             if (!Finite(now) || now < _now) throw new ArgumentException("Inventory time must be finite and monotonic.");

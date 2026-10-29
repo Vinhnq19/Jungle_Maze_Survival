@@ -1,6 +1,8 @@
 using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.Combat;
 using JungleMaze.App.Combat.Mocks;
+using JungleMaze.App.Match;
+using JungleMaze.App.MatchUi;
 using JungleMaze.App.Hud.State;
 using JungleMaze.App.Pooling;
 using JungleMaze.App.Player;
@@ -14,9 +16,8 @@ using UnityEngine;
 namespace JungleMaze.Presentation.Combat
 {
     /// <summary>
-    /// WPN-01 local demo: weapon keys, aim and pooled visuals on top of a <see cref="WeaponController"/> wired to the
-    /// in-process fake combat backend. Shots and swings show as soon as the attack is predicted; ammo and reload come
-    /// from the controller. Damage, HP and loot are never decided here. Disabled during networked matches.
+    /// Weapon input and pooled visuals. Online play uses the authoritative combat session;
+    /// the in-process backend is retained only for disconnected local previews.
     /// </summary>
     public sealed class CombatWeaponPresenter : MonoBehaviour
     {
@@ -38,6 +39,10 @@ namespace JungleMaze.Presentation.Combat
         private IPoolService _pool;
         private IHudStateWriter _hud;
         private FakeCombatBackend _server;
+        private MatchSession _match;
+        private OnlineCombatSession _online;
+        private IMatchMenuState _menu;
+        private IPlayerPoseSource _poses;
         private WeaponController _controller;
         private PooledPrefabFactory<CoverProbeProjectile> _projectiles;
         private PooledPrefabFactory<MeleeSwingVisual> _swings;
@@ -48,17 +53,23 @@ namespace JungleMaze.Presentation.Combat
         private float _serverTickAccumulator;
 
         [Inject]
-        public void Construct(IBalanceConfigProvider balance, IPoolService pool, IHudStateWriter hud, FakeCombatBackend server)
+        public void Construct(IBalanceConfigProvider balance, IPoolService pool, IHudStateWriter hud,
+            MatchSession match, OnlineCombatSession online, IMatchMenuState menu, IPlayerPoseSource poses)
         {
             _balance = balance;
             _pool = pool;
             _hud = hud;
-            _server = server;
+            _match=match; _online=online; _menu=menu; _poses=poses;
         }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        /// <summary>Only development previews receive a fake backend; release online injection never requires it.</summary>
+        [Inject] public void ConfigurePreview(FakeCombatBackend server) => _server=server;
+#endif
 
         private void Start()
         {
-            if (hero == null || projectilePrefab == null || swingPrefab == null || _pool == null || _server == null || _balance == null)
+            if (hero == null || projectilePrefab == null || swingPrefab == null || _pool == null || _balance == null)
             {
                 enabled = false;
                 return;
@@ -72,6 +83,12 @@ namespace JungleMaze.Presentation.Combat
                 if (renderer != null) _weaponSprites[i] = renderer.sprite;
             }
 
+            if (!_match.Connected && _server!=null) CreateOfflineController();
+            _online.Changed+=OnCombatEvent;
+        }
+
+        private void CreateOfflineController()
+        {
             var peer = _server.AddPeer(LocalNetId);
             _controller = new WeaponController(_balance, peer, _hud, LocalNetId);
             peer.AttackResult += _controller.OnAttackResult;
@@ -83,7 +100,20 @@ namespace JungleMaze.Presentation.Combat
 
         private void Update()
         {
-            if (_controller == null) return;
+            if (_online==null || _pool==null || _projectiles==null) return;
+            if (_match.Connected)
+            {
+                if (!_online.CanAct || (_menu?.BlocksGameplayInput??false)) return;
+                if (Input.GetKeyDown(KeyCode.R)) _online.TryReload();
+                if (Input.GetMouseButton(0))
+                {
+                    if (HeroAim.TryGetTargetDegrees(Camera.main, hero.position, Input.mousePosition, out var onlineAim)) _aimDegrees=onlineAim;
+                    _online.TryAttack(_aimDegrees);
+                }
+                return;
+            }
+            if (_server==null)return;
+            if (_controller == null) CreateOfflineController();
 
             // Stand-in for the server: answer requests from the previous frame, then advance ticks at 30 Hz.
             _server.Flush();
@@ -111,24 +141,28 @@ namespace JungleMaze.Presentation.Combat
 
         private void OnDestroy()
         {
-            if (_controller == null) return;
-            _controller.Changed -= _onChanged;
+            if (_controller != null) _controller.Changed -= _onChanged;
+            if (_online!=null) _online.Changed-=OnCombatEvent;
         }
 
         private void OnCombatEvent(CombatEvent combatEvent)
         {
-            if (combatEvent.Kind != CombatEventKind.AttackPredicted) return;
-            SpawnAttackVisual(combatEvent.Weapon, combatEvent.AimDegrees);
+            if (combatEvent.Kind == CombatEventKind.AttackPredicted)
+                SpawnAttackVisual(combatEvent.Weapon, combatEvent.AimDegrees, hero.position, hero);
+            else if (combatEvent.Kind == CombatEventKind.RemoteAttackConfirmed && _poses!=null && _poses.TryGetPose(combatEvent.NetId,out var pose))
+                SpawnAttackVisual(combatEvent.Weapon, pose.RotationDegrees, new Vector3(pose.X,pose.Y,0), null);
         }
 
-        private void SpawnAttackVisual(CombatWeaponId weapon, float aimDegrees)
+        private void SpawnAttackVisual(CombatWeaponId weapon, float aimDegrees, Vector3 origin, Transform anchor)
         {
-            var slot = _controller.Slot(weapon);
+            var controller=_match.Connected?_online.Controller:_controller;
+            if (controller==null) return;
+            var slot = controller.Slot(weapon);
             if (slot.IsRanged)
             {
                 var shot = new ConfiguredShot(_balance, CombatWeaponIds.ToJsonId(weapon));
                 var count = CombatShotMath.PelletAngles(aimDegrees, slot.Pellets, slot.SpreadDegrees, _pelletAngles);
-                var pose = new SpawnPose(hero.position, Quaternion.identity);
+                var pose = new SpawnPose(origin, Quaternion.identity);
                 for (var i = 0; i < count; i++)
                 {
                     var radians = _pelletAngles[i] * Mathf.Deg2Rad;
@@ -139,9 +173,9 @@ namespace JungleMaze.Presentation.Combat
                 return;
             }
 
-            var swing = _swings.Create(SpawnPose.At(hero.position));
+            var swing = _swings.Create(SpawnPose.At(origin));
             var duration = Mathf.Max(0.1f, slot.CadenceSeconds * 0.6f);
-            swing.Play(_weaponSprites[(int)weapon], hero, aimDegrees, slot.ArcDegrees, slot.Range, duration);
+            swing.Play(_weaponSprites[(int)weapon], anchor, aimDegrees, slot.ArcDegrees, slot.Range, duration);
             _pool.Despawn(swing, duration + 0.05f);
         }
     }

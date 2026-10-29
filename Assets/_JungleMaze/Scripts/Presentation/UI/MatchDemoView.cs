@@ -4,6 +4,7 @@ using JungleMaze.App.Match;
 using JungleMaze.App.MatchUi;
 using JungleMaze.App.Player;
 using JungleMaze.App.Ports;
+using JungleMaze.App.World;
 using JungleMaze.Core.DI;
 using JungleMaze.Domain.MatchUi;
 using JungleMaze.Presentation.Combat;
@@ -32,6 +33,7 @@ namespace JungleMaze.Presentation.UI
         private IPlayerHistory _history;
         private IClientRuntimeData _data;
         private IPlayerPoseSource _poses;
+        private WorldClientSession _generatedWorld;
         private IMatchMenuState _menuState;
         private MatchOverlayFlow _overlayFlow;
         private string _worldHash;
@@ -47,6 +49,8 @@ namespace JungleMaze.Presentation.UI
         private bool _showDetails;
         private bool _busyHistory;
         private GUIStyle _label;
+
+        [Inject] public void BindWorld(WorldClientSession world) => _generatedWorld=world;
 
         [Inject]
         public void Construct(MatchSession session, INetworkClient network, IMatchConnection connection,
@@ -161,14 +165,15 @@ namespace JungleMaze.Presentation.UI
             foreach (var renderer in _hero.GetComponentsInChildren<SpriteRenderer>()) renderer.enabled = false;
             foreach (var input in FindObjectsByType<PlayerInputReader>(FindObjectsSortMode.None)) input.enabled = false;
             foreach (var probe in FindObjectsByType<LocalWeaponProbe>(FindObjectsSortMode.None)) probe.enabled = false;
-            foreach (var combat in FindObjectsByType<CombatWeaponPresenter>(FindObjectsSortMode.None)) combat.enabled = false;
+            // CombatWeaponPresenter routes connected matches through OnlineCombatSession.
         }
 
         /// <summary>Map đã khớp hash server → mô phỏng movement client giống hệt server (MOV-02).</summary>
         private void UsePredictionWorld()
         {
             if (_worldHash == _session.PhaseState.ConfigHash && _session.Prediction.HasWorld) return;
-            _session.Prediction.SetWorld(new MovementSimulation(_data.Bounds, _data.Covers, _data.PlayerRadius, _data.PlayerSpeed));
+            if (_generatedWorld==null || !_generatedWorld.IsReady)
+                _session.Prediction.SetWorld(new MovementSimulation(_data.Bounds, _data.Covers, _data.PlayerRadius, _data.PlayerSpeed));
             _worldHash = _session.PhaseState.ConfigHash;
         }
 
@@ -293,9 +298,11 @@ namespace JungleMaze.Presentation.UI
                 foreach (var row in _session.Roster) GUILayout.Label(row.DisplayName, _label);
             GUILayout.Label($"HP: {_session.OwnHp} · Tick server: {_session.ServerTick} · Snapshot: {_session.Snapshots}", _label);
             if (_dataError != null) GUILayout.Label(_dataError, _label);
+            if (_generatedWorld!=null && _generatedWorld.Required && _session.Phase==MatchPhase.InGame && !_generatedWorld.IsReady)
+                GUILayout.Label(_generatedWorld.Error!=null?"Không thể tải bản đồ. Dữ liệu client và server không khớp; hãy cập nhật game.":"Đang đồng bộ bản đồ và túi đồ…",_label);
             if (_session.HasZone) GUILayout.Label($"Bo {_session.Zone.PhaseIndex}: r={_session.Zone.CurrentRadius:F1}" + (_session.Zone.InWarning ? " · Sắp co" : ""), _label);
             var p = _session.Prediction.Stats;
-            GUILayout.Label($"WASD di chuyển, chuột chọn hướng. Prediction: {(_session.Prediction.IsActive ? "bật" : "chờ")} · sửa {p.Corrections} · lệch max {p.MaxErrorMeters:F2}. Chưa có combat/FOW.", _label);
+            GUILayout.Label($"WASD di chuyển, chuột trái đánh, R nạp đạn, F nhặt đồ; 1–4 chọn vũ khí, 5–8 dùng dược. Prediction: {(_session.Prediction.IsActive ? "bật" : "chờ")} · sửa {p.Corrections} · lệch max {p.MaxErrorMeters:F2}.", _label);
             if (_session.HasResult)
             {
                 GUILayout.Label(_session.Result.Reason == MatchEndReason.Tie ? "HÒA — không có người thắng" : "KẾT QUẢ TRẬN", _label);

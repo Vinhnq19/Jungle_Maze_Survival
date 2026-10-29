@@ -55,8 +55,11 @@ namespace JungleMaze.World.Inventory
         public int Count;
         public float Durability;
         public int Ammo;
-        public ItemStack(string itemId, int count = 1, float durability = 0, int ammo = 0)
-        { ItemId = itemId; Count = count; Durability = durability; Ammo = ammo; }
+        /// <summary>Loaded rounds belong to the weapon instance, separately from reserve Ammo.</summary>
+        public int Magazine;
+        public bool MagazineKnown;
+        public ItemStack(string itemId, int count = 1, float durability = 0, int ammo = 0, int magazine = -1)
+        { ItemId = itemId; Count = count; Durability = durability; Ammo = ammo; Magazine = Math.Max(0, magazine); MagazineKnown = magazine >= 0; }
         public bool IsEmpty => string.IsNullOrEmpty(ItemId) || Count <= 0;
     }
 

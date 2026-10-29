@@ -9,8 +9,9 @@ namespace JungleMaze.App.World
         private readonly IInventoryStateWriter _inventory;
         private readonly IHudStateWriter _hud;
         private string _using;
-        public InventoryHudBinding(IInventoryStateWriter inventory, IHudStateWriter hud)
-        { _inventory = inventory; _hud = hud; }
+        private readonly bool _publishCombat;
+        public InventoryHudBinding(IInventoryStateWriter inventory, IHudStateWriter hud, bool publishCombat = true)
+        { _inventory = inventory; _hud = hud; _publishCombat=publishCombat; }
         public void Apply(InventorySnapshot state, double now)
         {
             for (var i = 0; i < 4; i++)
@@ -19,11 +20,12 @@ namespace JungleMaze.App.World
                 _inventory.SetConsumableSlot(i, state.Consumables[i].ItemId, state.Consumables[i].Count);
             }
             _inventory.SetActiveSlot(state.ActiveWeapon);
-            _hud.SetHeldWeapon(state.ActiveWeapon < 0 ? "HAND" : state.Weapons[state.ActiveWeapon].ItemId);
+            if (_publishCombat) _hud.SetHeldWeapon(state.ActiveWeapon < 0 ? "HAND" : state.Weapons[state.ActiveWeapon].ItemId);
             _hud.SetHelmet(state.Helmet.ItemId, state.Helmet.Durability);
             _hud.SetArmor(state.Armor.ItemId, state.Armor.Durability);
             var ammo = state.ActiveWeapon < 0 ? 0 : state.Weapons[state.ActiveWeapon].Ammo;
-            _hud.SetAmmo(0, ammo);
+            var magazine=state.ActiveWeapon<0?0:state.Weapons[state.ActiveWeapon].Magazine;
+            if (_publishCombat) _hud.SetAmmo(magazine, ammo);
             if (state.IsUsing && state.UseSlot >= 0 && state.UseSlot < 4)
             {
                 _using = state.UseItemId;

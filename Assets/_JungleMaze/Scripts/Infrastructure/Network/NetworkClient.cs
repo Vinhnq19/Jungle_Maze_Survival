@@ -104,7 +104,7 @@ namespace JungleMaze.Infrastructure.Network
             if (c == null) return;
             _resumeForNextConnect = proof;
             var upgraded = new ClientConfig(c.Mode, c.ApiBaseUrl, c.GameServerHost, c.GameServerPort, c.AuthMode,
-                NetworkProtocol.Version3, c.ConnectTimeoutMs, c.Transport, c.Source, c.WebSocketUrl);
+                NetworkProtocol.Version3, c.ConnectTimeoutMs, c.Transport, c.Source, c.WebSocketUrl, c.WorldEnabled);
             Connect(new ConnectRequest(upgraded, old.RoomCode, old.DisplayName, old.AccessToken));
         }
 

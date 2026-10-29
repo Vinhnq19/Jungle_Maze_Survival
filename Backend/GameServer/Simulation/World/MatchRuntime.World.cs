@@ -16,7 +16,8 @@ public sealed partial class MatchRuntime
 
     private void ConfigureWorld()
     {
-        if (Environment.GetEnvironmentVariable("WORLD_ENABLED") != "1") return;
+        var mode = Environment.GetEnvironmentVariable("WORLD_ENABLED");
+        if (mode != "1" && (mode == "0" || !_profile.WorldEnabled)) return;
         _worldSettings = WorldSettings.Load(GameDataLoader.ReadGameDataFile("world_settings.json"));
         var options = new JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true };
         options.Converters.Add(new JsonStringEnumConverter());
@@ -39,6 +40,7 @@ public sealed partial class MatchRuntime
         _worldPhysics=new PhysicsSimulation(_worldMap,_profile.PlayerRadius,_profile.PlayerSpeed);
         var i=0;foreach(var entity in _entities.Values){var spawn=World.Layout.Spawns[i++%World.Layout.Spawns.Count];entity.X=spawn.X;entity.Y=spawn.Y;}
         World.Tick(CurrentTick, _matchElapsedSeconds);RefreshWorldGeometry();
+        _combat = CreateCombat();
     }
     public bool ProcessWorldRequest(string sessionId,in WorldActionRequestPacket request)
     {

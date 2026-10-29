@@ -28,6 +28,7 @@ public sealed partial class SessionHub
         public bool WorldEnabled;
         public uint LastWorldRequestTick=uint.MaxValue,LastWorldSyncTick,LastWorldRevision,LastWorldResyncTick,LastWorldInventoryTick;
         public Guid LastWorldMatch;
+        public string LastWorldEffectKey = "";
     }
     private sealed class Attempt(JoinRequest request)
     {

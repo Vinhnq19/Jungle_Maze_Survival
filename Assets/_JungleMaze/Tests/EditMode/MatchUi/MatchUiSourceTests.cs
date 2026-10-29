@@ -27,6 +27,7 @@ namespace JungleMaze.Tests.MatchUi
         }
 
         [TestCase(EliminationCause.Zone, "Bị bo thu hẹp loại")]
+        [TestCase(EliminationCause.Environment, "Bị môi trường loại")]
         [TestCase(EliminationCause.LeftMatch, "Bạn đã rời trận")]
         [TestCase(EliminationCause.Disconnected, "Mất kết nối quá lâu")]
         [TestCase(EliminationCause.Unknown, "Không rõ nguyên nhân")]

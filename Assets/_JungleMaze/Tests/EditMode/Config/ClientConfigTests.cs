@@ -19,6 +19,18 @@ namespace JungleMaze.Tests.Config
   ""connectTimeoutMs"": 5000
 }";
 
+        [Test] public void WorldOptInSurvivesEndpointEditsAndSavedConfig()
+        {
+            var json=ValidJson.Replace("\"mode\": \"LAN\",","\"mode\": \"LAN\", \"worldEnabled\": true,");
+            Assert.IsTrue(ClientConfigJson.TryParse(json,"test",out var config,out var error),error);
+            Assert.IsTrue(config.WorldEnabled);
+            var edited=config.WithEndpoint("192.168.1.21",7778,ConnectionMode.LAN,"edit").WithApiBaseUrl(null,"edit").WithWebSocketUrl(null).WithTransport("Udp",null);
+            Assert.IsTrue(ClientConfigJson.TryParse(ClientConfigJson.Serialize(edited),"saved",out var restored,out error),error);
+            Assert.IsTrue(restored.WorldEnabled);
+            Assert.IsTrue(ClientConfigJson.TryParse(ValidJson,"legacy",out var legacy,out error),error);
+            Assert.IsFalse(legacy.WorldEnabled);
+        }
+
         private static ClientConfig Config(string host = "127.0.0.1", int port = 7777, ushort version = 1,
             int timeout = 5000, JoinAuthMode auth = JoinAuthMode.RoomCode, string api = null,
             ConnectionMode mode = ConnectionMode.Local, string transport = "Udp", string wsUrl = null) =>

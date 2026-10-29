@@ -20,7 +20,7 @@ namespace JungleMaze.Infrastructure.Config
         private static readonly HashSet<string> Known = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "mode", "apiBaseUrl", "gameServerHost", "gameServerPort", "authMode", "protocolVersion",
-            "connectTimeoutMs", "transport", "webSocketUrl", "webSocketConnectIp"
+            "connectTimeoutMs", "transport", "webSocketUrl", "webSocketConnectIp", "worldEnabled"
         };
 
         public static bool TryParse(string json, string source, out ClientConfig config, out string error)
@@ -53,8 +53,14 @@ namespace JungleMaze.Infrastructure.Config
                 { error = $"{source}: protocolVersion phải là số nguyên."; return false; }
             if (!TryInt(values["connectTimeoutMs"], out var timeout)) { error = $"{source}: connectTimeoutMs phải là số nguyên."; return false; }
 
+            var worldEnabled = false;
+            if (values.TryGetValue("worldEnabled", out var worldToken))
+            {
+                if (worldToken.Type != JTokenType.Boolean) { error = $"{source}: worldEnabled must be true or false."; return false; }
+                worldEnabled = worldToken.Value<bool>();
+            }
             config = new ClientConfig(mode, String(values, "apiBaseUrl"), String(values, "gameServerHost"), port,
-                authMode, (ushort)version, timeout, String(values, "transport") ?? "Udp", source, String(values, "webSocketUrl"));
+                authMode, (ushort)version, timeout, String(values, "transport") ?? "Udp", source, String(values, "webSocketUrl"), worldEnabled);
             error = null;
             return true;
         }
@@ -70,7 +76,8 @@ namespace JungleMaze.Infrastructure.Config
                 ["authMode"] = config.AuthMode.ToString(),
                 ["protocolVersion"] = config.ProtocolVersion,
                 ["connectTimeoutMs"] = config.ConnectTimeoutMs,
-                ["transport"] = config.Transport
+                ["transport"] = config.Transport,
+                ["worldEnabled"] = config.WorldEnabled
             };
             if (!string.IsNullOrEmpty(config.WebSocketUrl))
                 root["webSocketUrl"] = config.WebSocketUrl;

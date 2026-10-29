@@ -23,6 +23,7 @@ public sealed class CombatService
     private readonly IItemPassive _passive;
     private readonly IBreakableObstacles _breakables;
     private readonly Dictionary<byte, PlayerCombat> _players = new();
+    private readonly ICombatLoadout? _loadout;
 
     private sealed class PlayerCombat
     {
@@ -34,6 +35,7 @@ public sealed class CombatService
         public CombatWeaponId ReloadingWeapon;
         public uint ReloadEndTick;
         public bool LifeSaveUsed;
+        public uint EquipmentGeneration;
         public readonly int[] Magazine = new int[WeaponCount];
         public readonly int[] Reserve = new int[WeaponCount];
     }
@@ -45,7 +47,8 @@ public sealed class CombatService
         WeaponRules rules,
         IEffectService effects,
         IItemPassive passive,
-        IBreakableObstacles breakables)
+        IBreakableObstacles breakables,
+        ICombatLoadout? loadout = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _health = health ?? throw new ArgumentNullException(nameof(health));
@@ -54,13 +57,16 @@ public sealed class CombatService
         _effects = effects ?? throw new ArgumentNullException(nameof(effects));
         _passive = passive ?? throw new ArgumentNullException(nameof(passive));
         _breakables = breakables ?? throw new ArgumentNullException(nameof(breakables));
+        _loadout = loadout;
     }
 
     /// <summary>Đặt vũ khí đang cầm. ITM-01 gọi khi đổi trang bị; request chỉ được dùng đúng vũ khí đang cầm.</summary>
     public bool SetHeldWeapon(byte netId, CombatWeaponId weapon)
     {
         if (!_rules.TryGet(weapon, out _)) return false;
-        GetOrCreate(netId).Held = weapon;
+        var player = GetOrCreate(netId);
+        if (player.Held != weapon) player.Reloading = false;
+        player.Held = weapon;
         return true;
     }
 
@@ -70,10 +76,15 @@ public sealed class CombatService
     /// <summary>Hoàn tất các lần nạp đã đến hạn. Gọi mỗi tick trước khi xử lý request.</summary>
     public void Tick(uint tick)
     {
-        foreach (var player in _players.Values)
+        foreach (var entry in _players)
         {
+            var player = entry.Value;
+            SyncLoadout(entry.Key, player);
             if (player.Reloading && tick >= player.ReloadEndTick)
+            {
                 FinishReload(player);
+                _loadout?.WriteAmmo(entry.Key, player.Held, player.Magazine[(int)player.Held], player.Reserve[(int)player.Held]);
+            }
         }
     }
 
@@ -91,6 +102,9 @@ public sealed class CombatService
         var player = GetOrCreate(netId);
         var result = new AttackResultPacket { RequestSeq = request.RequestSeq, Weapon = request.Weapon, Tick = tick, NetId = netId };
 
+        if ((byte)request.Weapon >= WeaponCount)
+        { result.Outcome = CombatOutcome.InvalidWeapon; return result; }
+
         if (!AcceptSequence(player, request.RequestSeq))
         {
             result.Outcome = CombatOutcome.Duplicate;
@@ -99,6 +113,7 @@ public sealed class CombatService
         }
 
         Tick(tick);
+        SyncLoadout(netId, player);
         result.Magazine = (byte)player.Magazine[(int)request.Weapon];
 
         if (!_registry.TryGet(netId, out var attacker) || attacker == null || !attacker.IsAlive)
@@ -112,6 +127,9 @@ public sealed class CombatService
             result.Outcome = CombatOutcome.InvalidWeapon;
             return result;
         }
+
+        if (_loadout != null && !_loadout.CanAttack(netId))
+        { result.Outcome = CombatOutcome.RateLimited; return result; }
 
         if (player.Reloading)
         {
@@ -138,6 +156,7 @@ public sealed class CombatService
         }
 
         player.NextAttackTick = tick + SecondsToTicks(rule.CooldownSeconds);
+        _loadout?.AttackStarted(netId);
 
         var aim = CombatGeometry.AimDirection(request.Aim);
         var origin = new Vector2(attacker.X, attacker.Y);
@@ -147,6 +166,7 @@ public sealed class CombatService
             ResolveMelee(attacker, rule, origin, aim, tick, hits);
 
         result.Outcome = CombatOutcome.Accepted;
+        _loadout?.WriteAmmo(netId, rule.Id, player.Magazine[(int)rule.Id], player.Reserve[(int)rule.Id]);
         return result;
     }
 
@@ -156,6 +176,9 @@ public sealed class CombatService
         var player = GetOrCreate(netId);
         var result = new ReloadResultPacket { RequestSeq = request.RequestSeq, Weapon = request.Weapon, Tick = tick, NetId = netId };
 
+        if ((byte)request.Weapon >= WeaponCount)
+        { result.Outcome = CombatOutcome.InvalidWeapon; return result; }
+
         if (!AcceptSequence(player, request.RequestSeq))
         {
             result.Outcome = CombatOutcome.Duplicate;
@@ -163,6 +186,7 @@ public sealed class CombatService
         }
 
         Tick(tick);
+        SyncLoadout(netId, player);
         result.Magazine = (byte)player.Magazine[(int)request.Weapon];
 
         if (!_registry.TryGet(netId, out var reloader) || reloader == null || !reloader.IsAlive)
@@ -176,6 +200,9 @@ public sealed class CombatService
             result.Outcome = CombatOutcome.InvalidWeapon;
             return result;
         }
+
+        if (_loadout != null && !_loadout.CanAttack(netId))
+        { result.Outcome = CombatOutcome.RateLimited; return result; }
 
         if (player.Reloading)
         {
@@ -217,8 +244,6 @@ public sealed class CombatService
             ApplyHit(attacker.NetId, target, rule.Damage, rule, tick, hits);
         }
 
-        if (!rule.IsBreakableAxe) return;
-
         foreach (var obstacle in _obstacles)
         {
             if (!_breakables.IsBreakable(obstacle)) continue;
@@ -227,7 +252,7 @@ public sealed class CombatService
             if (!CombatGeometry.InMeleeArc(origin, aim, rule.Range, rule.ArcDegrees, nearest, 0f)) continue;
             if (IsBlocked(origin, nearest, obstacle)) continue;
 
-            var damage = (int)MathF.Round(rule.Damage * WeaponRules.AxeBreakableMultiplier);
+            var damage = (int)MathF.Round(rule.Damage * (rule.IsBreakableAxe ? WeaponRules.AxeBreakableMultiplier : 1f));
             _breakables.ApplyDamage(obstacle, damage, attacker.NetId);
         }
     }
@@ -248,10 +273,11 @@ public sealed class CombatService
     private void FireRay(IEntity attacker, WeaponRule rule, Vector2 origin, Vector2 dir, uint tick, List<CombatHit> hits)
     {
         var obstacleDistance = float.MaxValue;
+        AABB? nearestObstacle = null;
         foreach (var obstacle in _obstacles)
         {
             if (CombatGeometry.RayHitsAabb(origin, dir, rule.Range, obstacle, out var d) && d < obstacleDistance)
-                obstacleDistance = d;
+            { obstacleDistance = d; nearestObstacle = obstacle; }
         }
 
         IEntity? nearestTarget = null;
@@ -270,6 +296,8 @@ public sealed class CombatService
 
         if (nearestTarget != null && targetDistance <= obstacleDistance)
             ApplyHit(attacker.NetId, nearestTarget, rule.Damage, rule, tick, hits);
+        else if (nearestObstacle.HasValue && _breakables.IsBreakable(nearestObstacle.Value))
+            _breakables.ApplyDamage(nearestObstacle.Value, rule.Damage, attacker.NetId);
     }
 
     private void ApplyHit(byte attackerNetId, IEntity target, int damage, WeaponRule rule, uint tick, List<CombatHit> hits)
@@ -278,13 +306,14 @@ public sealed class CombatService
         if (_effects.IsInvulnerable(target.NetId, tick)) return;
 
         var player = GetOrCreate(target.NetId);
-        var clamped = (byte)Math.Min(damage, byte.MaxValue);
+        var mitigated = _loadout?.MitigateDamage(target.NetId, damage) ?? damage;
+        var clamped = (byte)Math.Min(mitigated, byte.MaxValue);
         var lethal = clamped >= target.Hp;
 
         if (lethal && !player.LifeSaveUsed && _passive.TryConsumeLifeSave(target.NetId))
         {
             player.LifeSaveUsed = true;
-            target.Hp = LifeSaveHp;
+            if (_loadout == null) target.Hp = LifeSaveHp;
             _effects.GrantInvulnerability(target.NetId, tick, LifeSaveInvulnerabilitySeconds);
             hits.Add(new CombatHit(target.NetId, 0, false));
         }
@@ -343,12 +372,24 @@ public sealed class CombatService
         foreach (CombatWeaponId weapon in Enum.GetValues<CombatWeaponId>())
         {
             if (!_rules.TryGet(weapon, out var rule) || !rule.IsRanged) continue;
-            created.Magazine[(int)weapon] = rule.MagazineSize;
-            created.Reserve[(int)weapon] = rule.ReserveAmmo;
+            created.Magazine[(int)weapon] = _loadout == null ? rule.MagazineSize : 0;
+            created.Reserve[(int)weapon] = _loadout == null ? rule.ReserveAmmo : 0;
         }
 
         _players[netId] = created;
         return created;
+    }
+
+    private void SyncLoadout(byte actor, PlayerCombat player)
+    {
+        if (_loadout == null) return;
+        var held = _loadout.TryGetHeld(actor, out var equipped) ? equipped : CombatWeaponId.Hand;
+        var generation = _loadout.EquipmentGeneration(actor);
+        if (player.Held != held || player.EquipmentGeneration != generation) player.Reloading = false;
+        player.EquipmentGeneration = generation;
+        player.Held = held;
+        if (_loadout.TryGetAmmo(actor, held, out var magazine, out var reserve))
+        { player.Magazine[(int)held] = magazine; player.Reserve[(int)held] = reserve; }
     }
 
     private static uint SecondsToTicks(double seconds) => (uint)Math.Ceiling(seconds * TicksPerSecond - 1e-6);

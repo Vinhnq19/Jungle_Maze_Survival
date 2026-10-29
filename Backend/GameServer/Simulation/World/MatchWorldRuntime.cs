@@ -5,7 +5,7 @@ namespace GameServer.Simulation;
 
 /// <summary>Per-match world adapter. Inventory owns items; this runtime owns all world instance IDs.
 /// Existing player NetIds are never reused for world objects. No Unity types, database or HTTP calls.</summary>
-public sealed class MatchWorldRuntime : ITransactionalDestructibleLootSink,IEnvironmentDamageSink,IEnvironmentEffectSink,IEnvironmentMovementSink,IItemGameplayPort
+public sealed partial class MatchWorldRuntime : ITransactionalDestructibleLootSink,IEnvironmentDamageSink,IEnvironmentEffectSink,IEnvironmentMovementSink,IItemGameplayPort
 {
     private readonly IEntityRegistry _entities;
     private readonly HealthService _health;
@@ -16,8 +16,12 @@ public sealed class MatchWorldRuntime : ITransactionalDestructibleLootSink,IEnvi
     private readonly LootTable _loot;
     private ushort _nextId;
     private uint _tick;
+    private readonly Dictionary<byte,(ushort Source,uint Sequence,uint Tick)> _portals=new();
+    private uint _startTick;
+    private bool _started;
     private readonly float _heroRadius;
     public ItemResult LastResult { get; private set; }
+    public bool EnvironmentDamageInProgress { get; private set; }
     private double _now;
     public Guid MatchId {get;}
     public MapLayout Layout {get;}
@@ -63,14 +67,18 @@ public sealed class MatchWorldRuntime : ITransactionalDestructibleLootSink,IEnvi
     {
         _tick=tick;_now=now;SyncActors();
         var actors=_entities.All.Select(e=>new WorldActor(e.NetId,e.X,e.Y,e.IsAlive)).ToArray();
-        Hazards.Tick(tick,actors);
+        if (!_started) { _started = true; _startTick = tick; }
+        Hazards.Tick(unchecked(tick - _startTick),actors);
         var expired=_effects.Where(e=>e.Value.End<=now).Select(e=>e.Key).ToArray();foreach(var k in expired)_effects.Remove(k);
         foreach(var e in _entities.All)
         {
             if(!e.IsAlive){Inventory.DeathDrop(e.NetId,tick);continue;}
             var poison=_effects.Where(p=>p.Key.Actor==e.NetId&&p.Key.Effect=="Poison"&&p.Value.End>now).Select(p=>p.Value.Magnitude).DefaultIfEmpty(0).Max();
-            if(poison>0&&(!_poisonDue.TryGetValue(e.NetId,out var due)||now>=due)){_poisonDue[e.NetId]=now+1;_health.ApplyDamage(e.NetId,(byte)Math.Clamp((int)poison,0,255),255);}
+            if(poison>0&&(!_poisonDue.TryGetValue(e.NetId,out var due)||now>=due)){_poisonDue[e.NetId]=now+1;ApplyEnvironmentalDamage(e.NetId,(int)poison);}
             else if(poison==0)_poisonDue.Remove(e.NetId);
+            foreach(var floor in Floor.Items.ToArray())
+                if((floor.X-e.X)*(floor.X-e.X)+(floor.Y-e.Y)*(floor.Y-e.Y)<=Inventory.PickupRadius*Inventory.PickupRadius)
+                    Inventory.AutoPickup(e.NetId,floor.Id);
         }
         Inventory.Tick(now);
     }
@@ -114,13 +122,21 @@ public sealed class MatchWorldRuntime : ITransactionalDestructibleLootSink,IEnvi
         var count=_loot.Roll(kind,seed).Length;
         return Floor.Items.Count+count<=2048&&_nextId+count<=ushort.MaxValue&&Layout.Objects.Count+Floor.Items.Count+count<=WorldWire.MaxObjects;
     }
-    public void RequestDamage(byte actor,ushort source,uint tick,int amount,bool bypassArmor){_health.ApplyDamage(actor,(byte)Math.Clamp(amount,0,255),255);}
+    public void RequestDamage(byte actor,ushort source,uint tick,int amount,bool bypassArmor){ApplyEnvironmentalDamage(actor,amount);}
+    private void ApplyEnvironmentalDamage(byte actor,int amount)
+    {
+        EnvironmentDamageInProgress = true;
+        try { _health.ApplyDamage(actor,(byte)Math.Clamp(amount,0,255),255); }
+        finally { EnvironmentDamageInProgress = false; }
+    }
     public void ApplyEffect(byte actor,ushort source,string effect,uint tick,float seconds,float magnitude){_effects[(actor,source,effect)]=(float.IsPositiveInfinity(seconds)?double.PositiveInfinity:_now+seconds,magnitude);}
     public void RemoveEffect(byte actor,ushort source,string effect,uint tick){_effects.Remove((actor,source,effect));}
     public bool TryMove(byte actor,WorldPoint destination,ushort source,uint tick)
     {
         if(!_entities.TryGet(actor,out var e)||e==null||!e.IsAlive||!Layout.IsWalkable(destination,_heroRadius,Destructibles.IsBroken,Hazards.IsDoorClosed))return false;
-        e.X=destination.X;e.Y=destination.Y;Revision++;return true;
+        e.X=destination.X;e.Y=destination.Y;
+        if(Layout.Objects.Any(o=>o.Id==source&&o.Kind==WorldObjectKind.Portal)){_portals.TryGetValue(actor,out var previous);_portals[actor]=(source,previous.Sequence+1,_tick);}
+        Revision++;return true;
     }
     public void Heal(byte actor,float amount){_health.Heal(actor,(byte)Math.Clamp((int)amount,0,255));}
     public void Rescue(byte actor,float hp,double invulnerableSeconds){_health.Rescue(actor,(byte)Math.Clamp((int)hp,1,100));_invulnerable[actor]=_now+invulnerableSeconds;}
@@ -145,8 +161,23 @@ public sealed class MatchWorldRuntime : ITransactionalDestructibleLootSink,IEnvi
     }
     public InventoryStatePacket SnapshotInventory(byte actor)
     {
-        var s=Inventory.GetSnapshot(actor);var slots=new InventorySlotWire[8];for(var i=0;i<4;i++){slots[i]=Slot(s.Weapons[i]);slots[i+4]=Slot(s.Consumables[i]);}
-        return new InventoryStatePacket{MatchId=MatchId,Actor=actor,Revision=s.Revision,ActiveWeapon=(byte)(s.ActiveWeapon<0?255:s.ActiveWeapon),IsUsing=s.IsUsing,UseSlot=(byte)(s.UseSlot<0?255:s.UseSlot),UseItemId=s.UseItemId,UseDuration=(float)s.UseDuration,UseRemaining=(float)Math.Max(0,s.UseEnd-_now),Slots=slots,Helmet=Slot(s.Helmet),Armor=Slot(s.Armor)};
+        _portals.TryGetValue(actor,out var portal);var s=Inventory.GetSnapshot(actor);var slots=new InventorySlotWire[8];for(var i=0;i<4;i++){slots[i]=Slot(s.Weapons[i]);slots[i+4]=Slot(s.Consumables[i]);}
+        return new InventoryStatePacket{MatchId=MatchId,Actor=actor,Revision=s.Revision,ActiveWeapon=(byte)(s.ActiveWeapon<0?255:s.ActiveWeapon),IsUsing=s.IsUsing,UseSlot=(byte)(s.UseSlot<0?255:s.UseSlot),UseItemId=s.UseItemId,UseDuration=(float)s.UseDuration,UseRemaining=(float)Math.Max(0,s.UseEnd-_now),Tick=_tick,PortalSourceId=portal.Source,PortalSequence=portal.Sequence,PortalTick=portal.Tick,EquipmentGeneration=Inventory.EquipmentGeneration(actor),MovementMultiplier=s.IsUsing?0:SpeedMultiplier(actor),SlowRemaining=Remaining(actor,"Slow"),PoisonRemaining=Remaining(actor,"Poison"),StunRemaining=Remaining(actor,"Stun"),SpeedRemaining=Remaining(actor,"Speed"),InvisibleRemaining=Remaining(actor,"Invisible"),ImmuneRemaining=Remaining(actor,"Immune"),Slots=slots,Helmet=Slot(s.Helmet),Armor=Slot(s.Armor)};
     }
-    private static InventorySlotWire Slot(ItemStack s){return new InventorySlotWire{ItemId=s.ItemId,Count=(ushort)Math.Max(0,s.Count),Ammo=(ushort)Math.Max(0,s.Ammo),Durability=s.Durability};}
+    private float Remaining(byte actor, string effect)
+    {
+        var remaining=0f;
+        foreach(var e in _effects)if(e.Key.Actor==actor&&e.Key.Effect==effect&&e.Value.End>_now)
+        {
+            if(double.IsPositiveInfinity(e.Value.End))return -1;
+            remaining=Math.Max(remaining,(float)Math.Min(3600,e.Value.End-_now));
+        }
+        return remaining;
+    }
+    public string OwnerEffectKey(byte actor)
+    {
+        var state=SnapshotInventory(actor);
+        return $"{state.MovementMultiplier:R}|{state.SlowRemaining!=0}|{state.PoisonRemaining>0}|{state.StunRemaining>0}|{state.SpeedRemaining>0}|{state.InvisibleRemaining>0}|{state.ImmuneRemaining>0}|{state.IsUsing}|{state.PortalSequence}|{state.EquipmentGeneration}";
+    }
+    private static InventorySlotWire Slot(ItemStack s){return new InventorySlotWire{ItemId=s.ItemId,Count=(ushort)Math.Max(0,s.Count),Ammo=(ushort)Math.Max(0,s.Ammo),Durability=s.Durability,Magazine=(ushort)Math.Max(0,s.Magazine),MagazineKnown=s.MagazineKnown};}
 }

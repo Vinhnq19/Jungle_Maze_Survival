@@ -107,6 +107,20 @@ namespace JungleMaze.App.Combat
         public CombatWeaponSlot Slot(CombatWeaponId weapon) => _slots[(int)weapon];
         public CombatWeaponSlot SelectedSlot => _slots[(int)_selected];
 
+        /// <summary>Applies the server-owned held item and ammunition without granting the local demo loadout.</summary>
+        public void ApplyEquipment(string itemId, int magazine, int reserve, bool selectionChanged = false)
+        {
+            if (!CombatWeaponIds.TryFromJsonId(itemId, out var weapon) || !Slot(weapon).Available)
+                weapon = CombatWeaponId.Hand;
+            if ((selectionChanged || _selected != weapon) && (_reloading || _reloadRequested))
+            { CancelReload(); _reloadRequested=false; }
+            var slot=Slot(weapon);
+            slot.Reserve=Math.Max(0,reserve);
+            if (magazine>=0 && !HasPendingFor(weapon)) slot.Magazine=Math.Max(0,Math.Min(slot.MagazineSize,magazine));
+            _selected=weapon;
+            PublishSelection();
+        }
+
         /// <summary>Returns false if the weapon is unknown to balance or not one of the client weapons.</summary>
         public bool Select(CombatWeaponId weapon)
         {

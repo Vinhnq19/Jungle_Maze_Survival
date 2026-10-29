@@ -6,7 +6,7 @@ namespace JungleBackend.Protocol.Gameplay
     public enum WorldActionKind:byte { Resync=0,Pickup=1,Drop=2,Select=3,Use=4,CancelUse=5 }
     public static class WorldWire
     {
-        public const byte Version=1;public const int PageSize=24,MaxObjects=4096;
+        public const byte Version=2;public const int PageSize=24,MaxObjects=4096;
         public static void Header(NetDataWriter w,Guid id){w.Put(Version);MatchWire.WriteGuid(w,id);}
         public static Guid Header(NetDataReader r){if(r.GetByte()!=Version)throw new InvalidOperationException("World protocol version mismatch.");return MatchWire.ReadGuid(r);}
         public static bool Finite(float n){return !float.IsNaN(n)&&!float.IsInfinity(n);}
@@ -44,15 +44,20 @@ namespace JungleBackend.Protocol.Gameplay
     }
     public struct InventorySlotWire
     {
-        public string ItemId;public ushort Count,Ammo;public float Durability;
-        public void Write(NetDataWriter w){w.Put(ItemId??"");w.Put(Count);w.Put(Ammo);w.Put(Durability);}
-        public static InventorySlotWire Read(NetDataReader r){var s=new InventorySlotWire{ItemId=MatchWire.ReadString(r,48),Count=r.GetUShort(),Ammo=r.GetUShort(),Durability=r.GetFloat()};WorldWire.Check(WorldWire.Finite(s.Durability)&&s.Durability>=0);return s;}
+        public string ItemId;public ushort Count,Ammo,Magazine;public bool MagazineKnown;public float Durability;
+        public void Write(NetDataWriter w){w.Put(ItemId??"");w.Put(Count);w.Put(Ammo);w.Put(Durability);w.Put(Magazine);w.Put(MagazineKnown);}
+        public static InventorySlotWire Read(NetDataReader r){var s=new InventorySlotWire{ItemId=MatchWire.ReadString(r,48),Count=r.GetUShort(),Ammo=r.GetUShort(),Durability=r.GetFloat(),Magazine=r.GetUShort(),MagazineKnown=r.GetBool()};WorldWire.Check(WorldWire.Finite(s.Durability)&&s.Durability>=0&&s.Magazine<=999&&s.Ammo<=9999);return s;}
     }
     public struct InventoryStatePacket:INetSerializable
     {
         public Guid MatchId;public byte Actor,ActiveWeapon,UseSlot;public uint Revision;public bool IsUsing;public string UseItemId;public float UseDuration,UseRemaining;public InventorySlotWire[] Slots;public InventorySlotWire Helmet,Armor;
-        public void Serialize(NetDataWriter w){WorldWire.Check(Slots!=null&&Slots.Length==8);WorldWire.Header(w,MatchId);w.Put(Actor);w.Put(Revision);w.Put(ActiveWeapon);w.Put(IsUsing);w.Put(UseSlot);w.Put(UseItemId??"");w.Put(UseDuration);w.Put(UseRemaining);foreach(var s in Slots)s.Write(w);Helmet.Write(w);Armor.Write(w);}
-        public void Deserialize(NetDataReader r){MatchId=WorldWire.Header(r);Actor=r.GetByte();Revision=r.GetUInt();ActiveWeapon=r.GetByte();IsUsing=r.GetBool();UseSlot=r.GetByte();UseItemId=MatchWire.ReadString(r,48);UseDuration=r.GetFloat();UseRemaining=r.GetFloat();WorldWire.Check(Actor<10&&(ActiveWeapon<4||ActiveWeapon==255)&&(UseSlot<4||UseSlot==255)&&WorldWire.Finite(UseDuration)&&WorldWire.Finite(UseRemaining)&&UseDuration>=0&&UseRemaining>=0&&UseRemaining<=UseDuration+.01f&&(!IsUsing||(UseSlot<4&&UseItemId.Length>0)));Slots=new InventorySlotWire[8];for(var i=0;i<8;i++)Slots[i]=InventorySlotWire.Read(r);Helmet=InventorySlotWire.Read(r);Armor=InventorySlotWire.Read(r);}
+        public uint Tick;
+        public ushort PortalSourceId;
+        public uint PortalSequence,PortalTick,EquipmentGeneration;
+        public float MovementMultiplier,SlowRemaining,PoisonRemaining,StunRemaining,SpeedRemaining,InvisibleRemaining,ImmuneRemaining;
+        public void Serialize(NetDataWriter w){WorldWire.Check(Slots!=null&&Slots.Length==8);WorldWire.Header(w,MatchId);w.Put(Actor);w.Put(Revision);w.Put(ActiveWeapon);w.Put(IsUsing);w.Put(UseSlot);w.Put(UseItemId??"");w.Put(UseDuration);w.Put(UseRemaining);w.Put(Tick);w.Put(MovementMultiplier);w.Put(SlowRemaining);w.Put(PoisonRemaining);w.Put(StunRemaining);w.Put(SpeedRemaining);w.Put(InvisibleRemaining);w.Put(ImmuneRemaining);w.Put(PortalSourceId);w.Put(PortalSequence);w.Put(PortalTick);w.Put(EquipmentGeneration);foreach(var s in Slots)s.Write(w);Helmet.Write(w);Armor.Write(w);}
+        public void Deserialize(NetDataReader r){MatchId=WorldWire.Header(r);Actor=r.GetByte();Revision=r.GetUInt();ActiveWeapon=r.GetByte();IsUsing=r.GetBool();UseSlot=r.GetByte();UseItemId=MatchWire.ReadString(r,48);UseDuration=r.GetFloat();UseRemaining=r.GetFloat();Tick=r.GetUInt();MovementMultiplier=r.GetFloat();SlowRemaining=r.GetFloat();PoisonRemaining=r.GetFloat();StunRemaining=r.GetFloat();SpeedRemaining=r.GetFloat();InvisibleRemaining=r.GetFloat();ImmuneRemaining=r.GetFloat();PortalSourceId=r.GetUShort();PortalSequence=r.GetUInt();PortalTick=r.GetUInt();EquipmentGeneration=r.GetUInt();WorldWire.Check(Actor<10&&(ActiveWeapon<4||ActiveWeapon==255)&&(UseSlot<4||UseSlot==255)&&WorldWire.Finite(UseDuration)&&WorldWire.Finite(UseRemaining)&&UseDuration>=0&&UseRemaining>=0&&UseRemaining<=UseDuration+.01f&&(!IsUsing||(UseSlot<4&&UseItemId.Length>0)));WorldWire.Check(WorldWire.Finite(MovementMultiplier)&&MovementMultiplier>=0&&MovementMultiplier<=2&&(SlowRemaining==-1||Remaining(SlowRemaining))&&Remaining(PoisonRemaining)&&Remaining(StunRemaining)&&Remaining(SpeedRemaining)&&Remaining(InvisibleRemaining)&&Remaining(ImmuneRemaining));Slots=new InventorySlotWire[8];for(var i=0;i<8;i++)Slots[i]=InventorySlotWire.Read(r);Helmet=InventorySlotWire.Read(r);Armor=InventorySlotWire.Read(r);}
+        private static bool Remaining(float value)=>WorldWire.Finite(value)&&value>=0&&value<=3600;
     }
     public struct WorldActionResultPacket : INetSerializable
     {

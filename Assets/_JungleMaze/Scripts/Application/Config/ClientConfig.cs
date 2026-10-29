@@ -28,10 +28,12 @@ namespace JungleMaze.App.Config
         public string Source { get; }
         /// <summary>URL kết nối WebSocket endpoint (ví dụ: wss://hostname/game hoặc ws://127.0.0.1:7781/game).</summary>
         public string WebSocketUrl { get; }
+        /// <summary>Requires the generated world stream before movement or item/combat input is allowed.</summary>
+        public bool WorldEnabled { get; }
 
         public ClientConfig(ConnectionMode mode, string apiBaseUrl, string gameServerHost, int gameServerPort,
             JoinAuthMode authMode, ushort protocolVersion, int connectTimeoutMs, string transport = "Udp",
-            string source = "", string webSocketUrl = null)
+            string source = "", string webSocketUrl = null, bool worldEnabled = false)
         {
             Mode = mode;
             ApiBaseUrl = string.IsNullOrWhiteSpace(apiBaseUrl) ? null : apiBaseUrl;
@@ -43,22 +45,23 @@ namespace JungleMaze.App.Config
             Transport = string.IsNullOrEmpty(transport) ? "Udp" : transport;
             Source = source ?? "";
             WebSocketUrl = string.IsNullOrWhiteSpace(webSocketUrl) ? null : webSocketUrl.Trim();
+            WorldEnabled = worldEnabled;
         }
 
         public ClientConfig WithEndpoint(string host, int port, ConnectionMode mode, string source) =>
-            new ClientConfig(mode, ApiBaseUrl, host, port, AuthMode, ProtocolVersion, ConnectTimeoutMs, Transport, source, WebSocketUrl);
+            new ClientConfig(mode, ApiBaseUrl, host, port, AuthMode, ProtocolVersion, ConnectTimeoutMs, Transport, source, WebSocketUrl, WorldEnabled);
 
         public ClientConfig WithApiBaseUrl(string apiBaseUrl, string source) =>
             new ClientConfig(Mode, apiBaseUrl, GameServerHost, GameServerPort, AuthMode, ProtocolVersion,
-                ConnectTimeoutMs, Transport, source, WebSocketUrl);
+                ConnectTimeoutMs, Transport, source, WebSocketUrl, WorldEnabled);
 
         public ClientConfig WithWebSocketUrl(string webSocketUrl, string source = null) =>
             new ClientConfig(Mode, ApiBaseUrl, GameServerHost, GameServerPort, AuthMode, ProtocolVersion,
-                ConnectTimeoutMs, Transport, source ?? Source, webSocketUrl);
+                ConnectTimeoutMs, Transport, source ?? Source, webSocketUrl, WorldEnabled);
 
         public ClientConfig WithTransport(string transport, string webSocketUrl, string source = null) =>
             new ClientConfig(Mode, ApiBaseUrl, GameServerHost, GameServerPort, AuthMode, ProtocolVersion,
-                ConnectTimeoutMs, transport, source ?? Source, webSocketUrl);
+                ConnectTimeoutMs, transport, source ?? Source, webSocketUrl, WorldEnabled);
 
         public string Endpoint => $"{GameServerHost}:{GameServerPort}";
 

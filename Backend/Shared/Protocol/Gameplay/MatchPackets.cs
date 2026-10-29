@@ -8,7 +8,7 @@ namespace JungleBackend.Protocol.Gameplay
     public enum MatchPhase : byte { Waiting, Lobby, Loading, InGame, Ending, Cleanup }
     public enum MatchEndReason : byte { None, LastAlive, Tie, Timeout, Cancelled }
     public enum MatchEntityEvent : byte { Spawn, Despawn, Eliminated }
-    public enum EliminationCauseWire : byte { Unknown = 0, Player = 1, Zone = 2, LeftMatch = 3, Disconnected = 4 }
+    public enum EliminationCauseWire : byte { Unknown = 0, Player = 1, Zone = 2, LeftMatch = 3, Disconnected = 4, Environment = 5 }
 
     // Guid's byte-array helpers allocate. The wire retains Guid byte order without allocating in snapshot/input loops.
     internal static class MatchWire
@@ -216,7 +216,7 @@ namespace JungleBackend.Protocol.Gameplay
             VictimNetId = r.GetByte();
             KillerNetId = r.GetByte();
             Cause = (EliminationCauseWire)r.GetByte();
-            if (VictimNetId >= MatchProtocol.MaxPlayers || (KillerNetId >= MatchProtocol.MaxPlayers && KillerNetId != 255) || Cause > EliminationCauseWire.Disconnected)
+            if (VictimNetId >= MatchProtocol.MaxPlayers || (KillerNetId >= MatchProtocol.MaxPlayers && KillerNetId != 255) || Cause > EliminationCauseWire.Environment)
                 throw new InvalidOperationException("Invalid elimination event.");
         }
     }

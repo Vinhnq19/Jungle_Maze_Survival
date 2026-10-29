@@ -42,6 +42,7 @@ namespace JungleMaze.App.Player
         {
             public ushort Seq;
             public float MoveX, MoveY;
+            public float MovementMultiplier;
             public double SentAt;
         }
 
@@ -61,6 +62,8 @@ namespace JungleMaze.App.Player
         /// <summary>Vị trí logic sau input mới nhất (chưa cộng offset làm mượt).</summary>
         public float PredictedX => _x;
         public float PredictedY => _y;
+        /// <summary>Authoritative status multiplier applied to new inputs and retained separately in replay history.</summary>
+        public float MovementMultiplier { get; set; } = 1f;
 
         public PredictionStats Stats
         {
@@ -87,6 +90,7 @@ namespace JungleMaze.App.Player
             _hasAuthority = _dead = false;
             _offsetX = _offsetY = 0f;
             _sinceInput = 0f;
+            MovementMultiplier=1f;
         }
 
         public void ResetStats()
@@ -108,10 +112,10 @@ namespace JungleMaze.App.Player
             }
             var mx = MovementSimulation.Dequantize(input.MoveX);
             var my = MovementSimulation.Dequantize(input.MoveY);
-            _pending[(_head + _count) % Capacity] = new PendingInput { Seq = input.InputSeq, MoveX = mx, MoveY = my, SentAt = _now };
+            _pending[(_head + _count) % Capacity] = new PendingInput { Seq = input.InputSeq, MoveX = mx, MoveY = my, SentAt = _now, MovementMultiplier=MovementMultiplier };
             _count++;
             _prevX = _x; _prevY = _y;
-            (_x, _y) = _world.Move(_x, _y, mx, my, MovementSimulation.TickSeconds);
+            (_x, _y) = _world.Move(_x, _y, mx, my, MovementSimulation.TickSeconds, MovementMultiplier);
             _aim = input.AimDegrees;
             _sinceInput = 0f;
             _stats.Predicted++;
@@ -141,7 +145,7 @@ namespace JungleMaze.App.Player
             {
                 var input = _pending[(_head + i) % Capacity];
                 prevX = x; prevY = y;
-                (x, y) = _world.Move(x, y, input.MoveX, input.MoveY, MovementSimulation.TickSeconds);
+                (x, y) = _world.Move(x, y, input.MoveX, input.MoveY, MovementSimulation.TickSeconds, input.MovementMultiplier);
             }
 
             var errX = _x - x; var errY = _y - y;
