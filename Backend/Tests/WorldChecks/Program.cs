@@ -45,6 +45,33 @@ hazards.Tick(60,Array.Empty<WorldActor>());Check(hazardPorts.Removed==1,"swamp l
 hazards.Tick(90,new[]{new WorldActor(3,25,25)});Check(hazardPorts.MoveCount==2,"portal cooldown expires");
 hazards.Tick(600,new[]{new WorldActor(0,30,30)});Check(hazards.DoorsClosed&&hazardPorts.MoveCount==3,"door closes and displaces occupant");
 hazards.Tick(1200,Array.Empty<WorldActor>());Check(!hazards.DoorsClosed&&hazards.CollisionRevision==2,"door all phases use server clock");
+var overlappingMap=new MapLayout{Size=50};
+overlappingMap.Objects.Add(new WorldObjectDefinition{Id=1,Kind=WorldObjectKind.Swamp,Bounds=new WorldBounds(10,10,4,4)});
+overlappingMap.Objects.Add(new WorldObjectDefinition{Id=2,Kind=WorldObjectKind.Swamp,Bounds=new WorldBounds(12,10,4,4)});
+var overlappingPorts=new FakePorts();overlappingPorts.ApplyEffect(0,999,"Slow",0,10,.5f);
+var overlapping=new HazardService(overlappingMap,new HazardConfig(),overlappingPorts,overlappingPorts,overlappingPorts);
+overlapping.Tick(0,new[]{new WorldActor(0,11,10)});
+Check(overlappingPorts.SlowSources.Count==3,"overlapping swamps retain separate slow sources");
+overlapping.Tick(1,new[]{new WorldActor(0,9,10)});
+Check(overlappingPorts.SlowSources.Count==2&&overlappingPorts.SlowSources.Contains((0,1)),"leaving one swamp preserves the other slow");
+overlapping.Tick(2,new[]{new WorldActor(0,20,10)});
+Check(overlappingPorts.SlowSources.Count==1&&overlappingPorts.SlowSources.Contains((0,999)),"leaving swamps never removes an unrelated slow source");
+var blockedMap=new MapLayout{Size=50};
+blockedMap.Objects.Add(new WorldObjectDefinition{Id=1,Kind=WorldObjectKind.Portal,PairId=1,Bounds=new WorldBounds(10,10,1,1)});
+blockedMap.Objects.Add(new WorldObjectDefinition{Id=2,Kind=WorldObjectKind.Portal,PairId=1,Bounds=new WorldBounds(20,20,1,1)});
+var blocker=new WorldObjectDefinition{Id=3,Kind=WorldObjectKind.Wall,Bounds=new WorldBounds(20,20,2,2)};blockedMap.Objects.Add(blocker);
+var blockedPorts=new FakePorts();var blockedPortal=new HazardService(blockedMap,new HazardConfig(),blockedPorts,blockedPorts,blockedPorts);
+blockedPortal.Tick(0,new[]{new WorldActor(0,10,10)});Check(blockedPorts.MoveCount==0,"portal refuses a blocked destination");
+blockedMap.Objects.Remove(blocker);blockedPortal.Tick(1,new[]{new WorldActor(0,10,10)});
+Check(blockedPorts.MoveCount==1,"failed portal traversal does not consume cooldown");
+blockedPortal.Tick(2,new[]{new WorldActor(0,10,10)});Check(blockedPorts.MoveCount==1,"portal cooldown rejects immediate repeat traversal");
+blockedPortal.Tick(91,new[]{new WorldActor(0,10,10)});Check(blockedPorts.MoveCount==2,"portal cooldown permits traversal after three seconds");
+var trappedMap=new MapLayout{Size=50};
+trappedMap.Objects.Add(new WorldObjectDefinition{Id=1,Kind=WorldObjectKind.Door,Bounds=new WorldBounds(25,25,1,2)});
+trappedMap.Objects.Add(new WorldObjectDefinition{Id=2,Kind=WorldObjectKind.Wall,Bounds=new WorldBounds(25,25,50,50)});
+var trappedPorts=new FakePorts();var trappedDoor=new HazardService(trappedMap,new HazardConfig(),trappedPorts,trappedPorts,trappedPorts);
+trappedDoor.Tick(0,new[]{new WorldActor(0,25,25)});trappedDoor.Tick(600,new[]{new WorldActor(0,25,25)});
+Check(!trappedDoor.DoorsClosed&&trappedDoor.BlockedDoorClosures==1&&trappedPorts.MoveCount==0,"door stays open if no safe displacement exists");
 var registry=new PacketRegistry();WorldActionRequestPacket received=default;registry.Subscribe<WorldActionRequestPacket>(p=>received=p);
 var request=new WorldActionRequestPacket{MatchId=Guid.NewGuid(),RequestId=1,Action=WorldActionKind.Pickup,TargetId=400,Slot=0};var writer=new NetDataWriter();registry.WriteFrame(writer,ref request);Check(registry.TryReadFrame(new NetDataReader(writer.CopyData()))&&received.TargetId==400,"world request roundtrip ushort ID");
 var invalid=writer.CopyData();invalid[9]=99;Check(!registry.TryReadFrame(new NetDataReader(invalid)),"wrong world version rejects");
@@ -107,10 +134,11 @@ Console.WriteLine($"WorldChecks: {checks} passed, 0 failed");
 
 sealed class FakePorts:IDestructibleLootSink,IEnvironmentDamageSink,IEnvironmentEffectSink,IEnvironmentMovementSink
 {
+    public readonly HashSet<(byte Actor,ushort Source)> SlowSources=new();
     public int LootCount,DamageCount,SlowCount,PoisonCount,MoveCount,Removed;
     public void SpawnLoot(WorldObjectKind source,ushort id,WorldPoint p,uint seed){LootCount++;}
     public void RequestDamage(byte actor,ushort source,uint tick,int amount,bool bypass){if(amount!=10||!bypass)throw new Exception("Invalid lava damage");DamageCount++;}
-    public void ApplyEffect(byte actor,ushort source,string effect,uint tick,float seconds,float magnitude){if(effect=="Slow")SlowCount++;if(effect=="Poison")PoisonCount++;}
-    public void RemoveEffect(byte actor,ushort source,string effect,uint tick){Removed++;}
+    public void ApplyEffect(byte actor,ushort source,string effect,uint tick,float seconds,float magnitude){if(effect=="Slow"){SlowCount++;SlowSources.Add((actor,source));}if(effect=="Poison")PoisonCount++;}
+    public void RemoveEffect(byte actor,ushort source,string effect,uint tick){Removed++;if(effect=="Slow")SlowSources.Remove((actor,source));}
     public bool TryMove(byte actor,WorldPoint destination,ushort source,uint tick){MoveCount++;return true;}
 }

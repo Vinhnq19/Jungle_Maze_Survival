@@ -46,6 +46,7 @@ namespace JungleMaze.App.MatchUi.Mocks
                 case EliminationCause.Player:
                     return new EliminationInfo(matchId, tick, 4, 10, cause, KillerNetId, KillerName, "Nỏ", 6.4f, 312f, 2);
                 case EliminationCause.Zone:
+                case EliminationCause.Environment:
                     return new EliminationInfo(matchId, tick, 7, 10, cause, EliminationInfo.NoNetId, null, null, float.NaN, 421f, 0);
                 case EliminationCause.LeftMatch:
                     return new EliminationInfo(matchId, tick, 9, 10, cause, EliminationInfo.NoNetId, null, null, float.NaN, 95f, 0);
