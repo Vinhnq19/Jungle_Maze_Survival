@@ -133,8 +133,10 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
 
             foreach (var b in new[] { menu.Resume, root.Eliminated.Spectate, root.Spectator.Home, root.Confirm.Stay })
                 Assert.AreEqual("ButtonPrimary", SpriteOf(b), b.name);
-            foreach (var b in new[] { menu.Defaults, menu.Leave, root.Eliminated.Home, root.Spectator.Killer, root.Killcam.Skip, root.Confirm.Confirm })
+            foreach (var b in new[] { menu.Defaults, root.Eliminated.Home, root.Spectator.Killer, root.Killcam.Skip })
                 Assert.AreEqual("ButtonSecondary", SpriteOf(b), b.name);
+            foreach (var b in new[] { menu.Leave, root.Confirm.Confirm }) // AES-02: destructive buttons use the Danger face
+                Assert.AreEqual("ButtonDanger", SpriteOf(b), b.name);
 
             var killcam = root.Killcam;
             var grid = killcam.Board.GetComponent<Image>();

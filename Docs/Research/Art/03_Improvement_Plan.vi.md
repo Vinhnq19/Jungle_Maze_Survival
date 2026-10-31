@@ -16,6 +16,7 @@ Công sức: **S** ≤ 1 ngày · **M** 2–3 ngày · **L** khoảng 1 tuần �
 ## 1. Quick wins (1–3 ngày)
 
 ### QW1 · Sửa chồng lấn hộp xác nhận xóa phòng (V1)
+- **Trạng thái:** ✅ xong 01/11 (AES-01): modal giữa màn có Scrim, câu hỏi ghi tên phòng. Ảnh `captures/before|after/modal_room_delete.png`. Chưa có PlayMode test overlap riêng (hộp là modal có Scrim nên không còn cần né dòng phòng).
 - **Mục tiêu:** xác nhận xóa không che dòng phòng.
 - **Việc:** chuyển xác nhận xóa thành modal giữa màn có Scrim (dùng chung kiểu với `LogoutConfirmView`), ghi tên phòng trong câu hỏi "Xóa phòng «Phòng 2»?". File: `RoomManagerView.cs`, `LobbyUiPrefabBuild.cs` → `LobbyUi.prefab`.
 - **Owner:** unity-dev. **Phụ thuộc:** UI-02 commit. **Công sức:** S.
@@ -23,6 +24,7 @@ Công sức: **S** ≤ 1 ngày · **M** 2–3 ngày · **L** khoảng 1 tuần �
 - **Rủi ro:** thấp; đụng file UI-02 đang sửa.
 
 ### QW2 · Sửa chồng lấn chế độ Theo dõi (V2)
+- **Trạng thái:** ⏳ chưa chụp được: ảnh spectator cần Play Mode có trận. Không sửa MatchOverlay; để QA chụp lại khi chạy trận thật.
 - **Mục tiêu:** chỉ một bộ vitals hiển thị; dải gợi ý không đè quickbar.
 - **Việc:** UI-02 vòng 2 (Agent_Coordination 31/10 18:55) đã đổi `HudSpectatorMask` sang tắt cả Canvas HUD khi Killcam/Spectator, nên phần đè vitals có thể đã hết. Việc còn lại: chụp lại sau khi UI-02 commit; nếu thẻ người được theo dõi hoặc dải phím gợi ý còn đè nhau thì sửa vị trí trong `MatchOverlayPrefabBuild.cs` → `MatchOverlay.prefab`.
 - **Owner:** unity-dev. **Phụ thuộc:** UI-02 commit (file đang sửa). **Công sức:** S.
@@ -30,6 +32,7 @@ Công sức: **S** ≤ 1 ngày · **M** 2–3 ngày · **L** khoảng 1 tuần �
 - **Rủi ro:** trung bình; liên quan logic ẩn/hiện HUD của UI-03.
 
 ### QW3 · Scrim cho mọi modal (V3)
+- **Trạng thái:** ✅ xong 01/11 (AES-01): Scrim `#0B1114` @0,72 cho Đăng xuất, Xóa phòng, Vào phòng, Thoát trận; hộp Thoát trận nền đặc. Ảnh `captures/`.
 - **Mục tiêu:** modal tách khỏi nội dung phía sau.
 - **Việc:** thêm Image Scrim `#0B1114` @0,72 toàn màn sau: Thoát trận (ESC), Đăng xuất, Xóa phòng, modal Vào phòng. Panel ESC phía sau không hiện chữ xuyên qua.
 - **Owner:** unity-dev. **Phụ thuộc:** UI-02 commit. **Công sức:** S.
@@ -37,6 +40,7 @@ Công sức: **S** ≤ 1 ngày · **M** 2–3 ngày · **L** khoảng 1 tuần �
 - **Rủi ro:** thấp.
 
 ### QW4 · Token tương phản và nút phá hủy (V4, V14)
+- **Trạng thái:** ✅ xong 01/11 (AES-02): Faint `#859E98`, nút chính `#2E7263`, thêm `RedText`, `Scrim`, sprite `ButtonDanger`; 3 nút Xóa/Đăng xuất/Thoát dùng Danger. Test `HudPaletteContrastTests`. `DangerFill` giữ giá trị cũ (đang dùng cho dải cảnh báo HUD); nền nút Danger là sprite `#2E1A1C`. `Hud.prefab` chỉ đổi giá trị Faint.
 - **Mục tiêu:** mọi chữ đạt ≥ 4,5:1; hành động phá hủy khác nút chính.
 - **Việc:** đổi `Faint` → `#859E98`, nền nút chính → `#2E7263`, thêm `RedText #F06A6E`, `DangerFill #2E1A1C`, `Scrim`; áp kiểu "Danger" cho Xóa, Đăng xuất (trong hộp xác nhận), Thoát trận. File: `HudPalette.cs`, `UiArtSet.cs`, builder lobby/overlay.
 - **Owner:** Codex (ADHOC) cho `HudPalette`/`UiArtSet`; unity-dev cho builder. **Phụ thuộc:** QW3 (cùng builder). **Công sức:** S.
@@ -44,6 +48,7 @@ Công sức: **S** ≤ 1 ngày · **M** 2–3 ngày · **L** khoảng 1 tuần �
 - **Rủi ro:** thấp; đổi màu có thể lệch art AI đã sinh theo màu cũ, cần Art Director soát lại.
 
 ### QW5 · Số dùng Be Vietnam Pro (V7)
+- **Trạng thái:** 🟡 một phần (AES-02): lobby và overlay đã dùng Be Vietnam Pro Bold. HUD (`Hud*.prefab`) để lại Pixelify: đổi font làm "×6", "3s" bị cắt thành rỗng ở ô nhỏ, và test HUD quy định số dùng Pixelify. Cần Codex/chủ HUD nới ô rồi đổi.
 - **Mục tiêu:** không còn nhầm 5/S, 7/ㄱ, C/0.
 - **Việc:** đổi font của mọi TMP hiển thị số và chuỗi tiếng Việt từ Pixelify Sans sang Be Vietnam Pro Bold; số đổi liên tục dùng `<mspace>`. Pixelify chỉ còn ở logo. File: builder lobby/overlay, `Hud.prefab` (Codex nếu thuộc ADHOC).
 - **Owner:** unity-dev + Codex (ADHOC) cho HUD. **Phụ thuộc:** không. **Công sức:** S.

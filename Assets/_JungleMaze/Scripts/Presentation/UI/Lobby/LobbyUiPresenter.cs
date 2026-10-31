@@ -255,7 +255,13 @@ namespace JungleMaze.Presentation.UI.Lobby
             }
             v.ConfirmGroup.alpha = m.PendingDelete.HasValue ? 1f : 0f;
             v.ConfirmGroup.interactable = v.ConfirmGroup.blocksRaycasts = m.PendingDelete.HasValue;
-            if (m.PendingDelete.HasValue) v.ConfirmText.text = "Xóa phòng này?";
+            if (m.PendingDelete.HasValue) v.ConfirmText.text = "Xóa phòng «" + PendingName(m) + "»?";
+        }
+
+        private static string PendingName(RoomListModel m)
+        {
+            foreach (var room in m.Rooms) if (room.Id == m.PendingDelete) return room.Name;
+            return "";
         }
 
         private void DrawHistory()

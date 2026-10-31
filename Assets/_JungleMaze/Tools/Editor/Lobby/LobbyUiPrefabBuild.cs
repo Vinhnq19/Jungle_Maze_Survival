@@ -27,7 +27,7 @@ namespace JungleMaze.EditorTools
 
         private static readonly HudPalette P = HudPalette.Default;
         private static TMP_FontAsset TextFont => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudText SDF.asset");
-        private static TMP_FontAsset NumberFont => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudNumber SDF.asset");
+        private static TMP_FontAsset NumberFont => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudTextBold SDF.asset");
         private static Sprite Menu(string name) => AssetDatabase.LoadAssetAtPath<Sprite>(MenuArt + name + ".png");
 
         [MenuItem("Jungle Maze/UI-02/Build Lobby UI")]
@@ -116,7 +116,7 @@ namespace JungleMaze.EditorTools
             var b = Modal(r, "Panel", 440, 260, 400, 200);
             Set(v, "text", Txt(b, "Text", "Đăng xuất?", 20, 24, 360, 30, 20, TextAlignmentOptions.Center, P.Text));
             Txt(b, "Body", "Bạn sẽ quay về màn đăng nhập.", 20, 62, 360, 22, 14, TextAlignmentOptions.Center, P.Muted);
-            Set(v, "yes", Btn(b, "Yes", "Đăng xuất", 20, 120, 170, true));
+            Set(v, "yes", Danger(Btn(b, "Yes", "Đăng xuất", 20, 120, 170)));
             Set(v, "no", Btn(b, "No", "Hủy", 210, 120, 170, false, true));
             return v;
         }
@@ -216,13 +216,17 @@ namespace JungleMaze.EditorTools
             Set(v, "newCapacity", cap);
             Set(v, "create", Btn(b, "Create", "Tạo phòng", 536, 438, 240, true));
             Set(v, "back", Btn(b, "Back", "Về trang chủ", 24, 552, 200, false, true));
-            var confirm = Modal(b, "Confirm", 200, 220, 400, 180);
-            var group = confirm.gameObject.AddComponent<CanvasGroup>();
+            // AES-01: centred modal over a scrim, never over a room row
+            var overlay = Rect("Confirm", (RectTransform)v.transform, 0, 0, 0, 0);
+            Stretch(overlay);
+            var group = overlay.gameObject.AddComponent<CanvasGroup>();
             group.alpha = 0f;
             group.interactable = group.blocksRaycasts = false;
+            Scrim(overlay);
+            var confirm = Modal(overlay, "Panel", 440, 270, 400, 180);
             Set(v, "confirmGroup", group);
-            Set(v, "confirmText", Txt(confirm, "Text", "Xóa phòng này?", 20, 24, 360, 30, 18, TextAlignmentOptions.Center, P.Text));
-            Set(v, "confirmYes", Btn(confirm, "Yes", "Xóa", 20, 100, 170, true));
+            Set(v, "confirmText", Txt(confirm, "Text", "Xóa phòng?", 20, 24, 360, 30, 18, TextAlignmentOptions.Center, P.Text));
+            Set(v, "confirmYes", Danger(Btn(confirm, "Yes", "Xóa", 20, 100, 170)));
             Set(v, "confirmNo", Btn(confirm, "No", "Giữ lại", 210, 100, 170, false, true));
             return v;
         }
@@ -449,7 +453,15 @@ namespace JungleMaze.EditorTools
         {
             var r = Rect("Scrim", parent, 0, 0, 0, 0);
             Stretch(r);
-            Img(r, new Color(0, 0, 0, 0.6f));
+            Img(r, P.Scrim);
+        }
+
+        /// <summary>Destructive action (AES-02): dark red face, red label.</summary>
+        private static Button Danger(Button button)
+        {
+            ((Image)button.targetGraphic).sprite = Menu("ButtonDanger");
+            button.GetComponentInChildren<TMP_Text>().color = P.RedText;
+            return button;
         }
 
         private static void Logo(RectTransform parent, float x, float y, float w, float h)

@@ -45,7 +45,7 @@ namespace JungleMaze.EditorTools
         private const int TextSize = 15;
         private static readonly HudPalette P = HudPalette.Default;
         private static TMP_FontAsset TextFont => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudText SDF.asset");
-        private static TMP_FontAsset NumberFont => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudNumber SDF.asset");
+        private static TMP_FontAsset NumberFont => AssetDatabase.LoadAssetAtPath<TMP_FontAsset>("Assets/_JungleMaze/Art/Fonts/TMP/HudTextBold SDF.asset");
 
         [MenuItem("Jungle Maze/UI-03/Build Match Overlay")]
         public static void Build()
@@ -388,7 +388,7 @@ namespace JungleMaze.EditorTools
             y += RowHeight + 12f;
             var defaults = Btn("Defaults", panel, 16, y, 140, 48, "Mặc định", Secondary, P.Text);
             var resume = Btn("Resume", panel, 168, y, 160, 48, "Tiếp tục", Primary, P.Text);
-            var leave = Btn("Leave", panel, 364, y, 180, 48, "Thoát trận", Secondary, P.Red);
+            var leave = Btn("Leave", panel, 364, y, 180, 48, "Thoát trận", Danger, P.RedText);
             ButtonIcon(leave, Overlay("IconExit"));
             var retry = Txt("RetryNotice", panel, 16, y + 52, 528, 20, "Chưa thoát được, thử lại", 13, TextFont, TextAlignmentOptions.MidlineLeft, P.Yellow);
             retry.gameObject.SetActive(false);
@@ -434,16 +434,17 @@ namespace JungleMaze.EditorTools
             var root = Rect("LeaveConfirm", parent, 0, 0, 1280, 720);
             Stretch(root);
             var group = Group(root);
-            Img(root, new Color(0f, 0f, 0f, 0.55f), true);
+            Img(root, P.Scrim, true);
             var box = Centered("Box", root, 420, 190);
             Panel(box);
+            box.GetComponent<Image>().color = new Color(P.Surface.r, P.Surface.g, P.Surface.b, 1f); // opaque: ESC text must not show through
             var view = root.gameObject.AddComponent<LeaveConfirmView>();
             var title = Txt("Title", box, 20, 18, 380, 30, "Thoát trận?", 20, TextFont, TextAlignmentOptions.MidlineLeft, P.Text);
             title.fontStyle = FontStyles.Bold;
             var message = Txt("Message", box, 20, 52, 380, 44, "Bạn sẽ bị loại khỏi trận.", TextSize, TextFont, TextAlignmentOptions.TopLeft, P.Muted);
             message.textWrappingMode = TextWrappingModes.Normal;
             var stay = Btn("Stay", box, 20, 122, 180, 48, "Ở lại", Primary, P.Text);
-            var confirm = Btn("Confirm", box, 220, 122, 180, 48, "Thoát", Secondary, P.Red);
+            var confirm = Btn("Confirm", box, 220, 122, 180, 48, "Thoát", Danger, P.RedText);
             ButtonIcon(confirm, Overlay("IconExit"));
             Set(view, "group", group);
             Set(view, "message", message);
@@ -574,6 +575,7 @@ namespace JungleMaze.EditorTools
 
         private static Sprite Primary => Load(MenuArt + "ButtonPrimary.png");
         private static Sprite Secondary => Load(MenuArt + "ButtonSecondary.png");
+        private static Sprite Danger => Load(MenuArt + "ButtonDanger.png");
         private static Sprite Overlay(string name) => Load(OverlayArt + name + ".png");
         private static Sprite Hud(string name) => Load(HudArt + name + ".png");
 
