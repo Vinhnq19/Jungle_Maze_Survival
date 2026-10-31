@@ -73,6 +73,13 @@ namespace JungleMaze.App.Lobby
             else Set(ListState.Ready, "");
         }
 
+        /// <summary>Forget the rows of the last account (logout, expired JWT); the next open loads again.</summary>
+        public void Clear()
+        {
+            if (State == ListState.Loading) return; // the running refresh overwrites anyway
+            Set(ListState.Idle, "");
+        }
+
         /// <summary>Local time, rank, survival, reason.</summary>
         public static string Line(PlayerMatchHistory row) =>
             row.EndedAt.ToLocalTime().ToString("dd/MM HH:mm") + " · Hạng #" + row.Rank + " · Sống sót "

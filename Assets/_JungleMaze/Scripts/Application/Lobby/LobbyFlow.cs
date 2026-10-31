@@ -28,7 +28,7 @@ namespace JungleMaze.App.Lobby
         private readonly OnceGate _gate = new OnceGate();
         private LobbyScreen _leaderboardReturn = LobbyScreen.History;
         private double _loadingSince;
-        private bool _sawConnect, _leaving, _roomsAfterLogin;
+        private bool _sawConnect, _leaving, _roomsAfterLogin, _devSkipped;
         private Guid _lastMatchId;
 
         public LobbyFlow(ILobbySource lobby, IMatchResultSource results, IConnectionStateSource connection,
@@ -65,7 +65,18 @@ namespace JungleMaze.App.Lobby
         /// <summary>Home when a JWT is valid, otherwise Login. No account service (old rigs) means no gate.</summary>
         public LobbyScreen HomeScreen => NeedsLogin ? LobbyScreen.Login : LobbyScreen.MainMenu;
 
-        private bool NeedsLogin => Account != null && Account.Token == null;
+        private bool NeedsLogin => Account != null && !_devSkipped && Account.Token == null;
+
+        /// <summary>True after "Bỏ qua đăng nhập (dev)": Home and room codes work, the room manager still needs a JWT.</summary>
+        public bool DevSkipped => _devSkipped;
+
+        /// <summary>M1 (round 2): Editor/dev builds only, so the team can play by room code without a backend.</summary>
+        public void DevSkipLogin()
+        {
+            if (!Options.DevSkipLogin || Screen != LobbyScreen.Login) return;
+            _devSkipped = true;
+            Go(LobbyScreen.MainMenu);
+        }
         public string Notice { get; private set; } = "";
         public string LoadErrorText { get; private set; } = "";
         public bool ReplayPending { get; private set; }
@@ -149,7 +160,9 @@ namespace JungleMaze.App.Lobby
         /// <summary>Logout on the account card asks first; confirming drops the JWT and lands on Login.</summary>
         public void RequestLogout()
         {
-            if (Account != null && Screen == LobbyScreen.MainMenu) LogoutConfirmOpen = true;
+            if (Account == null || Screen != LobbyScreen.MainMenu) return;
+            if (_devSkipped) { Go(LobbyScreen.Login); return; } // nothing to lose: no confirm
+            LogoutConfirmOpen = true;
         }
 
         public void CancelLogout() => LogoutConfirmOpen = false;
@@ -391,6 +404,13 @@ namespace JungleMaze.App.Lobby
         {
             if (next == Screen) return;
             if (next != LobbyScreen.MainMenu) LogoutConfirmOpen = false;
+            if (next == LobbyScreen.Login)
+            {
+                // Logout, expiry or a dev skip ended: nothing of the last account stays visible (review m1).
+                _devSkipped = false;
+                History?.Clear();
+                _lastMatchId = Guid.Empty;
+            }
             if (next != LobbyScreen.MainMenu && next != LobbyScreen.Login) ServerSettingsOpen = false;
             Screen = next;
             ScreenChanged?.Invoke(next);

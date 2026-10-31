@@ -14,6 +14,7 @@ namespace JungleMaze.App.Lobby
         public bool ReconnectEnabled = true; // Q2
         public bool HistoryEnabled = true;
         public bool ShowKills;             // T-4: off until PlayerDied ships
+        public bool DevSkipLogin;          // UI-02 round 2 M1: "Bỏ qua đăng nhập (dev)"; only Editor/dev builds turn it on
         public float GraceSeconds = 15f;
         public float ConnectBudgetSeconds = 20f;   // AC10: 5 s UDP + 15 s WS
         public float LoadingStuckSeconds = 35f;    // G-5: 30 s + 5 s

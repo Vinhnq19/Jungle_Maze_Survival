@@ -10,9 +10,9 @@ namespace JungleMaze.App.Lobby
     /// </summary>
     public static class ApiMessages
     {
-        public const string NoApi = "Không có API: chỉ chơi bằng mã phòng";
+        public const string NoApi = "Chưa cấu hình máy chủ tài khoản: chưa đăng nhập được"; // round 2: no guest path
         public const string ApiReady = "API sẵn sàng";
-        public const string ApiDown = "API tạm ngừng";
+        public const string ApiDown = "Máy chủ tài khoản không phản hồi: chưa đăng nhập được, hãy Thử lại";
         public const string AccountUnreachable = "Không kết nối được máy chủ tài khoản";
         public const string SessionExpired = "Phiên đăng nhập đã hết hạn, hãy đăng nhập lại";
         public const string RoomsUnavailable = "Máy chủ phòng chưa sẵn sàng";

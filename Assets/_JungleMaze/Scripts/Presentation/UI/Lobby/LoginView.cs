@@ -18,6 +18,10 @@ namespace JungleMaze.Presentation.UI.Lobby
         [SerializeField] private Button submit;
         [SerializeField] private Button advanced;
         [SerializeField] private TMP_Text message;
+        [SerializeField] private TMP_Text apiStatus;
+        [SerializeField] private Button retry;
+        [Tooltip("\"Bỏ qua đăng nhập (dev)\": the presenter hides it unless LobbyOptions.DevSkipLogin (Editor/dev builds).")]
+        [SerializeField] private Button devSkip;
         [Tooltip("Inactive tab: dimmed button and grey label (AC50: changed on the prefab only).")]
         [SerializeField] private float idleTabAlpha = 0.6f;
         [SerializeField] private Color idleTabText = new Color32(0xA6, 0xBB, 0xB7, 0xFF);
@@ -31,6 +35,9 @@ namespace JungleMaze.Presentation.UI.Lobby
         public Button Submit => submit;
         public Button Advanced => advanced;
         public TMP_Text Message => message;
+        public TMP_Text ApiStatus => apiStatus;
+        public Button Retry => retry;
+        public Button DevSkip => devSkip;
 
         public void SetTab(bool register)
         {

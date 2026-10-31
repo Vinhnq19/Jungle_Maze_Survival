@@ -40,6 +40,9 @@ namespace JungleMaze.Composition
 
             Func<double> clock = () => Time.unscaledTimeAsDouble;
             var options = set.ToOptions(balance.Match.DisconnectGraceSeconds);
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            options.DevSkipLogin = true; // review M1: play by room code without a backend; never in release builds
+#endif
             var config = _registry.Resolve<IConfigProvider>();
             var menu = _registry.Resolve<ConnectionMenuPresenter>();
             var connect = _registry.Resolve<ConnectToServerUseCase>();

@@ -22,6 +22,7 @@ namespace JungleMaze.Presentation.UI.Lobby
         public const string EmptySlot = "Chỗ trống";
         public const string SelfTag = "Bạn";
         public const string ReplayWaiting = "Đang chờ người khác…";
+        public const string DevHint = "Chế độ dev: vào bằng mã phòng, không dùng tài khoản";
 
         private readonly LobbyUiRoot _root;
         private readonly LobbyFlow _flow;
@@ -47,6 +48,7 @@ namespace JungleMaze.Presentation.UI.Lobby
             _unbind = BindButtons();
             BindInputs();
             FillEndpoint();
+            root.Login.DevSkip.gameObject.SetActive(flow.Options.DevSkipLogin); // release builds never show it (M1)
             foreach (var panel in root.Panels) panel.Show(false);
             Tick();
         }
@@ -121,9 +123,11 @@ namespace JungleMaze.Presentation.UI.Lobby
                     _root.JoinForm.DisplayName.SetTextWithoutNotify(_flow.Join.DisplayName);
                     _root.JoinForm.RoomCode.SetTextWithoutNotify(_flow.Join.RoomCode);
                     var user = _flow.Account?.Username?.Trim();
-                    _root.JoinForm.Hint.text = string.IsNullOrEmpty(user) ? "" : "Vào bằng tài khoản " + user + " · tên hiển thị lấy từ tài khoản";
+                    _root.JoinForm.Hint.text = _flow.DevSkipped ? DevHint
+                        : string.IsNullOrEmpty(user) ? "" : "Vào bằng tài khoản " + user + " · tên hiển thị lấy từ tài khoản";
                     break;
                 case LobbyScreen.Login:
+                    _flow.Api?.Check(); // status line + Thử lại when the account server is down
                     _root.Login.Username.SetTextWithoutNotify(_flow.Account?.Username ?? "");
                     _root.Login.Password.SetTextWithoutNotify("");
                     break;
@@ -164,11 +168,13 @@ namespace JungleMaze.Presentation.UI.Lobby
         {
             var v = _root.MainMenu;
             var api = _flow.Api?.Text ?? ApiMessages.NoApi;
-            var user = _flow.Account?.Username?.Trim() ?? "";
-            if (!Changed(Hash(api, user))) return;
+            var dev = _flow.DevSkipped;
+            var user = dev ? "Chưa đăng nhập" : _flow.Account?.Username?.Trim() ?? "";
+            if (!Changed(Hash(api, user, dev ? 1 : 0))) return;
             v.ApiStatus.text = api;
-            v.AccountStatus.text = "Đã đăng nhập";
+            v.AccountStatus.text = dev ? "Chế độ dev" : "Đã đăng nhập";
             v.AccountName.text = user;
+            SetLabel(v.Logout, dev ? "Đăng nhập" : "Đăng xuất");
             v.Join.interactable = true; // AC3: never blocked by the API
         }
 
@@ -212,8 +218,12 @@ namespace JungleMaze.Presentation.UI.Lobby
         private void DrawLogin()
         {
             var a = _flow.Account;
-            if (a == null || !Changed(Hash(a.Message, a.RegisterMode ? 1 : 0, a.Busy ? 1 : 0))) return;
+            var api = _flow.Api;
+            var apiDown = api != null && !api.Ready && !api.Checking;
+            if (a == null || !Changed(Hash(a.Message, a.RegisterMode ? 1 : 0, a.Busy ? 1 : 0, api?.Text, apiDown ? 1 : 0))) return;
             var v = _root.Login;
+            v.ApiStatus.text = api == null || api.Ready ? "" : api.Text;
+            v.Retry.gameObject.SetActive(apiDown);
             v.Title.text = a.RegisterMode ? "Đăng ký" : "Đăng nhập";
             v.SetTab(a.RegisterMode);
             v.Message.text = a.Message;
@@ -428,6 +438,8 @@ namespace JungleMaze.Presentation.UI.Lobby
             On(r.Login.RegisterTab, () => { if (f.Account != null) f.Account.RegisterMode = true; _drawnKey = int.MinValue; });
             On(r.Login.Submit, SubmitLogin);
             On(r.Login.Advanced, f.OpenServerSettings);
+            On(r.Login.Retry, () => f.Api?.Check());
+            On(r.Login.DevSkip, f.DevSkipLogin);
             On(r.RoomManager.Create, CreateRoom);
             On(r.RoomManager.Retry, () => f.Rooms?.Refresh());
             On(r.RoomManager.Back, f.Back);

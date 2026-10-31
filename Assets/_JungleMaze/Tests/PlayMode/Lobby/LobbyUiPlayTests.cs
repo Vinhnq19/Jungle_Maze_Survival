@@ -40,14 +40,15 @@ namespace JungleMaze.Tests.PlayMode.Lobby
         public string Copied;
         public int Quits;
 
-        public LobbyUiRig(LobbyCase scenario = LobbyCase.HappyPath, Func<bool> settingsOpen = null, Action<LobbyFlow> wire = null)
+        public LobbyUiRig(LobbyCase scenario = LobbyCase.HappyPath, Func<bool> settingsOpen = null, Action<LobbyFlow> wire = null,
+            LobbyOptions options = null)
         {
             Scenarios = new LobbyScenarios(Clock) { JoinDelay = 0.1f, LobbySeconds = 1, LoadingSeconds = 1, InGameSeconds = 1, EndingSeconds = 5, DropAfter = 0.2f };
             Scenarios.Use(scenario);
             var p = Scenarios.Ports;
             var account = new AccountSession(p, () => DateTime.UtcNow);
             Flow = new LobbyFlow(p, p, p, p, new JoinController(p, Clock, null, "Huy"), account, new RoomListModel(p, account),
-                null, new LeaderboardModel(p), new ApiStatusModel(p), Clock, null, Bus);
+                null, new LeaderboardModel(p), new ApiStatusModel(p), Clock, options, Bus);
             account.Username = "huycv"; // UI-02 round 2: login first, the flow starts on Home
             account.Password = "secret123";
             account.Submit();
@@ -119,6 +120,35 @@ namespace JungleMaze.Tests.PlayMode.Lobby
             Assert.AreEqual("huycv", m.AccountName.text);
             rig.Click(m.Quit);
             Assert.AreEqual(1, rig.Quits);
+        }
+
+        /// <summary>Review M1: "Bỏ qua đăng nhập (dev)" is hidden unless the dev option is on; with it, Login shows the
+        /// account-server error with Thử lại and the skip lands on Home in dev mode.</summary>
+        [UnityTest]
+        public IEnumerator DevSkip_HiddenByDefault_ShownInDev_ApiDownHasRetry()
+        {
+            using (var release = new LobbyUiRig())
+            {
+                yield return null;
+                Assert.IsFalse(release.Root.Login.DevSkip.gameObject.activeSelf, "release: no dev skip");
+            }
+            using var rig = new LobbyUiRig(options: new LobbyOptions { DevSkipLogin = true });
+            rig.Scenarios.Api.Configured = false;
+            yield return null;
+            rig.Click(rig.Root.MainMenu.Logout);
+            rig.Click(rig.Root.LogoutConfirm.Yes);
+            yield return null;
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.Login));
+            Assert.AreEqual(ApiMessages.NoApi, rig.Root.Login.ApiStatus.text);
+            Assert.IsTrue(rig.Root.Login.Retry.gameObject.activeInHierarchy, "Thử lại when the account server is down");
+            rig.Click(rig.Root.Login.DevSkip);
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.MainMenu));
+            Assert.AreEqual("Chế độ dev", rig.Root.MainMenu.AccountStatus.text);
+            rig.JoinForm();
+            rig.Click(rig.Root.JoinForm.Join);
+            yield return rig.Until(() => rig.Visible(rig.Root.Lobby), 2f, "lobby by room code without login");
         }
 
         /// <summary>Round 2: the join form is a modal over Home (Home drawn but inert), "Hủy" closes it; the server

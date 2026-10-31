@@ -703,6 +703,65 @@ namespace JungleMaze.Tests.Lobby
             Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen, "Quay lại returns to Home");
         }
 
+        /// <summary>Review M1: the dev skip works only when the composition turns it on (Editor/dev builds).</summary>
+        [Test]
+        public void DevSkip_OnlyWhenEnabled_JoinByCode_RoomsStillNeedLogin()
+        {
+            using (var release = new LobbyRig(login: false))
+            {
+                release.Flow.DevSkipLogin();
+                Assert.AreEqual(LobbyScreen.Login, release.Flow.Screen, "off by default: release has no way past Login");
+                Assert.IsFalse(LobbyOptions.Default.DevSkipLogin);
+            }
+            using var rig = new LobbyRig(o => o.DevSkipLogin = true, login: false);
+            rig.Flow.DevSkipLogin();
+            Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen);
+            Assert.IsTrue(rig.Flow.DevSkipped);
+            rig.Flow.OpenJoin();
+            rig.Join.SetCode("K7M2Q9");
+            Assert.IsTrue(rig.Flow.SubmitJoin(), "room code without an account");
+            Assert.AreEqual(1, rig.Commands.Joins);
+            rig.Flow.CancelJoin();
+            rig.Flow.Back();
+            rig.Flow.OpenRooms();
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen, "the room manager still needs a JWT");
+            Assert.IsFalse(rig.Flow.DevSkipped, "back on Login ends the dev skip");
+        }
+
+        /// <summary>Review m1: logout and JWT expiry forget the last account's history and last match.</summary>
+        [Test]
+        public void LogoutOrExpiry_ClearsHistoryAndLastMatch()
+        {
+            using var rig = new LobbyRig();
+            rig.InGame();
+            rig.Results.Current = rig.Result(MatchEndReason.LastAlive, 0, (0, 1, "Huy"), (1, 2, "Mai"));
+            rig.Phase(MatchPhase.Ending, 10);
+            Assert.AreEqual(LobbyScreen.Results, rig.Flow.Screen);
+            rig.Flow.GoHome();
+            rig.Connection.Set(NetworkState.Disconnected, DisconnectReason.UserRequested);
+            rig.Tick();
+            rig.History.Data.Add(new PlayerMatchHistory { MatchId = Guid.NewGuid(), EndedAt = DateTimeOffset.UtcNow });
+            rig.Flow.OpenHistory();
+            Assert.AreEqual(1, rig.Flow.History.Rows.Count);
+            rig.Flow.Back();
+            rig.Flow.RequestLogout();
+            rig.Flow.ConfirmLogout();
+            Assert.AreEqual(0, rig.Flow.History.Rows.Count, "no rows of the previous account");
+            Assert.AreEqual(ListState.Idle, rig.Flow.History.State);
+            rig.LogIn("mai01");
+            rig.Flow.OpenLatestLeaderboard();
+            Assert.AreEqual(Guid.Empty, rig.Flow.Leaderboard.MatchId, "neither the old history row nor the old result");
+
+            rig.Flow.Back();
+            rig.Flow.OpenHistory();
+            Assert.AreEqual(1, rig.Flow.History.Rows.Count);
+            rig.Flow.Back();
+            rig.Utc = rig.Utc.AddHours(2);
+            rig.Tick();
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen);
+            Assert.AreEqual(0, rig.Flow.History.Rows.Count, "expiry clears too");
+        }
+
         [Test]
         public void HomeLeaderboard_NoMatchYet_IsEmptyNotDown()
         {

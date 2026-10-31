@@ -191,6 +191,11 @@ namespace JungleMaze.EditorTools
             Set(v, "message", Txt(b, "Message", "", 24, 248, 352, 60, 15, TextAlignmentOptions.TopLeft, P.Yellow));
             Set(v, "submit", Btn(b, "Submit", "Đăng nhập", 24, 320, 352, true));
             Set(v, "advanced", Btn(b, "Advanced", "Máy chủ (nâng cao)", 24, 384, 352));
+            // Under the panel: account-server status with Thử lại (review M1), and the dev-only skip.
+            var r = (RectTransform)v.transform;
+            Set(v, "apiStatus", Txt(r, "ApiStatus", "", 440, 588, 400, 24, 14, TextAlignmentOptions.Center, P.Yellow));
+            Set(v, "retry", Btn(r, "Retry", "Thử lại", 440, 620, 192));
+            Set(v, "devSkip", Btn(r, "DevSkip", "Bỏ qua đăng nhập (dev)", 648, 620, 192, false, true));
             return v;
         }
 
