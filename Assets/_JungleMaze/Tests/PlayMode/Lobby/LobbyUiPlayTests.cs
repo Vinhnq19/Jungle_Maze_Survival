@@ -48,6 +48,9 @@ namespace JungleMaze.Tests.PlayMode.Lobby
             var account = new AccountSession(p, () => DateTime.UtcNow);
             Flow = new LobbyFlow(p, p, p, p, new JoinController(p, Clock, null, "Huy"), account, new RoomListModel(p, account),
                 null, new LeaderboardModel(p), new ApiStatusModel(p), Clock, null, Bus);
+            account.Username = "huycv"; // UI-02 round 2: login first, the flow starts on Home
+            account.Password = "secret123";
+            account.Submit();
             wire?.Invoke(Flow);
             Root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath)).GetComponent<LobbyUiRoot>();
             Presenter = new LobbyUiPresenter(Root, Flow, null, () => Quits++, code => Copied = code, settingsOpen);
@@ -98,20 +101,50 @@ namespace JungleMaze.Tests.PlayMode.Lobby
 
     public sealed class LobbyUiTimingTests
     {
+        /// <summary>Round 2: Home after login within 1 s, six buttons, the account card shows who is logged in.</summary>
         [UnityTest]
-        public IEnumerator MainMenuWithin1s_FiveButtons_NoLogin()
+        public IEnumerator HomeWithin1s_SixButtons_AccountCard()
         {
             var start = Time.realtimeSinceStartupAsDouble;
             using var rig = new LobbyUiRig();
             yield return null;
             Assert.Less(Time.realtimeSinceStartupAsDouble - start, 1.0, "AC1 ≤ 1 s");
             Assert.IsTrue(rig.Visible(rig.Root.MainMenu));
-            Assert.IsFalse(rig.Visible(rig.Root.Login), "no login before the menu");
-            var labels = new[] { rig.Root.MainMenu.Join, rig.Root.MainMenu.Rooms, rig.Root.MainMenu.History, rig.Root.MainMenu.Settings, rig.Root.MainMenu.Quit }
+            Assert.IsFalse(rig.Visible(rig.Root.Login), "logged in: no login screen");
+            var m = rig.Root.MainMenu;
+            var labels = new[] { m.Join, m.Rooms, m.History, m.Leaderboard, m.Settings, m.Quit }
                 .Select(b => b.GetComponentInChildren<TMP_Text>().text).ToArray();
-            CollectionAssert.AreEqual(new[] { "Vào phòng", "Quản lý phòng", "Lịch sử", "Cài đặt", "Thoát" }, labels);
-            rig.Click(rig.Root.MainMenu.Quit);
+            CollectionAssert.AreEqual(new[] { "Vào phòng", "Tạo phòng", "Lịch sử", "Bảng xếp hạng", "Cài đặt", "Thoát" }, labels);
+            Assert.AreEqual("Đã đăng nhập", m.AccountStatus.text);
+            Assert.AreEqual("huycv", m.AccountName.text);
+            rig.Click(m.Quit);
             Assert.AreEqual(1, rig.Quits);
+        }
+
+        /// <summary>Round 2: the join form is a modal over Home (Home drawn but inert), "Hủy" closes it; the server
+        /// settings modal opens from "Cài đặt" with the endpoint fields and closes with "Đóng".</summary>
+        [UnityTest]
+        public IEnumerator JoinModal_OverHome_ServerSettingsModal()
+        {
+            using var rig = new LobbyUiRig();
+            yield return null;
+            rig.JoinForm();
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.JoinForm));
+            Assert.AreEqual(1f, rig.Root.MainMenu.Group.alpha, "Home stays drawn under the modal");
+            Assert.IsFalse(rig.Root.MainMenu.Group.blocksRaycasts, "but takes no clicks");
+            StringAssert.Contains("huycv", rig.Root.JoinForm.Hint.text);
+            Assert.AreEqual("Hủy", rig.Root.JoinForm.Back.GetComponentInChildren<TMP_Text>().text);
+            rig.Click(rig.Root.JoinForm.Back);
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.MainMenu));
+            rig.Click(rig.Root.MainMenu.Settings);
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.ServerSettings));
+            Assert.IsTrue(rig.Root.ServerSettings.Host.gameObject.activeInHierarchy);
+            rig.Click(rig.Root.ServerSettings.Close);
+            yield return null;
+            Assert.IsFalse(rig.Visible(rig.Root.ServerSettings));
         }
 
         [UnityTest]
@@ -233,23 +266,33 @@ namespace JungleMaze.Tests.PlayMode.Lobby
             Assert.IsFalse(rig.Root.Canvas.enabled, "UI-02 hidden in the match");
         }
 
+        /// <summary>Round 2: logout asks first and lands on Login (no back button there); login lands on Home; "Tạo
+        /// phòng" opens the room manager, which has no logout of its own; "Vào" uses the RoomCode path (AC18).</summary>
         [UnityTest]
-        public IEnumerator GuestNeverSeesCreateDelete_JoinThisRoom()
+        public IEnumerator Logout_Confirm_Login_Rooms_JoinThisRoom()
         {
             using var rig = new LobbyUiRig();
             yield return null;
-            Assert.IsFalse(rig.Visible(rig.Root.RoomManager));
-            rig.JoinForm();
+            rig.Click(rig.Root.MainMenu.Logout);
             yield return null;
-            Assert.IsFalse(rig.Visible(rig.Root.RoomManager), "no create/delete on the guest path (AC19)");
-            rig.Click(rig.Root.JoinForm.Back);
-            rig.Click(rig.Root.MainMenu.Rooms);
+            Assert.IsTrue(rig.Visible(rig.Root.LogoutConfirm), "asks first");
+            rig.Click(rig.Root.LogoutConfirm.No);
             yield return null;
-            Assert.IsTrue(rig.Visible(rig.Root.Login), "room manager needs login");
+            Assert.IsFalse(rig.Visible(rig.Root.LogoutConfirm));
+            Assert.IsTrue(rig.Flow.Account.IsValid, "Hủy keeps the session");
+            rig.Click(rig.Root.MainMenu.Logout);
+            rig.Click(rig.Root.LogoutConfirm.Yes);
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.Login), "logout lands on Login");
+            Assert.IsFalse(rig.Visible(rig.Root.LogoutConfirm));
+            Assert.IsTrue(rig.Root.Login.Advanced.gameObject.activeInHierarchy, "server settings reachable before login");
             rig.Root.Login.Username.text = "huycv";
             rig.Root.Login.Password.text = "secret123";
             rig.Click(rig.Root.Login.Submit);
             Assert.AreEqual("", rig.Root.Login.Password.text, "password field cleared");
+            yield return null;
+            Assert.IsTrue(rig.Visible(rig.Root.MainMenu), "login lands on Home");
+            rig.Click(rig.Root.MainMenu.Rooms);
             yield return null;
             Assert.IsTrue(rig.Visible(rig.Root.RoomManager));
             var own = rig.Root.RoomManager.Rows.First(r => r.gameObject.activeSelf && r.Delete.gameObject.activeSelf);
@@ -281,6 +324,10 @@ namespace JungleMaze.Tests.PlayMode.Lobby
                 Assert.AreEqual(1, Object.FindObjectsByType<EventSystem>(FindObjectsSortMode.None).Length, "menu");
                 rig.Click(rig.Root.MainMenu.Settings);
                 yield return null;
+                Assert.IsTrue(rig.Visible(rig.Root.ServerSettings), "round 2: Cài đặt opens the server modal first");
+                rig.Click(rig.Root.ServerSettings.Audio);
+                yield return null;
+                Assert.IsFalse(rig.Visible(rig.Root.ServerSettings));
                 Assert.IsTrue(menu.IsOpen && menu.FromMainMenu);
                 Assert.IsTrue(overlay.Canvas.enabled, "overlay canvas on outside a match");
                 Assert.IsFalse(overlay.Menu.Leave.gameObject.activeSelf, "no leave row from the main menu");

@@ -7,16 +7,16 @@ using UnityEngine;
 namespace JungleMaze.Presentation.UI.MatchOverlay
 {
     /// <summary>
-    /// G-11: while spectating, the local player's Vitals and Quick bar (UI-01) are switched off; Minimap and match
-    /// status stay. Touches only the two root GameObjects through <see cref="HudRoot"/>'s public getters, and puts back
-    /// exactly what it switched off. No change in UI-01 code.
+    /// UI-02 round 2 (UX review, replaces G-11): while the killcam or the spectator view is up, the whole UI-01 HUD
+    /// canvas is switched off so nothing of the local player's HUD sits under those overlays. Touches only the canvas
+    /// found from <see cref="HudRoot"/>, and turns back on exactly what it turned off. No change in UI-01 code.
     /// </summary>
     public sealed class HudSpectatorMask : IDisposable
     {
         private readonly MatchOverlayFlow _flow;
         private readonly Func<HudRoot> _findHud;
         private readonly Action<MatchOverlayPhase> _onPhase;
-        private GameObject _vitals, _quickbar;
+        private Canvas _canvas;
 
         public HudSpectatorMask(MatchOverlayFlow flow, Func<HudRoot> findHud = null)
         {
@@ -26,7 +26,7 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             _flow.PhaseChanged += _onPhase;
         }
 
-        public bool Masking => _vitals != null || _quickbar != null;
+        public bool Masking => _canvas != null;
 
         public void Dispose()
         {
@@ -36,30 +36,24 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
 
         private void OnPhase(MatchOverlayPhase phase)
         {
-            if (phase == MatchOverlayPhase.Spectating) Mask();
+            if (phase == MatchOverlayPhase.Killcam || phase == MatchOverlayPhase.Spectating) Mask();
             else Restore();
         }
 
         private void Mask()
         {
+            if (_canvas != null) return;
             var hud = _findHud();
-            if (hud == null) return;
-            _vitals = Hide(hud.Vitals != null ? hud.Vitals.gameObject : null);
-            _quickbar = Hide(hud.Quickbar != null ? hud.Quickbar.gameObject : null);
+            var canvas = hud != null ? hud.GetComponentInParent<Canvas>(true) : null;
+            if (canvas == null || !canvas.enabled) return;
+            canvas.enabled = false;
+            _canvas = canvas;
         }
 
         private void Restore()
         {
-            if (_vitals != null) _vitals.SetActive(true);
-            if (_quickbar != null) _quickbar.SetActive(true);
-            _vitals = _quickbar = null;
-        }
-
-        private static GameObject Hide(GameObject go)
-        {
-            if (go == null || !go.activeSelf) return null;
-            go.SetActive(false);
-            return go;
+            if (_canvas != null) _canvas.enabled = true;
+            _canvas = null;
         }
     }
 }

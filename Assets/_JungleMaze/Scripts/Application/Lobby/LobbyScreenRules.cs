@@ -7,7 +7,7 @@ namespace JungleMaze.App.Lobby
     /// <summary>
     /// Pure screen rules (decision 2 of the plan). The screen follows the server phase and the connection; nothing here
     /// changes <see cref="MatchPhase"/>, ranks or the countdown (AC43). Every network failure lands on a screen that
-    /// has a "Về menu" button (AC40).
+    /// has a "Về trang chủ" button (AC40).
     /// </summary>
     public static class LobbyScreenRules
     {
@@ -15,7 +15,7 @@ namespace JungleMaze.App.Lobby
         public const string LoadMapError = "Dữ liệu bản đồ không khớp";
         public const string LoadLost = "Mất kết nối khi đang tải";
         public const string LoadKicked = "Bạn bị loại vì chưa tải xong trong 30 giây";
-        public const string LoadStuck = "Tải trận quá lâu, hãy về menu và thử lại";
+        public const string LoadStuck = "Tải trận quá lâu, hãy về trang chủ và thử lại";
 
         /// <summary>Main menu and its own sub-screens: no connection involved.</summary>
         public static bool IsMenu(LobbyScreen s) => s <= LobbyScreen.Settings;

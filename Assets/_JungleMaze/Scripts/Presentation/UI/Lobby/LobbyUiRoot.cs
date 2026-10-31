@@ -24,6 +24,8 @@ namespace JungleMaze.Presentation.UI.Lobby
         [SerializeField] private ResultsView results;
         [SerializeField] private ReconnectView reconnect;
         [SerializeField] private NoticeView notice;
+        [SerializeField] private LogoutConfirmView logoutConfirm;
+        [SerializeField] private ServerSettingsView serverSettings;
 
         public Canvas Canvas => canvas;
         public GameObject Backdrop => backdrop;
@@ -39,6 +41,9 @@ namespace JungleMaze.Presentation.UI.Lobby
         public ResultsView Results => results;
         public ReconnectView Reconnect => reconnect;
         public NoticeView Notice => notice;
+        /// <summary>Modals over Home/Login; not in <see cref="Panels"/>, shown from the flow flags.</summary>
+        public LogoutConfirmView LogoutConfirm => logoutConfirm;
+        public ServerSettingsView ServerSettings => serverSettings;
         public LobbyUiPresenter Presenter { get; private set; }
 
         public LobbyPanelView[] Panels => new LobbyPanelView[]

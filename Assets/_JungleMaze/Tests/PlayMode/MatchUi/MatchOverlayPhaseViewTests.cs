@@ -226,25 +226,27 @@ namespace JungleMaze.Tests.PlayMode.MatchUi
             Assert.AreEqual(0.5f, KillcamView.HpFraction(50, 100), 1e-6f);
         }
 
-        // AC29: Vitals and Quick bar off while spectating, Minimap and match status untouched, all back afterwards.
+        // AC29 as changed by UI-02 round 2 (UX review): the whole HUD canvas is off during killcam and spectating, on
+        // while eliminated, and back on afterwards.
         [Test]
-        public void HudMask_HidesVitalsAndQuickbarOnly()
+        public void HudMask_TurnsHudCanvasOff_InKillcamAndSpectator()
         {
-            Build(false);
+            Build(true);
             var hud = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_JungleMaze/Prefabs/UI/Hud.prefab")).GetComponent<HudRoot>();
+            var canvas = hud.GetComponentInParent<Canvas>(true);
             try
             {
                 var mask = new HudSpectatorMask(_flow, () => hud);
                 Eliminate(EliminationCause.Player);
-                Assert.IsTrue(hud.Vitals.gameObject.activeSelf, "not while eliminated");
+                Assert.AreEqual(MatchOverlayPhase.Killcam, _flow.Phase);
+                Assert.IsFalse(canvas.enabled, "off under the killcam");
+                _root.Killcam.Skip.onClick.Invoke();
+                Assert.IsTrue(canvas.enabled, "on while eliminated");
                 _flow.Spectate();
-                Assert.IsFalse(hud.Vitals.gameObject.activeSelf);
-                Assert.IsFalse(hud.Quickbar.gameObject.activeSelf);
-                Assert.IsTrue(hud.Minimap.gameObject.activeSelf);
-                Assert.IsTrue(hud.MatchStatus.gameObject.activeSelf);
+                Assert.IsFalse(canvas.enabled, "off while spectating");
+                Assert.IsTrue(hud.Vitals.gameObject.activeSelf, "nothing inside the HUD is touched");
                 _bus.Publish(new AppScreenChanged(AppScreen.InMatch, AppScreen.Results, null));
-                Assert.IsTrue(hud.Vitals.gameObject.activeSelf);
-                Assert.IsTrue(hud.Quickbar.gameObject.activeSelf);
+                Assert.IsTrue(canvas.enabled);
                 mask.Dispose();
             }
             finally { Object.DestroyImmediate(hud.gameObject); }

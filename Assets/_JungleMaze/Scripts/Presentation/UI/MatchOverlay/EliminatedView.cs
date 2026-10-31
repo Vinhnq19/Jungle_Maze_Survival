@@ -23,11 +23,10 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         [SerializeField] private TMP_Text blockedReason;
         [SerializeField] private Button home;
         [SerializeField] private Button spectate;
-        [Tooltip("Icon left of the centred cause line; the line keeps a left margin for it.")]
+        [Tooltip("Icon left of the cause text; both sit in a centred Horizontal Layout Group (UX review).")]
         [SerializeField] private Image causeIcon;
         [Tooltip("Sprite per EliminationCause: Unknown, Player, Zone, LeftMatch, Disconnected.")]
         [SerializeField] private Sprite[] causeIcons = new Sprite[5];
-        [SerializeField] private float causeIconGap = 8f;
 
         public CanvasGroup Group => group;
         public RectTransform Frame => frame;
@@ -56,15 +55,15 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
             Line(blockedReason, available ? null : reason);
         }
 
-        // Once per elimination: picks the cause sprite and puts the icon just left of the rendered text.
+        // Once per elimination: picks the cause sprite; the layout group places icon + text, rebuilt now so it is
+        // right on the first frame.
         private void PlaceCauseIcon(EliminationCause value)
         {
             if (causeIcon == null || cause == null || causeIcons == null || causeIcons.Length == 0) return;
             var index = (int)value;
             causeIcon.sprite = index < causeIcons.Length && causeIcons[index] != null ? causeIcons[index] : causeIcons[0];
-            cause.ForceMeshUpdate(true);
-            var r = causeIcon.rectTransform;
-            r.anchoredPosition = new Vector2(cause.textBounds.min.x - causeIconGap, r.anchoredPosition.y);
+            causeIcon.gameObject.SetActive(cause.gameObject.activeSelf);
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)cause.transform.parent);
         }
 
         private static void Line(TMP_Text text, string value)

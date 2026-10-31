@@ -76,10 +76,10 @@ namespace JungleMaze.EditorTools
                 new HistoryModel(hist, () => account.IsValid ? account.Token : null, () => true, options), new LeaderboardModel(p),
                 new ApiStatusModel(p), clock, options);
             var presenter = new LobbyUiPresenter(root, flow, null, () => { }, _ => { }, null);
-            root.MainMenu.Host.text = "127.0.0.1";
-            root.MainMenu.Port.text = "7777";
-            root.MainMenu.Api.text = "http://127.0.0.1:5000";
-            root.MainMenu.EndpointStatus.text = "Profile phase2-local";
+            root.ServerSettings.Host.text = "127.0.0.1";
+            root.ServerSettings.Port.text = "7777";
+            root.ServerSettings.Api.text = "http://127.0.0.1:5000";
+            root.ServerSettings.Status.text = "Profile phase2-local";
             void Shot(string name) { flow.Tick(0.016f); presenter.Tick(); s.Dump(name); }
             void Slots()
             {
@@ -102,15 +102,17 @@ namespace JungleMaze.EditorTools
                 sc.Connection.Set(NetworkState.Joined); sc.Lobby.MatchId = Guid.NewGuid(); sc.Lobby.ServerTick = 1000; Slots();
             }
 
+            account.Username = "huycv"; account.Password = "secret123"; account.Submit(); // UI-02 round 2: login first
             Shot("01_main-menu");
             flow.OpenJoin(); flow.Join.SetName("Huy"); flow.Join.SetCode("K7M2Q9"); Shot("02_join-form");
             flow.Join.SetCode("K7M2QO"); root.JoinForm.RoomCode.SetTextWithoutNotify("K7M2QO"); Shot("03_join-form-invalid-code");
             flow.Join.SetCode("K7M2Q9"); root.JoinForm.RoomCode.SetTextWithoutNotify("K7M2Q9"); flow.Join.Rejected(DisconnectReason.RoomFull); Shot("04_join-rejected-room-full");
             flow.SubmitJoin(); sc.Connection.Set(NetworkState.Connecting); sc.Connection.Step = "UDP"; Shot("05_connecting");
             flow.CancelJoin(); sc.Connection.Set(NetworkState.Disconnected); flow.Back(); flow.Tick(0.016f); presenter.Tick();
-            flow.OpenRooms(); presenter.Tick(); root.Login.Username.text = "huycv"; Shot("06_login");
+            flow.RequestLogout(); flow.ConfirmLogout(); presenter.Tick(); root.Login.Username.text = "huycv"; Shot("06_login");
             account.RegisterMode = true; account.Username = "huycv"; account.Password = "abc"; account.Submit(); Shot("07_register-validation");
-            account.RegisterMode = false; sc.Api.SeedRooms(2); account.Username = "huycv"; account.Password = "secret123"; account.Submit(); Shot("08_room-manager");
+            account.RegisterMode = false; sc.Api.SeedRooms(2); account.Username = "huycv"; account.Password = "secret123"; account.Submit();
+            flow.OpenRooms(); Shot("08_room-manager");
             var ownId = Guid.Empty;
             foreach (var r in flow.Rooms.Rooms) if (!r.IsDefault) { ownId = r.Id; break; }
             flow.Rooms.RequestDelete(ownId); Shot("09_room-delete-confirm");

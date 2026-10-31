@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace JungleMaze.Presentation.UI.Lobby
 {
-    /// <summary>Room manager (v1 8:124 layout): list with states, create form, one-step delete confirm (AC14–AC16). References only.</summary>
+    /// <summary>Room manager (v1 8:124 layout): list with states, create form, one-step delete confirm (AC14–AC16); logout moved to the Home account card. References only.</summary>
     public sealed class RoomManagerView : LobbyPanelView
     {
         [SerializeField] private TMP_Text state;
@@ -13,7 +13,6 @@ namespace JungleMaze.Presentation.UI.Lobby
         [SerializeField] private Button create;
         [SerializeField] private Button retry;
         [SerializeField] private Button back;
-        [SerializeField] private Button logout;
         [SerializeField] private CanvasGroup confirmGroup;
         [SerializeField] private TMP_Text confirmText;
         [SerializeField] private Button confirmYes;
@@ -26,7 +25,6 @@ namespace JungleMaze.Presentation.UI.Lobby
         public Button Create => create;
         public Button Retry => retry;
         public Button Back => back;
-        public Button Logout => logout;
         public CanvasGroup ConfirmGroup => confirmGroup;
         public TMP_Text ConfirmText => confirmText;
         public Button ConfirmYes => confirmYes;

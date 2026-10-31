@@ -31,7 +31,8 @@ namespace JungleMaze.Tests.Lobby
         public readonly LobbyFlow Flow;
         public string Cause;
 
-        public LobbyRig(Action<LobbyOptions> configure = null)
+        /// <param name="login">UI-02 round 2 starts on Login; by default the rig logs in so the flow sits on Home.</param>
+        public LobbyRig(Action<LobbyOptions> configure = null, bool login = true)
         {
             configure?.Invoke(Options);
             Api.UtcNow = () => Utc;
@@ -41,6 +42,16 @@ namespace JungleMaze.Tests.Lobby
             Flow = new LobbyFlow(Lobby, Results, Connection, Commands, Join, Account, Rooms,
                 new HistoryModel(History, () => Account.IsValid ? Account.Token : null, () => Api.Configured, Options, 200),
                 new LeaderboardModel(Api), new ApiStatusModel(Api), Clock.Read, Options, Bus, () => Cause);
+            if (!login) return;
+            LogIn();
+            Api.Logins = 0; // tests count API calls from here on
+        }
+
+        public void LogIn(string user = "huycv")
+        {
+            Account.Username = user;
+            Account.Password = "secret123";
+            Account.Submit();
         }
 
         public void Tick(int frames = 1)

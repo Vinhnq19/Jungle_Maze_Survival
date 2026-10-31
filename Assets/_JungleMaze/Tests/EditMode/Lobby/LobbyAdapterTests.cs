@@ -160,6 +160,9 @@ namespace JungleMaze.Tests.Lobby
             var account = new AccountSession(p, () => DateTime.UtcNow);
             var flow = new LobbyFlow(p, p, p, p, new JoinController(p, clock.Read, null, "Huy"), account, new RoomListModel(p, account),
                 null, new LeaderboardModel(p), new ApiStatusModel(p), clock.Read);
+            account.Username = "huycv"; // UI-02 round 2: login first
+            account.Password = "secret123";
+            account.Submit();
             return (s, flow, clock);
         }
 

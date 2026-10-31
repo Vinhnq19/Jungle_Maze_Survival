@@ -14,7 +14,8 @@ namespace JungleMaze.Presentation.UI.Lobby
     /// Connects <see cref="LobbyFlow"/> to the prefab panels. Buttons call the flow; each frame the visible panel is
     /// re-read and redrawn only when its data changed. One panel per <see cref="LobbyScreen"/>, swapped by CanvasGroup
     /// in the frame the screen changes; the canvas is off while the match runs (HUD and UI-03 own that screen).
-    /// The endpoint picker reuses <see cref="ConnectionMenuPresenter"/> as is (T-2).
+    /// The join form is a modal over Home; logout confirm and server settings are modals driven by the flow flags.
+    /// The endpoint picker (now in the server-settings modal) reuses <see cref="ConnectionMenuPresenter"/> as is (T-2).
     /// </summary>
     public sealed class LobbyUiPresenter : IDisposable
     {
@@ -32,6 +33,7 @@ namespace JungleMaze.Presentation.UI.Lobby
         private readonly UnityAction[] _unbind;
         private LobbyScreen _shown = (LobbyScreen)255;
         private int _drawnKey = int.MinValue;
+        private bool _serverShown;
 
         public LobbyUiPresenter(LobbyUiRoot root, LobbyFlow flow, ConnectionMenuPresenter menu = null, Action quit = null,
             Action<string> copy = null, Func<bool> settingsOpen = null)
@@ -58,6 +60,7 @@ namespace JungleMaze.Presentation.UI.Lobby
             if (screen != _shown) SwapPanels(screen);
             if (screen == LobbyScreen.Settings && _settingsOpen != null && !_settingsOpen()) _flow.SettingsClosed();
             Redraw(screen);
+            DrawModals();
         }
 
         public void Dispose()
@@ -99,6 +102,7 @@ namespace JungleMaze.Presentation.UI.Lobby
         {
             var target = PanelFor(_root, screen);
             foreach (var panel in _root.Panels) panel.Show(panel == target);
+            if (screen == LobbyScreen.JoinForm) _root.MainMenu.ShowUnder(); // modal over Home, behind its scrim
             if (_root.Canvas != null) _root.Canvas.enabled = screen != LobbyScreen.InGame;
             if (_root.Backdrop != null) _root.Backdrop.SetActive(LobbyScreenRules.IsMenu(screen));
             _shown = screen;
@@ -116,6 +120,8 @@ namespace JungleMaze.Presentation.UI.Lobby
                 case LobbyScreen.JoinForm:
                     _root.JoinForm.DisplayName.SetTextWithoutNotify(_flow.Join.DisplayName);
                     _root.JoinForm.RoomCode.SetTextWithoutNotify(_flow.Join.RoomCode);
+                    var user = _flow.Account?.Username?.Trim();
+                    _root.JoinForm.Hint.text = string.IsNullOrEmpty(user) ? "" : "Vào bằng tài khoản " + user + " · tên hiển thị lấy từ tài khoản";
                     break;
                 case LobbyScreen.Login:
                     _root.Login.Username.SetTextWithoutNotify(_flow.Account?.Username ?? "");
@@ -158,11 +164,28 @@ namespace JungleMaze.Presentation.UI.Lobby
         {
             var v = _root.MainMenu;
             var api = _flow.Api?.Text ?? ApiMessages.NoApi;
-            var status = _menu?.Status ?? "";
-            if (!Changed(Hash(api, status))) return;
+            var user = _flow.Account?.Username?.Trim() ?? "";
+            if (!Changed(Hash(api, user))) return;
             v.ApiStatus.text = api;
-            v.EndpointStatus.text = status;
+            v.AccountStatus.text = "Đã đăng nhập";
+            v.AccountName.text = user;
             v.Join.interactable = true; // AC3: never blocked by the API
+        }
+
+        private void DrawModals()
+        {
+            var r = _root;
+            r.LogoutConfirm.Show(_flow.LogoutConfirmOpen);
+            if (_flow.LogoutConfirmOpen) r.LogoutConfirm.Text.text = "Đăng xuất khỏi " + (_flow.Account?.Username?.Trim() ?? "") + "?";
+            var open = _flow.ServerSettingsOpen;
+            if (open != _serverShown)
+            {
+                _serverShown = open;
+                r.ServerSettings.Show(open);
+                if (open) FillEndpointFields();
+                r.ServerSettings.Audio.gameObject.SetActive(_flow.Screen == LobbyScreen.MainMenu && _flow.OpenSettingsPanel != null);
+            }
+            if (open) r.ServerSettings.Status.text = _menu?.Status ?? "";
         }
 
         private void DrawJoin()
@@ -192,6 +215,7 @@ namespace JungleMaze.Presentation.UI.Lobby
             if (a == null || !Changed(Hash(a.Message, a.RegisterMode ? 1 : 0, a.Busy ? 1 : 0))) return;
             var v = _root.Login;
             v.Title.text = a.RegisterMode ? "Đăng ký" : "Đăng nhập";
+            v.SetTab(a.RegisterMode);
             v.Message.text = a.Message;
             v.Submit.interactable = !a.Busy;
             SetLabel(v.Submit, a.RegisterMode ? "Đăng ký" : "Đăng nhập");
@@ -387,9 +411,15 @@ namespace JungleMaze.Presentation.UI.Lobby
             On(r.MainMenu.Join, f.OpenJoin);
             On(r.MainMenu.Rooms, f.OpenRooms);
             On(r.MainMenu.History, f.OpenHistory);
-            On(r.MainMenu.Settings, f.OpenSettings);
+            On(r.MainMenu.Leaderboard, f.OpenLatestLeaderboard);
+            On(r.MainMenu.Settings, f.OpenServerSettings);
             On(r.MainMenu.Quit, () => _quit());
-            On(r.MainMenu.SaveEndpoint, SaveEndpoint);
+            On(r.MainMenu.Logout, f.RequestLogout);
+            On(r.LogoutConfirm.Yes, f.ConfirmLogout);
+            On(r.LogoutConfirm.No, f.CancelLogout);
+            On(r.ServerSettings.Save, SaveEndpoint);
+            On(r.ServerSettings.Audio, f.OpenSettings);
+            On(r.ServerSettings.Close, f.CloseServerSettings);
             On(r.JoinForm.Join, () => f.SubmitJoin());
             On(r.JoinForm.Retry, () => f.SubmitJoin());
             On(r.JoinForm.Back, f.Back);
@@ -397,11 +427,10 @@ namespace JungleMaze.Presentation.UI.Lobby
             On(r.Login.LoginTab, () => { if (f.Account != null) f.Account.RegisterMode = false; _drawnKey = int.MinValue; });
             On(r.Login.RegisterTab, () => { if (f.Account != null) f.Account.RegisterMode = true; _drawnKey = int.MinValue; });
             On(r.Login.Submit, SubmitLogin);
-            On(r.Login.Back, f.Back);
+            On(r.Login.Advanced, f.OpenServerSettings);
             On(r.RoomManager.Create, CreateRoom);
             On(r.RoomManager.Retry, () => f.Rooms?.Refresh());
             On(r.RoomManager.Back, f.Back);
-            On(r.RoomManager.Logout, () => { f.Account?.Logout(); f.Rooms?.Clear(); f.Back(); });
             On(r.RoomManager.ConfirmYes, () => f.Rooms?.ConfirmDelete());
             On(r.RoomManager.ConfirmNo, () => f.Rooms?.CancelDelete());
             for (var i = 0; i < r.RoomManager.Rows.Length; i++)
@@ -451,8 +480,7 @@ namespace JungleMaze.Presentation.UI.Lobby
                 l.Username.onValueChanged.AddListener(t => _flow.Account.Username = t);
                 l.Password.onValueChanged.AddListener(t => _flow.Account.Password = t);
             }
-            var m = _root.MainMenu;
-            if (_menu != null) m.Profile.onValueChanged.AddListener(SelectProfile);
+            if (_menu != null) _root.ServerSettings.Profile.onValueChanged.AddListener(SelectProfile);
         }
 
         private void SubmitLogin()
@@ -490,7 +518,7 @@ namespace JungleMaze.Presentation.UI.Lobby
 
         private void FillEndpoint()
         {
-            var m = _root.MainMenu;
+            var m = _root.ServerSettings;
             if (_menu == null)
             {
                 m.Profile.gameObject.SetActive(false);
@@ -514,7 +542,7 @@ namespace JungleMaze.Presentation.UI.Lobby
         private void SaveEndpoint()
         {
             if (_menu == null) return;
-            var m = _root.MainMenu;
+            var m = _root.ServerSettings;
             _menu.Host = m.Host.text;
             _menu.Port = m.Port.text;
             _menu.ApiBaseUrl = m.Api.text;
@@ -524,7 +552,8 @@ namespace JungleMaze.Presentation.UI.Lobby
 
         private void FillEndpointFields()
         {
-            var m = _root.MainMenu;
+            if (_menu == null) return;
+            var m = _root.ServerSettings;
             m.Host.SetTextWithoutNotify(_menu.Host ?? "");
             m.Port.SetTextWithoutNotify(_menu.Port ?? "");
             m.Api.SetTextWithoutNotify(_menu.ApiBaseUrl ?? "");

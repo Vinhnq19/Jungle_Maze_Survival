@@ -12,6 +12,8 @@ namespace JungleMaze.App.Lobby
     /// UI-02 screen machine (plan 4.1). Menu sub-screens are UI-02's own state inside <c>AppScreen.MainMenu</c> (G-2);
     /// connected screens are derived every tick from the server phase and the connection (decision 2). Each command is
     /// sent once per press (decision 4), and <see cref="LeaveMatchRequested"/> from UI-03 is handled here (N7).
+    /// Round 2 (Flow_Proposal 6): login comes first; without a valid JWT every menu screen falls back to Login, and
+    /// joining is blocked on the client only (the server-side JWT check belongs to NET-01).
     /// </summary>
     public sealed class LobbyFlow : ITickable, IDisposable
     {
@@ -26,7 +28,8 @@ namespace JungleMaze.App.Lobby
         private readonly OnceGate _gate = new OnceGate();
         private LobbyScreen _leaderboardReturn = LobbyScreen.History;
         private double _loadingSince;
-        private bool _sawConnect, _leaving;
+        private bool _sawConnect, _leaving, _roomsAfterLogin;
+        private Guid _lastMatchId;
 
         public LobbyFlow(ILobbySource lobby, IMatchResultSource results, IConnectionStateSource connection,
             ILobbyCommands commands, JoinController join, AccountSession account, RoomListModel rooms,
@@ -52,9 +55,17 @@ namespace JungleMaze.App.Lobby
             _bus?.Subscribe(_onLeaveMatch);
             if (Account != null) Account.LoggedIn += OnLoggedIn;
             if (Rooms != null) Rooms.AuthExpired += OnAuthExpired;
+            Screen = HomeScreen;
         }
 
-        public LobbyScreen Screen { get; private set; } = LobbyScreen.MainMenu;
+        public LobbyScreen Screen { get; private set; }
+        public bool LogoutConfirmOpen { get; private set; }
+        public bool ServerSettingsOpen { get; private set; }
+
+        /// <summary>Home when a JWT is valid, otherwise Login. No account service (old rigs) means no gate.</summary>
+        public LobbyScreen HomeScreen => NeedsLogin ? LobbyScreen.Login : LobbyScreen.MainMenu;
+
+        private bool NeedsLogin => Account != null && Account.Token == null;
         public string Notice { get; private set; } = "";
         public string LoadErrorText { get; private set; } = "";
         public bool ReplayPending { get; private set; }
@@ -94,13 +105,18 @@ namespace JungleMaze.App.Lobby
 
         // ---- menu navigation -------------------------------------------------------------------------------------
 
-        public void OpenJoin() => Go(LobbyScreen.JoinForm);
+        /// <summary>"Vào phòng": a modal over Home; without a JWT it goes to Login instead.</summary>
+        public void OpenJoin()
+        {
+            if (NeedsLogin) { Go(LobbyScreen.Login); return; }
+            Go(LobbyScreen.JoinForm);
+        }
 
-        /// <summary>"Quản lý phòng": login first unless a valid JWT is in memory (AC12, AC17).</summary>
+        /// <summary>"Tạo phòng": login first unless a valid JWT is in memory (AC12, AC17).</summary>
         public void OpenRooms()
         {
             if (Account == null || Rooms == null) return;
-            if (Account.Token == null) { Go(LobbyScreen.Login); return; }
+            if (Account.Token == null) { _roomsAfterLogin = true; Go(LobbyScreen.Login); return; }
             Go(LobbyScreen.RoomManager);
             Rooms.Refresh();
         }
@@ -119,15 +135,54 @@ namespace JungleMaze.App.Lobby
             Leaderboard.Load(matchId);
         }
 
+        /// <summary>Home "Bảng xếp hạng": the newest match in history, else the last result seen this session.</summary>
+        public void OpenLatestLeaderboard()
+        {
+            var latest = _lastMatchId;
+            var newest = DateTimeOffset.MinValue;
+            if (History != null)
+                foreach (var row in History.Rows)
+                    if (row.EndedAt > newest) { newest = row.EndedAt; latest = row.MatchId; }
+            OpenLeaderboard(latest);
+        }
+
+        /// <summary>Logout on the account card asks first; confirming drops the JWT and lands on Login.</summary>
+        public void RequestLogout()
+        {
+            if (Account != null && Screen == LobbyScreen.MainMenu) LogoutConfirmOpen = true;
+        }
+
+        public void CancelLogout() => LogoutConfirmOpen = false;
+
+        public void ConfirmLogout()
+        {
+            if (!LogoutConfirmOpen) return;
+            LogoutConfirmOpen = false;
+            _roomsAfterLogin = false;
+            Account.Logout();
+            Rooms?.Clear();
+            Go(LobbyScreen.Login);
+        }
+
+        /// <summary>"Cài đặt" on Home and "Máy chủ (nâng cao)" on Login: host, port and API in a modal.</summary>
+        public void OpenServerSettings()
+        {
+            if (Screen == LobbyScreen.MainMenu || Screen == LobbyScreen.Login) ServerSettingsOpen = true;
+        }
+
+        public void CloseServerSettings() => ServerSettingsOpen = false;
+
+        /// <summary>Audio/controls: the UI-03 settings panel, reached from the server-settings modal on Home.</summary>
         public void OpenSettings()
         {
+            ServerSettingsOpen = false;
             Go(LobbyScreen.Settings);
             OpenSettingsPanel?.Invoke();
         }
 
         public void SettingsClosed()
         {
-            if (Screen == LobbyScreen.Settings) Go(LobbyScreen.MainMenu);
+            if (Screen == LobbyScreen.Settings) Go(HomeScreen);
         }
 
         /// <summary>"Quay lại" on menu sub-screens. Connected screens use <see cref="GoHome"/>.</summary>
@@ -138,24 +193,27 @@ namespace JungleMaze.App.Lobby
                 case LobbyScreen.Leaderboard: Go(_leaderboardReturn); break;
                 case LobbyScreen.Connecting: CancelJoin(); break;
                 default:
-                    if (LobbyScreenRules.IsMenu(Screen)) Go(LobbyScreen.MainMenu);
+                    if (Screen == LobbyScreen.Login) break; // first screen: nowhere to go back to
+                    if (LobbyScreenRules.IsMenu(Screen)) Go(HomeScreen);
                     else GoHome();
                     break;
             }
         }
 
-        /// <summary>"Vào phòng này": same RoomCode path as a guest, no JWT (AC18).</summary>
+        /// <summary>"Vào phòng này": the same RoomCode path as the join modal (AC18).</summary>
         public void JoinRoom(in RoomInfo room)
         {
             if (room.RoomCode != null) Join.SetCode(room.RoomCode);
-            Go(LobbyScreen.JoinForm);
+            OpenJoin();
         }
 
         // ---- join ------------------------------------------------------------------------------------------------
 
         public bool SubmitJoin()
         {
-            if (Screen != LobbyScreen.JoinForm || !Join.Submit()) return false;
+            if (Screen != LobbyScreen.JoinForm) return false;
+            if (NeedsLogin) { Go(LobbyScreen.Login); return false; } // client-side gate only
+            if (!Join.Submit()) return false;
             _sawConnect = false;
             Notice = "";
             Go(LobbyScreen.Connecting);
@@ -188,7 +246,7 @@ namespace JungleMaze.App.Lobby
             return true;
         }
 
-        /// <summary>"Về menu"/"Rời phòng"/N7: one leave, then the main menu; the join form keeps name and code (AC23, AC42).</summary>
+        /// <summary>"Về trang chủ"/"Rời phòng"/N7: one leave, then Home (Login if the JWT ran out); the form keeps name and code (AC23, AC42).</summary>
         public void GoHome()
         {
             if (Join.Busy) Join.Cancel();
@@ -203,7 +261,7 @@ namespace JungleMaze.App.Lobby
             ReplayPending = false;
             Notice = "";
             LoadErrorText = "";
-            Go(LobbyScreen.MainMenu);
+            Go(HomeScreen);
         }
 
         // ---- tick ------------------------------------------------------------------------------------------------
@@ -221,7 +279,13 @@ namespace JungleMaze.App.Lobby
                 case LobbyScreen.Connecting: TickConnecting(net); break;
                 case LobbyScreen.Reconnecting: TickReconnecting(net); break;
                 case LobbyScreen.RoomManager:
-                    if (Account != null && Account.Token == null) Go(LobbyScreen.Login); // AC17: expiry by clock
+                    if (NeedsLogin) { _roomsAfterLogin = true; Go(LobbyScreen.Login); } // AC17: expiry by clock
+                    break;
+                case LobbyScreen.MainMenu:
+                case LobbyScreen.JoinForm:
+                case LobbyScreen.History:
+                case LobbyScreen.Leaderboard:
+                    if (NeedsLogin) Go(LobbyScreen.Login);
                     break;
                 case LobbyScreen.Lobby:
                 case LobbyScreen.Loading:
@@ -284,6 +348,7 @@ namespace JungleMaze.App.Lobby
             var current = _results.HasResult ? _results.Current : null;
             if (current == null || current.MatchId != _lobby.MatchId || Result.HasData && Result.MatchId == current.MatchId) return;
             Result.Show(current, _eliminationCause(), Options.ShowKills);
+            _lastMatchId = current.MatchId;
             ResultsShown++;
         }
 
@@ -304,14 +369,19 @@ namespace JungleMaze.App.Lobby
 
         private void OnLoggedIn()
         {
+            if (string.IsNullOrEmpty(Join.DisplayName)) Join.SetName(Account.Username); // prefill from the account
             if (Screen != LobbyScreen.Login) return;
+            if (!_roomsAfterLogin) { Go(LobbyScreen.MainMenu); return; }
+            _roomsAfterLogin = false;
             Go(LobbyScreen.RoomManager);
             Rooms?.Refresh();
         }
 
         private void OnAuthExpired()
         {
-            if (Screen == LobbyScreen.RoomManager) Go(LobbyScreen.Login);
+            if (Screen != LobbyScreen.RoomManager) return;
+            _roomsAfterLogin = true;
+            Go(LobbyScreen.Login);
         }
 
         private static bool IsActive(NetworkState s) =>
@@ -320,6 +390,8 @@ namespace JungleMaze.App.Lobby
         private void Go(LobbyScreen next)
         {
             if (next == Screen) return;
+            if (next != LobbyScreen.MainMenu) LogoutConfirmOpen = false;
+            if (next != LobbyScreen.MainMenu && next != LobbyScreen.Login) ServerSettingsOpen = false;
             Screen = next;
             ScreenChanged?.Invoke(next);
         }

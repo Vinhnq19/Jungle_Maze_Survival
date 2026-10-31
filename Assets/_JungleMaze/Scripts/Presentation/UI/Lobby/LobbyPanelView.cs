@@ -19,5 +19,13 @@ namespace JungleMaze.Presentation.UI.Lobby
             group.interactable = visible;
             group.blocksRaycasts = visible;
         }
+
+        /// <summary>Visible but inert: Home under the join modal.</summary>
+        public void ShowUnder()
+        {
+            if (group == null) return;
+            group.alpha = 1f;
+            group.interactable = group.blocksRaycasts = false;
+        }
     }
 }

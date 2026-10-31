@@ -47,7 +47,7 @@ namespace JungleMaze.Tests.Lobby
             rig.Flow.Api.Check();
             Assert.AreEqual(ApiMessages.NoApi, rig.Flow.Api.Text);
             rig.JoinLobby();
-            Assert.AreEqual(LobbyScreen.Lobby, rig.Flow.Screen, "no login on the guest path (AC6)");
+            Assert.AreEqual(LobbyScreen.Lobby, rig.Flow.Screen, "join does not wait on the API (AC6)");
             Assert.AreEqual(0, rig.Api.Logins + rig.Api.Lists + rig.Api.Healths, "join never waits on the API");
         }
 
@@ -136,7 +136,7 @@ namespace JungleMaze.Tests.Lobby
         [TestCase(503, ApiMessages.AccountUnreachable)]
         public void Login_ErrorMapping(int status, string message)
         {
-            using var rig = new LobbyRig();
+            using var rig = new LobbyRig(login: false);
             rig.Api.LoginStatus = status;
             rig.Account.Username = "huycv";
             rig.Account.Password = "secret123";
@@ -148,7 +148,7 @@ namespace JungleMaze.Tests.Lobby
         [Test]
         public void Register_ValidatesAndMapsConflict()
         {
-            using var rig = new LobbyRig();
+            using var rig = new LobbyRig(login: false);
             rig.Account.RegisterMode = true;
             rig.Account.Username = "hu";
             rig.Account.Password = "secret123";
@@ -169,7 +169,7 @@ namespace JungleMaze.Tests.Lobby
         [Test]
         public void PasswordClearedEvenOnError()
         {
-            using var rig = new LobbyRig();
+            using var rig = new LobbyRig(login: false);
             rig.Api.LoginStatus = 401;
             rig.Account.Username = "huycv";
             rig.Account.Password = "secret123";
@@ -185,7 +185,7 @@ namespace JungleMaze.Tests.Lobby
         [Test]
         public void Expired_Or401_ClearsAndReLogin_NoResend()
         {
-            using var rig = new LobbyRig();
+            using var rig = new LobbyRig(login: false);
             rig.Api.TokenLifetimeSeconds = 60;
             rig.Flow.OpenRooms();
             Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen, "no JWT → login first");
@@ -222,7 +222,7 @@ namespace JungleMaze.Tests.Lobby
             Application.logMessageReceived += Capture;
             try
             {
-                using var rig = new LobbyRig();
+                using var rig = new LobbyRig(login: false);
                 rig.Account.Username = "huycv";
                 rig.Account.Password = "Pa55word-UI02";
                 rig.Account.Submit();

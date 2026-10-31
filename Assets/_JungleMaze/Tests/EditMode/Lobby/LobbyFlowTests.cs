@@ -511,7 +511,7 @@ namespace JungleMaze.Tests.Lobby
         [Test]
         public void History_ThreeStates_GuestOrJwt()
         {
-            using var rig = new LobbyRig();
+            using var rig = new LobbyRig(login: false);
             rig.History.Data.Add(new PlayerMatchHistory { MatchId = Guid.NewGuid(), Rank = 2, SurvivalSeconds = 65, EndedAt = DateTimeOffset.UtcNow, Reason = "LastAlive" });
             rig.Flow.OpenHistory();
             Assert.AreEqual(ListState.Ready, rig.Flow.History.State);
@@ -564,7 +564,7 @@ namespace JungleMaze.Tests.Lobby
         [Test]
         public void GuestLabel_UntilVerified()
         {
-            using var rig = new LobbyRig();
+            using var rig = new LobbyRig(login: false);
             rig.History.Ready = false;
             Assert.AreEqual(ApiMessages.GuestUnsaved, rig.Flow.History.IdentityLabel);
             rig.Flow.OpenHistory();
@@ -588,6 +588,129 @@ namespace JungleMaze.Tests.Lobby
             Assert.AreEqual(state, model.State);
             Assert.AreEqual(message, model.Message);
             Assert.AreEqual(rows, model.Rows.Length, "duplicate names stay separate rows");
+        }
+    }
+
+    /// <summary>UI-02 round 2 (Flow_Proposal 6): login first, account card logout with confirm, server settings modal.</summary>
+    public sealed class LoginFirstFlowTests
+    {
+        [Test]
+        public void Starts_OnLogin_WithoutJwt_ThenHomeAfterLogin()
+        {
+            using var rig = new LobbyRig(login: false);
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen, "no JWT → Login is the first screen");
+            rig.Flow.Back();
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen, "nothing before Login");
+            rig.LogIn();
+            Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen, "login lands on Home, not the room manager");
+            Assert.AreEqual(0, rig.Api.Lists, "Home does not load rooms");
+        }
+
+        [Test]
+        public void ValidJwt_StartsOnHome()
+        {
+            using var first = new LobbyRig();
+            var flow = new LobbyFlow(first.Lobby, first.Results, first.Connection, first.Commands, first.Join, first.Account,
+                first.Rooms, null, null, null, first.Clock.Read);
+            Assert.AreEqual(LobbyScreen.MainMenu, flow.Screen, "a JWT still valid in memory skips Login");
+            flow.Dispose();
+        }
+
+        [Test]
+        public void NoJwt_JoinBlockedOnClient()
+        {
+            using var rig = new LobbyRig(login: false);
+            rig.Flow.OpenJoin();
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen);
+            Assert.IsFalse(rig.Flow.SubmitJoin());
+            Assert.AreEqual(0, rig.Commands.Joins, "no join packet without a login");
+        }
+
+        [Test]
+        public void JwtExpiresOnHome_BackToLogin_JoinBlocked()
+        {
+            using var rig = new LobbyRig();
+            rig.Utc = rig.Utc.AddHours(2); // past the mock's 1 h token
+            rig.Tick();
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen);
+            rig.LogIn();
+            rig.Flow.OpenJoin();
+            rig.Join.SetCode("K7M2Q9");
+            rig.Utc = rig.Utc.AddHours(2);
+            Assert.IsFalse(rig.Flow.SubmitJoin(), "expired between opening the modal and pressing join");
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen);
+            Assert.AreEqual(0, rig.Commands.Joins);
+        }
+
+        [Test]
+        public void Logout_AsksFirst_ThenDropsJwtAndShowsLogin()
+        {
+            using var rig = new LobbyRig();
+            rig.Flow.RequestLogout();
+            Assert.IsTrue(rig.Flow.LogoutConfirmOpen);
+            rig.Flow.CancelLogout();
+            Assert.IsFalse(rig.Flow.LogoutConfirmOpen);
+            Assert.IsTrue(rig.Account.IsValid, "Hủy keeps the session");
+            rig.Flow.RequestLogout();
+            rig.Flow.ConfirmLogout();
+            Assert.IsFalse(rig.Account.IsValid);
+            Assert.AreEqual(LobbyScreen.Login, rig.Flow.Screen);
+            Assert.IsFalse(rig.Flow.LogoutConfirmOpen);
+        }
+
+        [Test]
+        public void ServerSettings_FromHomeAndLogin_ClosedByNavigation()
+        {
+            using var rig = new LobbyRig(login: false);
+            rig.Flow.OpenServerSettings();
+            Assert.IsTrue(rig.Flow.ServerSettingsOpen, "Login 'Máy chủ (nâng cao)'");
+            rig.LogIn();
+            Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen);
+            rig.Flow.CloseServerSettings();
+            rig.Flow.OpenServerSettings();
+            Assert.IsTrue(rig.Flow.ServerSettingsOpen, "Home 'Cài đặt'");
+            rig.Flow.OpenJoin();
+            Assert.IsFalse(rig.Flow.ServerSettingsOpen, "leaving Home closes the modal");
+            rig.Flow.OpenServerSettings();
+            Assert.IsFalse(rig.Flow.ServerSettingsOpen, "only from Home or Login");
+        }
+
+        [Test]
+        public void DisplayName_PrefilledFromAccount_WhenEmpty()
+        {
+            using var rig = new LobbyRig(login: false);
+            rig.Join.SetName("");
+            rig.LogIn("huycv");
+            Assert.AreEqual("huycv", rig.Join.DisplayName);
+            rig.Join.SetName("Huy");
+            rig.LogIn("huycv");
+            Assert.AreEqual("Huy", rig.Join.DisplayName, "a name the player typed is kept");
+        }
+
+        [Test]
+        public void HomeLeaderboard_OpensNewestMatchFromHistory()
+        {
+            using var rig = new LobbyRig();
+            var newest = Guid.NewGuid();
+            rig.History.Data.Add(new PlayerMatchHistory { MatchId = Guid.NewGuid(), EndedAt = DateTimeOffset.UtcNow.AddDays(-1) });
+            rig.History.Data.Add(new PlayerMatchHistory { MatchId = newest, EndedAt = DateTimeOffset.UtcNow });
+            Assert.IsTrue(rig.Flow.History.Refresh().IsCompleted);
+            rig.Flow.Back();
+            rig.Flow.OpenLatestLeaderboard();
+            Assert.AreEqual(LobbyScreen.Leaderboard, rig.Flow.Screen);
+            Assert.AreEqual(newest, rig.Flow.Leaderboard.MatchId);
+            rig.Flow.Back();
+            Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen, "Quay lại returns to Home");
+        }
+
+        [Test]
+        public void HomeLeaderboard_NoMatchYet_IsEmptyNotDown()
+        {
+            using var rig = new LobbyRig();
+            rig.Flow.OpenLatestLeaderboard();
+            Assert.AreEqual(ListState.Empty, rig.Flow.Leaderboard.State);
+            Assert.AreEqual(ApiMessages.HistoryEmpty, rig.Flow.Leaderboard.Message);
+            Assert.AreEqual(0, rig.Api.Boards, "no request for an empty id");
         }
     }
 }

@@ -68,6 +68,8 @@ namespace JungleMaze.EditorTools
                 Set(root, "results", BuildResults(rt));
                 Set(root, "reconnect", BuildReconnect(rt));
                 Set(root, "notice", BuildNotice(rt));
+                Set(root, "serverSettings", BuildServerSettings(rt)); // modals last: drawn over Home and Login
+                Set(root, "logoutConfirm", BuildLogoutConfirm(rt));
 
                 var prefab = PrefabUtility.SaveAsPrefabAsset(go, PrefabPath);
                 var set = AssetDatabase.LoadAssetAtPath<LobbyUiSet>(SetPath);
@@ -85,35 +87,66 @@ namespace JungleMaze.EditorTools
 
         // ---------- panels ----------
 
+        /// <summary>Home, Figma 03_home 121:2 (1920 px ÷ 1.5): logo 560×140, six buttons, account card top right.</summary>
         private static MainMenuView BuildMainMenu(RectTransform rt)
         {
             var v = Screen<MainMenuView>(rt, "MainMenu");
             var r = (RectTransform)v.transform;
-            var logo = Img(Rect("Logo", r, 440, 48, 400, 140), Color.white);
-            logo.sprite = Menu("Logo");
-            logo.preserveAspect = true;
-            logo.raycastTarget = false;
-            Set(v, "join", Btn(r, "Join", "Vào phòng", 490, 216, 300, true));
-            Set(v, "rooms", Btn(r, "Rooms", "Quản lý phòng", 490, 276, 300));
-            Set(v, "history", Btn(r, "History", "Lịch sử", 490, 336, 300));
-            Set(v, "settings", Btn(r, "Settings", "Cài đặt", 490, 396, 300));
-            Set(v, "quit", Btn(r, "Quit", "Thoát", 490, 456, 300, false, true));
-            Set(v, "apiStatus", Txt(r, "ApiStatus", "", 390, 520, 500, 28, 15, TextAlignmentOptions.Center, P.Muted));
-            var box = Block(r, "Endpoint", 920, 216, 320, 352);
-            Txt(box, "Title", "Máy chủ", 16, 12, 288, 24, 16, TextAlignmentOptions.Left, P.Text);
-            Set(v, "profile", Drop(box, "Profile", 16, 44, 288));
-            Set(v, "host", Input(box, "Host", "Host", 16, 96, 288));
-            Set(v, "port", Input(box, "Port", "Port", 16, 148, 120));
-            Set(v, "api", Input(box, "Api", "API (https://…)", 16, 200, 288));
-            Set(v, "saveEndpoint", Btn(box, "Save", "Lưu endpoint", 16, 252, 288));
-            Set(v, "endpointStatus", Txt(box, "Status", "", 16, 306, 288, 40, 13, TextAlignmentOptions.TopLeft, P.Muted));
+            Logo(r, 360, 48, 560, 140);
+            Set(v, "join", Btn(r, "Join", "Vào phòng", 490, 208, 300, true));
+            Set(v, "rooms", Btn(r, "Rooms", "Tạo phòng", 490, 264, 300));
+            Set(v, "history", Btn(r, "History", "Lịch sử", 490, 320, 300));
+            Set(v, "leaderboard", Btn(r, "Leaderboard", "Bảng xếp hạng", 490, 376, 300));
+            Set(v, "settings", Btn(r, "Settings", "Cài đặt", 490, 432, 300));
+            Set(v, "quit", Btn(r, "Quit", "Thoát", 490, 488, 300, false, true));
+            Set(v, "apiStatus", Txt(r, "ApiStatus", "", 390, 548, 500, 28, 15, TextAlignmentOptions.Center, P.Muted));
+            var card = Block(r, "AccountCard", 920, 24, 336, 72);
+            Set(v, "accountStatus", Txt(card, "Status", "Đã đăng nhập", 16, 10, 140, 18, 13, TextAlignmentOptions.Left, P.Muted));
+            Set(v, "accountName", Txt(card, "Username", "", 16, 30, 140, 28, 18, TextAlignmentOptions.Left, P.Yellow));
+            Set(v, "logout", Btn(card, "Logout", "Đăng xuất", 160, 12, 160));
             return v;
         }
 
+        /// <summary>Figma 04_logout-confirm 133:31: 400×200 box over a scrim.</summary>
+        private static LogoutConfirmView BuildLogoutConfirm(RectTransform rt)
+        {
+            var v = Screen<LogoutConfirmView>(rt, "LogoutConfirm");
+            var r = (RectTransform)v.transform;
+            Scrim(r);
+            var b = Modal(r, "Panel", 440, 260, 400, 200);
+            Set(v, "text", Txt(b, "Text", "Đăng xuất?", 20, 24, 360, 30, 20, TextAlignmentOptions.Center, P.Text));
+            Txt(b, "Body", "Bạn sẽ quay về màn đăng nhập.", 20, 62, 360, 22, 14, TextAlignmentOptions.Center, P.Muted);
+            Set(v, "yes", Btn(b, "Yes", "Đăng xuất", 20, 120, 170, true));
+            Set(v, "no", Btn(b, "No", "Hủy", 210, 120, 170, false, true));
+            return v;
+        }
+
+        /// <summary>Figma 05_settings-server 133:195: the old Home endpoint box as a modal, plus audio (Home only) and Close.</summary>
+        private static ServerSettingsView BuildServerSettings(RectTransform rt)
+        {
+            var v = Screen<ServerSettingsView>(rt, "ServerSettings");
+            var r = (RectTransform)v.transform;
+            Scrim(r);
+            var b = Modal(r, "Panel", 480, 114, 320, 492);
+            Txt(b, "Title", "Cài đặt · Máy chủ", 16, 12, 288, 24, 16, TextAlignmentOptions.Left, P.Text);
+            Txt(b, "Advanced", "Nâng cao: chỉ đổi khi chơi LAN/VPN hoặc được hướng dẫn.", 16, 38, 288, 38, 13, TextAlignmentOptions.TopLeft, P.Muted);
+            Set(v, "profile", Drop(b, "Profile", 16, 76, 288));
+            Set(v, "host", Input(b, "Host", "Host", 16, 128, 288));
+            Set(v, "port", Input(b, "Port", "Port", 16, 180, 120));
+            Set(v, "api", Input(b, "Api", "API (https://…)", 16, 232, 288));
+            Set(v, "save", Btn(b, "Save", "Lưu endpoint", 16, 284, 288));
+            Set(v, "status", Txt(b, "Status", "", 16, 338, 288, 24, 13, TextAlignmentOptions.TopLeft, P.Muted));
+            Set(v, "audioSettings", Btn(b, "Audio", "Âm thanh & điều khiển", 16, 368, 288));
+            Set(v, "close", Btn(b, "Close", "Đóng", 16, 428, 288, false, true));
+            return v;
+        }
+
+        /// <summary>Figma 06_join-modal 121:106: the v2 join panel over Home behind a scrim.</summary>
         private static JoinFormView BuildJoin(RectTransform rt)
         {
             var v = Screen<JoinFormView>(rt, "JoinForm");
-            var b = Block((RectTransform)v.transform, "Panel", 360, 67, 560, 586);
+            Scrim((RectTransform)v.transform);
+            var b = Modal((RectTransform)v.transform, "Panel", 360, 67, 560, 586);
             Txt(b, "Title", "Vào phòng", 32, 24, 496, 36, 26, TextAlignmentOptions.Left, P.Text);
             Txt(b, "NameLabel", "Tên hiển thị", 32, 84, 496, 22, 15, TextAlignmentOptions.Left, P.Muted);
             Set(v, "displayName", Input(b, "DisplayName", "Tên của bạn (1–32 ký tự)", 32, 110, 496));
@@ -128,8 +161,8 @@ namespace JungleMaze.EditorTools
             Set(v, "message", Txt(b, "Message", "", 32, 300, 496, 60, 16, TextAlignmentOptions.TopLeft, P.Yellow));
             Set(v, "join", Btn(b, "Join", "Vào phòng", 32, 380, 496, true));
             Set(v, "retry", Btn(b, "Retry", "Thử lại", 32, 440, 240));
-            Set(v, "back", Btn(b, "Back", "Về menu", 288, 440, 240, false, true));
-            Txt(b, "Hint", "Không cần đăng nhập để vào phòng bằng mã.", 32, 520, 496, 40, 13, TextAlignmentOptions.TopLeft, P.Muted);
+            Set(v, "back", Btn(b, "Back", "Hủy", 288, 440, 240, false, true));
+            Set(v, "hint", Txt(b, "Hint", "", 32, 520, 496, 40, 13, TextAlignmentOptions.TopLeft, P.Muted));
             return v;
         }
 
@@ -146,7 +179,8 @@ namespace JungleMaze.EditorTools
         private static LoginView BuildLogin(RectTransform rt)
         {
             var v = Screen<LoginView>(rt, "Login");
-            var b = Block((RectTransform)v.transform, "Panel", 440, 110, 400, 480);
+            Logo((RectTransform)v.transform, 480, 24, 320, 80);
+            var b = Block((RectTransform)v.transform, "Panel", 440, 128, 400, 448);
             Set(v, "title", Txt(b, "Title", "Đăng nhập", 24, 20, 352, 34, 24, TextAlignmentOptions.Left, P.Text));
             Set(v, "loginTab", Btn(b, "LoginTab", "Đăng nhập", 24, 66, 170));
             Set(v, "registerTab", Btn(b, "RegisterTab", "Đăng ký", 206, 66, 170));
@@ -156,7 +190,7 @@ namespace JungleMaze.EditorTools
             Set(v, "password", pass);
             Set(v, "message", Txt(b, "Message", "", 24, 248, 352, 60, 15, TextAlignmentOptions.TopLeft, P.Yellow));
             Set(v, "submit", Btn(b, "Submit", "Đăng nhập", 24, 320, 352, true));
-            Set(v, "back", Btn(b, "Back", "Quay lại", 24, 384, 352, false, true));
+            Set(v, "advanced", Btn(b, "Advanced", "Máy chủ (nâng cao)", 24, 384, 352));
             return v;
         }
 
@@ -165,7 +199,6 @@ namespace JungleMaze.EditorTools
             var v = Screen<RoomManagerView>(rt, "RoomManager");
             var b = Block((RectTransform)v.transform, "Panel", 240, 48, 800, 624);
             Txt(b, "Title", "Quản lý phòng", 24, 16, 500, 34, 24, TextAlignmentOptions.Left, P.Text);
-            Set(v, "logout", Btn(b, "Logout", "Đăng xuất", 616, 12, 160, false, true));
             Set(v, "state", Txt(b, "State", "", 24, 64, 600, 24, 15, TextAlignmentOptions.Left, P.Muted));
             Set(v, "retry", Btn(b, "Retry", "Thử lại", 640, 56, 136));
             var rows = new RoomRowView[5];
@@ -177,8 +210,8 @@ namespace JungleMaze.EditorTools
             cap.text = "10";
             Set(v, "newCapacity", cap);
             Set(v, "create", Btn(b, "Create", "Tạo phòng", 536, 438, 240, true));
-            Set(v, "back", Btn(b, "Back", "Về menu", 24, 552, 200, false, true));
-            var confirm = Block(b, "Confirm", 200, 220, 400, 180);
+            Set(v, "back", Btn(b, "Back", "Về trang chủ", 24, 552, 200, false, true));
+            var confirm = Modal(b, "Confirm", 200, 220, 400, 180);
             var group = confirm.gameObject.AddComponent<CanvasGroup>();
             group.alpha = 0f;
             group.interactable = group.blocksRaycasts = false;
@@ -196,8 +229,8 @@ namespace JungleMaze.EditorTools
             var row = r.gameObject.AddComponent<RoomRowView>();
             Set(row, "roomName", Txt(r, "Name", "", 16, 6, 260, 44, 16, TextAlignmentOptions.Left, P.Text));
             Set(row, "occupancy", Txt(r, "Occupancy", "", 280, 6, 80, 44, 16, TextAlignmentOptions.Center, P.Muted, NumberFont));
-            Set(row, "code", Txt(r, "Code", "", 364, 6, 120, 44, 18, TextAlignmentOptions.Center, P.Yellow, NumberFont));
-            Set(row, "copy", Btn(r, "Copy", "Sao chép", 488, 4, 84, false, false, 44));
+            Set(row, "code", Txt(r, "Code", "", 360, 6, 108, 44, 18, TextAlignmentOptions.Center, P.Yellow, NumberFont));
+            Set(row, "copy", Btn(r, "Copy", "Sao chép", 472, 4, 100, false, false, 44)); // 150 px at 1920
             Set(row, "join", Btn(r, "Join", "Vào", 578, 4, 80, true, false, 44));
             Set(row, "delete", Btn(r, "Delete", "Xóa", 664, 4, 80, false, true, 44));
             return row;
@@ -211,19 +244,31 @@ namespace JungleMaze.EditorTools
             Set(v, "identity", Txt(b, "Identity", "", 440, 20, 336, 28, 14, TextAlignmentOptions.Right, P.Muted));
             Set(v, "state", Txt(b, "State", "", 24, 56, 600, 24, 15, TextAlignmentOptions.Left, P.Muted));
             Set(v, "retry", Btn(b, "Retry", "Thử lại", 640, 52, 136, false, false, 44));
+            // 20 lines of 32 px (48 px / text 22 at 1920) scroll inside a 448 px viewport.
+            const float line = 32f;
+            var view = Rect("List", b, 24, 100, 752, 448);
+            view.gameObject.AddComponent<RectMask2D>();
+            var content = Rect("Content", view, 0, 0, 752, 20 * line);
+            var scroll = view.gameObject.AddComponent<ScrollRect>();
+            scroll.content = content;
+            scroll.viewport = view;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = line;
+            view.gameObject.AddComponent<Image>().color = new Color(0, 0, 0, 0); // catches the wheel between lines
             var rows = new HistoryRowView[20];
             for (var i = 0; i < rows.Length; i++)
             {
-                var r = Rect("Line" + i, b, 24, 104 + i * 22, 752, 22);
+                var r = Rect("Line" + i, content, 0, i * line, 752, line);
                 var row = r.gameObject.AddComponent<HistoryRowView>();
                 var button = r.gameObject.AddComponent<Button>();
                 button.targetGraphic = Img(r, i % 2 == 0 ? P.Raised : P.Surface);
                 Set(row, "open", button);
-                Set(row, "line", Txt(r, "Text", "", 8, 0, 736, 22, 13, TextAlignmentOptions.Left, P.Text));
+                Set(row, "line", Txt(r, "Text", "", 8, 0, 736, line, 15, TextAlignmentOptions.Left, P.Text));
                 rows[i] = row;
             }
             SetArray(v, "rows", rows);
-            Set(v, "back", Btn(b, "Back", "Về menu", 24, 560, 200, false, true));
+            Set(v, "back", Btn(b, "Back", "Về trang chủ", 24, 560, 200, false, true));
             return v;
         }
 
@@ -231,7 +276,7 @@ namespace JungleMaze.EditorTools
         {
             var v = Screen<LeaderboardView>(rt, "Leaderboard");
             var b = Block((RectTransform)v.transform, "Panel", 340, 48, 600, 624);
-            Txt(b, "Title", "Bảng xếp hạng trận (online)", 24, 16, 552, 34, 22, TextAlignmentOptions.Left, P.Text);
+            Txt(b, "Title", "Bảng xếp hạng trận (online)", 24, 12, 552, 36, 24, TextAlignmentOptions.Left, P.Text); // 36 at 1920
             Set(v, "state", Txt(b, "State", "", 24, 56, 400, 24, 15, TextAlignmentOptions.Left, P.Muted));
             Set(v, "retry", Btn(b, "Retry", "Thử lại", 440, 52, 136, false, false, 44));
             var rows = new ResultRowView[10];
@@ -285,7 +330,7 @@ namespace JungleMaze.EditorTools
             Set(v, "timeLeft", Txt(b, "TimeLeft", "", 24, 192, 552, 36, 24, TextAlignmentOptions.Left, P.Green, NumberFont));
             Set(v, "hint", Txt(b, "Hint", "", 24, 252, 552, 28, 16, TextAlignmentOptions.Left, P.Muted));
             Set(v, "tip", Txt(b, "Tip", "", 24, 290, 552, 48, 15, TextAlignmentOptions.TopLeft, P.Muted));
-            Set(v, "home", Btn(b, "Home", "Về menu", 24, 368, 200, false, true));
+            Set(v, "home", Btn(b, "Home", "Về trang chủ", 24, 368, 200, false, true));
             return v;
         }
 
@@ -303,7 +348,7 @@ namespace JungleMaze.EditorTools
             var replay = Btn(r, "Replay", "Chơi lại", 80, 399, 290, true);
             Set(v, "replay", replay);
             Set(v, "replayLabel", replay.GetComponentInChildren<TMP_Text>());
-            Set(v, "home", Btn(r, "Home", "Về menu", 390, 399, 290, false, true));
+            Set(v, "home", Btn(r, "Home", "Về trang chủ", 390, 399, 290, false, true));
             Set(v, "online", Btn(r, "Online", "Xem online", 80, 463, 290));
             var table = Block(r, "Table", 760, 123, 440, 475);
             Txt(table, "Header", "Bảng xếp hạng", 12, 8, 416, 28, 17, TextAlignmentOptions.Left, P.Text);
@@ -336,7 +381,7 @@ namespace JungleMaze.EditorTools
             var b = Block(r, "Panel", 390, 220, 500, 280);
             Set(v, "message", Txt(b, "Message", "Đang kết nối lại…", 24, 32, 452, 40, 24, TextAlignmentOptions.Center, P.Text));
             Set(v, "seconds", Txt(b, "Seconds", "", 24, 88, 452, 36, 22, TextAlignmentOptions.Center, P.Yellow, NumberFont));
-            Set(v, "home", Btn(b, "Home", "Về menu", 150, 190, 200, false, true));
+            Set(v, "home", Btn(b, "Home", "Về trang chủ", 150, 190, 200, false, true));
             return v;
         }
 
@@ -346,7 +391,7 @@ namespace JungleMaze.EditorTools
             var b = Block((RectTransform)v.transform, "Panel", 390, 220, 500, 280);
             Set(v, "title", Txt(b, "Title", "", 24, 28, 452, 36, 24, TextAlignmentOptions.Center, P.Text));
             Set(v, "message", Txt(b, "Message", "", 24, 80, 452, 80, 17, TextAlignmentOptions.Top, P.Yellow));
-            Set(v, "home", Btn(b, "Home", "Về menu", 150, 190, 200, true));
+            Set(v, "home", Btn(b, "Home", "Về trang chủ", 150, 190, 200, true));
             return v;
         }
 
@@ -378,6 +423,36 @@ namespace JungleMaze.EditorTools
             img.color = new Color(0, 0, 0, 0);
             img.raycastTarget = false;
             return r;
+        }
+
+        /// <summary>Opaque box with a drop shadow for dialogs over other panels (UX review: confirm alpha 1 + shadow).</summary>
+        private static RectTransform Modal(RectTransform parent, string name, float x, float y, float w, float h)
+        {
+            var r = Block(parent, name, x, y, w, h);
+            var image = r.GetComponent<Image>();
+            var c = image.color;
+            c.a = 1f;
+            image.color = c;
+            var shadow = r.gameObject.AddComponent<Shadow>();
+            shadow.effectColor = new Color(0, 0, 0, 0.6f);
+            shadow.effectDistance = new Vector2(6, -6);
+            return r;
+        }
+
+        /// <summary>Full-screen dim that also swallows clicks meant for the panel underneath.</summary>
+        private static void Scrim(RectTransform parent)
+        {
+            var r = Rect("Scrim", parent, 0, 0, 0, 0);
+            Stretch(r);
+            Img(r, new Color(0, 0, 0, 0.6f));
+        }
+
+        private static void Logo(RectTransform parent, float x, float y, float w, float h)
+        {
+            var logo = Img(Rect("Logo", parent, x, y, w, h), Color.white);
+            logo.sprite = Menu("Logo");
+            logo.preserveAspect = true;
+            logo.raycastTarget = false;
         }
 
         private static RectTransform Rect(string name, RectTransform parent, float x, float y, float w, float h)
@@ -451,11 +526,14 @@ namespace JungleMaze.EditorTools
             field.textComponent.font = TextFont;
             field.textComponent.fontSize = 17;
             field.textComponent.color = P.Text;
+            field.textComponent.verticalAlignment = VerticalAlignmentOptions.Middle; // UX review: text and hint centred
             var hint = (TMP_Text)field.placeholder;
             hint.font = TextFont;
             hint.fontSize = 15;
             hint.text = placeholder;
             hint.color = P.Faint;
+            hint.verticalAlignment = VerticalAlignmentOptions.Middle;
+            hint.fontStyle = FontStyles.Normal; // Figma: upright placeholder
             return field;
         }
 

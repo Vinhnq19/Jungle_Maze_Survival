@@ -102,7 +102,8 @@ namespace JungleMaze.App.Lobby
         {
             MatchId = matchId;
             Rows = Array.Empty<LeaderboardEntry>();
-            if (_api == null || matchId == Guid.Empty) { State = ListState.Unavailable; Message = "Bảng xếp hạng online tạm ngừng"; return; }
+            if (_api == null) { State = ListState.Unavailable; Message = "Bảng xếp hạng online tạm ngừng"; return; }
+            if (matchId == Guid.Empty) { State = ListState.Empty; Message = ApiMessages.HistoryEmpty; return; } // Home: no match played yet
             State = ListState.Loading;
             Message = "";
             _api.Get(matchId, r =>
