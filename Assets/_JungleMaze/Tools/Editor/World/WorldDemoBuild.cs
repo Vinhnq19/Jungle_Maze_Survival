@@ -22,7 +22,7 @@ namespace JungleMaze.EditorTools
             var light=new GameObject("Main Light").AddComponent<Light>();light.type=LightType.Directional;
             new GameObject("World Prototype").AddComponent<WorldDemoController>();
             var hud=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_JungleMaze/Prefabs/UI/Hud.prefab");if(hud!=null)PrefabUtility.InstantiatePrefab(hud);
-            var note=new GameObject("Prototype instructions").AddComponent<TextMesh>();note.text="WORLD PROTOTYPE — pending balance approval\nWASD move · F pickup · 1-4 select · 5-8 use\nBackspace drop · Space confirmed-hit fixture · H damage fixture";note.characterSize=.11f;note.fontSize=28;note.anchor=TextAnchor.UpperLeft;note.transform.position=new Vector3(1,49,0);note.color=Color.white;
+            var note=new GameObject("Prototype instructions").AddComponent<TextMesh>();note.text="OFFLINE WORLD PREVIEW\nWASD move · F pickup · 1-4 select · 5-8 use\nLeft click attack · R reload · Backspace drop\nSpace debug hit · H debug damage";note.characterSize=.11f;note.fontSize=28;note.anchor=TextAnchor.UpperLeft;note.transform.position=new Vector3(1,49,0);note.color=Color.white;
             EditorSceneManager.SaveScene(scene,"Assets/_JungleMaze/Scenes/WorldDemo.unity");AssetDatabase.SaveAssets();
         }
 

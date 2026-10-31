@@ -145,9 +145,9 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 750270370}
-  m_Text: "WORLD PROTOTYPE \u2014 pending balance approval\nWASD move \xB7 F pickup
-    \xB7 1-4 select \xB7 5-8 use\nBackspace drop \xB7 Space confirmed-hit fixture
-    \xB7 H damage fixture"
+  m_Text: "OFFLINE WORLD PREVIEW\nWASD move \xB7 F pickup \xB7 1-4 select \xB7 5-8
+    use\nLeft click attack \xB7 R reload \xB7 Backspace drop\nSpace debug hit \xB7
+    H debug damage"
   m_OffsetZ: 0
   m_CharacterSize: 0.11
   m_LineSpacing: 1

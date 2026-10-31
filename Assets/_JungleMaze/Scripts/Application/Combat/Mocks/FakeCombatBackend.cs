@@ -140,6 +140,16 @@ namespace JungleMaze.App.Combat.Mocks
         public int MagazineOf(CombatWeaponId weapon) => _magazine[(int)weapon];
         public int ReserveOf(CombatWeaponId weapon) => _reserve[(int)weapon];
 
+        /// <summary>Offline inventory preview only: do not grant the fake backend's default loadout.</summary>
+        public void SynchronizeEquipment(CombatWeaponId weapon, int magazine, int reserve, bool equipmentChanged)
+        {
+            if (!CombatWeaponIds.IsKnown(weapon)) throw new ArgumentOutOfRangeException(nameof(weapon));
+            if (equipmentChanged) Array.Clear(_reloading, 0, _reloading.Length);
+            var index = (int)weapon;
+            _magazine[index] = Math.Max(0, Math.Min(_definitions[index]?.Stats.MagazineSize ?? 0, magazine));
+            _reserve[index] = Math.Max(0, reserve);
+        }
+
         internal CombatOutcome DecideAttack(AttackRequestPacket packet)
         {
             if (!CombatWeaponIds.IsKnown(packet.Weapon)) return CombatOutcome.InvalidWeapon;

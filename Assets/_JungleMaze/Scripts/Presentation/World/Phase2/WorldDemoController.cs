@@ -13,7 +13,7 @@ using UnityEngine;
 namespace JungleMaze.Presentation.World.Phase2
 {
     /// <summary>Explicit offline prototype scene. Damage input is a confirmed-damage fixture, not WPN-02 combat.</summary>
-    public sealed class WorldDemoController : MonoBehaviour, IDestructibleLootSink, IEnvironmentDamageSink,
+    public sealed partial class WorldDemoController : MonoBehaviour, IDestructibleLootSink, IEnvironmentDamageSink,
         IEnvironmentEffectSink,IEnvironmentMovementSink,IItemGameplayPort
     {
         [SerializeField] private uint seed=20261028;
@@ -40,7 +40,7 @@ namespace JungleMaze.Presentation.World.Phase2
             _floor=new MemoryItemWorld(()=>++_nextId);_items=new InventoryService(_id,_catalog,this,_floor);_items.Register(0);
             _destructibles=new DestructibleService(_map,_destructibleConfig,this);
             _hazards=new HazardService(_map,_hazardConfig,this,this,this,_destructibles.IsBroken);
-            _binding=new InventoryHudBinding(_inventoryHud,_hud);_visuals=Resources.Load<WorldVisualSet>("WorldVisualSet");
+            _binding=new InventoryHudBinding(_inventoryHud,_hud,false);_visuals=Resources.Load<WorldVisualSet>("WorldVisualSet");
             _position=_map.Spawns[0];_items.SetActorState(0,_position.X,_position.Y,true);
             _texture=new Texture2D(1,1);_texture.SetPixel(0,0,Color.white);_texture.Apply();_square=Sprite.Create(_texture,new Rect(0,0,1,1),new Vector2(.5f,.5f),1);
             var hero=new GameObject("World Demo Hero");_hero=hero.transform;hero.AddComponent<SpriteRenderer>().sprite=_square;hero.GetComponent<SpriteRenderer>().color=Color.cyan;_hero.localScale=Vector3.one*.65f;
@@ -49,6 +49,8 @@ namespace JungleMaze.Presentation.World.Phase2
             ushort id;_floor.TrySpawn(new ItemStack("AXE"),_position.X+.7f,_position.Y,out id);
             _floor.TrySpawn(new ItemStack("GOD_LEAF",3),_position.X,_position.Y+.7f,out id);
             _floor.TrySpawn(new ItemStack("ELIXIR",1),_position.X-.7f,_position.Y,out id);
+            _floor.TrySpawn(new ItemStack("SHOTGUN",1,0,9,3),_position.X,_position.Y-.7f,out id);
+            InitializeCombat();
             _hp=70;_hud.SetHp(_hp);_hud.SetAliveCount(1,1);_ready=true;Render();
         }
         private void Update()
@@ -66,6 +68,7 @@ namespace JungleMaze.Presentation.World.Phase2
             if(Input.GetKeyDown(KeyCode.Backspace)){var s=_items.GetSnapshot(0);if(s.ActiveWeapon>=0)_items.Drop(_id,0,++_request,s.ActiveWeapon);}
             if(Input.GetKeyDown(KeyCode.Space))ConfirmDemoHit();
             if(Input.GetKeyDown(KeyCode.H))RequestDamage(0,0,++_tick,30,true);
+            UpdateCombat();
             _binding.Apply(_items.GetSnapshot(0),_now);_hud.SetPose(_position.X,_position.Y,0);_hud.SetHp(_hp);
             _hero.position=new Vector3(_position.X,_position.Y,0);_camera.transform.position=new Vector3(_position.X,_position.Y,-10);
             Render();
@@ -118,7 +121,8 @@ namespace JungleMaze.Presentation.World.Phase2
             {DestructibleState d;_destructibles.TryGet(o.Id,out d);var p=o.Bounds.Center;states.Add(new WorldObjectWire{Id=o.Id,Kind=(byte)o.Kind,X=p.X,Y=p.Y,Width=o.Bounds.MaxX-o.Bounds.MinX,Height=o.Bounds.MaxY-o.Bounds.MinY,Flags=(byte)((d!=null&&d.Broken?1:0)|(o.Kind==WorldObjectKind.Door&&_hazards.DoorsClosed?2:0)),Hp=(ushort)(d!=null?d.Hp:0)});}
             foreach(var f in _floor.Items)states.Add(new WorldObjectWire{Id=f.Id,Kind=100,X=f.X,Y=f.Y,Width=.35f,Height=.35f,ItemId=f.Stack.ItemId,Count=(ushort)f.Stack.Count});
             WorldSceneView.ApplyViews(states.ToArray(),transform,_views,_visuals,_square);
+            RenderItemIcons();
         }
-        private void OnDestroy(){if(_hero!=null)Destroy(_hero.gameObject);if(_square!=null)Destroy(_square);if(_texture!=null)Destroy(_texture);}
+        private void OnDestroy(){DisposeCombat();if(_hero!=null)Destroy(_hero.gameObject);if(_square!=null)Destroy(_square);if(_texture!=null)Destroy(_texture);}
     }
 }
