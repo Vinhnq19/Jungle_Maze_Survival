@@ -114,7 +114,14 @@ Mọi agent kết thúc bằng một báo cáo cùng khung để CPO ghép lại
 5. **Protocol đổi thì sửa cả hai phía trong cùng lượt**; server chưa hỗ trợ nhiều version song song.
 6. **Không sửa** `Assets/Imported/JSurviv/` gốc (chỉ tham khảo hoặc trích asset), không đụng scene thừa trong Build Settings nếu ticket không yêu cầu.
 7. **Không tiêu credits AWS** và không deploy nếu người không yêu cầu rõ. Test trên GameServer local.
-8. **Commit ngay khi xong mỗi phần**, không chờ hỏi: mỗi phần trong mục "Chia commit" của kế hoạch, compile được và test của phần đó xanh. Message tiếng Anh, ngắn, kiểu `feat(ui-01): …` như lịch sử repo. **Không ghi Claude/AI** trong commit, không thêm dòng `Co-Authored-By`. Chỉ `git add` đúng file của phần đó (kèm `.meta`), không gộp thay đổi sẵn có của người khác (ví dụ `ProjectSettings/*`). Nhiều phiên dùng chung index git, nên luôn commit kèm danh sách đường dẫn: `git commit -m "…" -- <file…>`. **Không push** nếu người không yêu cầu.
+8. **Commit ít, mỗi commit lớn** (người dùng: "giờ tôi cần commit ít lại"), không chờ hỏi. Mỗi ticket tối đa khoảng một commit cho mỗi chặng:
+   - spec;
+   - plan;
+   - build: code, test và `.meta` gộp làm một, không tách theo lát;
+   - sửa sau review;
+   - một commit đóng gồm QA và G3.
+
+   **Không** commit riêng cho nhật ký, dòng `Agent_Coordination`, runbook hay một mục ticket: gộp vào commit thật kế tiếp. Commit phải compile được và test xanh. Message tiếng Anh, ngắn, kiểu `feat(ui-01): …` như lịch sử repo. **Không ghi Claude/AI** trong commit, không thêm dòng `Co-Authored-By`. Chỉ `git add` đúng file của phần đó (kèm `.meta`), không gộp thay đổi sẵn có của người khác (ví dụ `ProjectSettings/*`). Nhiều phiên dùng chung index git, nên luôn commit kèm danh sách đường dẫn: `git commit -m "…" -- <file…>`. **Không push** nếu người không yêu cầu.
 9. **Không bịa kết quả.** Không chạy được test thì ghi "chưa kiểm chứng" và lý do.
 
 ## 7. Chạy song song

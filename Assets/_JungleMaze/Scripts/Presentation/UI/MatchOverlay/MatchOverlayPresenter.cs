@@ -155,12 +155,14 @@ namespace JungleMaze.Presentation.UI.MatchOverlay
         private void OnMenuOpen(bool open)
         {
             if (open) RefreshSettingRows();
+            _root.Menu.Leave.gameObject.SetActive(!_menu.FromMainMenu); // UI-02 settings: no leave row (T-8)
             _menuFade.Set(open);
+            if (_root.Canvas != null) _root.Canvas.enabled = open || (_flow != null ? _flow.Phase : MatchOverlayPhase.Playing) != MatchOverlayPhase.Inactive;
         }
 
         private void OnPhase(MatchOverlayPhase phase)
         {
-            if (_root.Canvas != null) _root.Canvas.enabled = phase != MatchOverlayPhase.Inactive;
+            if (_root.Canvas != null) _root.Canvas.enabled = phase != MatchOverlayPhase.Inactive || _menu.IsOpen;
             ShowPhase(phase);
         }
 

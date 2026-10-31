@@ -78,10 +78,9 @@ namespace JungleMaze.Composition
             gameObject.AddComponent<MatchOverlayCameraDriver>().Construct(overlayFlow, clock, balance.Match.MapSizeCells);
             _registry.Register(new HudSpectatorMask(overlayFlow));
 
-            // Temporary hooks (T-12): delete the line when MOV-02 reads IMatchMenuState / UI-02 handles LeaveMatchRequested.
+            // Temporary hook (T-12): delete the line when MOV-02 reads IMatchMenuState. UI-02 now handles LeaveMatchRequested.
             _registry.Register(new MatchMenuInputGuard(menu, intent => match.SetIntent(intent), () => match.OwnNetId, poses,
                 _registry.Resolve<PlayerInputService>(), GetComponent<MatchDemoView>, () => menu.InMatch));
-            _registry.Register(new LeaveMatchBridge(bus, _registry.Resolve<ConnectionMenuPresenter>().Disconnect));
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             _registry.Register(new MatchOverlayScenarios(overlayFlow, menu, killcam, elimination, spectator, replay, clock));

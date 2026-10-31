@@ -55,6 +55,7 @@ namespace JungleMaze.Tests.PlayMode
             var art = _view.Art;
             Assert.IsNotNull(art, "Boot wires the direction A menu art");
             Assert.AreEqual(6, art.AssignedCount);
+            _view.enabled = true; // UI-02 switches the IMGUI menu off; F8 brings it back for debugging
             yield return Frames(3);
             Assert.IsTrue(_view.ShowsBackdrop, "backdrop on MainMenu in the menu scene");
             Assert.AreSame(art.ButtonPrimary, _view.PrimaryStyle.normal.background, "art skin");

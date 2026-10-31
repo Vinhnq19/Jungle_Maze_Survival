@@ -46,6 +46,9 @@ namespace JungleMaze.App.MatchUi
         public bool InMatch => _screen == AppScreen.InMatch;
         public bool BlocksGameplayInput => IsOpen && InMatch;
 
+        /// <summary>Opened from the UI-02 main menu: settings only, no leave row (UI-02 AC4, T-8).</summary>
+        public bool FromMainMenu { get; private set; }
+
         public event Action<bool> OpenChanged;
         public event Action<bool> ConfirmChanged;
         /// <summary>Lock state or retry notice changed; the view re-reads both.</summary>
@@ -54,7 +57,12 @@ namespace JungleMaze.App.MatchUi
         /// <summary>ESC: closes the top layer, or opens the menu. False when ignored (not in a match).</summary>
         public bool PressEscape()
         {
-            if (!InMatch) return false;
+            if (!InMatch)
+            {
+                if (!FromMainMenu || !IsOpen) return false;
+                Close();
+                return true;
+            }
             if (IsConfirmOpen) CancelLeave();
             else if (IsOpen) Close();
             else Open();
@@ -68,12 +76,22 @@ namespace JungleMaze.App.MatchUi
             OpenChanged?.Invoke(true);
         }
 
+        /// <summary>UI-02 "Cài đặt": the same panel outside a match, leave row hidden (T-8).</summary>
+        public void OpenFromMainMenu()
+        {
+            if (IsOpen) return;
+            FromMainMenu = true;
+            IsOpen = true;
+            OpenChanged?.Invoke(true);
+        }
+
         /// <summary>"Tiếp tục", ESC, or leaving the match. Forces the debounced settings write (AC12).</summary>
         public void Close()
         {
             if (IsConfirmOpen) SetConfirm(false);
             if (!IsOpen) return;
             IsOpen = false;
+            FromMainMenu = false;
             _settings?.Flush();
             OpenChanged?.Invoke(false);
         }
@@ -81,7 +99,7 @@ namespace JungleMaze.App.MatchUi
         /// <summary>"Thoát trận": asks first (Q7).</summary>
         public void RequestLeave()
         {
-            if (!IsOpen || IsLeaveLocked) return;
+            if (!IsOpen || IsLeaveLocked || FromMainMenu) return;
             SetConfirm(true);
         }
 
