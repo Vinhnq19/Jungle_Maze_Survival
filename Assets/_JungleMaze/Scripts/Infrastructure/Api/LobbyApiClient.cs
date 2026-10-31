@@ -38,10 +38,11 @@ namespace JungleMaze.Infrastructure.Api
             {
                 if (r.Status != 200) { done(ApiResult<AuthToken>.Fail(r.Status, r.Code)); return; }
                 var token = r.Json?.Value<string>("accessToken");
-                var expires = r.Json?.Value<DateTime?>("expiresAtUtc") ?? DateTime.UtcNow.AddMinutes(30);
+                // DateTimeOffset keeps any offset the API sends ("Z" today; "+07:00" stays the same instant, review G2).
+                var expires = r.Json?.Value<DateTimeOffset?>("expiresAtUtc")?.UtcDateTime ?? DateTime.UtcNow.AddMinutes(30);
                 done(string.IsNullOrWhiteSpace(token)
                     ? ApiResult<AuthToken>.Fail(502, "BadResponse")
-                    : ApiResult<AuthToken>.Success(new AuthToken(token, DateTime.SpecifyKind(expires, DateTimeKind.Utc))));
+                    : ApiResult<AuthToken>.Success(new AuthToken(token, expires)));
             });
 
         public void List(string token, Action<ApiResult<RoomInfo[]>> done) =>

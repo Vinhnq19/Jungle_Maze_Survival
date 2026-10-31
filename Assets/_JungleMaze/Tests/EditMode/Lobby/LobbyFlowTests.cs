@@ -311,31 +311,130 @@ namespace JungleMaze.Tests.Lobby
             Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen);
         }
 
-        /// <summary>AC27: UI-02 sends no LoadAck; the count with UI-02 equals the count without it (zero).</summary>
+        /// <summary>
+        /// AC27: the flow joins through the live adapters, reaches Loading and stays there for 2 s of ticks; UI-02 adds no
+        /// packet (no LoadAck, nothing else). LoadAck belongs to MatchDemoView after Verify.
+        /// </summary>
         [Test]
-        public void LoadAckCount_Unchanged()
+        public void LoadAckCount_Unchanged_ThroughLoading()
         {
             var bus = new JungleMaze.Core.Events.EventBus();
             var network = new JungleMaze.Tests.App.FakeNetwork(bus);
             var match = new JungleMaze.App.Match.MatchSession(network, network, network, bus, new JungleMaze.Domain.Player.PlayerRegistry());
             match.Initialize();
-            network.SetState(NetworkState.Joined, DisconnectReason.None);
-            var matchId = Guid.NewGuid();
-            network.Push(new MatchPhasePacket { MatchId = matchId, Phase = MatchPhase.Loading, ServerTick = 10, PhaseEndTick = 910, MinPlayers = 2, MaxPlayers = 10 });
-            var before = network.Sent;
-            var commands = new JungleMaze.App.Lobby.Adapters.SessionLobbyCommands((c, n) => { }, () => { }, match, null);
+            var commands = new JungleMaze.App.Lobby.Adapters.SessionLobbyCommands(
+                (c, n) => network.SetState(NetworkState.Joined, DisconnectReason.None), network.Disconnect, match, null);
+            using var connection = new JungleMaze.App.Lobby.Adapters.NetworkConnectionStateSource(network, () => match.CanResume, bus);
             var clock = new JungleMaze.Tests.MatchUi.FakeClock();
             var flow = new LobbyFlow(new JungleMaze.App.Lobby.Adapters.MatchSessionLobbySource(match, () => "K7M2Q9"),
-                new JungleMaze.App.Lobby.Adapters.MatchSessionResultSource(match),
-                new JungleMaze.App.Lobby.Mocks.MockConnectionStateSource { State = NetworkState.Joined }, commands,
-                new JoinController(commands, clock.Read), null, null, null, null, null, clock.Read);
+                new JungleMaze.App.Lobby.Adapters.MatchSessionResultSource(match), connection, commands,
+                new JoinController(commands, clock.Read, null, "Huy", "K7M2Q9"), null, null, null, null, null, clock.Read);
+            flow.OpenJoin();
+            Assert.IsTrue(flow.SubmitJoin());
+            flow.Tick(1 / 60f);
+            var matchId = Guid.NewGuid();
+            network.Push(new MatchPhasePacket { MatchId = matchId, Phase = MatchPhase.Lobby, ServerTick = 10, PhaseEndTick = 460, MinPlayers = 2, MaxPlayers = 10 });
+            flow.Tick(1 / 60f);
+            Assert.AreEqual(LobbyScreen.Lobby, flow.Screen);
+            network.Push(new MatchPhasePacket { MatchId = matchId, Phase = MatchPhase.Loading, ServerTick = 460, PhaseEndTick = 1360, MinPlayers = 2, MaxPlayers = 10 });
+            var before = network.Sent;
             for (var i = 0; i < 120; i++) { flow.Tick(1 / 60f); clock.Advance(1 / 60.0); }
-            Assert.AreEqual(LobbyScreen.MainMenu, flow.Screen, "flow untouched without a join");
-            Assert.AreEqual(before, network.Sent, "no packet (LoadAck or other) from UI-02");
+            Assert.AreEqual(LobbyScreen.Loading, flow.Screen, "the flow really is in Loading");
+            Assert.AreEqual(before, network.Sent, "no LoadAck (or any packet) from UI-02 while loading");
             Assert.IsFalse(System.IO.Directory.GetFiles("Assets/_JungleMaze/Scripts", "*.cs", System.IO.SearchOption.AllDirectories)
                 .Where(f => f.Replace('\\', '/').Contains("/Lobby/"))
                 .Any(f => System.IO.File.ReadAllText(f).Contains("ConfirmLoaded") || System.IO.File.ReadAllText(f).Contains("LoadAckPacket")));
+            flow.Dispose();
             match.Dispose();
+        }
+
+        private static System.Collections.Generic.IEnumerable<TestCaseData> HomeMatrix()
+        {
+            var screens = new[] { LobbyScreen.Connecting, LobbyScreen.Lobby, LobbyScreen.Loading, LobbyScreen.InGame,
+                LobbyScreen.Results, LobbyScreen.RoomManager, LobbyScreen.History };
+            var errors = new[] { DisconnectReason.ConnectionLost, DisconnectReason.ConnectTimeout, DisconnectReason.ServerClosed };
+            foreach (var s in screens)
+            foreach (var e in errors)
+                yield return new TestCaseData(s, e).SetName("FlowHomeAlways_" + s + "_" + e);
+        }
+
+        /// <summary>
+        /// AC40 at flow level: each of 7 screens × 3 network failures (sudden drop, timeout, server closed) leaves a screen
+        /// with "Về menu"; pressing it lands on the main menu with no live connection, no reconnect, no old notice or
+        /// result, at most one leave, and the menu stays put on later ticks.
+        /// </summary>
+        [TestCaseSource(nameof(HomeMatrix))]
+        public void HomeAlways_FlowLevel(LobbyScreen screen, DisconnectReason error)
+        {
+            using var rig = new LobbyRig();
+            Reach(rig, screen);
+            Assert.AreEqual(screen, rig.Flow.Screen, "setup");
+            Fail(rig, screen, error);
+            Assert.IsTrue(LobbyScreenRules.HasHome(rig.Flow.Screen), "home offered on " + rig.Flow.Screen);
+            var sentBefore = rig.Commands.Leaves + rig.Commands.Cancels;
+            rig.Flow.GoHome();
+            Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen);
+            Assert.LessOrEqual(rig.Commands.Leaves + rig.Commands.Cancels - sentBefore, 1, "one leave at most");
+            Assert.AreEqual(ReconnectState.Idle, rig.Flow.Reconnect.State, "no reconnect overlay left");
+            Assert.IsEmpty(rig.Flow.Notice);
+            Assert.IsEmpty(rig.Flow.LoadErrorText);
+            Assert.IsFalse(rig.Flow.Result.HasData);
+            Assert.IsFalse(rig.Flow.ReplayPending);
+            Assert.IsFalse(rig.Join.Busy, "no join in flight");
+            rig.Connection.Set(NetworkState.Disconnected, DisconnectReason.UserRequested); // what the leave does on a real connection
+            rig.Tick(30);
+            Assert.AreEqual(LobbyScreen.MainMenu, rig.Flow.Screen, "no bounce back");
+        }
+
+        private static void Reach(LobbyRig rig, LobbyScreen screen)
+        {
+            switch (screen)
+            {
+                case LobbyScreen.Connecting:
+                    rig.Flow.OpenJoin();
+                    rig.Join.SetCode("K7M2Q9");
+                    rig.Flow.SubmitJoin();
+                    rig.Connection.Set(NetworkState.Connecting);
+                    rig.Tick();
+                    break;
+                case LobbyScreen.Lobby: rig.JoinLobby(); break;
+                case LobbyScreen.Loading: rig.JoinLobby(); rig.Phase(MatchPhase.Loading, 30); break;
+                case LobbyScreen.InGame: rig.InGame(); rig.Connection.CanResume = true; break;
+                case LobbyScreen.Results:
+                    rig.InGame();
+                    rig.Results.Current = rig.Result(MatchEndReason.LastAlive, 0, (0, 1, "Huy"), (1, 2, "Mai"));
+                    rig.Phase(MatchPhase.Ending, 10);
+                    break;
+                case LobbyScreen.RoomManager:
+                    rig.Account.Username = "huycv";
+                    rig.Account.Password = "secret123";
+                    rig.Account.Submit();
+                    rig.Flow.OpenRooms();
+                    break;
+                case LobbyScreen.History: rig.Flow.OpenHistory(); break;
+            }
+        }
+
+        /// <summary>Network screens lose the connection with the reason; API screens get the same failure from the API.</summary>
+        private static void Fail(LobbyRig rig, LobbyScreen screen, DisconnectReason error)
+        {
+            if (screen == LobbyScreen.RoomManager)
+            {
+                rig.Api.ListStatus = error == DisconnectReason.ServerClosed ? 503 : 0;
+                rig.Rooms.Refresh();
+                Assert.AreEqual(ListState.Unavailable, rig.Rooms.State);
+                return;
+            }
+            if (screen == LobbyScreen.History)
+            {
+                rig.History.Fail = true;
+                Assert.IsTrue(rig.Flow.History.Refresh().IsCompleted);
+                Assert.AreEqual(ListState.Unavailable, rig.Flow.History.State);
+                return;
+            }
+            rig.Connection.Set(error == DisconnectReason.ConnectTimeout ? NetworkState.Failed : NetworkState.Disconnected, error);
+            rig.Tick();
+            if (rig.Flow.Screen == LobbyScreen.Reconnecting) rig.Connection.Set(NetworkState.Connecting); // resume in flight
         }
     }
 
