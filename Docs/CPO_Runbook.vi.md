@@ -78,6 +78,8 @@ Trước khi dùng Unity thì ghi vào mục 4 của `Docs/Agent_Coordination.vi
 
 - **27/10 · G1 ART-05: duyệt** (`7567fc34`): không dùng ffmpeg mà dùng `soundfile` trong venv; nguồn gốc lưu ở `Tools/Audio/Sources/ART-05/`. Sau review (`b13626bf`): trần limiter 6 dB, nhãn tiếng rồng `chưa kiểm chứng`, giữ cột `heard`.
 - **27/10 · G3 ART-05: Nghiệm thu có điều kiện** (`dfb3a914`). QA Đạt 35 · Một phần 5 · Chưa kiểm chứng 2 · Không đạt 0. PIC đã nghe nhóm 4 âm và thấy ổn. Phải thay `MatchEnd` (TimeOver.wav mang thẻ hollywoodedge.com) bằng jingle CC0 của Kenney (F1, Unity Dev). PIC nghe 10 mã ★ còn lại (F2). Ticket kế tiếp của V.Huy: TEL-01.
+- **31/10 · Người dùng giao: CPO là đầu mối duy nhất**, điều phối mọi role và phòng ban, có quyền duyệt kết quả của họ. Đã lập Phòng UX/UI (phiên `ux-ui-designer`) và Phòng Thẩm mỹ Art (phiên `art-director`, `ca965c5c`). Điểm Art: Tốt 3/5 · Mượt 2/5 · Hấp dẫn 2/5; kế hoạch AES-01…12. Codex chưa chạy vì máy thiếu RAM.
+- **31/10 · G3 UI-02 vòng 2: Nghiệm thu vòng 2** (`e3044d8a`). Luồng đăng nhập trước; bản dev có nút bỏ qua đăng nhập. Ticket vẫn In Progress, chờ AC7/AC8 (Vinh/Vũ) và NET-02.
 ## 5. Khởi động lại khi hết token
 
 Đã hẹn các lượt tự chạy lại (scheduled task "CPO resume"). Mỗi lượt làm:
