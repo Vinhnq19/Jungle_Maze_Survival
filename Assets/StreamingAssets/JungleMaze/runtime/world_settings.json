@@ -1,6 +1,7 @@
 {
   "version": "world-prototype-1",
   "seed": 20261028,
+  "layoutMode": "Authored",
   "status": "prototype-pending-lead-approval",
   "map": { "size": 50, "spawnCount": 10, "spawnMinDistance": 6, "heroRadius": 0.4, "initialZoneRadius": 36, "chestCount": 60, "potCount": 90, "bushCount": 45, "portalPairs": 3, "doorCount": 2, "swampCount": 2, "lavaCount": 2, "poisonCount": 4 },
   "destructibles": { "chestHp": 30, "potHp": 20, "supplyHp": 150 },

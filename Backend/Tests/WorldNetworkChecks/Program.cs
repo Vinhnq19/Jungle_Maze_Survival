@@ -17,6 +17,8 @@ int FreePort(SocketType type) { using var s = new Socket(AddressFamily.InterNetw
 var mode = args.FirstOrDefault() ?? "Mixed";
 if (mode is not ("Udp" or "Wss" or "Mixed")) throw new ArgumentException("Use Udp, Wss or Mixed.");
 Environment.SetEnvironmentVariable("WORLD_ENABLED", "1");
+// Procedural placement is a fixture only; normal matches use the authored team map.
+Environment.SetEnvironmentVariable("WORLD_LAYOUT_MODE", "Prototype");
 Environment.SetEnvironmentVariable("MATCH_PROFILE", "test");
 Environment.SetEnvironmentVariable("WS_ENABLED", "true");
 Environment.SetEnvironmentVariable("WS_BIND_ADDRESS", "127.0.0.1");

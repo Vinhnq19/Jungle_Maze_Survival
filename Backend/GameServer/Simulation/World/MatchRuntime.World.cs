@@ -19,6 +19,13 @@ public sealed partial class MatchRuntime
         var mode = Environment.GetEnvironmentVariable("WORLD_ENABLED");
         if (mode != "1" && (mode == "0" || !_profile.WorldEnabled)) return;
         _worldSettings = WorldSettings.Load(GameDataLoader.ReadGameDataFile("world_settings.json"));
+        if (_worldSettings.LayoutMode == "Authored")
+        {
+            var mapDocument = JsonSerializer.Deserialize<AuthoredMapDocument>(GameDataLoader.ReadGameDataFile("map_demo.json"),
+                new JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true, Converters = { new JsonStringEnumConverter() } })
+                ?? throw new InvalidDataException("Missing authored map.");
+            _worldSettings.Layout = mapDocument.Build(_worldSettings.Version);
+        }
         var options = new JsonSerializerOptions { IncludeFields = true, PropertyNameCaseInsensitive = true };
         options.Converters.Add(new JsonStringEnumConverter());
         var document = JsonSerializer.Deserialize<ItemCatalogDocument>(GameDataLoader.ReadGameDataFile("items_catalog.json"), options)

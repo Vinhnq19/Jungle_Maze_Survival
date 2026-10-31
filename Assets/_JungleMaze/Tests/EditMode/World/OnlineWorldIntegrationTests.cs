@@ -59,16 +59,17 @@ namespace JungleMaze.Tests.World
             public readonly MapLayout Layout;
             public Guid MatchId=Guid.NewGuid();
             public bool Required=true;
-            public Rig()
+            public Rig(bool authored=false)
             {
                 var balance=new BalanceConfigProvider(Application.streamingAssetsPath,null);
                 Network=new FakeNetwork(Bus);Hud=new HudStateStore(Bus,balance);Effects=new EffectStateStore(Bus);
                 var inventory=new InventoryStateStore(Bus,balance);
                 Match=new MatchSession(Network,Sender,Network,Bus,new PlayerRegistry());
-                World=new WorldClientSession(Match,Sender,Network,new Runtime(),new InventoryHudBinding(inventory,Hud,false),Config,()=>Required,Effects);
+                var authoredLayout=authored?WorldConfigData.Load(Application.streamingAssetsPath).Layout:null;
+                World=new WorldClientSession(Match,Sender,Network,new Runtime(),new InventoryHudBinding(inventory,Hud,false),Config,()=>Required,Effects,authoredLayout);
                 Combat=new OnlineCombatSession(Match,World,balance,Sender,Network,Hud);
                 Match.Initialize();World.Initialize();Combat.Initialize();
-                Layout=MapLayoutGenerator.Generate(Config,20261028);
+                Layout=authoredLayout??MapLayoutGenerator.Generate(Config,20261028);
                 Network.SetState(NetworkState.Joined,DisconnectReason.None);StartRound();
             }
             public void StartRound()
@@ -80,7 +81,7 @@ namespace JungleMaze.Tests.World
                 World.Tick(0);Combat.Tick(0);
             }
             public void Manifest(string hash=null)
-            {Network.Push(new WorldManifestPacket{MatchId=MatchId,Version=Config.Version,Size=(ushort)Config.Size,Seed=Layout.Seed,Hash=hash??Layout.Hash});}
+            {Network.Push(new WorldManifestPacket{MatchId=MatchId,Version=Layout.Version,Size=(ushort)Layout.Size,Seed=Layout.Seed,Hash=hash??Layout.Hash});}
             public void Page(int index)
             {
                 var count=Math.Min(24,Layout.Objects.Count-index*24);var objects=new WorldObjectWire[count];
@@ -102,6 +103,18 @@ namespace JungleMaze.Tests.World
             public void Dispose(){Combat.Dispose();World.Dispose();Match.Dispose();}
         }
 
+        [Test] public void NormalWorldUsesAuthoredTeamMapWithoutProceduralObjects()
+        {
+            using(var r=new Rig(true))
+            {
+                r.Ready();Assert.IsTrue(r.World.IsReady);
+                Assert.AreEqual(4,r.World.Layout.Objects.Count);
+                Assert.AreEqual(0,r.World.Layout.Seed);
+                foreach(var item in r.World.Layout.Objects)Assert.IsTrue(item.IsHardCover);
+                Assert.AreEqual(43,r.World.Layout.Spawns[0].X);
+                Assert.AreEqual(25,r.World.Layout.Spawns[0].Y);
+            }
+        }
         [Test] public void MovementWaitsForVerifiedMapAllPagesAndOwnInventory()
         {
             using(var r=new Rig())

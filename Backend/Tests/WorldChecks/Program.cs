@@ -76,9 +76,11 @@ var registry=new PacketRegistry();WorldActionRequestPacket received=default;regi
 var request=new WorldActionRequestPacket{MatchId=Guid.NewGuid(),RequestId=1,Action=WorldActionKind.Pickup,TargetId=400,Slot=0};var writer=new NetDataWriter();registry.WriteFrame(writer,ref request);Check(registry.TryReadFrame(new NetDataReader(writer.CopyData()))&&received.TargetId==400,"world request roundtrip ushort ID");
 var invalid=writer.CopyData();invalid[9]=99;Check(!registry.TryReadFrame(new NetDataReader(invalid)),"wrong world version rejects");
 var priorWorld=Environment.GetEnvironmentVariable("WORLD_ENABLED");
+var priorLayout=Environment.GetEnvironmentVariable("WORLD_LAYOUT_MODE");
 try
 {
     Environment.SetEnvironmentVariable("WORLD_ENABLED","1");
+    Environment.SetEnvironmentVariable("WORLD_LAYOUT_MODE","Prototype");
     var canonical=MapData.Load(GameDataLoader.ReadGameDataFile("map_demo.json"));
     var schedule=ZoneSchedule.Load(GameDataLoader.ReadGameDataFile("zone_schedule.json"));
     var profile=new MatchProfile{MinPlayers=2,LobbyDurationSeconds=.01,LoadingTimeoutSeconds=1,ZoneTimeScale=1000,TargetMatchDurationSeconds=10000};
@@ -94,6 +96,12 @@ try
     var match=Start("WORLD_A");var other=Start("WORLD_B");
     Check(match.World!=null&&other.World!=null,"world initializes from server profile at match start");
     var active=match.World!;var second=other.World!;
+    Environment.SetEnvironmentVariable("WORLD_LAYOUT_MODE","Authored");
+    var authored=Start("TEAM_MAP");
+    Check(authored.World!.Layout.Objects.Count==canonical.Obstacles.Count&&authored.World.Layout.Objects.All(o=>o.IsHardCover),"normal world uses only the team's authored map without generated placements");
+    Check(authored.World.Layout.Spawns.Select(p=>(p.X,p.Y)).SequenceEqual(canonical.SpawnPoints),"authored mode preserves every team spawn coordinate");
+    Check(authored.World.Layout.Objects.Select(o=>(o.Bounds.MinX,o.Bounds.MaxX,o.Bounds.MinY,o.Bounds.MaxY)).SequenceEqual(canonical.Obstacles.Select(o=>(o.MinX,o.MaxX,o.MinY,o.MaxY))),"authored mode preserves every team collider exactly");
+    Environment.SetEnvironmentVariable("WORLD_LAYOUT_MODE","Prototype");
     Check(canonical.Obstacles.Count==4,"world collision never mutates shared canonical map");
     Check(match.Entities.All.All(e=>!match.Zone!.IsOutside(e.X,e.Y)),"world spawns start inside actual zone schedule");
     match.Entities.TryGet(0,out var actor);var px=actor!.X;var py=actor.Y;
@@ -129,7 +137,7 @@ try
     var batchCount = saturated.Floor.Items.Count;
     Check(!saturated.Destructibles.DamageConfirmed(saturatedChest.Id, 30, 0, 1) && saturated.Floor.Items.Count == batchCount, "retry after recovered destruction cannot duplicate the loot batch");
 }
-finally{Environment.SetEnvironmentVariable("WORLD_ENABLED",priorWorld);}
+finally{Environment.SetEnvironmentVariable("WORLD_ENABLED",priorWorld);Environment.SetEnvironmentVariable("WORLD_LAYOUT_MODE",priorLayout);}
 Console.WriteLine($"WorldChecks: {checks} passed, 0 failed");
 
 sealed class FakePorts:IDestructibleLootSink,IEnvironmentDamageSink,IEnvironmentEffectSink,IEnvironmentMovementSink

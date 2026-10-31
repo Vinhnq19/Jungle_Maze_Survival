@@ -19,11 +19,8 @@ namespace JungleMaze.Presentation.World.Phase2
         private Transform _root;private Sprite _square;private Texture2D _texture;private WorldVisualSet _visuals;
         private readonly Dictionary<ushort,WorldObjectView> _views=new Dictionary<ushort,WorldObjectView>();
         private readonly Dictionary<ushort,BoxCollider2D> _colliders=new Dictionary<ushort,BoxCollider2D>();
-        private readonly List<GameObject> _legacyCovers=new List<GameObject>();
-        private IClientRuntimeData _runtime;
         [Inject] public void Construct(WorldClientSession world,MatchSession match){_world=world;_match=match;}
         [Inject] public void Configure(IMatchMenuState menu,ItemCatalog catalog){_menu=menu;_catalog=catalog;}
-        [Inject] public void BindGeometry(IClientRuntimeData runtime) => _runtime=runtime;
         private void Start(){_world.Changed+=Refresh;_world.Teleported+=Teleport;SceneManager.sceneLoaded+=SceneLoaded;_visuals=visuals!=null?visuals:Resources.Load<WorldVisualSet>("WorldVisualSet");Refresh();}
         private void SceneLoaded(Scene scene,LoadSceneMode mode) => Refresh();
         private void Teleport(ushort source,uint sequence)
@@ -72,19 +69,13 @@ namespace JungleMaze.Presentation.World.Phase2
             if(_root==null){_views.Clear();_colliders.Clear();var go=new GameObject("Authoritative World Views");_root=go.transform;_root.SetParent(transform,false);}
             var show=SceneManager.GetActiveScene().name=="Game"&&_world.IsReady;
             _root.gameObject.SetActive(show);
-            SetLegacyCovers(show);
             if(_square==null){_texture=new Texture2D(1,1);_texture.SetPixel(0,0,Color.white);_texture.Apply();_square=Sprite.Create(_texture,new Rect(0,0,1,1),new Vector2(.5f,.5f),1);}
-            ApplyViews(_world.Objects,_root,_views,_visuals,_square);
-            ApplyCollision(_world.Objects);
-        }
-        private void SetLegacyCovers(bool generated)
-        {
-            if(!generated){foreach(var cover in _legacyCovers)if(cover!=null)cover.SetActive(true);_legacyCovers.Clear();return;}
-            if(_legacyCovers.Count!=0||_runtime==null)return;
-            foreach(var root in SceneManager.GetActiveScene().GetRootGameObjects())
-            foreach(var child in root.GetComponentsInChildren<Transform>(true))
-            foreach(var cover in _runtime.Covers)
-                if(child.name==cover.Name&&child.gameObject.activeSelf){_legacyCovers.Add(child.gameObject);child.gameObject.SetActive(false);break;}
+            // Static cover visuals/colliders belong to the team's map, never to this adapter.
+            var dynamicStates=new List<WorldObjectWire>();
+            foreach(var state in _world.Objects)if(state.Kind>4)dynamicStates.Add(state);
+            var states=dynamicStates.ToArray();
+            ApplyViews(states,_root,_views,_visuals,_square);
+            ApplyCollision(states);
         }
         private void ApplyCollision(WorldObjectWire[] states)
         {
@@ -110,6 +101,6 @@ namespace JungleMaze.Presentation.World.Phase2
             var gone=new List<ushort>();foreach(var entry in views)if(!seen.Contains(entry.Key))gone.Add(entry.Key);
             foreach(var id in gone){if(views[id]!=null)Object.Destroy(views[id].gameObject);views.Remove(id);}
         }
-        private void OnDestroy(){if(_world!=null){_world.Changed-=Refresh;_world.Teleported-=Teleport;}SceneManager.sceneLoaded-=SceneLoaded;SetLegacyCovers(false);if(_root!=null)Destroy(_root.gameObject);if(_square!=null)Destroy(_square);if(_texture!=null)Destroy(_texture);}
+        private void OnDestroy(){if(_world!=null){_world.Changed-=Refresh;_world.Teleported-=Teleport;}SceneManager.sceneLoaded-=SceneLoaded;if(_root!=null)Destroy(_root.gameObject);if(_square!=null)Destroy(_square);if(_texture!=null)Destroy(_texture);}
     }
 }

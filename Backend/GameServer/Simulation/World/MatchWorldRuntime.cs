@@ -32,7 +32,8 @@ public sealed partial class MatchWorldRuntime : ITransactionalDestructibleLootSi
     public uint Revision {get;private set;}=1;
     public MatchWorldRuntime(Guid matchId,WorldSettings settings,IEntityRegistry entities,HealthService health,ItemCatalog? catalog=null,LootProfile? lootProfile=null)
     {
-        MatchId=matchId;_entities=entities;_health=health;_heroRadius=settings.Map.HeroRadius;Layout=MapLayoutGenerator.Generate(settings.Map,settings.Seed);
+        MatchId=matchId;_entities=entities;_health=health;_heroRadius=settings.Map.HeroRadius;
+        Layout=settings.Layout ?? (settings.LayoutMode=="Prototype" ? MapLayoutGenerator.Generate(settings.Map,settings.Seed) : throw new InvalidOperationException("Authored map must be loaded before starting world services."));
         _nextId=(ushort)(Layout.Objects.Count+1);
         Floor=new MemoryItemWorld(AllocateId);
         catalog??=ItemCatalog.CreateBaseline();_loot=lootProfile==null?new LootTable(catalog):new LootTable(catalog,lootProfile);
