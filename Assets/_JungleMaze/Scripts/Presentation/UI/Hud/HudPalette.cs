@@ -37,6 +37,10 @@ namespace JungleMaze.Presentation.UI.Hud
         public Color Green;
         public Color HitMarker;
         public Color DangerFill;
+        /// <summary>Red for text on dark fills (AES-02: E5484D is 3.75:1 on Surface, this is ≥ 4.5:1).</summary>
+        public Color RedText;
+        /// <summary>Full-screen dim behind modals (AES-01).</summary>
+        public Color Scrim;
         /// <summary>Dark outer edge of direction A frames (overlay tint, ADHOC-UI-ASSETS-A).</summary>
         public Color Edge;
 
@@ -53,7 +57,7 @@ namespace JungleMaze.Presentation.UI.Hud
             Purple = Hex(0xA2, 0x74, 0xFF),
             Text = Hex(0xED, 0xF2, 0xEE),
             Muted = Hex(0xA6, 0xBB, 0xB7),
-            Faint = Hex(0x77, 0x90, 0x8A),
+            Faint = Hex(0x85, 0x9E, 0x98),
             Surface = Hex(0x20, 0x2A, 0x2D, 0.92f),
             Raised = Hex(0x0C, 0x14, 0x17),
             Line = Hex(0x52, 0x6B, 0x69),
@@ -65,6 +69,8 @@ namespace JungleMaze.Presentation.UI.Hud
             Green = Hex(0x63, 0xBA, 0xA5),
             HitMarker = Color.white,
             DangerFill = Hex(0xE5, 0x48, 0x4D, 0.15f),
+            RedText = Hex(0xF0, 0x6A, 0x6E),
+            Scrim = Hex(0x0B, 0x11, 0x14, 0.72f),
             Edge = Hex(0x0C, 0x14, 0x17)
         };
 
