@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text;
 using JungleMaze.App.Config;
 using JungleMaze.App.Lobby;
@@ -37,13 +38,20 @@ namespace JungleMaze.Infrastructure.Api
             Send("POST", "api/auth/login", null, Credentials(username, password), Timeout, "login", r =>
             {
                 if (r.Status != 200) { done(ApiResult<AuthToken>.Fail(r.Status, r.Code)); return; }
-                var token = r.Json?.Value<string>("accessToken");
-                // DateTimeOffset keeps any offset the API sends ("Z" today; "+07:00" stays the same instant, review G2).
-                var expires = r.Json?.Value<DateTimeOffset?>("expiresAtUtc")?.UtcDateTime ?? DateTime.UtcNow.AddMinutes(30);
-                done(string.IsNullOrWhiteSpace(token)
-                    ? ApiResult<AuthToken>.Fail(502, "BadResponse")
-                    : ApiResult<AuthToken>.Success(new AuthToken(token, expires)));
+                done(ReadLogin(r.Json));
             });
+
+        /// <summary>The <c>/api/auth/login</c> 200 body, parsed the same way as a live reply (<see cref="Read"/>).</summary>
+        public static ApiResult<AuthToken> ReadLogin(string body) => ReadLogin(JToken.Parse(body) as JObject);
+
+        private static ApiResult<AuthToken> ReadLogin(JObject json)
+        {
+            var token = json?.Value<string>("accessToken");
+            var expires = ReadUtc(json?["expiresAtUtc"]) ?? DateTime.UtcNow.AddMinutes(30);
+            return string.IsNullOrWhiteSpace(token)
+                ? ApiResult<AuthToken>.Fail(502, "BadResponse")
+                : ApiResult<AuthToken>.Success(new AuthToken(token, expires));
+        }
 
         public void List(string token, Action<ApiResult<RoomInfo[]>> done) =>
             Send("GET", "api/rooms", token, null, Timeout, "rooms.list", r =>
@@ -80,6 +88,29 @@ namespace JungleMaze.Infrastructure.Api
                 }
                 done(ApiResult<LeaderboardEntry[]>.Success(rows));
             });
+
+        /// <summary>
+        /// UTC instant of a JSON date. Newtonsoft has usually parsed it into a Date token already (QA B-1: casting that
+        /// to DateTimeOffset threw); a string is parsed keeping its offset ("Z" or "+07:00" are the same instant, G2).
+        /// A value with no offset at all is taken as UTC, as the field name says, never as the player's local time.
+        /// </summary>
+        private static DateTime? ReadUtc(JToken value)
+        {
+            if (value == null) return null;
+            switch (value.Type)
+            {
+                case JTokenType.Date:
+                    var raw = ((JValue)value).Value;
+                    if (raw is DateTimeOffset o) return o.UtcDateTime;
+                    var d = (DateTime)raw;
+                    return d.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(d, DateTimeKind.Utc) : d.ToUniversalTime();
+                case JTokenType.String:
+                    return DateTimeOffset.TryParse((string)value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var parsed)
+                        ? parsed.UtcDateTime : (DateTime?)null;
+                default:
+                    return null;
+            }
+        }
 
         private static JObject Credentials(string username, string password) =>
             new JObject { ["username"] = username, ["password"] = password };
@@ -122,8 +153,22 @@ namespace JungleMaze.Infrastructure.Api
                 // A down API is a normal state for guests (AC6): health is info, the account/room calls warn.
                 var line = "[LobbyApi] " + op + " → " + (reply.Status == 0 ? reply.Code : "HTTP " + reply.Status);
                 if (reply.Status / 100 != 2) { if (op == "health") _log.Info(line); else _log.Warn(line); }
-                done(reply);
+                Finish(op, reply, done);
             };
+        }
+
+        /// <summary>
+        /// Runs the answer handler; if it throws on an unexpected body, the caller still gets one answer, a 502
+        /// "BadResponse", so nothing stays busy (QA B-1). The exception goes to the log without the body.
+        /// </summary>
+        private void Finish(string op, Reply reply, Action<Reply> done)
+        {
+            try { done(reply); }
+            catch (Exception e) when (!(e is OutOfMemoryException))
+            {
+                _log.Warn("[LobbyApi] " + op + " → bad response (" + e.GetType().Name + ")");
+                done(new Reply(502, "BadResponse", null));
+            }
         }
 
         private static Reply Read(UnityWebRequest request)

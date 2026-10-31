@@ -559,6 +559,8 @@ namespace JungleMaze.EditorTools
                 t.fontSize = 15;
                 t.color = t.transform.parent == r ? P.Text : Color.black;
             }
+            var arrow = r.Find("Arrow");
+            if (arrow != null) arrow.gameObject.SetActive(false); // QA m-a: TMP default arrow has no sprite (white box)
             go.GetComponent<TMP_Dropdown>().ClearOptions();
             return go.GetComponent<TMP_Dropdown>();
         }

@@ -538,6 +538,13 @@ namespace JungleMaze.Presentation.UI.Lobby
             }
             m.Profile.ClearOptions();
             m.Profile.AddOptions(new System.Collections.Generic.List<string>(_menu.Profiles));
+            var current = System.Array.FindIndex(_menu.Profiles, name => _menu.ConfigSource == "profile:" + name);
+            if (current < 0) // a saved client.json or command line: name it instead of showing the first profile
+            {
+                m.Profile.AddOptions(new System.Collections.Generic.List<string> { "Đang dùng: " + _menu.ConfigSource });
+                current = m.Profile.options.Count - 1;
+            }
+            m.Profile.SetValueWithoutNotify(current); // QA m-a: show the profile in use, not the first one
             m.Host.SetTextWithoutNotify(_menu.Host ?? "");
             m.Port.SetTextWithoutNotify(_menu.Port ?? "");
             m.Api.SetTextWithoutNotify(_menu.ApiBaseUrl ?? "");

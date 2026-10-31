@@ -247,4 +247,59 @@ namespace JungleMaze.Tests.Lobby
             Assert.AreEqual(ApiMessages.SessionExpired, f.Account.Message);
         }
     }
+
+    /// <summary>
+    /// QA B-1: the real <c>/api/auth/login</c> body (Backend <c>LoginResponse(AccessToken, UserId, ExpiresAtUtc)</c>)
+    /// goes through the same JSON parse as a live reply. Newtonsoft turns the date into a Date token; reading it used to
+    /// throw, so the login never answered and the button stayed locked.
+    /// </summary>
+    public sealed class LobbyApiClientParseTests
+    {
+        private static readonly DateTime Expected = new DateTime(2026, 10, 31, 12, 30, 0, DateTimeKind.Utc);
+
+        [TestCase("2026-10-31T12:30:00Z", TestName = "ReadLogin_UtcZ")]
+        [TestCase("2026-10-31T19:30:00+07:00", TestName = "ReadLogin_Offset")]
+        [TestCase("2026-10-31T12:30:00", TestName = "ReadLogin_NoOffset_IsUtc")]
+        public void ReadLogin_RealBody_ExpiryInUtc(string expires)
+        {
+            var body = "{\"accessToken\":\"eyJhbGciOiJIUzI1NiJ9.x.y\",\"userId\":\"6721a0c3e1b2\",\"expiresAtUtc\":\"" + expires + "\"}";
+            var r = Infrastructure.Api.LobbyApiClient.ReadLogin(body);
+            Assert.IsTrue(r.Ok);
+            Assert.AreEqual("eyJhbGciOiJIUzI1NiJ9.x.y", r.Value.AccessToken);
+            Assert.AreEqual(DateTimeKind.Utc, r.Value.ExpiresAtUtc.Kind);
+            Assert.AreEqual(Expected, r.Value.ExpiresAtUtc);
+        }
+
+        [Test]
+        public void ReadLogin_SystemTextJsonTicks_AndMissingToken()
+        {
+            var r = Infrastructure.Api.LobbyApiClient.ReadLogin(
+                "{\"accessToken\":\"t\",\"userId\":\"u\",\"expiresAtUtc\":\"2026-10-31T12:30:00.1234567Z\"}");
+            Assert.AreEqual(Expected.AddTicks(1234567), r.Value.ExpiresAtUtc);
+            var missing = Infrastructure.Api.LobbyApiClient.ReadLogin("{\"userId\":\"u\",\"expiresAtUtc\":\"2026-10-31T12:30:00Z\"}");
+            Assert.IsFalse(missing.Ok);
+            Assert.AreEqual(502, missing.HttpStatus);
+        }
+
+        /// <summary>The whole login answer: the session leaves Busy and becomes valid (the B-1 symptom).</summary>
+        [Test]
+        public void Login_RealBody_SessionNotStuckBusy()
+        {
+            var api = new BodyAccountApi("{\"accessToken\":\"t\",\"userId\":\"u\",\"expiresAtUtc\":\"2099-01-01T00:00:00Z\"}");
+            var account = new AccountSession(api, () => new DateTime(2026, 10, 31, 0, 0, 0, DateTimeKind.Utc))
+                { Username = "huycv", Password = "secret123" };
+            Assert.IsTrue(account.Submit());
+            Assert.IsFalse(account.Busy);
+            Assert.IsTrue(account.IsValid);
+        }
+
+        private sealed class BodyAccountApi : IAccountApi
+        {
+            private readonly string _body;
+            public BodyAccountApi(string body) => _body = body;
+            public void Register(string username, string password, Action<ApiResult<bool>> done) => done(ApiResult<bool>.Success(true, 201));
+            public void Login(string username, string password, Action<ApiResult<AuthToken>> done) =>
+                done(Infrastructure.Api.LobbyApiClient.ReadLogin(_body));
+        }
+    }
 }
