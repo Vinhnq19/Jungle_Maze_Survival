@@ -1,0 +1,9 @@
+{
+  "name": "JungleMaze.FigmaExport.Editor",
+  "rootNamespace": "JungleMaze.EditorTools",
+  "references": ["JungleMaze.Core", "JungleMaze.Domain", "JungleMaze.Application", "JungleMaze.Infrastructure", "JungleMaze.Presentation", "JungleMaze.Protocol", "UnityEngine.UI", "Unity.TextMeshPro"],
+  "includePlatforms": ["Editor"],
+  "overrideReferences": true,
+  "precompiledReferences": ["LiteNetLib.dll"],
+  "autoReferenced": false
+}
