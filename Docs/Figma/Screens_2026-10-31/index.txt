@@ -1,0 +1,34 @@
+01_main-menu.png	Menu chính	UI-02
+02_join-form.png	Vào phòng (Guest: tên + RoomCode)	UI-02
+03_join-form-invalid-code.png	Vào phòng: mã sai ký tự	UI-02
+04_join-rejected-room-full.png	Vào phòng: bị từ chối, phòng đầy	UI-02
+05_connecting.png	Đang kết nối	UI-02
+06_login.png	Đăng nhập	UI-02
+07_register-validation.png	Đăng ký: lỗi kiểm tra	UI-02
+08_room-manager.png	Quản lý phòng: danh sách + tạo	UI-02
+09_room-delete-confirm.png	Quản lý phòng: xác nhận xóa	UI-02
+10_room-create-limit.png	Quản lý phòng: lỗi giới hạn tạo	UI-02
+11_lobby-countdown.png	Phòng chờ: đếm ngược	UI-02
+12_lobby-waiting.png	Phòng chờ: chờ đủ người	UI-02
+13_loading.png	Đang tải (hướng dẫn điều khiển)	UI-02
+14_loading-error.png	Đang tải: lỗi	UI-02
+15_results-victory.png	Kết quả: Chiến thắng	UI-02
+16_results-replay-waiting.png	Kết quả: chờ chơi lại	UI-02
+17_results-defeat.png	Kết quả: Thua (Hạng #3)	UI-02
+18_reconnecting.png	Mất kết nối: đang kết nối lại	UI-02
+19_reconnect-failed.png	Mất kết nối: không kết nối lại được	UI-02
+20_history.png	Lịch sử: có dữ liệu	UI-02
+21_history-empty.png	Lịch sử: trống	UI-02
+22_history-unavailable.png	Lịch sử: tạm ngừng	UI-02
+23_leaderboard.png	Leaderboard trận: có dữ liệu	UI-02
+24_leaderboard-empty.png	Leaderboard trận: trống	UI-02
+25_leaderboard-unavailable.png	Leaderboard trận: tạm ngừng	UI-02
+26_hud-in-match.png	HUD trong trận	UI-01
+27_hud-pickup-toast.png	HUD: thông báo nhặt đồ	UI-01
+28_hud-low-hp-zone.png	HUD: máu thấp, bo sắp thu	UI-01
+29_esc-menu.png	Menu ESC (cài đặt)	UI-03
+30_leave-confirm.png	Xác nhận thoát trận	UI-03
+31_eliminated.png	Bị loại (bị người chơi hạ)	UI-03
+32_spectator.png	Theo dõi (Spectator)	UI-03
+33_killcam.png	Killcam	UI-03
+34_killcam-unavailable-notice.png	Thông báo killcam không khả dụng (fallback)	UI-03
