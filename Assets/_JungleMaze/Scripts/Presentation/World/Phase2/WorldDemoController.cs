@@ -34,7 +34,7 @@ namespace JungleMaze.Presentation.World.Phase2
         {_mapConfig=map;_destructibleConfig=destructibles;_hazardConfig=hazards;_catalog=catalog;_lootTable=loot;}
         private void Start()
         {
-            if(_hud==null||_catalog==null||_mapConfig==null){Debug.LogError("[WorldDemo] Bootstrap/config injection missing; sync runtime data.");enabled=false;return;}
+            if(_hud==null||_catalog==null||_mapConfig==null||heroVisual==null||projectilePrefab==null||swingPrefab==null){Debug.LogError("[WorldDemo] Bootstrap/config or Game visual references missing; configure the WorldDemo scene.");enabled=false;return;}
             _flow.ApplyAuthoritativePhase(new MatchPhasePacket{Phase=MatchPhase.InGame});_flow.IsOffline=true;
             _id=Guid.NewGuid();_map=MapLayoutGenerator.Generate(_mapConfig,seed);
             _floor=new MemoryItemWorld(()=>++_nextId);_items=new InventoryService(_id,_catalog,this,_floor);_items.Register(0);
@@ -43,7 +43,7 @@ namespace JungleMaze.Presentation.World.Phase2
             _binding=new InventoryHudBinding(_inventoryHud,_hud,false);_visuals=Resources.Load<WorldVisualSet>("WorldVisualSet");
             _position=_map.Spawns[0];_items.SetActorState(0,_position.X,_position.Y,true);
             _texture=new Texture2D(1,1);_texture.SetPixel(0,0,Color.white);_texture.Apply();_square=Sprite.Create(_texture,new Rect(0,0,1,1),new Vector2(.5f,.5f),1);
-            var hero=new GameObject("World Demo Hero");_hero=hero.transform;hero.AddComponent<SpriteRenderer>().sprite=_square;hero.GetComponent<SpriteRenderer>().color=Color.cyan;_hero.localScale=Vector3.one*.65f;
+            CreateHeroVisual();
             _camera=Camera.main;_camera.orthographic=true;_camera.orthographicSize=10;
             // Explicit demo fixtures next to the initial spawn; real match starter loadout is server configured.
             ushort id;_floor.TrySpawn(new ItemStack("AXE"),_position.X+.7f,_position.Y,out id);
@@ -122,6 +122,7 @@ namespace JungleMaze.Presentation.World.Phase2
             foreach(var f in _floor.Items)states.Add(new WorldObjectWire{Id=f.Id,Kind=100,X=f.X,Y=f.Y,Width=.35f,Height=.35f,ItemId=f.Stack.ItemId,Count=(ushort)f.Stack.Count});
             WorldSceneView.ApplyViews(states.ToArray(),transform,_views,_visuals,_square);
             RenderItemIcons();
+            UpdateDemoCollision();
         }
         private void OnDestroy(){DisposeCombat();if(_hero!=null)Destroy(_hero.gameObject);if(_square!=null)Destroy(_square);if(_texture!=null)Destroy(_texture);}
     }

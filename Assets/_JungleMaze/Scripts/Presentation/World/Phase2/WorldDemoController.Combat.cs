@@ -1,9 +1,13 @@
 using JungleBackend.Protocol.Gameplay;
 using JungleMaze.App.Combat;
 using JungleMaze.App.Ports;
+using JungleMaze.App.Pooling;
+using JungleMaze.App.Player;
 using JungleMaze.App.World;
 using JungleMaze.Core.DI;
 using JungleMaze.Presentation.UI.Hud;
+using JungleMaze.Presentation.Combat;
+using JungleMaze.Presentation.World;
 using JungleMaze.World;
 using UnityEngine;
 
@@ -14,27 +18,48 @@ namespace JungleMaze.Presentation.World.Phase2
         private IBalanceConfigProvider _balance;
         private IItemIconProvider _icons;
         private WorldDemoCombatSession _combat;
+        [SerializeField] private SpriteRenderer heroVisual;
+        [SerializeField] private CoverProbeProjectile projectilePrefab;
+        [SerializeField] private MeleeSwingVisual swingPrefab;
+        [SerializeField] private GameObject[] weaponPrefabs=new GameObject[CombatWeaponIds.Count];
+        private IPoolService _pool;
+        private PooledPrefabFactory<CoverProbeProjectile> _projectiles;
+        private PooledPrefabFactory<MeleeSwingVisual> _swings;
+        private readonly Sprite[] _weaponSprites=new Sprite[CombatWeaponIds.Count];
+        private readonly System.Collections.Generic.Dictionary<ushort,BoxCollider2D> _demoCovers=new System.Collections.Generic.Dictionary<ushort,BoxCollider2D>();
         private SpriteRenderer _heldWeapon;
-        private readonly SpriteRenderer[] _traces=new SpriteRenderer[16];
         private readonly float[] _pelletAngles=new float[16];
-        private float _aimDegrees, _swingUntil, _traceUntil;
+        private float _aimDegrees, _swingUntil;
         private uint _hitSequence;
         public WorldDemoCombatSession DemoCombat=>_combat;
         public DestructibleService Destructibles=>_destructibles;
 
-        [Inject] public void ConfigureCombat(IBalanceConfigProvider balance,IItemIconProvider icons)
-        {_balance=balance;_icons=icons;}
+        [Inject] public void ConfigureCombat(IBalanceConfigProvider balance,IItemIconProvider icons,IPoolService pool)
+        {_balance=balance;_icons=icons;_pool=pool;}
+        /// <summary>Editor composition copies visual references from Game, never its movement/network scripts.</summary>
+        public void ConfigureVisualSources(SpriteRenderer body,CoverProbeProjectile projectile,MeleeSwingVisual swing,GameObject[] weapons)
+        {heroVisual=body;projectilePrefab=projectile;swingPrefab=swing;weaponPrefabs=weapons;}
+        private void CreateHeroVisual()
+        {
+            var hero=new GameObject("World Demo Hero");_hero=hero.transform;
+            var body=new GameObject("Body");body.transform.SetParent(_hero,false);
+            var renderer=body.AddComponent<SpriteRenderer>();
+            renderer.sprite=heroVisual.sprite;renderer.sharedMaterials=heroVisual.sharedMaterials;
+            renderer.color=heroVisual.color;renderer.flipX=heroVisual.flipX;renderer.flipY=heroVisual.flipY;
+            renderer.sortingLayerID=heroVisual.sortingLayerID;renderer.sortingOrder=heroVisual.sortingOrder;
+            body.transform.localPosition=heroVisual.transform.localPosition;
+            body.transform.localRotation=heroVisual.transform.localRotation;
+            body.transform.localScale=heroVisual.transform.localScale;
+        }
         private void InitializeCombat()
         {
             _combat=new WorldDemoCombatSession(_balance,_hud,_items);_combat.Confirmed+=PreviewHit;
+            _projectiles=new PooledPrefabFactory<CoverProbeProjectile>(_pool,projectilePrefab,16);
+            _swings=new PooledPrefabFactory<MeleeSwingVisual>(_pool,swingPrefab,4);
+            for(var i=0;i<weaponPrefabs.Length&&i<_weaponSprites.Length;i++)
+                if(weaponPrefabs[i]!=null)_weaponSprites[i]=weaponPrefabs[i].GetComponentInChildren<SpriteRenderer>(true)?.sprite;
             var held=new GameObject("Demo held weapon");held.transform.SetParent(transform,false);
             _heldWeapon=held.AddComponent<SpriteRenderer>();_heldWeapon.sortingOrder=10;
-            for(var i=0;i<_traces.Length;i++)
-            {
-                var trace=new GameObject("Demo shot trace "+i);trace.transform.SetParent(transform,false);
-                _traces[i]=trace.AddComponent<SpriteRenderer>();_traces[i].sprite=_square;
-                _traces[i].color=Color.yellow;_traces[i].sortingOrder=11;_traces[i].enabled=false;
-            }
         }
         private void UpdateCombat()
         {
@@ -43,17 +68,17 @@ namespace JungleMaze.Presentation.World.Phase2
             _aimDegrees=Mathf.Atan2(cursor.y-_position.Y,cursor.x-_position.X)*Mathf.Rad2Deg;
             if(_hp>0&&Input.GetMouseButton(0))_combat.TryAttack(_aimDegrees);
             if(_hp>0&&Input.GetKeyDown(KeyCode.R))_combat.TryReload();
-            var held=_items.HeldWeapon(0);_heldWeapon.sprite=held.IsEmpty?null:_icons.GetIcon(held.ItemId);
+            var held=_items.HeldWeapon(0);_heldWeapon.sprite=held.IsEmpty?null:_weaponSprites[(int)_combat.Controller.Selected];
+            _heldWeapon.enabled=Time.time>=_swingUntil;
+            _hero.rotation=Quaternion.Euler(0,0,_aimDegrees);
             if(_heldWeapon.sprite!=null)
             {
                 var size=_heldWeapon.sprite.bounds.size;_heldWeapon.transform.localScale=Vector3.one*(.8f/Mathf.Max(size.x,size.y));
                 var angle=_aimDegrees;
-                if(Time.time<_swingUntil)angle+=Mathf.Lerp(-50,50,1-(_swingUntil-Time.time)/.2f);
                 var direction=new Vector3(Mathf.Cos(angle*Mathf.Deg2Rad),Mathf.Sin(angle*Mathf.Deg2Rad));
                 _heldWeapon.transform.position=new Vector3(_position.X,_position.Y,0)+direction*.55f;
                 _heldWeapon.transform.rotation=Quaternion.Euler(0,0,angle);
             }
-            if(Time.time>=_traceUntil)foreach(var trace in _traces)trace.enabled=false;
         }
         private void PreviewHit(CombatWeaponId weapon,float aimDegrees)
         {
@@ -63,17 +88,23 @@ namespace JungleMaze.Presentation.World.Phase2
             if(slot.IsRanged)
             {
                 var count=CombatShotMath.PelletAngles(aimDegrees,slot.Pellets,slot.SpreadDegrees,_pelletAngles);
+                var shot=new ConfiguredShot(_balance,CombatWeaponIds.ToJsonId(weapon));
+                var pose=new SpawnPose(new Vector3(origin.x,origin.y,0),Quaternion.identity,transform);
                 for(var i=0;i<count;i++)
                 {
                     var direction=new Vector2(Mathf.Cos(_pelletAngles[i]*Mathf.Deg2Rad),Mathf.Sin(_pelletAngles[i]*Mathf.Deg2Rad));
                     float distance;var hit=NearestHit(origin,direction,slot.Range,out distance);
                     if(hit!=null&&hit.IsDestructible)_destructibles.DamageConfirmed(hit.Id,Mathf.RoundToInt(stats.Damage),0,++_hitSequence);
-                    var trace=_traces[i];trace.enabled=true;trace.transform.position=origin+direction*(distance*.5f);
-                    trace.transform.rotation=Quaternion.Euler(0,0,_pelletAngles[i]);trace.transform.localScale=new Vector3(distance,.035f,1);
+                    var projectile=_projectiles.Create(in pose);projectile.Launch(in shot,direction);
                 }
-                _traceUntil=Time.time+.1f;return;
+                return;
             }
-            _swingUntil=Time.time+.2f;
+            var duration=Mathf.Max(.1f,slot.CadenceSeconds*.6f);
+            var swingPose=new SpawnPose(new Vector3(origin.x,origin.y,0),Quaternion.identity,transform);
+            var swing=_swings.Create(in swingPose);
+            swing.Play(_weaponSprites[(int)weapon],_hero,aimDegrees,slot.ArcDegrees,slot.Range,duration);
+            swing.GetComponentInChildren<SpriteRenderer>(true).sortingOrder=10;
+            _pool.Despawn(swing,duration+.05f);_swingUntil=Time.time+duration;
             foreach(var target in _map.Objects)
             {
                 if(!target.IsDestructible||_destructibles.IsBroken(target.Id))continue;
@@ -112,6 +143,24 @@ namespace JungleMaze.Presentation.World.Phase2
                 var size=icon.bounds.size;view.transform.localScale=Vector3.one*(.45f/Mathf.Max(size.x,size.y));
             }
         }
-        private void DisposeCombat(){if(_combat!=null){_combat.Confirmed-=PreviewHit;_combat.Dispose();}}
+        private void UpdateDemoCollision()
+        {
+            foreach(var item in _map.Objects)
+            {
+                var solid=item.IsHardCover||(item.IsDestructible&&!_destructibles.IsBroken(item.Id))||(item.Kind==WorldObjectKind.Door&&_hazards.DoorsClosed);
+                if(!solid){if(_demoCovers.TryGetValue(item.Id,out var old)){old.enabled=false;Destroy(old.gameObject);_demoCovers.Remove(item.Id);}continue;}
+                if(_demoCovers.ContainsKey(item.Id))continue;
+                var go=new GameObject("Demo collision "+item.Id){layer=LayerMask.NameToLayer("HardCover")};go.transform.SetParent(transform,false);
+                var bounds=item.Bounds;var center=bounds.Center;go.transform.position=new Vector3(center.X,center.Y,0);
+                var collider=go.AddComponent<BoxCollider2D>();collider.size=new Vector2(bounds.MaxX-bounds.MinX,bounds.MaxY-bounds.MinY);_demoCovers.Add(item.Id,collider);
+            }
+        }
+        private void DisposeCombat()
+        {
+            if(_combat!=null){_combat.Confirmed-=PreviewHit;_combat.Dispose();}
+            if(_pool==null)return;
+            foreach(var projectile in GetComponentsInChildren<CoverProbeProjectile>())_pool.Despawn(projectile);
+            foreach(var swing in GetComponentsInChildren<MeleeSwingVisual>())_pool.Despawn(swing);
+        }
     }
 }

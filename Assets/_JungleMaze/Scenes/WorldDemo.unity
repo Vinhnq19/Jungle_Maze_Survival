@@ -254,6 +254,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f024542688477a348b51a0f243fbb33c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: JungleMaze.Presentation::JungleMaze.Presentation.World.Phase2.WorldDemoController
+  heroVisual: {fileID: 9030781189361835718, guid: 0b771002d50144440a26f486efa51d25, type: 3}
+  projectilePrefab: {fileID: 8077357926233679854, guid: 250fa663b8091af488a9de14e1cc6179, type: 3}
+  swingPrefab: {fileID: 950304993983111426, guid: f336da32cd5b9854a91cad61d67c21da, type: 3}
+  weaponPrefabs:
+  - {fileID: 0}
+  - {fileID: 615704597180599583, guid: b25644da96ead5c4a9bda7fe25ec00b5, type: 3}
+  - {fileID: 615704597180599583, guid: e7070f8e40f112f4a8356abfb6082b85, type: 3}
+  - {fileID: 615704597180599583, guid: 594d22ff228020942b7ea2175ceffb27, type: 3}
+  - {fileID: 615704597180599583, guid: 302c3b9469f07024aa49d4fae18bc1d3, type: 3}
+  - {fileID: 615704597180599583, guid: 4ea9df4f3b6248841b49471c49f24bf5, type: 3}
+  - {fileID: 4449992444893429118, guid: adafda99b6a8a3e4abf212e56797a36f, type: 3}
+  - {fileID: 8787065810530966089, guid: 6caa90e4d645b4d49a0241d4aa1403b2, type: 3}
+  - {fileID: 8787065810530966089, guid: 8433d16d135a4394ebe30a851c4267f6, type: 3}
+  - {fileID: 8787065810530966089, guid: 554cdfa652cf16449bd36e94d6649265, type: 3}
   seed: 20261028
 --- !u!4 &1262975349
 Transform:

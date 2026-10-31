@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
 using JungleMaze.Presentation.World.Phase2;
+using JungleMaze.Presentation.World;
+using JungleMaze.Presentation.Combat;
 using JungleMaze.World;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -20,10 +22,39 @@ namespace JungleMaze.EditorTools
             var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);
             var camera=new GameObject("Main Camera").AddComponent<Camera>();camera.tag="MainCamera";camera.orthographic=true;camera.orthographicSize=10;camera.transform.position=new Vector3(25,25,-10);camera.backgroundColor=new Color(.08f,.13f,.1f);
             var light=new GameObject("Main Light").AddComponent<Light>();light.type=LightType.Directional;
-            new GameObject("World Prototype").AddComponent<WorldDemoController>();
+            var demo=new GameObject("World Prototype").AddComponent<WorldDemoController>();ConfigureGameVisuals(demo);
             var hud=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_JungleMaze/Prefabs/UI/Hud.prefab");if(hud!=null)PrefabUtility.InstantiatePrefab(hud);
             var note=new GameObject("Prototype instructions").AddComponent<TextMesh>();note.text="OFFLINE WORLD PREVIEW\nWASD move · F pickup · 1-4 select · 5-8 use\nLeft click attack · R reload · Backspace drop\nSpace debug hit · H debug damage";note.characterSize=.11f;note.fontSize=28;note.anchor=TextAnchor.UpperLeft;note.transform.position=new Vector3(1,49,0);note.color=Color.white;
             EditorSceneManager.SaveScene(scene,"Assets/_JungleMaze/Scenes/WorldDemo.unity");AssetDatabase.SaveAssets();
+        }
+
+        /// <summary>Read Game's existing presenter references; never save or modify the Game scene.</summary>
+        public static void ConfigureGameVisuals(WorldDemoController demo)
+        {
+            var previous=SceneManager.GetActiveScene();var game=SceneManager.GetSceneByPath("Assets/_JungleMaze/Scenes/Game.unity");
+            var opened=!game.isLoaded;
+            if(opened)game=EditorSceneManager.OpenScene("Assets/_JungleMaze/Scenes/Game.unity",OpenSceneMode.Additive);
+            try
+            {
+                CombatWeaponPresenter source=null;
+                foreach(var root in game.GetRootGameObjects())
+                {source=root.GetComponentInChildren<CombatWeaponPresenter>(true);if(source!=null)break;}
+                if(source==null)throw new System.InvalidOperationException("Game combat presenter is missing.");
+                var serialized=new SerializedObject(source);
+                var projectile=serialized.FindProperty("projectilePrefab").objectReferenceValue as CoverProbeProjectile;
+                var swing=serialized.FindProperty("swingPrefab").objectReferenceValue as MeleeSwingVisual;
+                var array=serialized.FindProperty("weaponPrefabs");var weapons=new GameObject[array.arraySize];
+                for(var i=0;i<weapons.Length;i++)weapons[i]=array.GetArrayElementAtIndex(i).objectReferenceValue as GameObject;
+                var hero=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_JungleMaze/Prefabs/Hero.prefab");
+                if(hero==null||projectile==null||swing==null)throw new System.InvalidOperationException("Game visual assets are missing.");
+                demo.ConfigureVisualSources(hero.GetComponentInChildren<SpriteRenderer>(true),projectile,swing,weapons);
+                EditorUtility.SetDirty(demo);
+            }
+            finally
+            {
+                if(opened)EditorSceneManager.CloseScene(game,true);
+                if(previous.IsValid()&&previous.isLoaded)SceneManager.SetActiveScene(previous);
+            }
         }
 
         /// <summary>Rebuilds sprite-only world assets without replacing the active scene.</summary>
